@@ -228,28 +228,12 @@
 
         .pdf-rules-container { border-top: 2px solid var(--accent-orange); padding-top: 10px; flex-grow: 1; }
         .pdf-rules-container h3 { color: var(--accent-orange); font-size: 12px; margin: 0 0 10px 0; text-transform: uppercase; }
-        .pdf-rules-list {
-            column-count: 2;
-            column-gap: 25px;
-            font-size: 9px;
-            line-height: 1.35;
-            padding-left: 15px;
-            margin: 0;
-            color: #111;
-        }
+        .pdf-rules-list { column-count: 2; column-gap: 25px; font-size: 9px; line-height: 1.35; padding-left: 15px; margin: 0; color: #111; }
         .pdf-rules-list li { margin-bottom: 8px; break-inside: avoid; }
         .pdf-rules-list strong { display: block; font-size: 9.5px; color: #000; }
         .pdf-rules-list em { display: block; font-style: normal; color: #444; font-size: 9.5px; }
 
-        .pdf-footer {
-            margin-top: auto; /* Pushes to bottom */
-            border-top: 1px solid var(--accent-orange);
-            padding-top: 10px;
-            text-align: center;
-            font-size: 9px;
-            color: #555;
-            font-weight: 600;
-        }
+        .pdf-footer { margin-top: auto; border-top: 1px solid var(--accent-orange); padding-top: 10px; text-align: center; font-size: 9px; color: #555; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -419,7 +403,7 @@
                 <div class="admission-badge" id="generated-id">REV-0000</div>
                 <div class="modal-actions">
                     <button id="btn-download-pdf" class="btn primary">1. Download PDF Record</button>
-                    <button id="btn-whatsapp" class="btn whatsapp">2. Send WhatsApp Msg</button>
+                    <button id="btn-whatsapp" class="btn whatsapp">2. Share via WhatsApp</button>
                     <button class="btn secondary" onclick="closeModal()">Close & Return</button>
                 </div>
             </div>
@@ -464,7 +448,7 @@
 
             <div class="pdf-declaration">
                 <h4>DECLARATION</h4>
-                <p>I hereby declare that the details furnished above are true and correct to the best of my knowledge[span_0](start_span)[span_0](end_span). I agree to abide by the rules, regulations, and disciplinary guidelines of Revive Fitness[span_1](start_span)[span_1](end_span). I understand that the membership is non-transferable and fees are non-refundable[span_2](start_span)[span_2](end_span). I acknowledge that physical exercise involves inherent risks and I participate at my own risk[span_3](start_span)[span_3](end_span).</p>
+                <p>I hereby declare that the details furnished above are true and correct to the best of my knowledge. I agree to abide by the rules, regulations, and disciplinary guidelines of Revive Fitness. I understand that the membership is non-transferable and fees are non-refundable. I acknowledge that physical exercise involves inherent risks and I participate at my own risk.</p>
             </div>
 
             <div class="pdf-sigs-container">
@@ -533,6 +517,7 @@
 
         let userLocationStr = "Location details unavailable";
         let isAgeValid = false;
+        let currentMemberDetails = {};
 
         document.addEventListener('DOMContentLoaded', () => {
             
@@ -635,7 +620,7 @@
 
             btnRetake.addEventListener('click', () => { selfieData.value = ''; btnRetake.style.display = 'none'; btnStart.click(); });
 
-            // Signature Pad System
+            // Signature Pad
             const sigCanvas = document.getElementById('signature-pad');
             const sigCtx = sigCanvas.getContext('2d');
             let isDrawing = false;
@@ -690,9 +675,7 @@
             sigCanvas.addEventListener('touchmove', draw, {passive: false});
             sigCanvas.addEventListener('touchend', endDraw);
 
-            let currentMemberDetails = {};
-            let newCountToSave = null;
-
+            // Submissions & Data Handlers
             document.getElementById('admissionForm').addEventListener('submit', (e) => {
                 e.preventDefault();
                 
@@ -708,13 +691,10 @@
 
                 let currentCount = localStorage.getItem('revive_admission_count');
                 currentCount = !currentCount ? 1 : parseInt(currentCount) + 1;
-                newCountToSave = currentCount;
                 
                 const firstNameVal = document.getElementById('firstName').value.trim();
                 const lastNameVal = document.getElementById('lastName').value.trim();
                 const altContactVal = document.getElementById('alternateContact').value.trim();
-                
-                // Safely concatenate full name
                 const fullName = lastNameVal ? `${firstNameVal} ${lastNameVal}` : firstNameVal;
                 
                 currentMemberDetails = {
@@ -734,68 +714,133 @@
 
                 document.getElementById('generated-id').innerText = currentMemberDetails.id;
                 document.getElementById('successModal').style.display = 'flex';
-                localStorage.setItem('revive_admission_count', newCountToSave);
+                localStorage.setItem('revive_admission_count', currentCount);
             });
 
-            // Flawless 1-Page PDF Engine
-            document.getElementById('btn-download-pdf').addEventListener('click', function() {
+            // ---------------------------------------------------------------------
+            // 8. PDF Engine & Action Buttons (Download + Native Web Share API)
+            // ---------------------------------------------------------------------
+            
+            // Core PDF Blob Generator using DOM Swap
+            function getPdfBlob() {
+                return new Promise((resolve, reject) => {
+                    const now = new Date();
+                    const timestampStr = now.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+                    
+                    document.getElementById('pdf-id').innerText = currentMemberDetails.id;
+                    document.getElementById('pdf-date').innerText = currentMemberDetails.date;
+                    document.getElementById('pdf-photo').src = currentMemberDetails.photo;
+                    document.getElementById('pdf-name').innerText = currentMemberDetails.fullName;
+                    document.getElementById('pdf-type').innerText = currentMemberDetails.type;
+                    document.getElementById('pdf-contact1').innerText = currentMemberDetails.primaryContact;
+                    document.getElementById('pdf-contact2').innerText = currentMemberDetails.alternateContact;
+                    document.getElementById('pdf-dob-age').innerText = `${currentMemberDetails.dob} (${currentMemberDetails.age} yrs)`;
+                    document.getElementById('pdf-address').innerText = currentMemberDetails.address;
+                    
+                    const sigImgEl = document.getElementById('pdf-member-sig');
+                    sigImgEl.src = currentMemberDetails.signature;
+                    sigImgEl.style.display = 'inline-block';
+                    
+                    document.getElementById('member-verified').innerText = `+91 ${currentMemberDetails.primaryContact}`;
+                    document.getElementById('member-timestamp').innerText = timestampStr;
+                    document.getElementById('member-location').innerText = userLocationStr;
+                    document.getElementById('official-timestamp').innerText = timestampStr;
+
+                    const appWrapper = document.getElementById('app-wrapper');
+                    const pdfWrapper = document.getElementById('pdf-template-wrapper');
+                    const element = document.getElementById('pdf-template');
+                    
+                    window.scrollTo(0, 0);
+                    appWrapper.style.display = 'none';
+                    pdfWrapper.style.display = 'flex';
+
+                    setTimeout(() => {
+                        const opt = {
+                            margin:       0,
+                            filename:     `${currentMemberDetails.id}.pdf`,
+                            image:        { type: 'jpeg', quality: 1.0 },
+                            html2canvas:  { scale: 2, useCORS: true, scrollY: 0 }, 
+                            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                        };
+
+                        html2pdf().set(opt).from(element).output('blob').then((blob) => {
+                            pdfWrapper.style.display = 'none'; 
+                            appWrapper.style.display = 'flex';
+                            resolve(blob);
+                        }).catch(err => {
+                            pdfWrapper.style.display = 'none'; 
+                            appWrapper.style.display = 'flex';
+                            reject(err);
+                        });
+                    }, 350);
+                });
+            }
+
+            // Forced File Download (Solves browser PDF viewer bug)
+            document.getElementById('btn-download-pdf').addEventListener('click', async function() {
                 const btn = this;
-                btn.innerText = "Generating PDF..."; btn.disabled = true;
+                btn.innerText = "Generating..."; btn.disabled = true;
 
-                const now = new Date();
-                const timestampStr = now.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
-                
-                document.getElementById('pdf-id').innerText = currentMemberDetails.id;
-                document.getElementById('pdf-date').innerText = currentMemberDetails.date;
-                document.getElementById('pdf-photo').src = currentMemberDetails.photo;
-                document.getElementById('pdf-name').innerText = currentMemberDetails.fullName;
-                document.getElementById('pdf-type').innerText = currentMemberDetails.type;
-                document.getElementById('pdf-contact1').innerText = currentMemberDetails.primaryContact;
-                document.getElementById('pdf-contact2').innerText = currentMemberDetails.alternateContact;
-                document.getElementById('pdf-dob-age').innerText = `${currentMemberDetails.dob} (${currentMemberDetails.age} yrs)`;
-                document.getElementById('pdf-address').innerText = currentMemberDetails.address;
-                
-                const sigImgEl = document.getElementById('pdf-member-sig');
-                sigImgEl.src = currentMemberDetails.signature;
-                sigImgEl.style.display = 'inline-block';
-                
-                document.getElementById('member-verified').innerText = `+91 ${currentMemberDetails.primaryContact}`;
-                document.getElementById('member-timestamp').innerText = timestampStr;
-                document.getElementById('member-location').innerText = userLocationStr;
-                document.getElementById('official-timestamp').innerText = timestampStr;
-
-                const appWrapper = document.getElementById('app-wrapper');
-                const pdfWrapper = document.getElementById('pdf-template-wrapper');
-                const element = document.getElementById('pdf-template');
-                
-                window.scrollTo(0, 0);
-                appWrapper.style.display = 'none';
-                pdfWrapper.style.display = 'flex';
-
-                setTimeout(() => {
-                    const opt = {
-                        margin:       0,
-                        filename:     `${currentMemberDetails.id}.pdf`, /* Matches Exact ID */
-                        image:        { type: 'jpeg', quality: 1.0 },
-                        html2canvas:  { scale: 2, useCORS: true, scrollY: 0 }, 
-                        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                    };
-
-                    html2pdf().set(opt).from(element).save().then(() => {
-                        pdfWrapper.style.display = 'none'; appWrapper.style.display = 'flex';
-                        btn.innerText = "1. Download PDF Record"; btn.disabled = false;
-                    }).catch(() => {
-                        pdfWrapper.style.display = 'none'; appWrapper.style.display = 'flex';
-                        btn.innerText = "1. Download PDF Record"; btn.disabled = false;
-                        alert("Error generating PDF. Please try again.");
-                    });
-                }, 350);
+                try {
+                    const blob = await getPdfBlob();
+                    const url = URL.createObjectURL(blob);
+                    
+                    // Create invisible anchor to forcefully trigger device download
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `${currentMemberDetails.id}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    
+                    // Clean up memory
+                    setTimeout(() => {
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                    }, 100);
+                    
+                } catch (err) {
+                    alert("Error generating PDF.");
+                    console.error(err);
+                } finally {
+                    btn.innerText = "1. Download PDF Record"; 
+                    btn.disabled = false;
+                }
             });
 
-            document.getElementById('btn-whatsapp').addEventListener('click', () => {
+            // Native Web Share API (Auto-Attaches PDF to WhatsApp)
+            document.getElementById('btn-whatsapp').addEventListener('click', async function() {
+                const btn = this;
+                btn.innerText = "Preparing Share..."; btn.disabled = true;
+
                 const phone = currentMemberDetails.primaryContact;
                 const msg = `Dear ${currentMemberDetails.fullName},\n\nThank you for joining Revive Fitness Studio!\nYour registration is successful. Your Admission Number is *${currentMemberDetails.id}*.\n\n*Please find your Official Admission Record attached.*`;
-                window.open(`https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(msg)}`, '_blank');
+
+                try {
+                    const blob = await getPdfBlob();
+                    const file = new File([blob], `${currentMemberDetails.id}.pdf`, { type: 'application/pdf' });
+
+                    // Check if device supports native file sharing (Mobile devices)
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            title: `Admission Record - ${currentMemberDetails.id}`,
+                            text: msg,
+                            files: [file]
+                        });
+                    } else {
+                        // Desktop fallback: Open WhatsApp Web (user must attach file manually)
+                        alert("Native file sharing is unsupported on this device. Opening WhatsApp. Please attach the downloaded PDF manually.");
+                        window.open(`https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(msg)}`, '_blank');
+                    }
+                } catch (err) {
+                    if (err.name !== 'AbortError') { // AbortError just means user canceled the share sheet
+                        console.error(err);
+                        alert("Error sharing the document.");
+                    }
+                } finally {
+                    btn.innerText = "2. Share via WhatsApp"; 
+                    btn.disabled = false;
+                }
             });
         });
 
