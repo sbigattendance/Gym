@@ -2,850 +2,739 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Revive Fitness Portal</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- html2pdf.js -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Revive Fitness Studio | Portal</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        gym: {
-                            dark: '#0f172a', surface: '#1e293b', cyan: '#06B6D4', cyanHover: '#0891b2',
-                            success: '#10B981', danger: '#F43F5E', warning: '#F59E0B'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        @keyframes fadeUp { 0% { transform: translateY(20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
-        .animate-fade-up { animation: fadeUp 0.4s ease-out forwards; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #06B6D4; }
+        :root {
+            --bg-dark: #050505;
+            --bg-panel: #141414;
+            --bg-card: #1f1f1f;
+            --text-light: #ffffff;
+            --text-muted: #a0a0a0;
+            --accent-orange: #ff6600;
+            --accent-hover: #e65c00;
+            --border-color: #333333;
+            --success-green: #25D366;
+            --error-red: #ff3333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html { font-size: 16px; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* App Header */
+        .app-header {
+            background-color: var(--bg-panel);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 2px solid var(--accent-orange);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+        }
+
+        .logo-container { cursor: pointer; display: flex; align-items: center; transition: transform 0.2s; }
+        .logo-container:active { transform: scale(0.95); }
+
+        /* View Controller */
+        .view-section {
+            display: none; flex: 1; width: 100%; max-width: 1200px;
+            margin: 0 auto; padding: 2rem 1.5rem; animation: fadeIn 0.3s ease-in-out;
+        }
+        .view-section.active-view { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Dashboard Homepage */
+        .dashboard-header { text-align: center; margin-bottom: 3rem; }
+        .dashboard-header h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; letter-spacing: 2px; margin-bottom: 0.5rem; }
+        .dashboard-header span { color: var(--accent-orange); }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; }
+        .module-card {
+            background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px;
+            padding: 2.5rem 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s ease;
+            position: relative; overflow: hidden;
+        }
+        .module-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background-color: var(--accent-orange); transform: scaleX(0); transition: transform 0.3s ease; transform-origin: left;
+        }
+        .module-card:hover { transform: translateY(-5px); border-color: var(--accent-orange); box-shadow: 0 10px 30px rgba(255, 102, 0, 0.15); background-color: #242424; }
+        .module-card:hover::before { transform: scaleX(1); }
+        .module-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
+        .module-card h3 { font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .module-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.4; }
+
+        /* Forms & Toolbars */
+        .module-toolbar { display: flex; align-items: center; margin-bottom: 2rem; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
+        .back-btn { background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: color 0.2s; padding: 0.5rem; margin-left: -0.5rem; }
+        .back-btn:hover, .back-btn:active { color: var(--accent-orange); }
+        .module-title { font-size: clamp(1.2rem, 4vw, 1.8rem); color: var(--accent-orange); text-transform: uppercase; font-weight: 700; }
+        
+        .form-layout { max-width: 800px; margin: 0 auto; }
+        .form-row { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .form-group { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
+        label { margin-bottom: 0.6rem; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .required { color: var(--accent-orange); font-size: 1.1rem; line-height: 0; vertical-align: middle; }
+        
+        input, select, textarea {
+            background-color: var(--bg-panel); border: 1px solid var(--border-color); color: var(--text-light);
+            padding: 1rem; border-radius: 8px; outline: none; transition: all 0.3s; font-size: 1rem; width: 100%;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent-orange); background-color: var(--bg-card); box-shadow: 0 0 0 2px rgba(255, 102, 0, 0.15); }
+        input[readonly] { background-color: var(--bg-dark); color: var(--text-muted); cursor: not-allowed; border-style: dashed; }
+        .warning-text { color: var(--error-red); font-size: 0.85rem; margin-top: 0.5rem; display: none; font-weight: bold; }
+
+        /* Camera */
+        .selfie-group { align-items: center; margin-bottom: 2.5rem; background-color: var(--bg-panel); padding: 2rem 1rem; border-radius: 12px; border: 1px dashed var(--border-color); }
+        .camera-container {
+            width: 100%; max-width: 280px; aspect-ratio: 1; background-color: #000; border: 3px solid var(--border-color);
+            margin: 1rem 0 1.5rem 0; display: flex; justify-content: center; align-items: center; overflow: hidden; border-radius: 50%; box-shadow: 0 8px 20px rgba(0,0,0,0.5); position: relative;
+        }
+        .camera-placeholder { color: var(--text-muted); font-size: 3rem; position: absolute; }
+        video, #selfie-preview { width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 2; }
+        .camera-controls { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+
+        /* Buttons */
+        .btn {
+            padding: 1rem 2rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; transition: all 0.2s; font-size: 0.95rem; display: inline-flex; justify-content: center; align-items: center; gap: 0.5rem;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn.primary { background-color: var(--accent-orange); color: #fff; }
+        .btn.primary:hover { background-color: var(--accent-hover); }
+        .btn.primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn.secondary { background-color: transparent; border: 1px solid var(--text-muted); color: var(--text-light); }
+        .btn.secondary:hover { border-color: var(--text-light); }
+        .btn.whatsapp { background-color: var(--success-green); color: #fff; }
+        .submit-btn { width: 100%; margin-top: 2rem; font-size: 1.1rem; padding: 1.2rem; box-shadow: 0 4px 15px rgba(255,102,0,0.3); }
+
+        /* Modal */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 1000; padding: 1rem;
+        }
+        .modal-content {
+            background-color: var(--bg-panel); padding: clamp(1.5rem, 5vw, 3rem); border-radius: 16px; text-align: center;
+            border: 1px solid var(--accent-orange); max-width: 450px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .orange-text { color: var(--accent-orange); margin: 1rem 0; font-size: 1.5rem; text-transform: uppercase; font-weight: 800; }
+        .admission-badge {
+            background-color: var(--bg-dark); padding: 1.2rem; font-size: 2.2rem; font-weight: 900; letter-spacing: 2px;
+            color: var(--text-light); border: 2px dashed var(--accent-orange); border-radius: 8px; margin: 1.5rem 0; display: inline-block; width: 100%;
+        }
+        .modal-actions { display: flex; flex-direction: column; gap: 0.8rem; }
+        .modal-actions .btn { width: 100%; }
+
+        /* PDF TEMPLATE (Strictly styled for A4 dimensions without overflow) */
+        #pdf-template {
+            background: #ffffff; color: #111111; width: 210mm;
+            box-sizing: border-box; font-family: 'Helvetica', 'Arial', sans-serif;
+            position: absolute; left: -9999px; top: 0; z-index: -9999;
+        }
+        
+        /* Enforce fixed page heights to prevent html2pdf from injecting blank space */
+        .pdf-page { 
+            width: 210mm;
+            height: 297mm;
+            padding: 15mm; 
+            box-sizing: border-box; 
+            display: flex; 
+            flex-direction: column;
+            background: #ffffff;
+            position: relative;
+        }
+        
+        /* First Page Layout */
+        .pdf-header-container { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 4px solid var(--accent-orange); padding-bottom: 12px; margin-bottom: 25px; }
+        .pdf-header-text h2 { color: var(--accent-orange); font-size: 34px; font-weight: 900; margin: 0; letter-spacing: 2px; text-transform: uppercase; }
+        .pdf-header-text h3 { color: #444; font-size: 14px; margin: 4px 0 0 0; font-weight: 700; letter-spacing: 4px; }
+        .pdf-header-right { text-align: right; font-weight: 800; color: #111; font-size: 14px; line-height: 1.2; }
+        
+        .pdf-top-meta {
+            display: flex; justify-content: space-between; background-color: #fff8f3;
+            padding: 12px 16px; border-left: 5px solid var(--accent-orange); margin-bottom: 30px;
+            font-weight: 700; font-size: 13px; color: #111; border-radius: 4px;
+        }
+        
+        .pdf-content-row { display: flex; gap: 25px; align-items: flex-start; margin-bottom: 30px; }
+        .pdf-photo-wrapper { flex: 0 0 170px; text-align: center; }
+        .pdf-photo-wrapper img { width: 170px; height: 170px; object-fit: cover; border: 3px solid var(--accent-orange); border-radius: 8px; }
+        
+        .pdf-table-wrapper { flex: 1; }
+        .pdf-table { width: 100%; border-collapse: collapse; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; }
+        .pdf-table th, .pdf-table td { border-bottom: 1px solid #ddd; padding: 12px 14px; font-size: 12.5px; text-align: left; }
+        .pdf-table tr:last-child th, .pdf-table tr:last-child td { border-bottom: none; }
+        .pdf-table th { background-color: #fcfcfc; color: #555; width: 40%; font-weight: 700; text-transform: uppercase; border-right: 1px solid #ddd; }
+        .pdf-table td { font-weight: 600; color: #000; }
+        
+        .pdf-declaration { margin-bottom: 20px; }
+        .pdf-declaration h4 { color: var(--accent-orange); margin: 0 0 8px 0; font-size: 15px; text-transform: uppercase; }
+        .pdf-declaration p { font-size: 12px; line-height: 1.6; color: #333; margin: 0; text-align: justify; }
+        
+        .pdf-spacer { flex-grow: 1; } /* Consumes remaining space to push signatures to absolute bottom */
+
+        .pdf-signatures { display: flex; justify-content: space-between; align-items: flex-end; padding-top: 20px; }
+        .sig-block { width: 45%; position: relative; }
+        .sig-line { border-top: 1px solid #000; padding-top: 8px; font-weight: 800; font-size: 13px; text-align: center; }
+        .sig-meta { text-align: left; font-size: 10.5px; color: #444; margin-top: 8px; line-height: 1.5; }
+        .official-sig-img { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); height: 50px; }
+
+        /* Second Page - Rules Compacted to prevent spilling to Page 3 */
+        .pdf-rules-page h3 { color: var(--accent-orange); border-bottom: 2px solid var(--accent-orange); padding-bottom: 10px; margin-bottom: 20px; font-size: 18px; text-transform: uppercase; }
+        .pdf-rules-list { font-size: 11px; line-height: 1.35; padding-left: 20px; color: #111; }
+        .pdf-rules-list li { margin-bottom: 12px; }
+        .pdf-rules-list strong { display: block; font-size: 11.5px; margin-bottom: 3px; color: #000; }
+        .pdf-rules-list em { display: block; font-style: normal; color: #444; font-size: 11.5px; }
+
+        @media(max-width: 768px) {
+            .form-row { flex-direction: column; gap: 1rem; margin-bottom: 1rem; }
+            .view-section { padding: 1.5rem 1rem; }
+            .camera-container { max-width: 220px; }
+            .btn { padding: 0.9rem 1.5rem; }
+        }
     </style>
 </head>
-<body class="bg-gym-dark text-gray-200 font-sans antialiased min-h-screen flex flex-col">
+<body>
 
-    <!-- NAVIGATION -->
-    <nav class="bg-gym-surface border-b border-gray-800 p-4 shadow-lg sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3 text-gym-cyan font-black text-2xl tracking-widest uppercase cursor-pointer hover:scale-105 transition-transform" onclick="switchView('home')">
-                <i class="fa-solid fa-bolt"></i> REVIVE FITNESS
-            </div>
-            <button id="btn-back-home" onclick="switchView('home')" class="hidden px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors flex items-center gap-2 border border-gray-700 text-sm font-semibold">
-                <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-            </button>
+    <!-- Unified Application Header -->
+    <header class="app-header">
+        <div class="logo-container" onclick="switchView('home')">
+            <svg viewBox="0 0 350 80" height="40" xmlns="http://www.w3.org/2000/svg">
+                <text x="0" y="45" font-family="'Segoe UI', Arial, sans-serif" font-size="42" font-weight="900" fill="#ffffff" letter-spacing="4">REV<tspan fill="#ff6600">I</tspan>VE</text>
+                <text x="2" y="70" font-family="'Segoe UI', Arial, sans-serif" font-size="14" font-weight="600" fill="#a0a0a0" letter-spacing="6">FITNESS STUDIO</text>
+            </svg>
         </div>
-    </nav>
+    </header>
 
-    <main class="flex-1 p-6 flex flex-col relative overflow-x-hidden">
-        
-        <!-- ========================================== -->
-        <!-- VIEW: HOMEPAGE MODULES                     -->
-        <!-- ========================================== -->
-        <section id="view-home" class="max-w-7xl mx-auto w-full flex-1 flex flex-col justify-center animate-fade-up">
-            <div class="text-center mb-10">
-                <h1 class="text-4xl font-black text-white mb-3">SYSTEM MODULES</h1>
-                <p class="text-gray-400">Select an operational module to continue</p>
+    <!-- MODULE: DASHBOARD -->
+    <main id="view-home" class="view-section active-view">
+        <div class="dashboard-header">
+            <h1>WELCOME TO <span>REVIVE</span></h1>
+            <p style="color: var(--text-muted); font-size: 1rem;">Portal Management System</p>
+        </div>
+        <div class="dashboard-grid">
+            <div class="module-card" onclick="switchView('admission')">
+                <span class="module-icon">📝</span>
+                <h3>New Admission</h3>
+                <p>Register members & ID</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Module 1 -->
-                <div onclick="switchView('registration')" class="bg-gym-surface p-8 rounded-xl border border-gray-800 cursor-pointer hover:-translate-y-2 hover:border-gym-cyan transition-all group text-center">
-                    <div class="w-16 h-16 bg-gym-dark rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-gym-cyan transition-colors">
-                        <i class="fa-solid fa-user-plus text-2xl text-gym-cyan group-hover:text-white transition-colors"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-2">New Registration</h3>
-                    <p class="text-sm text-gray-400">Enroll members with Live Photo</p>
-                </div>
-                <!-- Module 2 -->
-                <div onclick="switchView('userDetails')" class="bg-gym-surface p-8 rounded-xl border border-gray-800 cursor-pointer hover:-translate-y-2 hover:border-gym-cyan transition-all group text-center">
-                    <div class="w-16 h-16 bg-gym-dark rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-gym-cyan transition-colors">
-                        <i class="fa-solid fa-address-card text-2xl text-gym-cyan group-hover:text-white transition-colors"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-2">User Details</h3>
-                    <p class="text-sm text-gray-400">Edit profiles & track financial year fees</p>
-                </div>
-                <!-- Module 3 -->
-                <div onclick="alert('Module coming soon!')" class="bg-gym-surface p-8 rounded-xl border border-gray-800 cursor-pointer hover:-translate-y-2 hover:border-gym-success transition-all group text-center">
-                    <div class="w-16 h-16 bg-gym-dark rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-gym-success transition-colors">
-                        <i class="fa-solid fa-file-invoice-dollar text-2xl text-gym-success group-hover:text-white transition-colors"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-2">Fee Collection Entry</h3>
-                    <p class="text-sm text-gray-400">Record payments & update dues</p>
-                </div>
-                <!-- Module 4 -->
-                <div onclick="alert('Module coming soon!')" class="bg-gym-surface p-8 rounded-xl border border-gray-800 cursor-pointer hover:-translate-y-2 hover:border-gym-warning transition-all group text-center lg:col-start-2">
-                    <div class="w-16 h-16 bg-gym-dark rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-gym-warning transition-colors">
-                        <i class="fa-solid fa-calendar-check text-2xl text-gym-warning group-hover:text-white transition-colors"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-2">Attendance Mark</h3>
-                    <p class="text-sm text-gray-400">Daily check-ins & gym usage tracking</p>
-                </div>
-                <!-- Module 5 -->
-                <div onclick="alert('Module coming soon!')" class="bg-gym-surface p-8 rounded-xl border border-gray-800 cursor-pointer hover:-translate-y-2 hover:border-purple-500 transition-all group text-center">
-                    <div class="w-16 h-16 bg-gym-dark rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-500 transition-colors">
-                        <i class="fa-solid fa-chart-pie text-2xl text-purple-500 group-hover:text-white transition-colors"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-2">Reports</h3>
-                    <p class="text-sm text-gray-400">Analytics, growth, and exports</p>
-                </div>
+            <div class="module-card" onclick="alert('Module under construction for Phase 2 Sheets Integration.')">
+                <span class="module-icon">💳</span>
+                <h3>Fee Collection</h3>
+                <p>Process payments</p>
             </div>
-        </section>
+            <div class="module-card" onclick="alert('Module under construction for Phase 2 Sheets Integration.')">
+                <span class="module-icon">👥</span>
+                <h3>User Details</h3>
+                <p>Manage profiles</p>
+            </div>
+            <div class="module-card" onclick="alert('Module under construction for Phase 2 Sheets Integration.')">
+                <span class="module-icon">✅</span>
+                <h3>Attendance</h3>
+                <p>Daily check-ins</p>
+            </div>
+            <div class="module-card" onclick="alert('Module under construction for Phase 2 Sheets Integration.')">
+                <span class="module-icon">📊</span>
+                <h3>Reports</h3>
+                <p>Analytics & Export</p>
+            </div>
+        </div>
+    </main>
 
-        <!-- ========================================== -->
-        <!-- VIEW 1: NEW REGISTRATION                 -->
-        <!-- ========================================== -->
-        <section id="view-registration" class="hidden max-w-4xl mx-auto w-full animate-fade-up">
-            <div id="reg-form-container" class="bg-gym-surface p-8 rounded-xl shadow-2xl border border-gray-800">
-                <div class="flex items-center gap-3 border-b border-gray-700 pb-4 mb-6">
-                    <i class="fa-solid fa-user-plus text-gym-cyan text-2xl"></i>
-                    <h2 class="text-2xl font-bold uppercase tracking-wider text-white">Member Enrollment</h2>
+    <!-- MODULE: NEW ADMISSION -->
+    <main id="view-admission" class="view-section">
+        <div class="form-layout">
+            <div class="module-toolbar">
+                <button class="back-btn" onclick="switchView('home')" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    Back
+                </button>
+                <h2 class="module-title">New Admission</h2>
+            </div>
+            
+            <form id="admissionForm">
+                <div class="form-group selfie-group">
+                    <label>Live Member Portrait <span class="required">*</span></label>
+                    <div class="camera-container">
+                        <div class="camera-placeholder">📷</div>
+                        <video id="camera-stream" autoplay playsinline style="display:none;"></video>
+                        <canvas id="canvas-snapshot" style="display:none;"></canvas>
+                        <img id="selfie-preview" style="display:none;" />
+                    </div>
+                    <div class="camera-controls">
+                        <button type="button" id="btn-start-camera" class="btn secondary">Open Camera</button>
+                        <button type="button" id="btn-capture" class="btn primary" style="display:none;">Capture Photo</button>
+                        <button type="button" id="btn-retake" class="btn secondary" style="display:none;">Retake</button>
+                    </div>
+                    <input type="hidden" id="selfie-data" required>
                 </div>
 
-                <div id="regAlert" class="hidden bg-rose-500/20 border border-rose-500 text-rose-300 p-4 rounded-lg mb-6 flex items-center gap-3">
-                    <i class="fa-solid fa-triangle-exclamation"></i><span id="regAlertMsg"></span>
-                </div>
-
-                <form id="registrationForm" onsubmit="handleRegistration(event)" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                    
-                    <!-- LIVE PHOTO CAPTURE MODULE (SELFIE) -->
-                    <div class="flex flex-col gap-2 md:col-span-2 bg-gym-dark p-4 rounded-lg border border-gray-700">
-                        <label class="text-sm text-gym-cyan font-semibold">Live Photo Capture (Selfie) <span class="text-gym-danger">*</span></label>
-                        <div class="flex flex-col sm:flex-row gap-6 items-center">
-                            <div class="relative w-32 h-40 bg-gray-900 border-2 border-dashed border-gray-600 rounded flex justify-center items-center overflow-hidden shadow-inner">
-                                <video id="camera-stream" autoplay playsinline class="w-full h-full object-cover hidden" style="transform: scaleX(-1);"></video>
-                                <img id="photo-preview" class="w-full h-full object-cover hidden" style="transform: scaleX(-1);" />
-                                <i id="camera-icon" class="fa-solid fa-camera text-3xl text-gray-600"></i>
-                            </div>
-                            <div class="flex flex-col gap-3 w-full sm:w-auto">
-                                <button type="button" id="btn-start-cam" onclick="startCamera()" class="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded font-bold text-sm transition-colors"><i class="fa-solid fa-video"></i> Open Selfie Camera</button>
-                                <button type="button" id="btn-capture-cam" onclick="capturePhoto()" class="hidden px-6 py-2 bg-gym-cyan hover:bg-gym-cyanHover text-white rounded font-bold text-sm transition-colors"><i class="fa-solid fa-camera-retro"></i> Capture Photo</button>
-                                <button type="button" id="btn-retake-cam" onclick="retakePhoto()" class="hidden px-6 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded font-bold text-sm transition-colors"><i class="fa-solid fa-rotate-left"></i> Retake</button>
-                            </div>
-                            <input type="hidden" id="regPhotoData"> 
-                        </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dateOfAdmission">Date of Admission <span class="required">*</span></label>
+                        <input type="text" id="dateOfAdmission" placeholder="DD-MM-YYYY" pattern="\d{2}-\d{2}-\d{4}" required>
                     </div>
-
-                    <!-- FORM FIELDS -->
-                    <div class="flex flex-col gap-2">
-                        <label class="text-sm text-gym-cyan font-semibold">Date of Admission *</label>
-                        <input type="date" required id="regDate" class="w-full bg-gym-dark border border-gray-700 rounded p-3 text-white focus:border-gym-cyan outline-none">
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label class="text-sm text-gym-cyan font-semibold">Type of Admission *</label>
-                        <select required id="regType" class="w-full bg-gym-dark border border-gray-700 rounded p-3 text-white focus:border-gym-cyan outline-none">
+                    <div class="form-group">
+                        <label for="admissionType">Type of Admission <span class="required">*</span></label>
+                        <select id="admissionType" required>
                             <option value="Regular">Regular</option>
                             <option value="Personal Training">Personal Training</option>
                         </select>
                     </div>
-                    <div class="flex flex-col gap-2">
-                        <label class="text-sm text-gym-cyan font-semibold">First Name *</label>
-                        <input type="text" required id="regFirstName" pattern="[A-Za-z\s]+" oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')" class="w-full bg-gym-dark border border-gray-700 rounded p-3 text-white outline-none">
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label class="text-sm text-gray-400 font-semibold">Last Name</label>
-                        <input type="text" id="regLastName" pattern="[A-Za-z\s]+" oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')" class="w-full bg-gym-dark border border-gray-700 rounded p-3 text-white outline-none">
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label class="text-sm text-gym-cyan font-semibold">Primary Contact (10 Digits) *</label>
-                        <input type="text" required id="regPhone" pattern="[0-9]{10}" maxlength="10" minlength="10" oninput="this.value = this.value.replace(/\D/g, '').substring(0,10)" class="w-full bg-gym-dark border border-gray-700 rounded p-3 text-white outline-none">
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label class="text-sm text-gray-400 font-semibold">Alternate Contact</label>
-                        <input type="text" id="regAltPhone" pattern="[0-9]{10}" maxlength="10" oninput="this.value = this.value.replace(/\D/g, '').substring(0,10)" class="w-full bg-gym-dark border border-gray-700 rounded p-3 text-white outline-none">
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label class="text-sm text-gym-cyan font-semibold">Date of Birth *</label>
-                        <div class="flex gap-4">
-                            <input type="date" required id="regDob" onchange="calculateAge('regDob', 'regAge')" class="w-full bg-gym-dark border border-gray-700 rounded p-3 text-white outline-none">
-                            <input type="text" readonly id="regAge" class="w-20 bg-gray-800 border border-gray-700 rounded p-3 text-center text-gym-cyan font-bold" placeholder="Age">
-                        </div>
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label class="text-sm text-gray-400 font-semibold">Blood Group</label>
-                        <select id="regBlood" class="w-full bg-gym-dark border border-gray-700 rounded p-3 text-white outline-none">
-                            <option value="">Select</option>
-                            <option value="A+">A+</option><option value="O+">O+</option><option value="B+">B+</option><option value="AB+">AB+</option>
-                            <option value="A-">A-</option><option value="O-">O-</option><option value="B-">B-</option><option value="AB-">AB-</option>
-                        </select>
-                    </div>
-                    <div class="flex flex-col gap-2 md:col-span-2">
-                        <label class="text-sm text-gym-cyan font-semibold">Address *</label>
-                        <textarea required id="regAddress" rows="3" class="w-full bg-gym-dark border border-gray-700 rounded p-3 text-white outline-none"></textarea>
-                    </div>
-                    <div class="md:col-span-2 pt-2">
-                        <button type="submit" id="submitRegBtn" class="w-full bg-gym-cyan hover:bg-gym-cyanHover text-white font-bold py-4 rounded-lg shadow-lg hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all uppercase tracking-widest flex justify-center items-center gap-2">
-                            <span>Register Member</span>
-                        </button>
-                        <p class="text-xs text-gray-500 text-center mt-3"><i class="fa-solid fa-location-dot"></i> Date, Time, and Location will be captured for the digital signature.</p>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Success Container -->
-            <div id="reg-success-container" class="hidden animate-fade-up flex-col items-center justify-center p-10 bg-gym-surface rounded-xl border border-gym-cyan/30 shadow-[0_0_40px_rgba(6,182,212,0.2)] text-center mt-4">
-                <i class="fa-solid fa-circle-check text-6xl text-gym-success mb-6 drop-shadow-[0_0_15px_rgba(16,185,129,0.8)]"></i>
-                <h2 class="text-4xl font-black text-white mb-2 tracking-wider">REGISTRATION SUCCESS</h2>
-                <p id="successMessage" class="text-gray-400 mb-6 text-lg"></p>
-                
-                <div class="bg-gray-800 px-10 py-5 rounded-lg border-l-4 border-gym-cyan flex items-center gap-5 mb-8 inline-block">
-                    <div class="text-left">
-                        <p class="text-sm text-gray-400 uppercase tracking-widest mb-1">Admission Number</p>
-                        <p id="generatedAdmissionNo" class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gym-cyan to-blue-400 tracking-wider"></p>
-                    </div>
                 </div>
-                
-                <div class="flex flex-col sm:flex-row gap-4 w-full max-w-lg mx-auto">
-                    <button onclick="downloadPDF()" class="flex-1 px-6 py-4 bg-gym-dark border-2 border-gym-cyan hover:bg-gym-cyan/10 text-gym-cyan font-bold rounded-lg transition-colors flex justify-center items-center gap-2">
-                        <i class="fa-solid fa-file-pdf"></i> Download PDF Form
-                    </button>
-                    <button onclick="sharePDF()" class="flex-1 px-6 py-4 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition-colors flex justify-center items-center gap-2 shadow-[0_0_15px_rgba(22,163,74,0.4)]">
-                        <i class="fa-brands fa-whatsapp text-xl"></i> Share on WhatsApp
-                    </button>
-                </div>
-                <button onclick="resetRegistration()" class="mt-8 text-gray-400 hover:text-white transition-colors underline text-sm">Register Another Member</button>
-            </div>
-        </section>
 
-        <!-- ========================================== -->
-        <!-- VIEW 2: USER DETAILS & EDIT              -->
-        <!-- ========================================== -->
-        <section id="view-userDetails" class="hidden max-w-6xl mx-auto w-full space-y-6 animate-fade-up">
-            <div class="bg-gym-surface p-6 rounded-xl shadow-lg border border-gray-800">
-                <div class="flex items-center gap-3 border-b border-gray-700 pb-4 mb-6">
-                    <i class="fa-solid fa-address-card text-gym-cyan text-2xl"></i>
-                    <h2 class="text-2xl font-bold uppercase tracking-wider text-white">Member Lookup</h2>
-                </div>
-                <form onsubmit="handleSearch(event)" class="flex flex-col md:flex-row gap-6 items-end">
-                    <div class="flex-1 w-full flex flex-col gap-2">
-                        <label class="text-sm text-gray-400">Primary Contact (10 Digits)</label>
-                        <div class="relative">
-                            <i class="fa-solid fa-phone absolute left-3 top-4 text-gray-500"></i>
-                            <input type="text" required id="searchPhone" pattern="[0-9]{10}" maxlength="10" oninput="this.value = this.value.replace(/\D/g, '').substring(0,10)" class="w-full bg-gym-dark border border-gray-700 rounded p-3 pl-10 text-white focus:border-gym-cyan outline-none transition-colors" placeholder="Enter exactly 10 digits">
-                        </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name <span class="required">*</span></label>
+                        <input type="text" id="firstName" pattern="[A-Za-z\s]+" title="Only alphabets allowed" placeholder="Enter first name" required>
                     </div>
-                    <div class="flex-1 w-full flex flex-col gap-2">
-                        <label class="text-sm text-gray-400">Financial Year</label>
-                        <select id="searchYear" class="w-full bg-gym-dark border border-gray-700 rounded p-3 text-white focus:border-gym-cyan outline-none transition-colors">
-                            <option value="2023-2024">2023-2024</option>
-                            <option value="2024-2025" selected>2024-2025</option>
-                            <option value="2025-2026">2025-2026</option>
-                        </select>
-                    </div>
-                    <button type="submit" id="searchBtn" class="bg-gym-cyan hover:bg-gym-cyanHover px-8 py-3 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors h-[50px] text-white w-full md:w-auto">
-                        <i class="fa-solid fa-magnifying-glass"></i> Fetch
-                    </button>
-                </form>
-            </div>
-
-            <div id="user-dashboard" class="hidden bg-gym-surface rounded-xl shadow-lg border border-gray-800 overflow-hidden animate-fade-up">
-                
-                <div class="bg-[#151f32] p-6 flex flex-col md:flex-row md:items-center justify-between border-b border-gray-800 gap-4">
-                    <div class="flex items-center gap-4">
-                        <i class="fa-solid fa-circle-user text-5xl text-gym-cyan"></i>
-                        <div>
-                            <h3 id="profileName" class="text-2xl font-bold text-white uppercase tracking-wide"></h3>
-                            <p class="text-gym-cyan text-sm font-mono mt-1">
-                                <span id="profileRegNo" class="font-bold"></span> | <span id="profileType"></span>
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <div class="flex bg-gym-dark rounded-lg p-1 border border-gray-800">
-                        <button onclick="switchTab('fees')" id="tab-fees" class="px-5 py-2 rounded-md flex items-center gap-2 text-sm font-bold transition-all bg-gym-cyan text-white">
-                            <i class="fa-solid fa-calendar-days"></i> Fees
-                        </button>
-                        <button onclick="switchTab('edit')" id="tab-edit" class="px-5 py-2 rounded-md flex items-center gap-2 text-sm font-bold transition-all text-gray-400 hover:text-white">
-                            <i class="fa-solid fa-pen-to-square"></i> Edit Details
-                        </button>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" pattern="[A-Za-z\s]+" title="Only alphabets allowed" placeholder="Optional">
                     </div>
                 </div>
 
-                <!-- Fees Tab -->
-                <div id="content-fees" class="p-6">
-                    <h4 class="text-lg font-bold mb-6 flex items-center gap-2 text-white">
-                        <i class="fa-solid fa-money-check-dollar text-gym-cyan"></i> 
-                        FY <span id="displayYear" class="text-gym-cyan"></span> Tracker
-                    </h4>
-                    
-                    <div id="feeCalendarGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="primaryContact">Primary Contact <span class="required">*</span></label>
+                        <input type="tel" id="primaryContact" pattern="\d{10}" maxlength="10" title="Exactly 10 digits required" placeholder="10-digit mobile number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="alternateContact">Alternate Contact</label>
+                        <input type="tel" id="alternateContact" pattern="\d{10}" maxlength="10" title="Exactly 10 digits required" placeholder="Optional">
                     </div>
                 </div>
 
-                <!-- Edit Details Tab -->
-                <div id="content-edit" class="hidden p-6">
-                    <div id="editAlert" class="hidden bg-rose-500/20 border border-rose-500 text-rose-300 p-4 rounded-lg mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-triangle-exclamation"></i><span id="editAlertMsg"></span>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dob">Date of Birth <span class="required">*</span></label>
+                        <input type="text" id="dob" placeholder="DD-MM-YYYY" pattern="\d{2}-\d{2}-\d{4}" title="Format: DD-MM-YYYY" required>
+                        <div id="ageWarning" class="warning-text">⚠️ Minimum age requirement is 18 years.</div>
                     </div>
-
-                    <form onsubmit="handleEditSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                        <div class="flex flex-col gap-2 opacity-60 cursor-not-allowed md:col-span-2 lg:col-span-1">
-                            <label class="text-sm text-gray-400 font-semibold">Admission Number (Fixed)</label>
-                            <input type="text" readonly id="editRegNo" class="w-full bg-gym-dark border border-gray-700 rounded p-3 text-white outline-none">
-                        </div>
-                        <div class="flex flex-col gap-2">
-                            <label class="text-sm text-gym-cyan font-semibold">Primary Contact (Editable)</label>
-                            <input type="text" required id="editPhone" pattern="[0-9]{10}" maxlength="10" minlength="10" oninput="this.value = this.value.replace(/\D/g, '').substring(0,10)" class="w-full bg-gym-dark border border-gray-700 rounded p-3 text-white focus:border-gym-cyan outline-none transition-colors border-l-4 border-l-gym-cyan">
-                        </div>
-                        <div class="flex flex-col gap-2">
-                            <label class="text-sm text-gym-cyan font-semibold">First Name</label>
-                            <input type="text" required id="editFirstName" pattern="[A-Za-z\s]+" oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')" class="w-full bg-gym-dark border border-gray-700 rounded p-3 text-white focus:border-gym-cyan outline-none transition-colors">
-                        </div>
-                        <div class="flex flex-col gap-2">
-                            <label class="text-sm text-gray-400 font-semibold">Last Name</label>
-                            <input type="text" id="editLastName" pattern="[A-Za-z\s]+" oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')" class="w-full bg-gym-dark border border-gray-700 rounded p-3 text-white focus:border-gym-cyan outline-none transition-colors">
-                        </div>
-                        <div class="flex flex-col gap-2">
-                            <label class="text-sm text-gym-cyan font-semibold">Date of Birth</label>
-                            <input type="date" required id="editDob" class="w-full bg-gym-dark border border-gray-700 rounded p-3 text-white focus:border-gym-cyan outline-none transition-colors">
-                        </div>
-                        <div class="flex flex-col gap-2">
-                            <label class="text-sm text-gym-cyan font-semibold">Type of Admission</label>
-                            <select required id="editType" class="w-full bg-gym-dark border border-gray-700 rounded p-3 text-white focus:border-gym-cyan outline-none transition-colors">
-                                <option value="Regular">Regular</option>
-                                <option value="Personal Training">Personal Training</option>
-                            </select>
-                        </div>
-                        <div class="flex flex-col gap-2 md:col-span-2">
-                            <label class="text-sm text-gym-cyan font-semibold">Address</label>
-                            <textarea required id="editAddress" rows="2" class="w-full bg-gym-dark border border-gray-700 rounded p-3 text-white focus:border-gym-cyan outline-none transition-colors"></textarea>
-                        </div>
-                        <div class="md:col-span-2 pt-2">
-                            <button type="submit" id="updateBtn" class="bg-gym-cyan hover:bg-gym-cyanHover text-white font-bold py-3 px-8 rounded-lg transition-all flex items-center justify-center gap-2 w-full md:w-auto">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> Update Existing Record
-                            </button>
-                        </div>
-                    </form>
+                    <div class="form-group">
+                        <label for="age">Calculated Age</label>
+                        <input type="number" id="age" readonly placeholder="Auto-calculated">
+                    </div>
                 </div>
-            </div>
-        </section>
 
+                <div class="form-group">
+                    <label for="address">Full Residential Address <span class="required">*</span></label>
+                    <textarea id="address" maxlength="100" rows="3" placeholder="Enter complete address (Max 100 characters)" required></textarea>
+                </div>
+
+                <button type="submit" class="btn primary submit-btn">Generate Admission Record</button>
+            </form>
+        </div>
     </main>
 
-    <!-- ========================================== -->
-    <!-- HIDDEN A4 PDF TEMPLATE (Strictly formatted)-->
-    <!-- ========================================== -->
-    <!-- CRITICAL FIX: The container is now position fixed and left -9999px. 
-         This ensures html2canvas can 'see' and render it perfectly without displaying it to the user. -->
-    <div style="position: fixed; top: -10000px; left: -10000px; z-index: -999;">
-        <!-- Container matching A4 Dimensions precisely -->
-        <div id="pdf-template-wrapper" style="width: 210mm; background-color: #ffffff; color: #000000; font-family: 'Helvetica', Arial, sans-serif; box-sizing: border-box;">
-            
-            <!-- PAGE 1: ADMISSION FORM (Modeled exactly after REV-0002_ReviveFitness_OnePager.pdf) -->
-            <div style="width: 210mm; height: 297mm; padding: 15mm; box-sizing: border-box; position: relative; background: #fff;">
-                
-                <!-- Main Border -->
-                <div style="border: 2px solid #000; height: 267mm; padding: 12mm; box-sizing: border-box; position: relative;">
-                    
-                    <!-- LIVE PHOTO: Top Right Inside Border -->
-                    <div style="position: absolute; top: 12mm; right: 12mm; width: 35mm; height: 45mm; border: 1px solid #000; padding: 2px; box-sizing: border-box;">
-                        <img id="pdf-photo" src="" style="width: 100%; height: 100%; object-fit: cover; background: #eee; transform: scaleX(-1);" />
-                    </div>
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <svg viewBox="0 0 350 80" height="40" style="margin-bottom: 1rem;" xmlns="http://www.w3.org/2000/svg">
+                <text x="0" y="45" font-family="'Segoe UI', Arial, sans-serif" font-size="42" font-weight="900" fill="#ffffff" letter-spacing="4">REV<tspan fill="#ff6600">I</tspan>VE</text>
+                <text x="2" y="70" font-family="'Segoe UI', Arial, sans-serif" font-size="14" font-weight="600" fill="#a0a0a0" letter-spacing="6">FITNESS STUDIO</text>
+            </svg>
+            <h2 class="orange-text">Registration Success!</h2>
+            <div class="admission-badge" id="generated-id">REV-0000</div>
+            <div class="modal-actions">
+                <button id="btn-download-pdf" class="btn primary">Download Official Record</button>
+                <button id="btn-whatsapp" class="btn whatsapp">Share via WhatsApp</button>
+                <button class="btn secondary" onclick="closeModal()">Close & Return</button>
+            </div>
+        </div>
+    </div>
 
-                    <!-- HEADER LOGO / TITLE -->
-                    <div style="text-align: left; margin-bottom: 8mm; width: calc(100% - 40mm);">
-                        <h1 style="font-size: 30px; font-weight: 900; margin: 0; letter-spacing: 1px; color: #000;">REVIVE FITNESS</h1>
-                        <p style="font-size: 14px; font-weight: bold; margin: 2px 0 0 0; color: #333;">OFFICIAL MEMBER ADMISSION FORM</p>
-                    </div>
-
-                    <!-- ADMISSION INFO ROW -->
-                    <table style="width: calc(100% - 40mm); margin-bottom: 10mm; font-size: 12px;">
-                        <tr>
-                            <td style="font-weight: bold; color: #555; padding-bottom: 4px;">ADMISSION NUMBER</td>
-                            <td style="text-align: center; color: #aaa;">|</td>
-                            <td style="font-weight: bold; color: #555; padding-bottom: 4px;">DATE OF ADMISSION</td>
-                        </tr>
-                        <tr>
-                            <td id="pdf-admissionNo" style="font-size: 18px; font-weight: 900; color: #000;">REV-XXXX</td>
-                            <td style="text-align: center; font-size: 18px; color: #000;">|</td>
-                            <td id="pdf-date" style="font-size: 18px; font-weight: bold; color: #000;">DD/MM/YYYY</td>
-                        </tr>
-                    </table>
-
-                    <!-- SECTION: MEMBER DETAILS -->
-                    <div style="margin-bottom: 4mm; border-bottom: 2px solid #000; padding-bottom: 2px;">
-                        <h3 style="font-size: 16px; font-weight: 900; margin: 0;">MEMBER DETAILS</h3>
-                    </div>
-                    
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 12mm; font-size: 13px;">
-                        <tbody>
-                            <tr>
-                                <td style="padding: 6px 0; font-weight: bold; width: 35%; text-transform: uppercase;">FULL NAME</td>
-                                <td style="width: 5%; text-align: center;">|</td>
-                                <td id="pdf-name" style="padding: 6px 0;">--</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 6px 0; font-weight: bold; text-transform: uppercase;">ADMISSION TYPE</td>
-                                <td style="text-align: center;">|</td>
-                                <td id="pdf-type" style="padding: 6px 0;">--</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 6px 0; font-weight: bold; text-transform: uppercase;">PRIMARY CONTACT</td>
-                                <td style="text-align: center;">|</td>
-                                <td id="pdf-phone" style="padding: 6px 0;">--</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 6px 0; font-weight: bold; text-transform: uppercase;">ALTERNATE CONTACT</td>
-                                <td style="text-align: center;">|</td>
-                                <td id="pdf-altPhone" style="padding: 6px 0;">--</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 6px 0; font-weight: bold; text-transform: uppercase;">DATE OF BIRTH (AGE)</td>
-                                <td style="text-align: center;">|</td>
-                                <td id="pdf-dob" style="padding: 6px 0;">--</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 6px 0; font-weight: bold; text-transform: uppercase;">BLOOD GROUP</td>
-                                <td style="text-align: center;">|</td>
-                                <td id="pdf-blood" style="padding: 6px 0;">--</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 6px 0; font-weight: bold; vertical-align: top; text-transform: uppercase;">RESIDENTIAL ADDRESS</td>
-                                <td style="text-align: center; vertical-align: top;">|</td>
-                                <td id="pdf-address" style="padding: 6px 0; line-height: 1.4;">--</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <!-- SECTION: DECLARATION -->
-                    <div style="margin-bottom: 4mm; border-bottom: 2px solid #000; padding-bottom: 2px;">
-                        <h3 style="font-size: 16px; font-weight: 900; margin: 0;">DECLARATION</h3>
-                    </div>
-                    
-                    <div style="font-size: 11px; color: #333; line-height: 1.5; text-align: justify; margin-bottom: 20mm;">
-                        <strong>Declaration:</strong> I hereby declare that the details furnished above are true and correct to the best of my knowledge. I agree to abide by the rules, regulations, and disciplinary guidelines of Revive Fitness. I understand that the membership is non-transferable and fees are non-refundable. I acknowledge that physical exercise involves inherent risks and I participate at my own risk.
-                    </div>
-
-                    <!-- FOOTER SECTION (Digital Metadata) -->
-                    <div style="position: absolute; bottom: 12mm; left: 12mm; right: 12mm;">
-                        <table style="width: 100%; border: none;">
-                            <tr>
-                                <td style="width: 35%; text-align: left; vertical-align: bottom;">
-                                    <div style="font-size: 9px; color: #555; text-transform: uppercase;">Registered Timestamp</div>
-                                    <div id="pdf-timestamp" style="font-size: 11px; font-weight: bold; margin-bottom: 6px; color: #000;">--</div>
-                                    
-                                    <div style="font-size: 9px; color: #555; text-transform: uppercase;">Geolocation Coordinates</div>
-                                    <div id="pdf-location" style="font-size: 10px; font-weight: bold; color: #000; word-wrap: break-word;">--</div>
-                                </td>
-                                
-                                <td style="width: 30%; text-align: center; vertical-align: bottom;">
-                                    <div style="font-size: 10px; font-weight: bold; color: #777;">REVIVE FITNESS OFFICIAL MEMBER RECORD</div>
-                                </td>
-
-                                <td style="width: 35%; text-align: right; vertical-align: bottom;">
-                                    <div style="border-bottom: 1px solid #000; width: 80%; margin: 0 0 5px auto;"></div>
-                                    <div style="font-size: 11px; font-weight: bold; padding-right: 10px;">AUTHORIZED SIGNATURE</div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+    <!-- Hidden Refined PDF Template -->
+    <div id="pdf-template">
+        <!-- Page 1 -->
+        <div class="pdf-page">
+            <div class="pdf-header-container">
+                <div class="pdf-header-text">
+                    <h2>REVIVE</h2>
+                    <h3>FITNESS STUDIO</h3>
+                </div>
+                <div class="pdf-header-right">
+                    OFFICIAL MEMBER<br>ADMISSION
                 </div>
             </div>
 
-            <!-- PAGE BREAK TO FORCE SECOND PAGE -->
-            <div class="html2pdf__page-break"></div>
+            <div class="pdf-top-meta">
+                <span>ADMISSION ID: <span id="pdf-id" style="color:var(--accent-orange);"></span></span>
+                <span>REGISTRATION DATE: <span id="pdf-date"></span></span>
+            </div>
 
-            <!-- PAGE 2: RULES & REGULATIONS IMAGE -->
-            <div style="width: 210mm; height: 297mm; padding: 15mm; box-sizing: border-box; position: relative; background: #fff;">
-                <div style="border: 2px solid #000; height: 267mm; padding: 10mm; box-sizing: border-box; display: flex; flex-direction: column;">
-                    
-                    <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 5mm; margin-bottom: 5mm;">
-                        <h2 style="font-size: 24px; font-weight: 900; margin: 0; letter-spacing: 2px; color: #000; text-transform: uppercase;">Rules & Regulations</h2>
-                    </div>
-                    
-                    <!-- PLACEHOLDER FOR UPLOADED RULES IMAGE -->
-                    <!-- DEVELOPER NOTE: Replace 'src' with your actual hosted rules image URL -->
-                    <div style="flex: 1; display: flex; justify-content: center; align-items: center; overflow: hidden;">
-                        <img id="pdf-rules-image" src="https://via.placeholder.com/700x950.png?text=PLACEHOLDER:+UPLOAD+YOUR+RULES+IMAGE+HERE" style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="Rules Document" />
-                    </div>
-
+            <div class="pdf-content-row">
+                <div class="pdf-photo-wrapper">
+                    <img id="pdf-photo" src="" alt="Member Photo">
+                </div>
+                <div class="pdf-table-wrapper">
+                    <table class="pdf-table">
+                        <tr><th>FULL NAME</th><td id="pdf-name"></td></tr>
+                        <tr><th>ADMISSION TYPE</th><td id="pdf-type"></td></tr>
+                        <tr><th>PRIMARY CONTACT</th><td id="pdf-contact1"></td></tr>
+                        <tr><th>ALTERNATE CONTACT</th><td id="pdf-contact2"></td></tr>
+                        <tr><th>DATE OF BIRTH & AGE</th><td id="pdf-dob-age"></td></tr>
+                        <tr><th>RESIDENTIAL ADDRESS</th><td id="pdf-address"></td></tr>
+                    </table>
                 </div>
             </div>
 
+            <div class="pdf-declaration">
+                <h4>DECLARATION</h4>
+                <p>I hereby declare that the details furnished above are true and correct to the best of my knowledge. I agree to abide by the rules, regulations, and disciplinary guidelines of Revive Fitness. I understand that the membership is non-transferable and fees are non-refundable. I acknowledge that physical exercise involves inherent risks and I participate at my own risk.</p>
+            </div>
+
+            <div class="pdf-spacer"></div>
+
+            <div class="pdf-signatures">
+                <div class="sig-block" style="padding-right: 15px;">
+                    <div style="height: 50px;"></div> 
+                    <div class="sig-line">MEMBER SIGNATURE</div>
+                    <div class="sig-meta">
+                        <strong>Verified by:</strong> <span id="member-verified"></span><br>
+                        <strong>Timestamp:</strong> <span id="member-timestamp"></span><br>
+                        <strong>Location:</strong> <span id="member-location">Fetching...</span>
+                    </div>
+                </div>
+                <div class="sig-block" style="padding-left: 15px;">
+                    <!-- Repository Signature Image Placeholder -->
+                    <img src="signature.png" class="official-sig-img" alt="Authorized Signature" onerror="this.style.display='none'">
+                    <div class="sig-line">AUTHORIZED SIGNATURE</div>
+                    <div class="sig-meta">
+                        <strong>Verified by:</strong> Revive System Admin<br>
+                        <strong>Timestamp:</strong> <span id="official-timestamp"></span><br>
+                        <strong>Location:</strong> Revive Fitness Studio H.O
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 2 (Compact rules to enforce strict 2-pager) -->
+        <div class="pdf-page html2pdf__page-break pdf-rules-page">
+            <h3>RULES & REGULATIONS / നിബന്ധനകൾ</h3>
+            <ol class="pdf-rules-list">
+                <li>
+                    <strong>Members must strictly observe discipline.</strong>
+                    <em>അംഗങ്ങൾ കർശനമായി അച്ചടക്കം പാലിക്കേണ്ടതാണ്.</em>
+                </li>
+                <li>
+                    <strong>Fees must be paid on time. The fee for each month must be paid before the 9th of that month.</strong>
+                    <em>ഫീസ് കൃത്യസമയത്ത് അടയ്ക്കേണ്ടതാണ്. എല്ലാ മാസവും 9-ാം തീയതിക്ക് മുമ്പായി അതാത് മാസത്തെ ഫീസ് അടയ്ക്കേണ്ടതാണ്.</em>
+                </li>
+                <li>
+                    <strong>Equipment must be returned to its proper place after use.</strong>
+                    <em>ക്ലബ്ബിലെ ഉപകരണങ്ങൾ ഉപയോഗിച്ചതിനുശേഷം യഥാസ്ഥാനങ്ങളിൽ തിരികെ വയ്ക്കേണ്ടതാണ്.</em>
+                </li>
+                <li>
+                    <strong>Advance fees and monthly fees once paid will not be refunded.</strong>
+                    <em>ഒരിക്കൽ അടച്ച അഡ്വാൻസ് ഫീസും മാസഫീസും മടക്കിത്തരുന്നതല്ല.</em>
+                </li>
+                <li>
+                    <strong>Belongings brought to the club must be kept at one's own risk.</strong>
+                    <em>ക്ലബ്ബിൽ കൊണ്ടുവരുന്ന സാധനങ്ങൾ സ്വന്തം ഉത്തരവാദിത്വത്തിൽ സൂക്ഷിക്കേണ്ടതാണ്.</em>
+                </li>
+                <li>
+                    <strong>The time of practice and name must be entered accurately in the club's register book every day.</strong>
+                    <em>പ്രാക്ടീസിനായി വരുന്ന സമയവും പേരും എല്ലാ ദിവസവും ക്ലബ്ബിലെ രജിസ്റ്റർ ബുക്കിൽ കൃത്യമായി രേഖപ്പെടുത്തേണ്ടതാണ്.</em>
+                </li>
+                <li>
+                    <strong>It is mandatory to use a towel during practice. Practice will not be allowed without a towel.</strong>
+                    <em>നിർബന്ധമായും ടവ്വൽ ഉപയോഗിച്ച് പ്രാക്ടീസ് ചെയ്യുക. ടവ്വൽ ഇല്ലാത്തപക്ഷം പ്രാക്ടീസ് ചെയ്യാൻ അനുവദിക്കുന്നതല്ല.</em>
+                </li>
+                <li>
+                    <strong>Workout using a t-shirt and track pants.</strong>
+                    <em>ടീഷർട്ട്, ട്രാക്ക് പാന്റ് എന്നിവ ഉപയോഗിച്ച് വർക്കൗട്ട് ചെയ്യുക.</em>
+                </li>
+                <li>
+                    <strong>If absent continuously for 6 months, readmission must be taken.</strong>
+                    <em>തുടർച്ചയായി 6 മാസം വരാതിരുന്നാൽ തുടർന്ന് റീ അഡ്മിഷൻ എടുക്കേണ്ടി വരുന്നതാണ്.</em>
+                </li>
+                <li>
+                    <strong>Do not enter the club under the influence of alcohol or drugs. If found, membership will be cancelled.</strong>
+                    <em>ലഹരി കഴിച്ചുകൊണ്ട് ക്ലബ്ബിൽ പ്രവേശിക്കാൻ പാടില്ല. അങ്ങനെ കണ്ടെത്തിയാൽ അംഗത്വം റദ്ദ് ചെയ്യുന്നതായിരിക്കും.</em>
+                </li>
+                <li>
+                    <strong>Management is not responsible for any accidents during training.</strong>
+                    <em>പരിശീലനത്തിനിടയിൽ ഉണ്ടാകുന്ന അത്യാഹിതങ്ങൾക്ക് മാനേജ്മെന്റിന് യാതൊരു ഉത്തരവാദിത്വവും ഉണ്ടായിരിക്കുന്നതല്ല.</em>
+                </li>
+                <li>
+                    <strong>Members are fully responsible for any damages caused to the club by them.</strong>
+                    <em>അംഗങ്ങൾമൂലം ക്ലബ്ബിൽ ഉണ്ടാകുന്ന നാശനഷ്ടങ്ങളുടെ പൂർണ്ണ ഉത്തരവാദിത്വം അതത് അംഗങ്ങൾക്ക് തന്നെയായിരിക്കും.</em>
+                </li>
+                <li>
+                    <strong>Those with any confirmed medical conditions must produce a full medical clearance certificate from a doctor.</strong>
+                    <em>വൈദ്യശാസ്ത്രപരമായ ഏതെങ്കിലും രോഗം ഉള്ളതായി സ്ഥിരീകരിക്കപ്പെട്ടിട്ടുള്ളവർ ഡോക്ടറുടെ പൂർണ്ണ ആരോഗ്യ സർട്ടിഫിക്കറ്റ് ഹാജരാക്കേണ്ടതാണ്.</em>
+                </li>
+                <li>
+                    <strong>Ensure that all the above conditions are read, understood, and acceptable. Applicable to everyone.</strong>
+                    <em>മേൽപ്പറഞ്ഞ നിബന്ധനകൾ എല്ലാം വായിച്ചു ബോധ്യപ്പെടുകയും അവയെല്ലാം സ്വീകാര്യവുമാണെന്ന് ഉറപ്പ് വരുത്തുക. മുകളിൽ പറഞ്ഞ വസ്തുതകൾ എല്ലാവർക്കും ബാധകം.</em>
+                </li>
+            </ol>
         </div>
     </div>
 
     <script>
-        // --- GLOBAL STATE ---
-        let currentRegData = null;
-        let gymDatabase = JSON.parse(localStorage.getItem('revive_db')) || [];
-        let videoStream = null;
-
-        // Initialize Mock Data if array is empty so User Details works immediately
-        if(gymDatabase.length === 0) {
-            gymDatabase.push({
-                admissionNo: "REV-0001", phone: "9876543210", firstName: "Test", lastName: "User",
-                type: "Regular", dob: "1990-01-01", address: "Demo Address", dateOfAdmission: "2024-01-01",
-                fees: [
-                    { month: "April", status: "paid", amount: 2000, pending: 0 },
-                    { month: "May", status: "paid", amount: 2000, pending: 0 },
-                    { month: "June", status: "not_paid", amount: 0, pending: 2000 }
-                ]
-            });
-            localStorage.setItem('revive_db', JSON.stringify(gymDatabase));
-        }
-
-        // --- NAVIGATION ---
-        const views = ['home', 'registration', 'userDetails'];
-        function switchView(targetView) {
-            views.forEach(v => document.getElementById(`view-${v}`).classList.add('hidden'));
-            document.getElementById(`view-${targetView}`).classList.remove('hidden');
-            document.getElementById('btn-back-home').classList.toggle('hidden', targetView === 'home');
-            
-            if(targetView !== 'registration' && videoStream) {
-                videoStream.getTracks().forEach(track => track.stop());
-                videoStream = null;
-            } else if (targetView === 'registration') {
-                document.getElementById('regDate').valueAsDate = new Date();
+        // Router
+        function switchView(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
+            const target = document.getElementById(`view-${viewName}`);
+            if(target) {
+                target.classList.add('active-view');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
 
-        function calculateAge(dobId, ageId) {
-            const dob = new Date(document.getElementById(dobId).value);
-            if(isNaN(dob)) return;
+        function getTodayDDMMYYYY() {
             const today = new Date();
-            let age = today.getFullYear() - dob.getFullYear();
-            if (today.getMonth() < dob.getMonth() || (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate())) age--;
-            document.getElementById(ageId).value = age > 0 ? age : 0;
+            return `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
         }
 
-        // --- CAMERA LOGIC (SELFIE FORCED) ---
-        async function startCamera() {
-            try {
-                // EXPLICITLY REQUEST FRONT CAMERA (Selfie)
-                videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-                const video = document.getElementById('camera-stream');
-                video.srcObject = videoStream;
-                video.classList.remove('hidden');
-                document.getElementById('camera-icon').classList.add('hidden');
-                document.getElementById('photo-preview').classList.add('hidden');
-                
-                document.getElementById('btn-start-cam').classList.add('hidden');
-                document.getElementById('btn-capture-cam').classList.remove('hidden');
-                document.getElementById('btn-retake-cam').classList.add('hidden');
-            } catch (err) {
-                alert("Camera access denied or unavailable. Please ensure permissions are granted.");
+        // Global state for location
+        let userLocationStr = "Location details unavailable";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateInput = document.getElementById('dateOfAdmission');
+            dateInput.value = getTodayDDMMYYYY();
+
+            const dobInput = document.getElementById('dob');
+            const ageInput = document.getElementById('age');
+            const ageWarning = document.getElementById('ageWarning');
+            let isAgeValid = false;
+
+            function calculateAge() {
+                const val = dobInput.value;
+                if (val.length === 10 && val.includes('-')) {
+                    const parts = val.split('-');
+                    if (parts.length === 3) {
+                        const dob = new Date(parts[2], parts[1] - 1, parts[0]);
+                        const diffMs = Date.now() - dob.getTime();
+                        const ageDt = new Date(diffMs);
+                        const calculatedAge = Math.abs(ageDt.getUTCFullYear() - 1970);
+                        
+                        ageInput.value = calculatedAge;
+                        
+                        if (calculatedAge < 18) {
+                            ageWarning.style.display = 'block';
+                            isAgeValid = false;
+                        } else {
+                            ageWarning.style.display = 'none';
+                            isAgeValid = true;
+                        }
+                    }
+                } else {
+                    ageInput.value = '';
+                    ageWarning.style.display = 'none';
+                    isAgeValid = false;
+                }
             }
-        }
 
-        function capturePhoto() {
+            dobInput.addEventListener('keyup', calculateAge);
+            dobInput.addEventListener('blur', calculateAge);
+
+            // Auto-format DD-MM-YYYY dashes
+            function autoFormatDate(e) {
+                let v = this.value.replace(/\D/g, '');
+                if (v.length > 8) v = v.slice(0, 8);
+                if (v.length >= 5) {
+                    this.value = `${v.slice(0, 2)}-${v.slice(2, 4)}-${v.slice(4)}`;
+                } else if (v.length >= 3) {
+                    this.value = `${v.slice(0, 2)}-${v.slice(2)}`;
+                }
+            }
+            dobInput.addEventListener('input', autoFormatDate);
+            dateInput.addEventListener('input', autoFormatDate);
+
+            // Camera System
             const video = document.getElementById('camera-stream');
-            if(!videoStream) return;
-            
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            const ctx = canvas.getContext('2d');
-            
-            // Mirror the canvas so the captured image matches the selfie preview
-            ctx.translate(canvas.width, 0);
-            ctx.scale(-1, 1);
-            ctx.drawImage(video, 0, 0);
-            
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-            document.getElementById('regPhotoData').value = dataUrl;
-            
-            const preview = document.getElementById('photo-preview');
-            preview.src = dataUrl;
-            preview.classList.remove('hidden');
-            video.classList.add('hidden');
-            
-            videoStream.getTracks().forEach(track => track.stop());
-            videoStream = null;
+            const canvas = document.getElementById('canvas-snapshot');
+            const preview = document.getElementById('selfie-preview');
+            const btnStart = document.getElementById('btn-start-camera');
+            const btnCapture = document.getElementById('btn-capture');
+            const btnRetake = document.getElementById('btn-retake');
+            const selfieData = document.getElementById('selfie-data');
+            const placeholder = document.querySelector('.camera-placeholder');
+            let stream = null;
 
-            document.getElementById('btn-capture-cam').classList.add('hidden');
-            document.getElementById('btn-retake-cam').classList.remove('hidden');
-        }
+            btnStart.addEventListener('click', async () => {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                    video.srcObject = stream;
+                    video.style.display = 'block';
+                    placeholder.style.display = 'none';
+                    preview.style.display = 'none';
+                    
+                    btnStart.style.display = 'none';
+                    btnCapture.style.display = 'inline-flex';
+                    btnCapture.disabled = false;
+                } catch (err) {
+                    alert("Camera access denied or unavailable. Please check permissions.");
+                }
+            });
 
-        function retakePhoto() {
-            document.getElementById('regPhotoData').value = '';
-            startCamera();
-        }
+            btnCapture.addEventListener('click', () => {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageData = canvas.toDataURL('image/png');
+                
+                selfieData.value = imageData;
+                preview.src = imageData;
+                
+                video.style.display = 'none';
+                preview.style.display = 'block';
+                btnCapture.style.display = 'none';
+                btnRetake.style.display = 'inline-flex';
 
-        // --- LOCATION HELPER ---
-        function getLocation() {
-            return new Promise((resolve) => {
-                if ("geolocation" in navigator) {
+                if(stream) stream.getTracks().forEach(track => track.stop());
+            });
+
+            btnRetake.addEventListener('click', () => {
+                selfieData.value = '';
+                btnRetake.style.display = 'none';
+                btnStart.click();
+            });
+
+            function generateAdmissionNumber() {
+                let currentCount = localStorage.getItem('revive_admission_count');
+                if (!currentCount) {
+                    currentCount = 1;
+                } else {
+                    currentCount = parseInt(currentCount) + 1;
+                }
+                return {
+                    id: `REV-${String(currentCount).padStart(4, '0')}`,
+                    rawCount: currentCount
+                };
+            }
+
+            const form = document.getElementById('admissionForm');
+            let currentMemberDetails = {};
+            let newCountToSave = null;
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                if (!selfieData.value) {
+                    alert("Selfie capture is mandatory for the official record.");
+                    return;
+                }
+                if (!isAgeValid) {
+                    alert("Cannot process admission. Member must be at least 18 years old.");
+                    return;
+                }
+
+                // Initiate Geolocation upon valid form submission
+                if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
-                        (position) => resolve(`${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`),
-                        (error) => resolve("Location Access Denied")
+                        (pos) => { userLocationStr = `Lat: ${pos.coords.latitude.toFixed(5)}, Long: ${pos.coords.longitude.toFixed(5)}`; },
+                        (err) => { userLocationStr = "Location permissions denied by user"; }
                     );
-                } else {
-                    resolve("Geolocation Not Supported");
                 }
+
+                const idData = generateAdmissionNumber();
+                newCountToSave = idData.rawCount;
+                
+                currentMemberDetails = {
+                    id: idData.id,
+                    date: dateInput.value,
+                    type: document.getElementById('admissionType').value,
+                    firstName: document.getElementById('firstName').value.trim(),
+                    lastName: document.getElementById('lastName').value.trim(),
+                    primaryContact: document.getElementById('primaryContact').value,
+                    alternateContact: document.getElementById('alternateContact').value || 'N/A',
+                    dob: dobInput.value,
+                    age: ageInput.value,
+                    address: document.getElementById('address').value.trim(),
+                    photo: selfieData.value
+                };
+
+                document.getElementById('generated-id').innerText = currentMemberDetails.id;
+                document.getElementById('successModal').style.display = 'flex';
+                
+                localStorage.setItem('revive_admission_count', newCountToSave);
             });
-        }
 
-        // --- REGISTRATION LOGIC ---
-        async function handleRegistration(e) {
-            e.preventDefault();
-            
-            const photoData = document.getElementById('regPhotoData').value;
-            if(!photoData) {
-                document.getElementById('regAlert').classList.remove('hidden');
-                document.getElementById('regAlertMsg').innerText = "Live Photo capture is mandatory.";
-                return;
-            }
-
-            const phone = document.getElementById('regPhone').value;
-            if (gymDatabase.some(u => u.phone === phone)) {
-                document.getElementById('regAlert').classList.remove('hidden');
-                document.getElementById('regAlertMsg').innerText = `Phone ${phone} is already linked.`;
-                return;
-            }
-            document.getElementById('regAlert').classList.add('hidden');
-            
-            const btn = document.getElementById('submitRegBtn');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Fetching Location & Saving...';
-            btn.disabled = true;
-
-            const now = new Date();
-            const dateOpts = { day: '2-digit', month: '2-digit', year: 'numeric' };
-            const timeOpts = { hour: '2-digit', minute: '2-digit', hour12: true };
-            const timestampStr = `${now.toLocaleDateString('en-GB', dateOpts)} | ${now.toLocaleTimeString('en-GB', timeOpts)}`;
-            
-            const locationStr = await getLocation();
-
-            let currentCount = parseInt(localStorage.getItem('revive_reg_count')) || 1;
-            currentCount++;
-            localStorage.setItem('revive_reg_count', currentCount);
-            const newAdmissionNo = `REV-${currentCount.toString().padStart(4, '0')}`;
-            
-            currentRegData = {
-                admissionNo: newAdmissionNo,
-                dateOfAdmission: document.getElementById('regDate').value,
-                type: document.getElementById('regType').value,
-                firstName: document.getElementById('regFirstName').value,
-                lastName: document.getElementById('regLastName').value,
-                phone: phone,
-                altPhone: document.getElementById('regAltPhone').value || 'N/A',
-                dob: document.getElementById('regDob').value,
-                age: document.getElementById('regAge').value,
-                bloodGroup: document.getElementById('regBlood').value || 'N/A',
-                address: document.getElementById('regAddress').value,
-                photoBase64: photoData,
-                registeredTimestamp: timestampStr,
-                registeredLocation: locationStr
-            };
-
-            gymDatabase.push(currentRegData);
-            localStorage.setItem('revive_db', JSON.stringify(gymDatabase));
-
-            populatePDFTemplate();
-
-            document.getElementById('reg-form-container').classList.add('hidden');
-            document.getElementById('reg-success-container').classList.remove('hidden');
-            document.getElementById('reg-success-container').classList.add('flex');
-            document.getElementById('successMessage').innerText = `Profile created for ${currentRegData.firstName}`;
-            document.getElementById('generatedAdmissionNo').innerText = newAdmissionNo;
-            
-            btn.innerHTML = '<span>Register Member</span>';
-            btn.disabled = false;
-        }
-
-        function resetRegistration() {
-            document.getElementById('registrationForm').reset();
-            document.getElementById('regAge').value = '';
-            document.getElementById('regDate').valueAsDate = new Date();
-            document.getElementById('regPhotoData').value = '';
-            document.getElementById('photo-preview').src = '';
-            document.getElementById('photo-preview').classList.add('hidden');
-            document.getElementById('camera-icon').classList.remove('hidden');
-            
-            document.getElementById('btn-start-cam').classList.remove('hidden');
-            document.getElementById('btn-capture-cam').classList.add('hidden');
-            document.getElementById('btn-retake-cam').classList.add('hidden');
-
-            currentRegData = null;
-            document.getElementById('reg-success-container').classList.add('hidden');
-            document.getElementById('reg-success-container').classList.remove('flex');
-            document.getElementById('reg-form-container').classList.remove('hidden');
-        }
-
-        // --- EXACT PDF POPULATION ---
-        function populatePDFTemplate() {
-            if(!currentRegData) return;
-            
-            document.getElementById('pdf-admissionNo').innerText = currentRegData.admissionNo;
-            
-            const adDate = new Date(currentRegData.dateOfAdmission);
-            document.getElementById('pdf-date').innerText = adDate.toLocaleDateString('en-GB'); 
-            
-            document.getElementById('pdf-name').innerText = `${currentRegData.firstName} ${currentRegData.lastName}`.trim();
-            document.getElementById('pdf-type').innerText = currentRegData.type;
-            document.getElementById('pdf-phone').innerText = currentRegData.phone;
-            document.getElementById('pdf-altPhone').innerText = currentRegData.altPhone;
-            document.getElementById('pdf-dob').innerText = `${currentRegData.dob} (${currentRegData.age} yrs)`;
-            document.getElementById('pdf-blood').innerText = currentRegData.bloodGroup;
-            document.getElementById('pdf-address').innerText = currentRegData.address;
-            
-            document.getElementById('pdf-photo').src = currentRegData.photoBase64;
-            document.getElementById('pdf-timestamp').innerText = currentRegData.registeredTimestamp;
-            document.getElementById('pdf-location').innerText = currentRegData.registeredLocation;
-        }
-
-        function getPdfOptions() {
-            return {
-                margin:       0,
-                filename:     `${currentRegData.admissionNo}_ReviveFitness.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, logging: false },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-        }
-
-        function downloadPDF() {
-            const el = document.getElementById('pdf-template-wrapper');
-            html2pdf().set(getPdfOptions()).from(el).save();
-        }
-
-        async function sharePDF() {
-            const el = document.getElementById('pdf-template-wrapper');
-            try {
-                const pdfBlob = await html2pdf().set(getPdfOptions()).from(el).output('blob');
-                const file = new File([pdfBlob], `${currentRegData.admissionNo}_Admission.pdf`, { type: 'application/pdf' });
+            document.getElementById('btn-download-pdf').addEventListener('click', () => {
+                const now = new Date();
+                const timestampStr = now.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
                 
-                // Native Share for Mobile Browsers that support file attachments
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({
-                        files: [file],
-                        title: 'Revive Fitness Admission',
-                        text: `Admission form for ${currentRegData.firstName}. ID: ${currentRegData.admissionNo}`
-                    });
-                } else {
-                    throw new Error("Native file share not supported on this browser.");
-                }
-            } catch (err) {
-                console.log("Share fallback triggered:", err);
-                alert("File sharing is not supported on this browser. A WhatsApp Web window will open with a text message instead, and you can attach the manually downloaded PDF.");
+                // Inject Data
+                document.getElementById('pdf-id').innerText = currentMemberDetails.id;
+                document.getElementById('pdf-date').innerText = currentMemberDetails.date;
+                document.getElementById('pdf-photo').src = currentMemberDetails.photo;
+                document.getElementById('pdf-name').innerText = `${currentMemberDetails.firstName} ${currentMemberDetails.lastName}`.trim();
+                document.getElementById('pdf-type').innerText = currentMemberDetails.type;
+                document.getElementById('pdf-contact1').innerText = currentMemberDetails.primaryContact;
+                document.getElementById('pdf-contact2').innerText = currentMemberDetails.alternateContact;
+                document.getElementById('pdf-dob-age').innerText = `${currentMemberDetails.dob} (${currentMemberDetails.age} yrs)`;
+                document.getElementById('pdf-address').innerText = currentMemberDetails.address;
                 
-                // Fallback for desktop browsers (WhatsApp Web link)
-                const msg = `*REVIVE FITNESS*%0A*ID:* ${currentRegData.admissionNo}%0A*Name:* ${currentRegData.firstName}%0A*Contact:* ${currentRegData.phone}%0AWelcome!`;
-                window.open(`https://wa.me/?text=${msg}`, '_blank');
-            }
-        }
+                // Set Signatures Meta
+                document.getElementById('member-verified').innerText = `+91 ${currentMemberDetails.primaryContact}`;
+                document.getElementById('member-timestamp').innerText = timestampStr;
+                document.getElementById('member-location').innerText = userLocationStr;
+                document.getElementById('official-timestamp').innerText = timestampStr;
 
-        // --- USER DETAILS MODULE (Restored Completely) ---
-        function handleSearch(e) {
-            e.preventDefault();
-            const phone = document.getElementById('searchPhone').value;
-            const year = document.getElementById('searchYear').value;
-            const btn = document.getElementById('searchBtn');
-            
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-            document.getElementById('user-dashboard').classList.add('hidden');
+                const element = document.getElementById('pdf-template');
+                element.style.left = '0'; // Bring to viewport for accurate capture
 
-            setTimeout(() => {
-                btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Fetch';
-                const user = gymDatabase.find(u => u.phone === phone);
-                if(user) {
-                    populateUserDashboard(user, year);
-                } else {
-                    alert("User not found. Try the number used in registration.");
-                }
-            }, 500);
-        }
+                const opt = {
+                    margin:       0, // Handled internally by CSS
+                    filename:     `${currentMemberDetails.id}_Official_Record.pdf`,
+                    image:        { type: 'jpeg', quality: 1.0 },
+                    // scrollY: 0 is CRITICAL to fix the top whitespace bug when generating
+                    html2canvas:  { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 }, 
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
 
-        function populateUserDashboard(user, year) {
-            document.getElementById('user-dashboard').classList.remove('hidden');
-            document.getElementById('profileName').innerText = `${user.firstName} ${user.lastName}`;
-            document.getElementById('profileRegNo').innerText = user.admissionNo;
-            document.getElementById('profileType').innerText = user.type;
-            document.getElementById('displayYear').innerText = year;
-
-            document.getElementById('editRegNo').value = user.admissionNo;
-            document.getElementById('editPhone').value = user.phone;
-            document.getElementById('editFirstName').value = user.firstName;
-            document.getElementById('editLastName').value = user.lastName;
-            document.getElementById('editDob').value = user.dob;
-            document.getElementById('editType').value = user.type;
-            document.getElementById('editAddress').value = user.address;
-
-            const grid = document.getElementById('feeCalendarGrid');
-            grid.innerHTML = ''; 
-            (user.fees || []).forEach(fee => {
-                let styles = "", content = "";
-                if (fee.status === 'paid') {
-                    styles = "bg-gym-success/10 border-gym-success/50";
-                    content = `<span class="font-black text-xl text-gym-success">PAID</span>`;
-                } else if (fee.status === 'not_paid') {
-                    styles = "bg-gym-danger/10 border-gym-danger/50";
-                    content = `<span class="font-black text-xl text-gym-danger">NOT PAID</span>`;
-                } else if (fee.status === 'partial') {
-                    styles = "bg-gym-warning/10 border-gym-warning/50";
-                    content = `<span class="font-black text-lg text-gym-warning">PARTIAL</span><span class="text-xs text-yellow-200 mt-1">Pending: ₹${fee.pending}</span>`;
-                }
-                grid.innerHTML += `
-                    <div class="p-4 rounded-xl border ${styles} flex flex-col items-center justify-center text-center transition-transform hover:scale-105">
-                        <span class="font-bold text-gray-300 uppercase tracking-widest text-sm mb-2">${fee.month}</span>
-                        ${content}
-                    </div>
-                `;
+                html2pdf().set(opt).from(element).save().then(() => {
+                    element.style.left = '-9999px'; // Hide again
+                });
             });
-            switchTab('fees');
-        }
 
-        function switchTab(tabName) {
-            document.getElementById('content-fees').classList.add('hidden');
-            document.getElementById('content-edit').classList.add('hidden');
-            const inactive = "px-5 py-2 rounded-md flex items-center gap-2 text-sm font-bold transition-all text-gray-400 hover:text-white";
-            document.getElementById('tab-fees').className = inactive;
-            document.getElementById('tab-edit').className = inactive;
-            document.getElementById(`content-${tabName}`).classList.remove('hidden');
-            document.getElementById(`tab-${tabName}`).className = "px-5 py-2 rounded-md flex items-center gap-2 text-sm font-bold transition-all bg-gym-cyan text-white";
-        }
+            document.getElementById('btn-whatsapp').addEventListener('click', () => {
+                const phone = currentMemberDetails.primaryContact;
+                const msg = `Dear ${currentMemberDetails.firstName},\n\nThank you for joining Revive Fitness Studio!\nYour registration is successful. Your Admission Number is *${currentMemberDetails.id}*.\n\nWelcome to the Revive family!`;
+                const whatsappUrl = `https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(msg)}`;
+                window.open(whatsappUrl, '_blank');
+            });
+        });
 
-        function handleEditSubmit(e) {
-            e.preventDefault();
-            const admissionNo = document.getElementById('editRegNo').value;
-            const newPhone = document.getElementById('editPhone').value;
+        window.closeModal = function() {
+            document.getElementById('successModal').style.display = 'none';
+            document.getElementById('admissionForm').reset();
             
-            // Check if changing phone to a number that already exists for a different user
-            if (gymDatabase.some(u => u.phone === newPhone && u.admissionNo !== admissionNo)) {
-                document.getElementById('editAlert').classList.remove('hidden');
-                document.getElementById('editAlertMsg').innerText = `Phone ${newPhone} is in use by someone else.`;
-                return;
-            }
-            document.getElementById('editAlert').classList.add('hidden');
-
-            const btn = document.getElementById('updateBtn');
-            const origTxt = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
-
-            setTimeout(() => {
-                const idx = gymDatabase.findIndex(u => u.admissionNo === admissionNo);
-                if (idx !== -1) {
-                    gymDatabase[idx].phone = newPhone;
-                    gymDatabase[idx].firstName = document.getElementById('editFirstName').value;
-                    gymDatabase[idx].lastName = document.getElementById('editLastName').value;
-                    gymDatabase[idx].dob = document.getElementById('editDob').value;
-                    gymDatabase[idx].type = document.getElementById('editType').value;
-                    gymDatabase[idx].address = document.getElementById('editAddress').value;
-                    localStorage.setItem('revive_db', JSON.stringify(gymDatabase));
-                }
-                
-                btn.innerHTML = '<i class="fa-solid fa-check"></i> Updated Successfully';
-                btn.classList.replace('bg-gym-cyan', 'bg-gym-success');
-                
-                document.getElementById('profileName').innerText = `${gymDatabase[idx].firstName} ${gymDatabase[idx].lastName}`;
-                document.getElementById('searchPhone').value = newPhone; 
-                
-                setTimeout(() => {
-                    btn.innerHTML = origTxt;
-                    btn.classList.replace('bg-gym-success', 'bg-gym-cyan');
-                }, 2000);
-            }, 800);
-        }
+            document.getElementById('selfie-preview').style.display = 'none';
+            document.querySelector('.camera-placeholder').style.display = 'block';
+            document.getElementById('selfie-data').value = '';
+            document.getElementById('btn-retake').style.display = 'none';
+            document.getElementById('btn-start-camera').style.display = 'inline-flex';
+            document.getElementById('ageWarning').style.display = 'none';
+            
+            document.getElementById('dateOfAdmission').value = getTodayDDMMYYYY();
+            
+            switchView('home');
+        };
     </script>
 </body>
 </html>
