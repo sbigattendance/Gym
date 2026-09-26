@@ -28,17 +28,11 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        html { font-size: 16px; }
+        html { font-size: 16px; background-color: var(--bg-dark); }
+        body { color: var(--text-light); min-height: 100vh; overflow-x: hidden; margin: 0; }
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-            position: relative;
-        }
+        /* Main App Wrapper (Used for DOM Swapping) */
+        #app-wrapper { display: flex; flex-direction: column; min-height: 100vh; }
 
         /* App Header */
         .app-header {
@@ -48,12 +42,9 @@
             justify-content: center;
             align-items: center;
             border-bottom: 2px solid var(--accent-orange);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            position: sticky; top: 0; z-index: 100;
             box-shadow: 0 4px 20px rgba(0,0,0,0.6);
         }
-
         .logo-container { cursor: pointer; display: flex; align-items: center; transition: transform 0.2s; }
         .logo-container:active { transform: scale(0.95); }
 
@@ -72,14 +63,13 @@
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; }
         .module-card {
             background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px;
-            padding: 2.5rem 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s ease;
-            position: relative; overflow: hidden;
+            padding: 2.5rem 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden;
         }
         .module-card::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
             background-color: var(--accent-orange); transform: scaleX(0); transition: transform 0.3s ease; transform-origin: left;
         }
-        .module-card:hover { transform: translateY(-5px); border-color: var(--accent-orange); box-shadow: 0 10px 30px rgba(255, 102, 0, 0.15); background-color: #242424; }
+        .module-card:hover { transform: translateY(-5px); border-color: var(--accent-orange); box-shadow: 0 10px 30px rgba(255,102,0,0.15); background-color: #242424; }
         .module-card:hover::before { transform: scaleX(1); }
         .module-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
         .module-card h3 { font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
@@ -147,16 +137,25 @@
         .modal-actions { display: flex; flex-direction: column; gap: 0.8rem; }
         .modal-actions .btn { width: 100%; }
 
-        /* PDF TEMPLATE - CRITICAL FIX FOR BLANK PAGE rendering[span_0](start_span)[span_0](end_span) */
+        /* ========================================================
+           PDF TEMPLATE - DOM ISOLATION FIX
+           This container is hidden by default. During generation, 
+           the app hides the main UI and shows this to guarantee 
+           100% perfect rendering without clipping. 
+        ======================================================== */
+        #pdf-template-wrapper {
+            display: none; 
+            background: #e0e0e0; /* Gray background for testing flash */
+            min-height: 100vh;
+            width: 100vw;
+            padding: 20px;
+        }
+        
         #pdf-template {
-            display: none; /* Hide from UI completely */
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: -9999;
-            width: 210mm; /* Strict A4 Width */
             background: #ffffff;
             color: #111111;
+            width: 210mm; /* Strict A4 Width */
+            margin: 0 auto; /* Center on screen */
             box-sizing: border-box;
             font-family: 'Helvetica', 'Arial', sans-serif;
             text-align: left;
@@ -198,14 +197,14 @@
         .pdf-declaration h4 { color: var(--accent-orange); margin: 0 0 8px 0; font-size: 15px; text-transform: uppercase; }
         .pdf-declaration p { font-size: 12px; line-height: 1.6; color: #333; margin: 0; text-align: justify; }
 
-        .pdf-signatures { display: flex; justify-content: space-between; align-items: flex-end; padding-top: 40px; }
+        .pdf-signatures { display: flex; justify-content: space-between; align-items: flex-end; padding-top: 40px; margin-bottom: 20px; }
         .sig-block { width: 45%; position: relative; }
         .sig-line { border-top: 1px solid #000; padding-top: 8px; font-weight: 800; font-size: 13px; text-align: center; }
         .sig-meta { text-align: left; font-size: 10.5px; color: #444; margin-top: 8px; line-height: 1.5; }
         .official-sig-img { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); height: 50px; }
 
         /* Second Page */
-        .pdf-rules-page { padding-top: 10mm; }
+        .pdf-rules-page { padding-top: 5mm; }
         .pdf-rules-page h3 { color: var(--accent-orange); border-bottom: 2px solid var(--accent-orange); padding-bottom: 10px; margin-bottom: 20px; font-size: 18px; text-transform: uppercase; }
         .pdf-rules-list { font-size: 11px; line-height: 1.35; padding-left: 20px; color: #111; }
         .pdf-rules-list li { margin-bottom: 12px; }
@@ -217,278 +216,290 @@
             .view-section { padding: 1.5rem 1rem; }
             .camera-container { max-width: 220px; }
             .btn { padding: 0.9rem 1.5rem; }
+            /* Scaling PDF template for mobile visibility during generation flash */
+            #pdf-template { transform: scale(0.45); transform-origin: top center; } 
         }
     </style>
 </head>
 <body>
 
-    <header class="app-header">
-        <div class="logo-container" onclick="switchView('home')">
-            <svg viewBox="0 0 350 80" height="40" xmlns="http://www.w3.org/2000/svg">
-                <text x="0" y="45" font-family="'Segoe UI', Arial, sans-serif" font-size="42" font-weight="900" fill="#ffffff" letter-spacing="4">REV<tspan fill="#ff6600">I</tspan>VE</text>
-                <text x="2" y="70" font-family="'Segoe UI', Arial, sans-serif" font-size="14" font-weight="600" fill="#a0a0a0" letter-spacing="6">FITNESS STUDIO</text>
-            </svg>
-        </div>
-    </header>
+    <!-- MAIN APP WRAPPER -->
+    <div id="app-wrapper">
+        <header class="app-header">
+            <div class="logo-container" onclick="switchView('home')">
+                <svg viewBox="0 0 350 80" height="40" xmlns="http://www.w3.org/2000/svg">
+                    <text x="0" y="45" font-family="'Segoe UI', Arial, sans-serif" font-size="42" font-weight="900" fill="#ffffff" letter-spacing="4">REV<tspan fill="#ff6600">I</tspan>VE</text>
+                    <text x="2" y="70" font-family="'Segoe UI', Arial, sans-serif" font-size="14" font-weight="600" fill="#a0a0a0" letter-spacing="6">FITNESS STUDIO</text>
+                </svg>
+            </div>
+        </header>
 
-    <main id="view-home" class="view-section active-view">
-        <div class="dashboard-header">
-            <h1>WELCOME TO <span>REVIVE</span></h1>
-            <p style="color: var(--text-muted); font-size: 1rem;">Portal Management System</p>
-        </div>
-        <div class="dashboard-grid">
-            <div class="module-card" onclick="switchView('admission')">
-                <span class="module-icon">📝</span>
-                <h3>New Admission</h3>
-                <p>Register members & ID</p>
+        <main id="view-home" class="view-section active-view">
+            <div class="dashboard-header">
+                <h1>WELCOME TO <span>REVIVE</span></h1>
+                <p style="color: var(--text-muted); font-size: 1rem;">Portal Management System</p>
             </div>
-            <div class="module-card" onclick="alert('Module under construction for Phase 2 Sheets Integration.')">
-                <span class="module-icon">💳</span>
-                <h3>Fee Collection</h3>
-                <p>Process payments</p>
-            </div>
-            <div class="module-card" onclick="alert('Module under construction for Phase 2 Sheets Integration.')">
-                <span class="module-icon">👥</span>
-                <h3>User Details</h3>
-                <p>Manage profiles</p>
-            </div>
-            <div class="module-card" onclick="alert('Module under construction for Phase 2 Sheets Integration.')">
-                <span class="module-icon">✅</span>
-                <h3>Attendance</h3>
-                <p>Daily check-ins</p>
-            </div>
-            <div class="module-card" onclick="alert('Module under construction for Phase 2 Sheets Integration.')">
-                <span class="module-icon">📊</span>
-                <h3>Reports</h3>
-                <p>Analytics & Export</p>
-            </div>
-        </div>
-    </main>
-
-    <main id="view-admission" class="view-section">
-        <div class="form-layout">
-            <div class="module-toolbar">
-                <button class="back-btn" onclick="switchView('home')" type="button">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                    Back
-                </button>
-                <h2 class="module-title">New Admission</h2>
-            </div>
-            
-            <form id="admissionForm">
-                <div class="form-group selfie-group">
-                    <label>Live Member Portrait <span class="required">*</span></label>
-                    <div class="camera-container">
-                        <div class="camera-placeholder">📷</div>
-                        <video id="camera-stream" autoplay playsinline style="display:none;"></video>
-                        <canvas id="canvas-snapshot" style="display:none;"></canvas>
-                        <img id="selfie-preview" style="display:none;" />
-                    </div>
-                    <div class="camera-controls">
-                        <button type="button" id="btn-start-camera" class="btn secondary">Open Camera</button>
-                        <button type="button" id="btn-capture" class="btn primary" style="display:none;">Capture Photo</button>
-                        <button type="button" id="btn-retake" class="btn secondary" style="display:none;">Retake</button>
-                    </div>
-                    <input type="hidden" id="selfie-data" required>
+            <div class="dashboard-grid">
+                <div class="module-card" onclick="switchView('admission')">
+                    <span class="module-icon">📝</span>
+                    <h3>New Admission</h3>
+                    <p>Register members & ID</p>
                 </div>
+                <div class="module-card" onclick="alert('Module under construction.')">
+                    <span class="module-icon">💳</span>
+                    <h3>Fee Collection</h3>
+                    <p>Process payments</p>
+                </div>
+                <div class="module-card" onclick="alert('Module under construction.')">
+                    <span class="module-icon">👥</span>
+                    <h3>User Details</h3>
+                    <p>Manage profiles</p>
+                </div>
+                <div class="module-card" onclick="alert('Module under construction.')">
+                    <span class="module-icon">✅</span>
+                    <h3>Attendance</h3>
+                    <p>Daily check-ins</p>
+                </div>
+                <div class="module-card" onclick="alert('Module under construction.')">
+                    <span class="module-icon">📊</span>
+                    <h3>Reports</h3>
+                    <p>Analytics & Export</p>
+                </div>
+            </div>
+        </main>
 
-                <div class="form-row">
+        <main id="view-admission" class="view-section">
+            <div class="form-layout">
+                <div class="module-toolbar">
+                    <button class="back-btn" onclick="switchView('home')" type="button">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                        Back
+                    </button>
+                    <h2 class="module-title">New Admission</h2>
+                </div>
+                
+                <form id="admissionForm">
+                    <div class="form-group selfie-group">
+                        <label>Live Member Portrait <span class="required">*</span></label>
+                        <div class="camera-container">
+                            <div class="camera-placeholder">📷</div>
+                            <video id="camera-stream" autoplay playsinline style="display:none;"></video>
+                            <canvas id="canvas-snapshot" style="display:none;"></canvas>
+                            <img id="selfie-preview" style="display:none;" />
+                        </div>
+                        <div class="camera-controls">
+                            <button type="button" id="btn-start-camera" class="btn secondary">Open Camera</button>
+                            <button type="button" id="btn-capture" class="btn primary" style="display:none;">Capture Photo</button>
+                            <button type="button" id="btn-retake" class="btn secondary" style="display:none;">Retake</button>
+                        </div>
+                        <input type="hidden" id="selfie-data" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dateOfAdmission">Date of Admission <span class="required">*</span></label>
+                            <input type="text" id="dateOfAdmission" placeholder="DD-MM-YYYY" pattern="\d{2}-\d{2}-\d{4}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="admissionType">Type of Admission <span class="required">*</span></label>
+                            <select id="admissionType" required>
+                                <option value="Regular">Regular</option>
+                                <option value="Personal Training">Personal Training</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name <span class="required">*</span></label>
+                            <input type="text" id="firstName" pattern="[A-Za-z\s]+" title="Only alphabets allowed" placeholder="Enter first name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" pattern="[A-Za-z\s]+" title="Only alphabets allowed" placeholder="Optional">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="primaryContact">Primary Contact <span class="required">*</span></label>
+                            <input type="tel" id="primaryContact" pattern="\d{10}" maxlength="10" title="Exactly 10 digits required" placeholder="10-digit mobile number" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="alternateContact">Alternate Contact</label>
+                            <input type="tel" id="alternateContact" pattern="\d{10}" maxlength="10" title="Exactly 10 digits required" placeholder="Optional">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dob">Date of Birth <span class="required">*</span></label>
+                            <input type="text" id="dob" placeholder="DD-MM-YYYY" pattern="\d{2}-\d{2}-\d{4}" title="Format: DD-MM-YYYY" required>
+                            <div id="ageWarning" class="warning-text">⚠️ Minimum age requirement is 18 years.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="age">Calculated Age</label>
+                            <input type="number" id="age" readonly placeholder="Auto-calculated">
+                        </div>
+                    </div>
+
                     <div class="form-group">
-                        <label for="dateOfAdmission">Date of Admission <span class="required">*</span></label>
-                        <input type="text" id="dateOfAdmission" placeholder="DD-MM-YYYY" pattern="\d{2}-\d{2}-\d{4}" required>
+                        <label for="address">Full Residential Address <span class="required">*</span></label>
+                        <textarea id="address" maxlength="100" rows="3" placeholder="Enter complete address (Max 100 characters)" required></textarea>
                     </div>
-                    <div class="form-group">
-                        <label for="admissionType">Type of Admission <span class="required">*</span></label>
-                        <select id="admissionType" required>
-                            <option value="Regular">Regular</option>
-                            <option value="Personal Training">Personal Training</option>
-                        </select>
-                    </div>
-                </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="firstName">First Name <span class="required">*</span></label>
-                        <input type="text" id="firstName" pattern="[A-Za-z\s]+" title="Only alphabets allowed" placeholder="Enter first name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="lastName">Last Name</label>
-                        <input type="text" id="lastName" pattern="[A-Za-z\s]+" title="Only alphabets allowed" placeholder="Optional">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="primaryContact">Primary Contact <span class="required">*</span></label>
-                        <input type="tel" id="primaryContact" pattern="\d{10}" maxlength="10" title="Exactly 10 digits required" placeholder="10-digit mobile number" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="alternateContact">Alternate Contact</label>
-                        <input type="tel" id="alternateContact" pattern="\d{10}" maxlength="10" title="Exactly 10 digits required" placeholder="Optional">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="dob">Date of Birth <span class="required">*</span></label>
-                        <input type="text" id="dob" placeholder="DD-MM-YYYY" pattern="\d{2}-\d{2}-\d{4}" title="Format: DD-MM-YYYY" required>
-                        <div id="ageWarning" class="warning-text">⚠️ Minimum age requirement is 18 years.</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="age">Calculated Age</label>
-                        <input type="number" id="age" readonly placeholder="Auto-calculated">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="address">Full Residential Address <span class="required">*</span></label>
-                    <textarea id="address" maxlength="100" rows="3" placeholder="Enter complete address (Max 100 characters)" required></textarea>
-                </div>
-
-                <button type="submit" class="btn primary submit-btn">Generate Admission Record</button>
-            </form>
-        </div>
-    </main>
-
-    <!-- Success Modal -->
-    <div id="successModal" class="modal">
-        <div class="modal-content">
-            <svg viewBox="0 0 350 80" height="40" style="margin-bottom: 1rem;" xmlns="http://www.w3.org/2000/svg">
-                <text x="0" y="45" font-family="'Segoe UI', Arial, sans-serif" font-size="42" font-weight="900" fill="#ffffff" letter-spacing="4">REV<tspan fill="#ff6600">I</tspan>VE</text>
-                <text x="2" y="70" font-family="'Segoe UI', Arial, sans-serif" font-size="14" font-weight="600" fill="#a0a0a0" letter-spacing="6">FITNESS STUDIO</text>
-            </svg>
-            <h2 class="orange-text">Registration Success!</h2>
-            <div class="admission-badge" id="generated-id">REV-0000</div>
-            <div class="modal-actions">
-                <button id="btn-download-pdf" class="btn primary">1. Download PDF Record</button>
-                <button id="btn-whatsapp" class="btn whatsapp">2. Send WhatsApp Msg</button>
-                <button class="btn secondary" onclick="closeModal()">Close & Return</button>
+                    <button type="submit" class="btn primary submit-btn">Generate Admission Record</button>
+                </form>
             </div>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem;">Note: Browsers prevent auto-attaching files. Please download the PDF first, then attach it manually inside WhatsApp.</p>
-        </div>
-    </div>
+        </main>
 
-    <!-- Hidden Refined PDF Template -->
-    <div id="pdf-template">
-        <div class="pdf-page">
-            <div class="pdf-header-container">
-                <div class="pdf-header-text">
-                    <h2>REVIVE</h2>
-                    <h3>FITNESS STUDIO</h3>
+        <!-- Success Modal -->
+        <div id="successModal" class="modal">
+            <div class="modal-content">
+                <svg viewBox="0 0 350 80" height="40" style="margin-bottom: 1rem;" xmlns="http://www.w3.org/2000/svg">
+                    <text x="0" y="45" font-family="'Segoe UI', Arial, sans-serif" font-size="42" font-weight="900" fill="#ffffff" letter-spacing="4">REV<tspan fill="#ff6600">I</tspan>VE</text>
+                    <text x="2" y="70" font-family="'Segoe UI', Arial, sans-serif" font-size="14" font-weight="600" fill="#a0a0a0" letter-spacing="6">FITNESS STUDIO</text>
+                </svg>
+                <h2 class="orange-text">Registration Success!</h2>
+                <div class="admission-badge" id="generated-id">REV-0000</div>
+                <div class="modal-actions">
+                    <button id="btn-download-pdf" class="btn primary">1. Download PDF Record</button>
+                    <button id="btn-whatsapp" class="btn whatsapp">2. Send WhatsApp Msg</button>
+                    <button class="btn secondary" onclick="closeModal()">Close & Return</button>
                 </div>
-                <div class="pdf-header-right">
-                    OFFICIAL MEMBER<br>ADMISSION
-                </div>
-            </div>
-
-            <div class="pdf-top-meta">
-                <span>ADMISSION ID: <span id="pdf-id" style="color:var(--accent-orange);"></span></span>
-                <span>REGISTRATION DATE: <span id="pdf-date"></span></span>
-            </div>
-
-            <div class="pdf-content-row">
-                <div class="pdf-photo-wrapper">
-                    <img id="pdf-photo" src="" alt="Member Photo">
-                </div>
-                <div class="pdf-table-wrapper">
-                    <table class="pdf-table">
-                        <tr><th>FULL NAME</th><td id="pdf-name"></td></tr>
-                        <tr><th>ADMISSION TYPE</th><td id="pdf-type"></td></tr>
-                        <tr><th>PRIMARY CONTACT</th><td id="pdf-contact1"></td></tr>
-                        <tr><th>ALTERNATE CONTACT</th><td id="pdf-contact2"></td></tr>
-                        <tr><th>DATE OF BIRTH & AGE</th><td id="pdf-dob-age"></td></tr>
-                        <tr><th>RESIDENTIAL ADDRESS</th><td id="pdf-address"></td></tr>
-                    </table>
-                </div>
-            </div>
-
-            <div class="pdf-declaration">
-                <h4>DECLARATION</h4>
-                <p>I hereby declare that the details furnished above are true and correct to the best of my knowledge. I agree to abide by the rules, regulations, and disciplinary guidelines of Revive Fitness. I understand that the membership is non-transferable and fees are non-refundable. I acknowledge that physical exercise involves inherent risks and I participate at my own risk.</p>
-            </div>
-
-            <div class="pdf-signatures">
-                <div class="sig-block" style="padding-right: 15px;">
-                    <div style="height: 50px;"></div> 
-                    <div class="sig-line">MEMBER SIGNATURE</div>
-                    <div class="sig-meta">
-                        <strong>Verified by:</strong> <span id="member-verified"></span><br>
-                        <strong>Timestamp:</strong> <span id="member-timestamp"></span><br>
-                        <strong>Location:</strong> <span id="member-location">Fetching...</span>
-                    </div>
-                </div>
-                <div class="sig-block" style="padding-left: 15px;">
-                    <img src="signature.png" class="official-sig-img" alt="Authorized Signature" onerror="this.style.display='none'">
-                    <div class="sig-line">AUTHORIZED SIGNATURE</div>
-                    <div class="sig-meta">
-                        <strong>Verified by:</strong> Revive System Admin<br>
-                        <strong>Timestamp:</strong> <span id="official-timestamp"></span><br>
-                        <strong>Location:</strong> Revive Fitness Studio
-                    </div>
-                </div>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem;">Note: Download the PDF first, then attach it manually inside WhatsApp.</p>
             </div>
         </div>
+    </div> <!-- END APP WRAPPER -->
 
-        <div class="pdf-page html2pdf__page-break pdf-rules-page">
-            <h3>RULES & REGULATIONS / നിബന്ധനകൾ</h3>
-            <ol class="pdf-rules-list">
-                <li>
-                    <strong>Members must strictly observe discipline.</strong>
-                    <em>അംഗങ്ങൾ കർശനമായി അച്ചടക്കം പാലിക്കേണ്ടതാണ്.</em>
-                </li>
-                <li>
-                    <strong>Fees must be paid on time. The fee for each month must be paid before the 9th of that month.</strong>
-                    <em>ഫീസ് കൃത്യസമയത്ത് അടയ്ക്കേണ്ടതാണ്. എല്ലാ മാസവും 9-ാം തീയതിക്ക് മുമ്പായി അതാത് മാസത്തെ ഫീസ് അടയ്ക്കേണ്ടതാണ്.</em>
-                </li>
-                <li>
-                    <strong>Equipment must be returned to its proper place after use.</strong>
-                    <em>ക്ലബ്ബിലെ ഉപകരണങ്ങൾ ഉപയോഗിച്ചതിനുശേഷം യഥാസ്ഥാനങ്ങളിൽ തിരികെ വയ്ക്കേണ്ടതാണ്.</em>
-                </li>
-                <li>
-                    <strong>Advance fees and monthly fees once paid will not be refunded.</strong>
-                    <em>ഒരിക്കൽ അടച്ച അഡ്വാൻസ് ഫീസും മാസഫീസും മടക്കിത്തരുന്നതല്ല.</em>
-                </li>
-                <li>
-                    <strong>Belongings brought to the club must be kept at one's own risk.</strong>
-                    <em>ക്ലബ്ബിൽ കൊണ്ടുവരുന്ന സാധനങ്ങൾ സ്വന്തം ഉത്തരവാദിത്വത്തിൽ സൂക്ഷിക്കേണ്ടതാണ്.</em>
-                </li>
-                <li>
-                    <strong>The time of practice and name must be entered accurately in the club's register book every day.</strong>
-                    <em>പ്രാക്ടീസിനായി വരുന്ന സമയവും പേരും എല്ലാ ദിവസവും ക്ലബ്ബിലെ രജിസ്റ്റർ ബുക്കിൽ കൃത്യമായി രേഖപ്പെടുത്തേണ്ടതാണ്.</em>
-                </li>
-                <li>
-                    <strong>It is mandatory to use a towel during practice. Practice will not be allowed without a towel.</strong>
-                    <em>നിർബന്ധമായും ടവ്വൽ ഉപയോഗിച്ച് പ്രാക്ടീസ് ചെയ്യുക. ടവ്വൽ ഇല്ലാത്തപക്ഷം പ്രാക്ടീസ് ചെയ്യാൻ അനുവദിക്കുന്നതല്ല.</em>
-                </li>
-                <li>
-                    <strong>Workout using a t-shirt and track pants.</strong>
-                    <em>ടീഷർട്ട്, ട്രാക്ക് പാന്റ് എന്നിവ ഉപയോഗിച്ച് വർക്കൗട്ട് ചെയ്യുക.</em>
-                </li>
-                <li>
-                    <strong>If absent continuously for 6 months, readmission must be taken.</strong>
-                    <em>തുടർച്ചയായി 6 മാസം വരാതിരുന്നാൽ തുടർന്ന് റീ അഡ്മിഷൻ എടുക്കേണ്ടി വരുന്നതാണ്.</em>
-                </li>
-                <li>
-                    <strong>Do not enter the club under the influence of alcohol or drugs. If found, membership will be cancelled.</strong>
-                    <em>ലഹരി കഴിച്ചുകൊണ്ട് ക്ലബ്ബിൽ പ്രവേശിക്കാൻ പാടില്ല. അങ്ങനെ കണ്ടെത്തിയാൽ അംഗത്വം റദ്ദ് ചെയ്യുന്നതായിരിക്കും.</em>
-                </li>
-                <li>
-                    <strong>Management is not responsible for any accidents during training.</strong>
-                    <em>പരിശീലനത്തിനിടയിൽ ഉണ്ടാകുന്ന അത്യാഹിതങ്ങൾക്ക് മാനേജ്മെന്റിന് യാതൊരു ഉത്തരവാദിത്വവും ഉണ്ടായിരിക്കുന്നതല്ല.</em>
-                </li>
-                <li>
-                    <strong>Members are fully responsible for any damages caused to the club by them.</strong>
-                    <em>അംഗങ്ങൾമൂലം ക്ലബ്ബിൽ ഉണ്ടാകുന്ന നാശനഷ്ടങ്ങളുടെ പൂർണ്ണ ഉത്തരവാദിത്വം അതത് അംഗങ്ങൾക്ക് തന്നെയായിരിക്കും.</em>
-                </li>
-                <li>
-                    <strong>Those with any confirmed medical conditions must produce a full medical clearance certificate from a doctor.</strong>
-                    <em>വൈദ്യശാസ്ത്രപരമായ ഏതെങ്കിലും രോഗം ഉള്ളതായി സ്ഥിരീകരിക്കപ്പെട്ടിട്ടുള്ളവർ ഡോക്ടറുടെ പൂർണ്ണ ആരോഗ്യ സർട്ടിഫിക്കറ്റ് ഹാജരാക്കേണ്ടതാണ്.</em>
-                </li>
-                <li>
-                    <strong>Ensure that all the above conditions are read, understood, and acceptable. Applicable to everyone.</strong>
-                    <em>മേൽപ്പറഞ്ഞ നിബന്ധനകൾ എല്ലാം വായിച്ചു ബോധ്യപ്പെടുകയും അവയെല്ലാം സ്വീകാര്യവുമാണെന്ന് ഉറപ്പ് വരുത്തുക. മുകളിൽ പറഞ്ഞ വസ്തുതകൾ എല്ലാവർക്കും ബാധകം.</em>
-                </li>
-            </ol>
+    <!-- PDF RENDERER WRAPPER -->
+    <div id="pdf-template-wrapper">
+        <div id="pdf-template">
+            <!-- Page 1 -->
+            <div class="pdf-page">
+                <div class="pdf-header-container">
+                    <div class="pdf-header-text">
+                        <h2>REVIVE</h2>
+                        <h3>FITNESS STUDIO</h3>
+                    </div>
+                    <div class="pdf-header-right">
+                        OFFICIAL MEMBER<br>ADMISSION
+                    </div>
+                </div>
+
+                <div class="pdf-top-meta">
+                    <span>ADMISSION ID: <span id="pdf-id" style="color:var(--accent-orange);"></span></span>
+                    <span>REGISTRATION DATE: <span id="pdf-date"></span></span>
+                </div>
+
+                <div class="pdf-content-row">
+                    <div class="pdf-photo-wrapper">
+                        <img id="pdf-photo" src="" alt="Member Photo">
+                    </div>
+                    <div class="pdf-table-wrapper">
+                        <table class="pdf-table">
+                            <tr><th>FULL NAME</th><td id="pdf-name"></td></tr>
+                            <tr><th>ADMISSION TYPE</th><td id="pdf-type"></td></tr>
+                            <tr><th>PRIMARY CONTACT</th><td id="pdf-contact1"></td></tr>
+                            <tr><th>ALTERNATE CONTACT</th><td id="pdf-contact2"></td></tr>
+                            <tr><th>DATE OF BIRTH & AGE</th><td id="pdf-dob-age"></td></tr>
+                            <tr><th>RESIDENTIAL ADDRESS</th><td id="pdf-address"></td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="pdf-declaration">
+                    <h4>DECLARATION</h4>
+                    <p>I hereby declare that the details furnished above are true and correct to the best of my knowledge. I agree to abide by the rules, regulations, and disciplinary guidelines of Revive Fitness. I understand that the membership is non-transferable and fees are non-refundable. I acknowledge that physical exercise involves inherent risks and I participate at my own risk.</p>
+                </div>
+
+                <div class="pdf-signatures">
+                    <div class="sig-block" style="padding-right: 15px;">
+                        <div style="height: 50px;"></div> 
+                        <div class="sig-line">MEMBER SIGNATURE</div>
+                        <div class="sig-meta">
+                            <strong>Verified by:</strong> <span id="member-verified"></span><br>
+                            <strong>Timestamp:</strong> <span id="member-timestamp"></span><br>
+                            <strong>Location:</strong> <span id="member-location">Fetching...</span>
+                        </div>
+                    </div>
+                    <div class="sig-block" style="padding-left: 15px;">
+                        <img src="signature.png" class="official-sig-img" alt="Authorized Signature" onerror="this.style.display='none'">
+                        <div class="sig-line">AUTHORIZED SIGNATURE</div>
+                        <div class="sig-meta">
+                            <strong>Verified by:</strong> Revive System Admin<br>
+                            <strong>Timestamp:</strong> <span id="official-timestamp"></span><br>
+                            <strong>Location:</strong> Revive Fitness Studio H.O
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page Break -->
+            <div class="html2pdf__page-break"></div>
+
+            <!-- Page 2 -->
+            <div class="pdf-page pdf-rules-page">
+                <h3>RULES & REGULATIONS / നിബന്ധനകൾ</h3>
+                <ol class="pdf-rules-list">
+                    <li>
+                        <strong>Members must strictly observe discipline.</strong>
+                        <em>അംഗങ്ങൾ കർശനമായി അച്ചടക്കം പാലിക്കേണ്ടതാണ്.</em>
+                    </li>
+                    <li>
+                        <strong>Fees must be paid on time. The fee for each month must be paid before the 9th of that month.</strong>
+                        <em>ഫീസ് കൃത്യസമയത്ത് അടയ്ക്കേണ്ടതാണ്. എല്ലാ മാസവും 9-ാം തീയതിക്ക് മുമ്പായി അതാത് മാസത്തെ ഫീസ് അടയ്ക്കേണ്ടതാണ്.</em>
+                    </li>
+                    <li>
+                        <strong>Equipment must be returned to its proper place after use.</strong>
+                        <em>ക്ലബ്ബിലെ ഉപകരണങ്ങൾ ഉപയോഗിച്ചതിനുശേഷം യഥാസ്ഥാനങ്ങളിൽ തിരികെ വയ്ക്കേണ്ടതാണ്.</em>
+                    </li>
+                    <li>
+                        <strong>Advance fees and monthly fees once paid will not be refunded.</strong>
+                        <em>ഒരിക്കൽ അടച്ച അഡ്വാൻസ് ഫീസും മാസഫീസും മടക്കിത്തരുന്നതല്ല.</em>
+                    </li>
+                    <li>
+                        <strong>Belongings brought to the club must be kept at one's own risk.</strong>
+                        <em>ക്ലബ്ബിൽ കൊണ്ടുവരുന്ന സാധനങ്ങൾ സ്വന്തം ഉത്തരവാദിത്വത്തിൽ സൂക്ഷിക്കേണ്ടതാണ്.</em>
+                    </li>
+                    <li>
+                        <strong>The time of practice and name must be entered accurately in the club's register book every day.</strong>
+                        <em>പ്രാക്ടീസിനായി വരുന്ന സമയവും പേരും എല്ലാ ദിവസവും ക്ലബ്ബിലെ രജിസ്റ്റർ ബുക്കിൽ കൃത്യമായി രേഖപ്പെടുത്തേണ്ടതാണ്.</em>
+                    </li>
+                    <li>
+                        <strong>It is mandatory to use a towel during practice. Practice will not be allowed without a towel.</strong>
+                        <em>നിർബന്ധമായും ടവ്വൽ ഉപയോഗിച്ച് പ്രാക്ടീസ് ചെയ്യുക. ടവ്വൽ ഇല്ലാത്തപക്ഷം പ്രാക്ടീസ് ചെയ്യാൻ അനുവദിക്കുന്നതല്ല.</em>
+                    </li>
+                    <li>
+                        <strong>Workout using a t-shirt and track pants.</strong>
+                        <em>ടീഷർട്ട്, ട്രാക്ക് പാന്റ് എന്നിവ ഉപയോഗിച്ച് വർക്കൗട്ട് ചെയ്യുക.</em>
+                    </li>
+                    <li>
+                        <strong>If absent continuously for 6 months, readmission must be taken.</strong>
+                        <em>തുടർച്ചയായി 6 മാസം വരാതിരുന്നാൽ തുടർന്ന് റീ അഡ്മിഷൻ എടുക്കേണ്ടി വരുന്നതാണ്.</em>
+                    </li>
+                    <li>
+                        <strong>Do not enter the club under the influence of alcohol or drugs. If found, membership will be cancelled.</strong>
+                        <em>ലഹരി കഴിച്ചുകൊണ്ട് ക്ലബ്ബിൽ പ്രവേശിക്കാൻ പാടില്ല. അങ്ങനെ കണ്ടെത്തിയാൽ അംഗത്വം റദ്ദ് ചെയ്യുന്നതായിരിക്കും.</em>
+                    </li>
+                    <li>
+                        <strong>Management is not responsible for any accidents during training.</strong>
+                        <em>പരിശീലനത്തിനിടയിൽ ഉണ്ടാകുന്ന അത്യാഹിതങ്ങൾക്ക് മാനേജ്മെന്റിന് യാതൊരു ഉത്തരവാദിത്വവും ഉണ്ടായിരിക്കുന്നതല്ല.</em>
+                    </li>
+                    <li>
+                        <strong>Members are fully responsible for any damages caused to the club by them.</strong>
+                        <em>അംഗങ്ങൾമൂലം ക്ലബ്ബിൽ ഉണ്ടാകുന്ന നാശനഷ്ടങ്ങളുടെ പൂർണ്ണ ഉത്തരവാദിത്വം അതത് അംഗങ്ങൾക്ക് തന്നെയായിരിക്കും.</em>
+                    </li>
+                    <li>
+                        <strong>Those with any confirmed medical conditions must produce a full medical clearance certificate from a doctor.</strong>
+                        <em>വൈദ്യശാസ്ത്രപരമായ ഏതെങ്കിലും രോഗം ഉള്ളതായി സ്ഥിരീകരിക്കപ്പെട്ടിട്ടുള്ളവർ ഡോക്ടറുടെ പൂർണ്ണ ആരോഗ്യ സർട്ടിഫിക്കറ്റ് ഹാജരാക്കേണ്ടതാണ്.</em>
+                    </li>
+                    <li>
+                        <strong>Ensure that all the above conditions are read, understood, and acceptable. Applicable to everyone.</strong>
+                        <em>മേൽപ്പറഞ്ഞ നിബന്ധനകൾ എല്ലാം വായിച്ചു ബോധ്യപ്പെടുകയും അവയെല്ലാം സ്വീകാര്യവുമാണെന്ന് ഉറപ്പ് വരുത്തുക. മുകളിൽ പറഞ്ഞ വസ്തുതകൾ എല്ലാവർക്കും ബാധകം.</em>
+                    </li>
+                </ol>
+            </div>
         </div>
     </div>
 
@@ -560,6 +571,7 @@
             dobInput.addEventListener('input', autoFormatDate);
             dateInput.addEventListener('input', autoFormatDate);
 
+            // Camera Setup
             const video = document.getElementById('camera-stream');
             const canvas = document.getElementById('canvas-snapshot');
             const preview = document.getElementById('selfie-preview');
@@ -590,7 +602,7 @@
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
                 canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-                const imageData = canvas.toDataURL('image/png');
+                const imageData = canvas.toDataURL('image/jpeg', 0.9);
                 
                 selfieData.value = imageData;
                 preview.src = imageData;
@@ -638,10 +650,11 @@
                     return;
                 }
 
+                // Request Location on submit
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
                         (pos) => { userLocationStr = `Lat: ${pos.coords.latitude.toFixed(5)}, Long: ${pos.coords.longitude.toFixed(5)}`; },
-                        (err) => { userLocationStr = "Location access denied"; }
+                        (err) => { userLocationStr = "Location permissions denied"; }
                     );
                 }
 
@@ -668,11 +681,16 @@
                 localStorage.setItem('revive_admission_count', newCountToSave);
             });
 
-            // FIXED BLANK PAGE PDF GENERATION
-            document.getElementById('btn-download-pdf').addEventListener('click', () => {
+            // GUARANTEED PDF GENERATION VIA DOM SWAP
+            document.getElementById('btn-download-pdf').addEventListener('click', function() {
+                const btn = this;
+                btn.innerText = "Generating PDF...";
+                btn.disabled = true;
+
                 const now = new Date();
                 const timestampStr = now.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
                 
+                // Inject Data
                 document.getElementById('pdf-id').innerText = currentMemberDetails.id;
                 document.getElementById('pdf-date').innerText = currentMemberDetails.date;
                 document.getElementById('pdf-photo').src = currentMemberDetails.photo;
@@ -688,26 +706,42 @@
                 document.getElementById('member-location').innerText = userLocationStr;
                 document.getElementById('official-timestamp').innerText = timestampStr;
 
+                const appWrapper = document.getElementById('app-wrapper');
+                const pdfWrapper = document.getElementById('pdf-template-wrapper');
                 const element = document.getElementById('pdf-template');
                 
-                // Temporarily display block to allow HTML2Canvas to read heights and styles natively.
-                // Placed under the modal visually so the user doesn't see a flash.
-                element.style.display = 'block';
+                // DOM SWAP: Hide the app, display the PDF template normally in the document flow.
+                // This guarantees html2canvas can read dimensions without clipping.
+                window.scrollTo(0, 0);
+                appWrapper.style.display = 'none';
+                pdfWrapper.style.display = 'block';
 
-                // Provide a slight delay for images to load into the visible DOM
+                // Give the browser 300ms to paint the DOM and load the image src
                 setTimeout(() => {
                     const opt = {
                         margin:       0,
                         filename:     `${currentMemberDetails.id}_Official_Record.pdf`,
                         image:        { type: 'jpeg', quality: 1.0 },
-                        html2canvas:  { scale: 2, useCORS: true, scrollY: 0 }, 
+                        html2canvas:  { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 }, 
                         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
                     };
 
                     html2pdf().set(opt).from(element).save().then(() => {
-                        element.style.display = 'none'; // Re-hide after complete
+                        // SWAP BACK
+                        pdfWrapper.style.display = 'none';
+                        appWrapper.style.display = 'flex';
+                        btn.innerText = "1. Download PDF Record";
+                        btn.disabled = false;
+                    }).catch(err => {
+                        // Failsafe
+                        console.error(err);
+                        pdfWrapper.style.display = 'none';
+                        appWrapper.style.display = 'flex';
+                        btn.innerText = "1. Download PDF Record";
+                        btn.disabled = false;
+                        alert("An error occurred generating the PDF.");
                     });
-                }, 150);
+                }, 300);
             });
 
             document.getElementById('btn-whatsapp').addEventListener('click', () => {
