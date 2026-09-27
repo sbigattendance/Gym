@@ -102,9 +102,12 @@
         .signature-container { width: 100%; margin-top: 1rem; text-align: center; }
         .signature-pad { border: 2px solid var(--accent-orange); border-radius: 8px; background-color: #ffffff; cursor: crosshair; touch-action: none; width: 100%; max-width: 450px; height: 150px; display: block; margin: 0 auto 1rem auto; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05); }
 
+        /* Re-Admission Validation Input Layout Fix */
         #reAdmissionSection { background: var(--bg-main); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px dashed var(--accent-orange); display: none; animation: fadeIn 0.3s ease; }
-        .val-group { display: flex; gap: 10px; align-items: stretch; margin-bottom: 1rem; }
-        
+        .val-group { display: flex; gap: 10px; align-items: stretch; margin-bottom: 1rem; width: 100%; }
+        .val-group input { flex: 1 1 auto; width: 100%; min-width: 0; margin-bottom: 0 !important; }
+        .val-group button { flex: 0 0 auto; white-space: nowrap; height: 100%; margin-bottom: 0 !important; padding: 1rem 1.5rem; }
+
         .tariff-row { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .tariff-month-name { font-weight: 800; color: var(--accent-orange); margin-bottom: 1rem; font-size: 1.1rem; text-transform: uppercase; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
         .tariff-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
@@ -189,9 +192,6 @@
             .view-section { padding: 1.5rem 1rem; }
             .form-layout { padding: 1.5rem; border: none; box-shadow: none; background: transparent; }
             .btn { padding: 0.9rem 1.5rem; }
-            .val-group { flex-direction: row; }
-            .val-group input { flex: 1; }
-            .val-group button { width: auto; padding: 0.5rem 1rem; }
             .profile-snippet { flex-direction: column; text-align: center; }
             .profile-snippet img { width: 90px; height: 90px; }
             #hub-actions { width: 100%; max-width: 100%; }
@@ -203,6 +203,7 @@
     <div id="app-wrapper">
         <header class="app-header">
             <div class="logo-container" onclick="appContext.goHome()">
+                <!-- Logo matched to the white background -->
                 <img src="logo.png" alt="REVIVE FITNESS STUDIO" onerror="this.src='https://via.placeholder.com/150x40/ffffff/ff6600?text=REVIVE+FITNESS'">
             </div>
         </header>
@@ -239,7 +240,8 @@
                     </button>
                     <h2 class="module-title" id="login-title">Login</h2>
                 </div>
-                <form id="loginForm">
+                <!-- Removed direct submit to avoid crashes; handled by button click in JS -->
+                <form id="loginForm" onsubmit="event.preventDefault(); window.appContext.handleLogin(event);">
                     <div class="form-group">
                         <input type="password" id="pin-input" class="pin-input" inputmode="numeric" required autocomplete="off">
                     </div>
@@ -297,7 +299,7 @@
                     </button>
                     <h2 class="module-title" id="search-title">Search User</h2>
                 </div>
-                <form id="userSearchForm">
+                <form id="userSearchForm" onsubmit="event.preventDefault(); window.moduleContext.fetchUserHub(event);">
                     <div class="form-group">
                         <label>Member Phone Number <span class="required">*</span></label>
                         <input type="tel" id="search-phone" pattern="\d{10}" maxlength="10" required>
@@ -401,6 +403,7 @@
                             </div>
                         </div>
 
+                        <!-- Fixed Re-Admission Layout -->
                         <div id="reAdmissionSection">
                             <label style="color: var(--accent-orange); margin-bottom: 0.5rem; display: block;">Validate Previous Registration</label>
                             <div class="val-group">
@@ -487,10 +490,10 @@
                                 <img id="selfie-preview" style="display:none;" />
                             </div>
                             <div class="control-btns">
-                                <button type="button" id="btn-start-camera" class="btn secondary">Open Camera</button>
-                                <button type="button" id="btn-switch-camera" class="btn secondary" style="display:none;">Switch Camera</button>
-                                <button type="button" id="btn-capture" class="btn primary" style="display:none;">Capture Photo</button>
-                                <button type="button" id="btn-retake" class="btn secondary" style="display:none;">Retake Photo</button>
+                                <button type="button" id="btn-start-camera" class="btn secondary" style="width: 100%;">Open Camera</button>
+                                <button type="button" id="btn-switch-camera" class="btn secondary" style="display:none; width: 100%;">Switch Camera</button>
+                                <button type="button" id="btn-capture" class="btn primary" style="display:none; width: 100%;">Capture Photo</button>
+                                <button type="button" id="btn-retake" class="btn secondary" style="display:none; width: 100%;">Retake Photo</button>
                             </div>
                             <input type="hidden" id="selfie-data" required>
                         </div>
@@ -879,17 +882,10 @@
                 const photoEl = document.getElementById('hub-photo');
                 photoEl.src = user.photo || 'https://via.placeholder.com/70x70/141414/a0a0a0?text=N/A';
                 
-                // Photo Security for Staff
                 if (window.appContext.currentRole === 'staff') {
-                    photoEl.style.pointerEvents = 'none';
-                    photoEl.style.userSelect = 'none';
-                    photoEl.style.webkitUserDrag = 'none';
-                    photoEl.oncontextmenu = (e) => e.preventDefault();
+                    photoEl.style.pointerEvents = 'none'; photoEl.style.userSelect = 'none'; photoEl.style.webkitUserDrag = 'none'; photoEl.oncontextmenu = (ev) => ev.preventDefault();
                 } else {
-                    photoEl.style.pointerEvents = 'auto';
-                    photoEl.style.userSelect = 'auto';
-                    photoEl.style.webkitUserDrag = 'auto';
-                    photoEl.oncontextmenu = null;
+                    photoEl.style.pointerEvents = 'auto'; photoEl.style.userSelect = 'auto'; photoEl.style.webkitUserDrag = 'auto'; photoEl.oncontextmenu = null;
                 }
 
                 document.getElementById('hub-name').innerText = user.fullName;
@@ -1049,11 +1045,8 @@
                         canvas.toBlob(blob => {
                             currentGeneratedReceiptBlob = blob;
                             wrapper.style.left = '-9999px';
-                            if (triggerFlow === 'success') {
-                                document.getElementById('receiptSuccessModal').style.display = 'flex';
-                            } else if (triggerFlow === 'view') {
-                                document.getElementById('viewReceiptModal').style.display = 'flex';
-                            }
+                            if (triggerFlow === 'success') { document.getElementById('receiptSuccessModal').style.display = 'flex'; } 
+                            else if (triggerFlow === 'view') { document.getElementById('viewReceiptModal').style.display = 'flex'; }
                         }, 'image/jpeg', 0.95);
                     });
                 }, 300);
@@ -1070,7 +1063,6 @@
                 } catch(e) { console.error(e); }
                 finally { btn.innerText = "Share Receipt via WhatsApp"; document.getElementById(modalId).style.display = 'none'; }
             },
-            
             editUser: function() {
                 IS_EDIT_MODE = true; const u = currentActiveUser;
                 document.getElementById('form-main-title').innerText = "Edit Member Details";
@@ -1140,7 +1132,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             
             document.getElementById('btn-save-upi').addEventListener('click', () => window.moduleContext.saveUpi());
-            document.getElementById('userSearchForm').addEventListener('submit', function(e) { window.moduleContext.fetchUserHub(e); });
             document.getElementById('pay-amount-now').addEventListener('input', () => window.moduleContext.updatePaymentModalUI());
             document.getElementById('pay-method').addEventListener('change', () => window.moduleContext.updatePaymentModalUI());
             document.getElementById('btn-cancel-pay').addEventListener('click', () => document.getElementById('paymentProcessModal').style.display='none');
@@ -1391,12 +1382,9 @@
                     document.getElementById('reAdmissionSection').style.display = 'none'; 
                     document.getElementById('validationResultBox').style.display = 'none'; 
                     document.getElementById('prevPhoneInput').value = ''; 
-                    document.getElementById('firstName').value = ''; 
-                    document.getElementById('lastName').value = ''; 
-                    document.getElementById('primaryContact').value = ''; 
-                    document.getElementById('alternateContact').value = ''; 
-                    document.getElementById('dob').value = ''; 
-                    document.getElementById('address').value = ''; 
+                    document.getElementById('firstName').value = ''; document.getElementById('lastName').value = ''; 
+                    document.getElementById('primaryContact').value = ''; document.getElementById('alternateContact').value = ''; 
+                    document.getElementById('dob').value = ''; document.getElementById('address').value = ''; 
                     calcAge();
                 }
             });
@@ -1432,9 +1420,10 @@
                 } else {
                     resBox.innerHTML = '<span style="color:var(--error-red);">No previous registration found.</span><br><span style="color:var(--text-muted); font-size:0.85rem;">Type changed to New Admission.</span>';
                     admissionTypeSelect.value = 'New Admission'; document.getElementById('primaryContact').value = phone;
+                    
                     document.getElementById('firstName').value = ''; document.getElementById('lastName').value = '';
                     document.getElementById('alternateContact').value = ''; document.getElementById('dob').value = '';
-                    document.getElementById('address').value = ''; calcAge();
+                    document.getElementById('address').value = ''; document.getElementById('age').value = '';
                 }
             });
 
