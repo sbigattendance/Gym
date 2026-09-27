@@ -5,14 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Revive Fitness Studio | Portal</title>
     
-    <!-- html2pdf for robust PDF generation & html2canvas for Receipt Images -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
-        /* ==========================================================================
-           1. CSS VARIABLES & RESET (Light, Clean Theme for White Logo)
-           ========================================================================== */
         :root {
             --bg-main: #f9f9f9;
             --bg-panel: #ffffff;
@@ -29,9 +25,6 @@
         html { font-size: 16px; background-color: var(--bg-main); }
         body { color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
-        /* ==========================================================================
-           2. MAIN LAYOUT & NAVIGATION
-           ========================================================================== */
         #app-wrapper { display: flex; flex-direction: column; min-height: 100vh; }
 
         .app-header {
@@ -47,9 +40,6 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ==========================================================================
-           3. DASHBOARD MODULES
-           ========================================================================== */
         .dashboard-header { text-align: center; margin-bottom: 2rem; }
         .dashboard-header h1 { font-size: clamp(1.6rem, 5vw, 2.5rem); font-weight: 800; letter-spacing: 2px; margin-bottom: 0.5rem; }
         .dashboard-header span { color: var(--accent-orange); }
@@ -68,9 +58,6 @@
         .module-icon-svg { width: 42px; height: 42px; stroke: var(--accent-orange); fill: none; stroke-width: 1.5; margin-bottom: 0.8rem; stroke-linecap: round; stroke-linejoin: round; }
         .module-card h3 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0; color: var(--text-main); font-weight: 700; }
 
-        /* ==========================================================================
-           4. FORM UI
-           ========================================================================== */
         .module-toolbar { display: flex; align-items: center; margin-bottom: 2rem; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); justify-content: space-between; }
         .back-btn { background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; margin-left: -0.5rem; transition: color 0.2s; font-weight: 600; }
         .back-btn:hover { color: var(--accent-orange); }
@@ -90,11 +77,6 @@
         .warning-text { color: var(--error-red); font-size: 0.85rem; margin-top: 0.5rem; display: none; font-weight: bold; align-items: center; gap: 5px; }
         .warning-text svg { width: 16px; height: 16px; stroke: var(--error-red); fill: none; stroke-width: 2; }
 
-        .val-group { display: flex; gap: 10px; align-items: stretch; margin-bottom: 1rem; }
-
-        /* ==========================================================================
-           5. BUTTONS & CONTROLS
-           ========================================================================== */
         .btn { padding: 1rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; font-size: 0.95rem; display: inline-flex; justify-content: center; align-items: center; gap: 0.5rem; }
         .btn:active { transform: scale(0.98); }
         .btn.primary { background-color: var(--accent-orange); color: #fff; width: 100%; justify-content: center;}
@@ -102,16 +84,13 @@
         .btn.secondary { background-color: transparent; border: 2px solid var(--text-muted); color: var(--text-muted); font-weight: 700; width: 100%; }
         .btn.secondary:hover { border-color: var(--text-main); color: var(--text-main); }
         .btn.danger { background-color: transparent; border: 2px solid var(--error-red); color: var(--error-red); font-weight: 700; width: 100%; }
-        .btn.danger:hover { background-color: var(--error-red); color: #fff; }
+        .btn.danger:hover { background-color: var(--error-red); color: #fff; border-color: var(--error-red); }
         .btn.whatsapp { background-color: var(--success-green); color: #fff; width: 100%; justify-content: center;}
         .btn.whatsapp:hover { box-shadow: 0 4px 15px rgba(37,211,102,0.3); }
         
         .action-row { display: flex; gap: 1rem; margin-top: 2rem; }
         .action-row .btn { flex: 1; }
 
-        /* ==========================================================================
-           6. VERIFICATION (CAMERA & SIG)
-           ========================================================================== */
         .step-container { display: none; animation: fadeIn 0.3s ease-in-out; }
         .step-container.active-step { display: block; }
         .step-indicator { margin-bottom: 1.5rem; color: var(--accent-orange); font-weight: 800; text-align: center; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; border: 1px dashed var(--border-color); padding: 10px; border-radius: 8px; background: var(--bg-main); }
@@ -123,9 +102,6 @@
         .signature-container { width: 100%; margin-top: 1rem; text-align: center; }
         .signature-pad { border: 2px solid var(--accent-orange); border-radius: 8px; background-color: #ffffff; cursor: crosshair; touch-action: none; width: 100%; max-width: 450px; height: 150px; display: block; margin: 0 auto 1rem auto; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05); }
 
-        /* ==========================================================================
-           7. MODULE SPECIFICS (CALENDAR, RECEIPTS, ETC)
-           ========================================================================== */
         #reAdmissionSection { background: var(--bg-main); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px dashed var(--accent-orange); display: none; animation: fadeIn 0.3s ease; }
         .tariff-row { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .tariff-month-name { font-weight: 800; color: var(--accent-orange); margin-bottom: 1rem; font-size: 1.1rem; text-transform: uppercase; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
@@ -140,34 +116,33 @@
         .calendar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 1rem; }
         .cal-month { padding: 15px 5px; border-radius: 8px; text-align: center; border: 2px solid transparent; cursor: pointer; color: #fff; transition: transform 0.2s; }
         .cal-month:hover { transform: scale(1.05); }
-        .cal-month h4 { font-size: 0.9rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .cal-month h4 { font-size: 0.9rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; color: #fff;}
         .cal-month p { font-size: 0.75rem; font-weight: bold; line-height: 1.4; margin: 0; }
         
         .status-paid { background: var(--success-green); border-color: #1b9f4a; }
         .status-partial { background: var(--warning-yellow); border-color: #c87f0a; color: #000; }
         .status-unpaid { background: var(--error-red); border-color: #a72424; }
+        .status-na { background: transparent; border: 2px dashed var(--border-color); cursor: not-allowed; }
+        .status-na h4 { color: var(--text-muted); }
+        .status-na p { color: var(--text-muted); font-weight: normal; }
+        .status-na:hover { transform: none; }
 
         .profile-snippet { display: flex; gap: 1rem; align-items: center; background: var(--bg-main); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid var(--border-color); }
         .profile-snippet img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-orange); }
         .profile-snippet-info h3 { margin: 0 0 5px 0; color: var(--accent-orange); }
         .profile-snippet-info p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
 
-        /* ==========================================================================
-           8. MODALS & RECEIPTS
-           ========================================================================== */
+        /* MODALS */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 1000; padding: 1rem; overflow-y: auto; }
         .modal-content { background-color: var(--bg-panel); padding: clamp(1.5rem, 5vw, 3rem); border-radius: 16px; text-align: center; border: 2px solid var(--accent-orange); max-width: 450px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.2); animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin: auto; }
-        
         .checkmark-circle { width: 80px; height: 80px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; background: rgba(37, 211, 102, 0.1); border: 4px solid var(--success-green); margin: 0 auto 1.5rem auto; }
         .checkmark-icon svg { width: 40px; height: 40px; stroke: var(--success-green); fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
-        
         .orange-text { color: var(--accent-orange); margin: 1rem 0; font-size: 1.5rem; text-transform: uppercase; font-weight: 900; }
         .admission-badge { background-color: var(--bg-main); padding: 1.2rem; font-size: 2.2rem; font-weight: 900; letter-spacing: 2px; color: var(--text-main); border: 2px dashed var(--accent-orange); border-radius: 8px; margin: 1.5rem 0; display: inline-block; width: 100%; }
         
-        /* Modal actions explicitly stacked */
         .modal-actions { display: flex; flex-direction: column; width: 100%; gap: 10px; align-items: stretch; margin-top: 1rem; }
-        .modal-actions .btn { width: 100%; }
 
+        /* Receipts & Hidden Render */
         #receipt-render-zone { position: absolute; left: -9999px; top: 0; }
         #receipt-template { width: 400px; padding: 25px; background: #ffffff; border: 3px solid var(--accent-orange); font-family: 'Segoe UI', Arial, sans-serif; color: #111; box-sizing: border-box; }
         .rcpt-header { text-align: center; border-bottom: 2px dashed #ccc; padding-bottom: 15px; margin-bottom: 15px; }
@@ -179,15 +154,7 @@
         .rcpt-amount-box { margin-top: 20px; padding: 15px; background: #fdfdfd; border-radius: 8px; border: 1px solid #eee; }
         .rcpt-footer { text-align: center; font-size: 11px; color: #888; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; }
 
-        @media(max-width: 768px) {
-            .form-row { flex-direction: column; gap: 1rem; margin-bottom: 1rem; }
-            .view-section { padding: 1.5rem 1rem; }
-            .form-layout { padding: 1.5rem; border: none; box-shadow: none; background: transparent; }
-            .btn { padding: 0.9rem 1.5rem; }
-            .val-group { flex-direction: column; }
-        }
-
-        /* Hidden PDF Area */
+        /* PDF Temp Wrapper */
         #pdf-template-wrapper { display: none; background: #e0e0e0; min-height: 100vh; width: 100vw; padding: 20px; justify-content: center; }
         #pdf-template { background: #ffffff; color: #111111; width: 210mm; height: 296mm; padding: 12mm 15mm; box-sizing: border-box; font-family: 'Helvetica', 'Arial', sans-serif; position: relative; overflow: hidden; display: flex; flex-direction: column; }
         .pdf-flex-between { display: flex; justify-content: space-between; align-items: flex-end; }
@@ -214,6 +181,16 @@
         .pdf-rules-list strong { display: block; font-size: 9.5px; color: #000; }
         .pdf-rules-list em { display: block; font-style: normal; color: #444; font-size: 9.5px; }
         .pdf-footer { margin-top: auto; border-top: 1px solid var(--accent-orange); padding-top: 10px; text-align: center; font-size: 9px; color: #555; font-weight: 600; }
+
+        @media(max-width: 768px) {
+            .form-row { flex-direction: column; gap: 1rem; margin-bottom: 1rem; }
+            .view-section { padding: 1.5rem 1rem; }
+            .form-layout { padding: 1.5rem; border: none; box-shadow: none; background: transparent; }
+            .btn { padding: 0.9rem 1.5rem; }
+            .profile-snippet { flex-direction: column; text-align: center; }
+            .profile-snippet img { width: 90px; height: 90px; }
+            #hub-actions { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -305,7 +282,7 @@
             </div>
         </main>
 
-        <!-- USER SEARCH & HUB -->
+        <!-- USER SEARCH & HUB (Handles Details & Fee) -->
         <main id="view-user-search" class="view-section">
             <div class="form-layout" style="max-width: 500px;">
                 <div class="module-toolbar">
@@ -346,10 +323,10 @@
                         <p><strong id="hub-id" style="color:var(--text-main);">REV-0000</strong> | <span id="hub-phone">9999999999</span></p>
                         <p id="hub-details" style="margin-top:5px;">Regular - Individual</p>
                     </div>
-                    <div id="hub-actions" style="display:flex; flex-direction:column; gap:0.5rem;">
-                        <button class="btn secondary" onclick="moduleContext.editUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Edit Profile</button>
-                        <button class="btn secondary" onclick="moduleContext.regeneratePdf()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Re-Download PDF</button>
-                        <button class="btn danger admin-only" onclick="moduleContext.deleteUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Delete User</button>
+                    <div id="hub-actions" style="display:flex; flex-direction:column; gap:0.5rem; width:100%; max-width:200px;">
+                        <button id="btn-hub-edit" class="btn secondary" onclick="moduleContext.editUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Edit Profile</button>
+                        <button id="btn-hub-pdf" class="btn secondary" onclick="moduleContext.regeneratePdf()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Re-Download PDF</button>
+                        <button id="btn-hub-delete" class="btn danger" onclick="moduleContext.deleteUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Delete User</button>
                     </div>
                 </div>
 
@@ -401,7 +378,6 @@
                 
                 <form id="admissionForm">
                     
-                    <!-- STEP 1: Details -->
                     <div id="step-1" class="step-container active-step">
                         <div class="step-indicator" id="step-1-ind">Step 1 of 3: Member Details</div>
                         
@@ -419,12 +395,12 @@
                             </div>
                         </div>
 
-                        <!-- Dynamic Re-Admission Section -->
+                        <!-- Fixed Re-Admission Layout -->
                         <div id="reAdmissionSection">
-                            <label style="color: var(--accent-orange);">Validate Previous Registration</label>
-                            <div class="val-group">
-                                <input type="tel" id="prevPhoneInput" placeholder="Enter previous registered phone number" pattern="\d{10}" maxlength="10" style="flex:1;">
-                                <button type="button" id="btn-validate-readmission" class="btn secondary">Validate</button>
+                            <label style="color: var(--accent-orange); margin-bottom: 0.5rem; display: block;">Validate Previous Registration</label>
+                            <div style="display: flex; gap: 10px; width: 100%; margin-bottom: 1rem;">
+                                <input type="tel" id="prevPhoneInput" placeholder="10-digit number" pattern="\d{10}" maxlength="10" style="flex: 1; min-width: 0;">
+                                <button type="button" id="btn-validate-readmission" class="btn secondary" style="width: auto; white-space: nowrap;">Validate</button>
                             </div>
                             <div id="validationResultBox" style="display:none; font-size: 0.9rem; line-height: 1.5; padding: 1rem; background: var(--bg-panel); border-radius: 6px; border: 1px solid var(--border-color);"></div>
                         </div>
@@ -492,7 +468,6 @@
                         </div>
                     </div>
 
-                    <!-- STEP 2: Verification -->
                     <div id="step-2" class="step-container">
                         <div class="step-indicator" id="step-2-ind">Step 2 of 3: Digital Verification</div>
                         
@@ -507,10 +482,10 @@
                                 <img id="selfie-preview" style="display:none;" />
                             </div>
                             <div class="control-btns">
-                                <button type="button" id="btn-start-camera" class="btn secondary">Open Camera</button>
-                                <button type="button" id="btn-switch-camera" class="btn secondary" style="display:none;">Switch Camera</button>
-                                <button type="button" id="btn-capture" class="btn primary" style="display:none;">Capture Photo</button>
-                                <button type="button" id="btn-retake" class="btn secondary" style="display:none;">Retake Photo</button>
+                                <button type="button" id="btn-start-camera" class="btn secondary" style="width: 100%;">Open Camera</button>
+                                <button type="button" id="btn-switch-camera" class="btn secondary" style="display:none; width: 100%;">Switch Camera</button>
+                                <button type="button" id="btn-capture" class="btn primary" style="display:none; width: 100%;">Capture Photo</button>
+                                <button type="button" id="btn-retake" class="btn secondary" style="display:none; width: 100%;">Retake Photo</button>
                             </div>
                             <input type="hidden" id="selfie-data" required>
                         </div>
@@ -531,7 +506,6 @@
                         </div>
                     </div>
 
-                    <!-- STEP 3: Payment UI (Hidden in Edit Mode) -->
                     <div id="step-3" class="step-container">
                         <div class="step-indicator">Step 3 of 3: Initial Payment Validation</div>
                         
@@ -578,7 +552,6 @@
                     <p style="margin-bottom: 5px;"><strong>Already Paid:</strong> ₹<span id="pay-already-paid"></span></p>
                     <p style="color:var(--error-red); font-size:1.1rem; margin-top:10px;"><strong>Balance Left: ₹<span id="pay-balance"></span></strong></p>
                 </div>
-                
                 <div class="form-group">
                     <label>Amount Paying Now (₹) <span class="required">*</span></label>
                     <input type="number" id="pay-amount-now" min="1" required>
@@ -590,11 +563,9 @@
                         <option value="CASH">Cash Payment</option>
                     </select>
                 </div>
-
                 <div id="pay-upi-section" style="text-align:center; margin: 1rem 0; display:none;">
                     <div class="qr-wrapper"><img id="pay-upi-qr" src="" style="width:150px; height:150px;"></div>
                 </div>
-
                 <div class="action-row">
                     <button type="button" id="btn-cancel-pay" class="btn secondary">Cancel</button>
                     <button type="button" id="btn-confirm-pay" class="btn primary">Confirm</button>
@@ -621,10 +592,10 @@
                     <button id="btn-whatsapp-welcome" class="btn whatsapp">2. Send Welcome Message</button>
                     <button id="btn-whatsapp-pdf" class="btn whatsapp">3. Share PDF Record</button>
                 </div>
-                <div class="modal-actions" id="sm-edit-actions" style="display:none; margin-top:1rem;">
-                    <button class="btn secondary" onclick="appContext.goHome()">Return to Dashboard</button>
+                <div class="modal-actions" id="sm-edit-actions" style="display:none;">
+                    <button class="btn primary" onclick="appContext.goHome()">Return to Dashboard</button>
                 </div>
-                <div class="modal-actions" style="margin-top:10px;">
+                <div class="modal-actions">
                     <button class="btn secondary" onclick="appContext.closeModal()">Close</button>
                 </div>
             </div>
@@ -634,112 +605,21 @@
             <div class="modal-content">
                 <div class="checkmark-circle"><div class="checkmark-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div></div>
                 <h2 class="orange-text">Payment Recorded!</h2>
-                <p>Receipt has been generated.</p>
-                <div class="modal-actions" style="margin-top:2rem;">
-                    <button id="btn-share-receipt" class="btn whatsapp">Share Receipt Image</button>
-                    <button class="btn secondary" onclick="appContext.switchView('user-hub')">Close</button>
+                <p style="margin-bottom: 1.5rem;">Receipt has been successfully generated.</p>
+                <div class="modal-actions">
+                    <button id="btn-share-receipt" class="btn whatsapp">Share Receipt via WhatsApp</button>
+                    <button class="btn secondary" onclick="appContext.switchView('user-hub')">Return to Profile</button>
                 </div>
             </div>
         </div>
     </div> <!-- END APP WRAPPER -->
 
-    <!-- =======================================================================
-         HIDDEN GENERATION TEMPLATES (PDF & RECEIPT)
-         ======================================================================= -->
-    <div id="pdf-template-wrapper">
-        <div id="pdf-template">
-            <div class="pdf-flex-between pdf-border-bottom">
-                <div><img src="logo.png" alt="REVIVE FITNESS STUDIO" class="pdf-logo" onerror="this.src='https://via.placeholder.com/150x45/ffffff/ff6600?text=REVIVE+FITNESS'"></div>
-                <div style="text-align:right; font-weight:bold; font-size:12px; line-height:1.3;">OFFICIAL MEMBER<br>ADMISSION</div>
-            </div>
-            <div class="pdf-meta-box"><span>ADMISSION ID: <span id="pdf-id" style="color:var(--accent-orange);"></span></span><span>REGISTRATION DATE: <span id="pdf-date"></span></span></div>
-            <div class="pdf-data-row">
-                <div style="flex: 0 0 120px;"><img id="pdf-photo" class="pdf-photo" src="" alt="Member Photo"></div>
-                <div style="flex: 1;">
-                    <table class="pdf-table">
-                        <tr><th>FULL NAME</th><td id="pdf-name"></td></tr>
-                        <tr><th>ADMISSION DETAILS</th><td id="pdf-admission-details"></td></tr>
-                        <tr><th>TRAINING CATEGORY</th><td id="pdf-training-category"></td></tr>
-                        <tr><th>PRIMARY CONTACT</th><td id="pdf-contact1"></td></tr>
-                        <tr><th>ALTERNATE CONTACT</th><td id="pdf-contact2"></td></tr>
-                        <tr><th>DATE OF BIRTH & AGE</th><td id="pdf-dob-age"></td></tr>
-                        <tr><th>RESIDENTIAL ADDRESS</th><td id="pdf-address"></td></tr>
-                    </table>
-                </div>
-            </div>
-            <div class="pdf-declaration">
-                <h4>DECLARATION</h4>
-                <p>I hereby declare that the details furnished above are true and correct to the best of my knowledge. I agree to abide by the rules, regulations, and disciplinary guidelines of Revive Fitness. I understand that the membership is non-transferable and fees are non-refundable. I acknowledge that physical exercise involves inherent risks and I participate at my own risk.</p>
-            </div>
-            <div class="pdf-sigs-container">
-                <div class="pdf-sig-block">
-                    <div class="pdf-sig-image-box"><img id="pdf-member-sig" src="" alt="Member Signature" style="display:none;"></div>
-                    <div class="pdf-sig-line">MEMBER SIGNATURE</div>
-                    <div class="pdf-sig-meta"><strong>Verified by:</strong> <span id="member-verified"></span><br><strong>Timestamp:</strong> <span id="member-timestamp"></span><br><strong>Location:</strong> <span id="member-location"></span></div>
-                </div>
-                <div class="pdf-sig-block">
-                    <div class="pdf-sig-image-box"><img src="signature.png" alt="Authorized Signature" onerror="this.style.display='none'"></div>
-                    <div class="pdf-sig-line">AUTHORIZED SIGNATURE</div>
-                    <div class="pdf-sig-meta"><strong>Verified by:</strong> Revive System Admin<br><strong>Timestamp:</strong> <span id="official-timestamp"></span><br><strong>Location:</strong> Revive Fitness Studio H.O</div>
-                </div>
-            </div>
-            <div class="pdf-rules-container">
-                <h3>RULES & REGULATIONS / നിബന്ധനകൾ</h3>
-                <ol class="pdf-rules-list">
-                    <li><strong>Members must strictly observe discipline.</strong><em>അംഗങ്ങൾ കർശനമായി അച്ചടക്കം പാലിക്കേണ്ടതാണ്.</em></li>
-                    <li><strong>Fees must be paid on time. The fee for each month must be paid before the 9th of that month.</strong><em>ഫീസ് കൃത്യസമയത്ത് അടയ്ക്കേണ്ടതാണ്. എല്ലാ മാസവും 9-ാം തീയതിക്ക് മുമ്പായി അതാത് മാസത്തെ ഫീസ് അടയ്ക്കേണ്ടതാണ്.</em></li>
-                    <li><strong>Equipment must be returned to its proper place after use.</strong><em>ക്ലബ്ബിലെ ഉപകരണങ്ങൾ ഉപയോഗിച്ചതിനുശേഷം യഥാസ്ഥാനങ്ങളിൽ തിരികെ വയ്ക്കേണ്ടതാണ്.</em></li>
-                    <li><strong>Advance fees and monthly fees once paid will not be refunded.</strong><em>ഒരിക്കൽ അടച്ച അഡ്വാൻസ് ഫീസും മാസഫീസും മടക്കിത്തരുന്നതല്ല.</em></li>
-                    <li><strong>Belongings brought to the club must be kept at one's own risk.</strong><em>ക്ലബ്ബിൽ കൊണ്ടുവരുന്ന സാധനങ്ങൾ സ്വന്തം ഉത്തരവാദിത്വത്തിൽ സൂക്ഷിക്കേണ്ടതാണ്.</em></li>
-                    <li><strong>The time of practice and name must be entered accurately in the club's register book every day.</strong><em>പ്രാക്ടീസിനായി വരുന്ന സമയവും പേരും എല്ലാ ദിവസവും ക്ലബ്ബിലെ രജിസ്റ്റർ ബുക്കിൽ കൃത്യമായി രേഖപ്പെടുത്തേണ്ടതാണ്.</em></li>
-                    <li><strong>It is mandatory to use a towel during practice. Practice will not be allowed without a towel.</strong><em>നിർബന്ധമായും ടവ്വൽ ഉപയോഗിച്ച് പ്രാക്ടീസ് ചെയ്യുക. ടവ്വൽ ഇല്ലാത്തപക്ഷം പ്രാക്ടീസ് ചെയ്യാൻ അനുവദിക്കുന്നതല്ല.</em></li>
-                    <li><strong>Workout using a t-shirt and track pants.</strong><em>ടീഷർട്ട്, ട്രാക്ക് പാന്റ് എന്നിവ ഉപയോഗിച്ച് വർക്കൗട്ട് ചെയ്യുക.</em></li>
-                    <li><strong>If absent continuously for 6 months, readmission must be taken.</strong><em>തുടർച്ചയായി 6 മാസം വരാതിരുന്നാൽ തുടർന്ന് റീ അഡ്മിഷൻ എടുക്കേണ്ടി വരുന്നതാണ്.</em></li>
-                    <li><strong>Do not enter the club under the influence of alcohol or drugs. If found, membership will be cancelled.</strong><em>ലഹരി കഴിച്ചുകൊണ്ട് ക്ലബ്ബിൽ പ്രവേശിക്കാൻ പാടില്ല. അങ്ങനെ കണ്ടെത്തിയാൽ അംഗത്വം റദ്ദ് ചെയ്യുന്നതായിരിക്കും.</em></li>
-                    <li><strong>Management is not responsible for any accidents during training.</strong><em>പരിശീലനത്തിനിടയിൽ ഉണ്ടാകുന്ന അത്യാഹിതങ്ങൾക്ക് മാനേജ്മെന്റിന് യാതൊരു ഉത്തരവാദിത്വവും ഉണ്ടായിരിക്കുന്നതല്ല.</em></li>
-                    <li><strong>Members are fully responsible for any damages caused to the club by them.</strong><em>അംഗങ്ങൾമൂലം ക്ലബ്ബിൽ ഉണ്ടാകുന്ന നാശനഷ്ടങ്ങളുടെ പൂർണ്ണ ഉത്തരവാദിത്വം അതത് അംഗങ്ങൾക്ക് തന്നെയായിരിക്കും.</em></li>
-                    <li><strong>Those with any confirmed medical conditions must produce a full medical clearance certificate from a doctor.</strong><em>വൈദ്യശാസ്ത്രപരമായ ഏതെങ്കിലും രോഗം ഉള്ളതായി സ്ഥിരീകരിക്കപ്പെട്ടിട്ടുള്ളവർ ഡോക്ടറുടെ പൂർണ്ണ ആരോഗ്യ സർട്ടിഫിക്കറ്റ് ഹാജരാക്കേണ്ടതാണ്.</em></li>
-                    <li><strong>Ensure that all the above conditions are read, understood, and acceptable. Applicable to everyone.</strong><em>മേൽപ്പറഞ്ഞ നിബന്ധനകൾ എല്ലാം വായിച്ചു ബോധ്യപ്പെടുകയും അവയെല്ലാം സ്വീകാര്യവുമാണെന്ന് ഉറപ്പ് വരുത്തുക. മുകളിൽ പറഞ്ഞ വസ്തുതകൾ എല്ലാവർക്കും ബാധകം.</em></li>
-                </ol>
-            </div>
-            <div class="pdf-footer">Address: Kadayil Arcade, Thanal Nagar, Keralapuram, Keralam 691504 | Contact no: 8921698044</div>
-        </div>
-    </div>
-
-    <!-- Receipt Generator -->
-    <div id="receipt-render-zone">
-        <div id="receipt-template">
-            <div class="rcpt-header">
-                <img src="logo.png" onerror="this.style.display='none'">
-                <div class="rcpt-address">Kadayil Arcade, Thanal Nagar, Keralapuram, Keralam 691504<br>Ph: 8921698044</div>
-                <h3 class="rcpt-title">PAYMENT RECEIPT</h3>
-            </div>
-            <table class="rcpt-table">
-                <tr><td><strong>Member Name:</strong></td><td id="rcpt-name" style="text-align:right;"></td></tr>
-                <tr><td><strong>Admission No:</strong></td><td id="rcpt-id" style="text-align:right;"></td></tr>
-                <tr><td><strong>Phone:</strong></td><td id="rcpt-phone" style="text-align:right;"></td></tr>
-                <tr><td><strong>Month Paid For:</strong></td><td id="rcpt-month" style="text-align:right; font-weight:bold; color:var(--accent-orange);"></td></tr>
-            </table>
-            <div class="rcpt-amount-box">
-                <table style="width: 100%; font-size: 14px; line-height:2;">
-                    <tr><td><strong>Amount Paid:</strong></td><td style="text-align: right; color: green; font-weight: 900; font-size:16px;">₹<span id="rcpt-paid"></span></td></tr>
-                    <tr><td><strong>Balance Due:</strong></td><td style="text-align: right; color: red; font-weight: bold;">₹<span id="rcpt-balance"></span></td></tr>
-                    <tr><td><strong>Payment Mode:</strong></td><td style="text-align: right; font-weight:bold;" id="rcpt-mode"></td></tr>
-                </table>
-            </div>
-            <div class="rcpt-footer">Generated on <span id="rcpt-date"></span><br>Thank you for choosing Revive!</div>
-        </div>
-    </div>
-
-    <!-- =======================================================================
-         JAVASCRIPT ENGINE
-         ======================================================================= -->
+    <!-- JAVASCRIPT ENGINE -->
     <script>
-        // CONFIG
         const APP_CONFIG = { upiId: "revivefitness@upi", baseAdmissionFee: 850, baseMonthlyFee: 800, basePTFee: 1500 };
         const tariffMonthsOrder = ['April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March'];
+        const tariffMonthIndices = [3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2]; // Apr(3) to Mar(2)
         
-        // GLOBALS
         let userLocationStr = "Location details unavailable";
         let isAgeValid = false;
         let currentMemberDetails = {};
@@ -749,8 +629,8 @@
         let activePaymentConfig = null; 
         let currentGeneratedReceiptBlob = null; 
         let IS_EDIT_MODE = false;
+        let currentHubMode = 'details'; // 'fee' or 'details'
 
-        // APP CONTEXT
         window.appContext = {
             currentRole: null, pendingRole: null, 
             switchView: function(viewName) {
@@ -813,7 +693,6 @@
             }
         };
 
-        // MODULE CONTEXT
         window.moduleContext = {
             initUpiEditor: function() { document.getElementById('admin-upi-id').value = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId; },
             saveUpi: function() {
@@ -860,7 +739,9 @@
                 localStorage.setItem('revive_tariffs', JSON.stringify(db));
                 alert(`Tariffs for ${fy} saved.`);
             },
+            
             openUserSearch: function(mode) {
+                currentHubMode = mode;
                 const fySelect = document.getElementById('search-fy');
                 const currYear = new Date().getFullYear(); fySelect.innerHTML = '';
                 for(let i = -1; i <= 1; i++) {
@@ -868,6 +749,7 @@
                     if(i === 0) opt.selected = true; fySelect.appendChild(opt);
                 }
                 document.getElementById('search-phone').value = '';
+                document.getElementById('search-title').innerText = mode === 'fee' ? "Search for Fee Collection" : "Search User Details";
                 window.appContext.switchView('user-search');
             },
             fetchUserHub: function(e) {
@@ -888,19 +770,49 @@
                 document.getElementById('hub-details').innerText = `${user.admissionCategory} - ${user.trainingCategory}`;
                 document.getElementById('hub-fy-label').innerText = fy;
                 
-                this.renderFeeCalendar(user.id, fy, user.trainingCategory);
+                // Configure UI based on Entry Path
+                if (currentHubMode === 'fee') {
+                    document.getElementById('hub-actions').style.display = 'none';
+                    document.getElementById('hub-instruction').style.display = 'block';
+                } else {
+                    document.getElementById('hub-actions').style.display = 'flex';
+                    document.getElementById('hub-instruction').style.display = 'none';
+                    document.getElementById('btn-hub-edit').style.display = 'flex'; 
+                    document.getElementById('btn-hub-pdf').style.display = window.appContext.currentRole === 'admin' ? 'flex' : 'none';
+                    document.getElementById('btn-hub-delete').style.display = window.appContext.currentRole === 'admin' ? 'flex' : 'none';
+                }
+                
+                this.renderFeeCalendar(user.id, fy, user.trainingCategory, user.date);
                 window.appContext.switchView('user-hub');
             },
-            renderFeeCalendar: function(userId, fy, trainCat) {
+            renderFeeCalendar: function(userId, fy, trainCat, adDateStr) {
                 const grid = document.getElementById('fee-calendar'); grid.innerHTML = '';
                 const paymentsDb = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
                 const userFyData = (paymentsDb[userId] && paymentsDb[userId][fy]) ? paymentsDb[userId][fy] : {};
                 const tariffDb = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
                 const fyTariffs = tariffDb[fy] || {};
 
-                tariffMonthsOrder.forEach(month => {
+                // Parse Admission Date
+                const p = adDateStr.split('-');
+                const adScore = parseInt(p[2]) * 100 + (parseInt(p[1]) - 1); 
+                const fyStartYear = parseInt(fy.split('-')[0]);
+
+                tariffMonthsOrder.forEach((month, index) => {
+                    const monthIdx = tariffMonthIndices[index]; 
+                    const mYear = monthIdx >= 3 ? fyStartYear : fyStartYear + 1;
+                    const mScore = mYear * 100 + monthIdx;
+
+                    if (mScore < adScore) {
+                        grid.innerHTML += `<div class="cal-month status-na"><h4>${month}</h4><p>N/A</p></div>`;
+                        return;
+                    }
+
                     const record = userFyData[month];
-                    let statusClass = 'status-unpaid'; let displayAmt = ''; let action = `onclick="window.moduleContext.initPayment('${month}', '${fy}')"`;
+                    let statusClass = 'status-unpaid'; let displayAmt = ''; let action = '';
+
+                    if (currentHubMode === 'fee') {
+                        action = `onclick="window.moduleContext.initPayment('${month}', '${fy}')"`;
+                    }
 
                     if (record) {
                         if (record.status === 'Paid') { statusClass = 'status-paid'; displayAmt = `Paid: ₹${record.amountPaid}`; action = ''; } 
@@ -964,7 +876,7 @@
                 document.getElementById('paymentProcessModal').style.display = 'none';
                 
                 this.generateReceiptImage(payAmt, activePaymentConfig.balance - payAmt, method);
-                this.renderFeeCalendar(currentActiveUser.id, activePaymentConfig.fy, currentActiveUser.trainingCategory);
+                this.renderFeeCalendar(currentActiveUser.id, activePaymentConfig.fy, currentActiveUser.trainingCategory, currentActiveUser.date);
             },
             generateReceiptImage: function(paidAmt, newBal, mode) {
                 const now = new Date(); const dStr = now.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
@@ -995,8 +907,9 @@
                     if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ title: 'Payment Receipt', text: msg, files: [file] }); } 
                     else { alert("Native share unsupported. Opening WhatsApp."); window.open(`https://api.whatsapp.com/send?phone=91${currentActiveUser.primaryContact}&text=${encodeURIComponent(msg)}`, '_blank'); }
                 } catch(e) { console.error(e); }
-                finally { btn.innerText = "Share Receipt via WhatsApp"; document.getElementById('receiptSuccessModal').style.display = 'none'; }
+                finally { btn.innerText = "Share Receipt Image"; document.getElementById('receiptSuccessModal').style.display = 'none'; }
             },
+            
             editUser: function() {
                 IS_EDIT_MODE = true; const u = currentActiveUser;
                 document.getElementById('form-main-title').innerText = "Edit Member Details";
@@ -1021,6 +934,7 @@
                     prev.src = u.photo; prev.style.display = 'block';
                     document.querySelector('.camera-placeholder').style.display = 'none';
                     document.getElementById('btn-start-camera').style.display = 'none';
+                    document.getElementById('btn-switch-camera').style.display = 'none';
                     document.getElementById('btn-retake').style.display = 'inline-flex';
                 }
                 window.appContext.switchView('admission');
@@ -1238,10 +1152,7 @@
                 let payDb = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
                 if(!payDb[currentMemberDetails.id]) payDb[currentMemberDetails.id] = {};
                 if(!payDb[currentMemberDetails.id][currentMemberDetails._fy]) payDb[currentMemberDetails.id][currentMemberDetails._fy] = {};
-                
-                payDb[currentMemberDetails.id][currentMemberDetails._fy][currentMemberDetails._month] = {
-                    totalDue: calculatedTotalFee, amountPaid: calculatedTotalFee, status: 'Paid', lastDate: new Date().toISOString()
-                };
+                payDb[currentMemberDetails.id][currentMemberDetails._fy][currentMemberDetails._month] = { totalDue: calculatedTotalFee, amountPaid: calculatedTotalFee, status: 'Paid', lastDate: new Date().toISOString() };
                 localStorage.setItem('revive_payments_db', JSON.stringify(payDb));
 
                 const currentCount = parseInt(preAdmissionId.split('-')[1]);
