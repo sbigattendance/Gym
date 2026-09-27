@@ -10,7 +10,7 @@
     
     <style>
         /* ==========================================================================
-           1. CSS VARIABLES & RESET (Light Theme Match for Logo)
+           1. CSS VARIABLES & RESET
            ========================================================================== */
         :root {
             --bg-main: #f4f7f6;
@@ -125,7 +125,6 @@
             margin-bottom: 1.5rem; border: 1px dashed var(--accent-orange); display: none; animation: fadeIn 0.3s ease;
         }
 
-        /* Tariff Editor UI */
         .tariff-row {
             background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
@@ -340,9 +339,37 @@
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                     <h3>Tariff Editor</h3>
                 </div>
+                <!-- Admin Only UPI Editor -->
+                <div class="module-card" id="card-upi" onclick="appContext.switchView('upi-editor')">
+                    <svg class="module-icon-svg" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+                    <h3>UPI Account Detail</h3>
+                </div>
             </div>
             <div style="text-align: center; margin-top: 3rem;">
                 <button class="btn secondary" onclick="appContext.logout()" style="font-size: 0.85rem; padding: 0.8rem 2rem;">Log Out Securely</button>
+            </div>
+        </main>
+
+        <!-- UPI ACCOUNT EDITOR VIEW -->
+        <main id="view-upi-editor" class="view-section">
+            <div class="form-layout" style="max-width: 600px;">
+                <div class="module-toolbar">
+                    <button class="back-btn" onclick="appContext.goHome()" type="button">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                        Back
+                    </button>
+                    <h2 class="module-title">UPI Account Detail</h2>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="admin-upi-id">Linked UPI ID <span class="required">*</span></label>
+                        <input type="text" id="admin-upi-id" placeholder="e.g. revivefitness@upi" required>
+                    </div>
+                </div>
+                <div class="action-row">
+                    <button type="button" id="btn-save-upi" class="btn primary">Save UPI ID</button>
+                </div>
             </div>
         </main>
 
@@ -673,12 +700,11 @@
          JAVASCRIPT ENGINE
          ======================================================================= -->
     <script>
-        // CONFIGURABLE SYSTEM DEFAULTS
         const APP_CONFIG = {
-            upiId: "revivefitness@upi", 
+            upiId: "revivefitness@upi", // Default fallback
             baseAdmissionFee: 850,
             baseMonthlyFee: 800,
-            basePTFee: 1500 // Default if missing in Tariff Editor
+            basePTFee: 1500 
         };
 
         const appContext = {
@@ -690,6 +716,7 @@
                 const target = document.getElementById(`view-${viewName}`);
                 if(target) { target.classList.add('active-view'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
                 if(viewName === 'tariff-editor') initTariffEditor();
+                if(viewName === 'upi-editor') initUpiEditor();
             },
             
             goHome: function() {
@@ -727,9 +754,9 @@
             
             loadDashboard: function(roleTitle) {
                 document.getElementById('dashboard-title').innerHTML = `${roleTitle} <span>PORTAL</span>`;
-                // Show Admin-only modules
                 document.getElementById('card-reports').style.display = this.currentRole === 'admin' ? 'flex' : 'none';
                 document.getElementById('card-tariff').style.display = this.currentRole === 'admin' ? 'flex' : 'none';
+                document.getElementById('card-upi').style.display = this.currentRole === 'admin' ? 'flex' : 'none';
                 this.switchView('dashboard');
             },
             
@@ -765,6 +792,23 @@
 
         document.getElementById('loginForm').addEventListener('submit', function(e) { appContext.handleLogin(e); });
 
+        // UPI EDITOR LOGIC
+        function initUpiEditor() {
+            const storedUpi = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId;
+            document.getElementById('admin-upi-id').value = storedUpi;
+        }
+
+        document.getElementById('btn-save-upi').addEventListener('click', () => {
+            const newUpi = document.getElementById('admin-upi-id').value.trim();
+            if(newUpi) {
+                localStorage.setItem('revive_upi_id', newUpi);
+                alert("UPI ID saved successfully.");
+                appContext.goHome();
+            } else {
+                alert("Please enter a valid UPI ID.");
+            }
+        });
+
         // TARIFF EDITOR LOGIC
         const tariffMonthsOrder = ['April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March'];
         
@@ -772,7 +816,6 @@
             const fySelect = document.getElementById('fy-select');
             const container = document.getElementById('tariff-months-container');
             
-            // Build FY Dropdown
             const currentYear = new Date().getFullYear();
             fySelect.innerHTML = '';
             for(let i = -1; i <= 2; i++) {
@@ -784,7 +827,6 @@
                 fySelect.appendChild(option);
             }
 
-            // Build Month Rows
             container.innerHTML = '';
             tariffMonthsOrder.forEach(month => {
                 const row = document.createElement('div');
@@ -844,9 +886,7 @@
         });
 
 
-        // ---------------------------------------------------------------------
         // ADMISSION LOGIC
-        // ---------------------------------------------------------------------
         let userLocationStr = "Location details unavailable";
         let isAgeValid = false;
         let currentMemberDetails = {};
@@ -1096,7 +1136,7 @@
             sigCanvas.addEventListener('touchmove', draw, {passive: false});
             sigCanvas.addEventListener('touchend', endDraw);
 
-            // DYNAMIC TARIFF & FEE CALCULATION
+
             document.getElementById('btn-next-step-2').addEventListener('click', () => {
                 if (!selfieData.value) { alert("Portrait capture is mandatory."); return; }
                 if (!signatureHasData) { alert("Digital signature is mandatory."); return; }
@@ -1105,19 +1145,16 @@
                 currentCount = !currentCount ? 1 : parseInt(currentCount) + 1;
                 preAdmissionId = `REV-${String(currentCount).padStart(4, '0')}`;
                 
-                // Parse date & calc logic
                 const adDateVal = document.getElementById('dateOfAdmission').value;
                 const parts = adDateVal.split('-');
                 const adDateObj = new Date(parts[2], parts[1]-1, parts[0]);
                 const monthName = adDateObj.toLocaleString('default', { month: 'long' });
                 
-                // Determine FY
                 const y = adDateObj.getFullYear();
-                const m = adDateObj.getMonth(); // 0 = Jan, 3 = April
+                const m = adDateObj.getMonth(); 
                 let fyStart = m >= 3 ? y : y - 1;
                 let fyString = `${fyStart}-${fyStart + 1}`;
 
-                // Fetch Custom Tariffs
                 const allTariffs = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
                 const monthTariff = (allTariffs[fyString] && allTariffs[fyString][monthName]) ? allTariffs[fyString][monthName] : {
                     admFee: APP_CONFIG.baseAdmissionFee,
@@ -1168,7 +1205,9 @@
                     btnValidatePayment.innerText = 'Validate Payment & Complete';
                     document.getElementById('qr-amount-display').innerText = calculatedTotalFee;
                     
-                    const upiString = `upi://pay?pa=${APP_CONFIG.upiId}&pn=ReviveFitness&am=${calculatedTotalFee}&cu=INR`;
+                    // Fetch dynamic UPI ID
+                    const activeUpiId = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId;
+                    const upiString = `upi://pay?pa=${activeUpiId}&pn=ReviveFitness&am=${calculatedTotalFee}&cu=INR`;
                     document.getElementById('upi-qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
                 } else {
                     upiSection.style.display = 'none';
