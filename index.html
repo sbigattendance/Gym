@@ -70,9 +70,9 @@
         
         .compact-grid {
             display: grid;
-            grid-template-columns: 1fr; /* Restored to One-by-One layout */
+            grid-template-columns: 1fr; 
             gap: 1rem;
-            max-width: 400px; /* Constrained width so it doesn't stretch too wide */
+            max-width: 400px; 
             margin: 0 auto;
         }
         
@@ -473,7 +473,8 @@
                 <div class="admission-badge" id="generated-id">REV-0000</div>
                 <div class="modal-actions">
                     <button id="btn-download-pdf" class="btn primary">1. Download PDF Record</button>
-                    <button id="btn-whatsapp" class="btn whatsapp">2. Share via WhatsApp</button>
+                    <button id="btn-whatsapp-welcome" class="btn whatsapp">2. Send Welcome Message</button>
+                    <button id="btn-whatsapp-pdf" class="btn whatsapp">3. Share PDF Record</button>
                     <button class="btn secondary" onclick="appContext.closeModal()">Close & Return</button>
                 </div>
             </div>
@@ -610,7 +611,6 @@
             handleLogin: function(e) {
                 e.preventDefault();
                 const pin = document.getElementById('pin-input').value;
-                // Production: Replace hardcoded PINs with secure backend auth
                 if (this.currentRole === 'staff' && pin === '123456') {
                     this.loadDashboard('STAFF');
                 } else if (this.currentRole === 'admin' && pin === '1234') {
@@ -653,7 +653,6 @@
             }
         };
 
-        // Attach login handler
         document.getElementById('loginForm').addEventListener('submit', function(e) { appContext.handleLogin(e); });
 
         let userLocationStr = "Location details unavailable";
@@ -859,10 +858,8 @@
             });
 
             // ---------------------------------------------------------------------
-            // 8. PDF Engine & Action Buttons (Download + Native Web Share API)
+            // 8. PDF Engine & Action Buttons
             // ---------------------------------------------------------------------
-            
-            // Core PDF Blob Generator using DOM Swap
             function getPdfBlob() {
                 return new Promise((resolve, reject) => {
                     const now = new Date();
@@ -925,7 +922,6 @@
                 try {
                     const blob = await getPdfBlob();
                     const url = URL.createObjectURL(blob);
-                    
                     const a = document.createElement('a');
                     a.style.display = 'none';
                     a.href = url;
@@ -937,7 +933,6 @@
                         document.body.removeChild(a);
                         window.URL.revokeObjectURL(url);
                     }, 100);
-                    
                 } catch (err) {
                     alert("Error generating PDF.");
                     console.error(err);
@@ -947,8 +942,16 @@
                 }
             });
 
-            // Native Web Share API (Auto-Attaches PDF to WhatsApp)
-            document.getElementById('btn-whatsapp').addEventListener('click', async function() {
+            // Action 2: WhatsApp Welcome Message
+            document.getElementById('btn-whatsapp-welcome').addEventListener('click', () => {
+                const phone = currentMemberDetails.primaryContact;
+                const welcomeMsg = `🎉 Revive Fitness Studio-ലേക്ക് ഹൃദയം നിറഞ്ഞ സ്വാഗതം! 🏋️‍♂️✨\n\nനിങ്ങളുടെ Fitness Journey-യുടെ പുതിയ തുടക്കത്തിന് ഞങ്ങളോടൊപ്പം ചേർന്നതിൽ സന്തോഷം! 💪\n\nആരോഗ്യവും ഫിറ്റ്നസും ജീവിതത്തിന്റെ ഭാഗമാക്കി, നിങ്ങളുടെ ലക്ഷ്യങ്ങളിലേക്ക് ഓരോ ദിവസവും ഒരു പടി കൂടി മുന്നോട്ട് പോകാൻ Revive Fitness Studio നിങ്ങളോടൊപ്പം ഉണ്ടാകും. ❤️\n\n🔥 Train Better • Stay Strong • Live Healthy\n\nWelcome to the Revive Family! 🤝💪\n— Revive Fitness Studio`;
+                
+                window.open(`https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(welcomeMsg)}`, '_blank');
+            });
+
+            // Action 3: Web Share API for PDF
+            document.getElementById('btn-whatsapp-pdf').addEventListener('click', async function() {
                 const btn = this;
                 btn.innerText = "Preparing Share..."; btn.disabled = true;
 
@@ -975,7 +978,7 @@
                         alert("Error sharing the document.");
                     }
                 } finally {
-                    btn.innerText = "2. Share via WhatsApp"; 
+                    btn.innerText = "3. Share PDF Record"; 
                     btn.disabled = false;
                 }
             });
