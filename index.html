@@ -102,11 +102,11 @@
         .signature-container { width: 100%; margin-top: 1rem; text-align: center; }
         .signature-pad { border: 2px solid var(--accent-orange); border-radius: 8px; background-color: #ffffff; cursor: crosshair; touch-action: none; width: 100%; max-width: 450px; height: 150px; display: block; margin: 0 auto 1rem auto; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05); }
 
-        /* Re-Admission Validation Input Layout Fix */
+        /* Bulletproof Grid Layout for Validation Row */
         #reAdmissionSection { background: var(--bg-main); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px dashed var(--accent-orange); display: none; animation: fadeIn 0.3s ease; }
-        .val-group { display: flex; gap: 10px; align-items: stretch; margin-bottom: 1rem; width: 100%; }
-        .val-group input { flex: 1 1 auto; width: 100%; min-width: 0; margin-bottom: 0 !important; }
-        .val-group button { flex: 0 0 auto; white-space: nowrap; height: 100%; margin-bottom: 0 !important; padding: 1rem 1.5rem; }
+        .val-group { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: stretch; margin-bottom: 1rem; width: 100%; }
+        .val-group input { margin-bottom: 0 !important; width: 100%; }
+        .val-group button { margin-bottom: 0 !important; padding: 0 1.5rem; height: 100%; white-space: nowrap; }
 
         .tariff-row { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .tariff-month-name { font-weight: 800; color: var(--accent-orange); margin-bottom: 1rem; font-size: 1.1rem; text-transform: uppercase; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
@@ -203,7 +203,6 @@
     <div id="app-wrapper">
         <header class="app-header">
             <div class="logo-container" onclick="appContext.goHome()">
-                <!-- Logo matched to the white background -->
                 <img src="logo.png" alt="REVIVE FITNESS STUDIO" onerror="this.src='https://via.placeholder.com/150x40/ffffff/ff6600?text=REVIVE+FITNESS'">
             </div>
         </header>
@@ -240,7 +239,6 @@
                     </button>
                     <h2 class="module-title" id="login-title">Login</h2>
                 </div>
-                <!-- Removed direct submit to avoid crashes; handled by button click in JS -->
                 <form id="loginForm" onsubmit="event.preventDefault(); window.appContext.handleLogin(event);">
                     <div class="form-group">
                         <input type="password" id="pin-input" class="pin-input" inputmode="numeric" required autocomplete="off">
@@ -324,7 +322,6 @@
                 </div>
                 
                 <div class="profile-snippet">
-                    <!-- Photo protected for staff via JS later -->
                     <img id="hub-photo" src="" alt="User Photo">
                     <div class="profile-snippet-info" style="flex:1;">
                         <h3 id="hub-name">John Doe</h3>
@@ -747,390 +744,391 @@
             return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
         }
 
-        window.appContext = {
-            currentRole: null, pendingRole: null, 
-            switchView: function(viewName) {
-                document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
-                const target = document.getElementById(`view-${viewName}`);
-                if(target) { target.classList.add('active-view'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-                if(viewName === 'tariff-editor') window.moduleContext.initTariffEditor();
-                if(viewName === 'upi-editor') window.moduleContext.initUpiEditor();
-                if(viewName !== 'admission') { IS_EDIT_MODE = false; }
-            },
-            goHome: function() {
-                if (document.getElementById('successModal').style.display === 'flex' || document.getElementById('receiptSuccessModal').style.display === 'flex' || document.getElementById('viewReceiptModal').style.display === 'flex') return;
-                if (this.currentRole) this.switchView('dashboard');
-                else { this.pendingRole = null; this.switchView('home'); }
-            },
-            openLogin: function(role) {
-                this.pendingRole = role;
-                document.getElementById('login-title').innerText = role === 'staff' ? 'Staff Login' : 'Admin Login';
-                const pinInput = document.getElementById('pin-input');
-                pinInput.value = ''; pinInput.setAttribute('maxlength', role === 'staff' ? '6' : '4');
-                pinInput.placeholder = role === 'staff' ? '6-Digit PIN' : '4-Digit PIN';
-                this.switchView('login');
-            },
-            handleLogin: function(e) {
-                e.preventDefault();
-                const pin = document.getElementById('pin-input').value;
-                if (this.pendingRole === 'staff' && pin === '123456') { this.currentRole = 'staff'; this.loadDashboard('STAFF'); } 
-                else if (this.pendingRole === 'admin' && pin === '1234') { this.currentRole = 'admin'; this.loadDashboard('ADMIN'); } 
-                else { alert('Invalid PIN. Please try again.'); }
-            },
-            loadDashboard: function(roleTitle) {
-                document.getElementById('dashboard-title').innerHTML = `${roleTitle} <span>PORTAL</span>`;
-                document.querySelectorAll('.admin-only').forEach(el => { el.style.display = this.currentRole === 'admin' ? 'flex' : 'none'; });
-                this.switchView('dashboard');
-            },
-            logout: function() { this.currentRole = null; this.pendingRole = null; this.switchView('home'); },
-            startAdmission: function() {
-                IS_EDIT_MODE = false;
-                document.getElementById('form-main-title').innerText = "Admission Registration";
-                document.getElementById('step-1-ind').innerText = "Step 1 of 3: Member Details";
-                document.getElementById('step-2-ind').innerText = "Step 2 of 3: Digital Verification";
-                document.getElementById('btn-next-step-2').innerText = "Proceed to Payment →";
-                document.getElementById('admissionForm').reset();
-                document.getElementById('selfie-preview').style.display = 'none';
-                document.querySelector('.camera-placeholder').style.display = 'block';
-                document.getElementById('selfie-data').value = '';
-                document.getElementById('signature-pad').getContext('2d').clearRect(0, 0, 450, 150);
-                document.getElementById('reAdmissionSection').style.display = 'none';
-                document.getElementById('validationResultBox').style.display = 'none';
-                document.getElementById('step-3').classList.remove('active-step');
-                document.getElementById('step-2').classList.remove('active-step');
-                document.getElementById('step-1').classList.add('active-step');
-                const today = new Date();
-                document.getElementById('dateOfAdmission').value = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
-                this.switchView('admission');
-            },
-            closeModal: function() {
-                document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
-                this.goHome();
-            }
-        };
+        document.addEventListener('DOMContentLoaded', () => {
 
-        window.moduleContext = {
-            initUpiEditor: function() { document.getElementById('admin-upi-id').value = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId; },
-            saveUpi: function() {
-                const newUpi = document.getElementById('admin-upi-id').value.trim();
-                if(newUpi) { localStorage.setItem('revive_upi_id', newUpi); alert("UPI ID saved."); window.appContext.goHome(); } else alert("Invalid UPI ID.");
-            },
-            initTariffEditor: function() {
-                const fySelect = document.getElementById('fy-select'); const container = document.getElementById('tariff-months-container');
-                const currYear = new Date().getFullYear(); fySelect.innerHTML = '';
-                for(let i = -1; i <= 2; i++) {
-                    const y = currYear + i; const opt = document.createElement('option'); opt.value = `${y}-${y+1}`; opt.innerText = `${y}-${y+1}`;
-                    if(i === 0) opt.selected = true; fySelect.appendChild(opt);
+            window.appContext = {
+                currentRole: null, pendingRole: null, 
+                switchView: function(viewName) {
+                    document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
+                    const target = document.getElementById(`view-${viewName}`);
+                    if(target) { target.classList.add('active-view'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+                    if(viewName === 'tariff-editor') window.moduleContext.initTariffEditor();
+                    if(viewName === 'upi-editor') window.moduleContext.initUpiEditor();
+                    if(viewName !== 'admission') { IS_EDIT_MODE = false; }
+                },
+                goHome: function() {
+                    if (document.getElementById('successModal').style.display === 'flex' || document.getElementById('receiptSuccessModal').style.display === 'flex' || document.getElementById('viewReceiptModal').style.display === 'flex') return;
+                    if (this.currentRole) this.switchView('dashboard');
+                    else { this.pendingRole = null; this.switchView('home'); }
+                },
+                openLogin: function(role) {
+                    this.pendingRole = role;
+                    document.getElementById('login-title').innerText = role === 'staff' ? 'Staff Login' : 'Admin Login';
+                    const pinInput = document.getElementById('pin-input');
+                    pinInput.value = ''; pinInput.setAttribute('maxlength', role === 'staff' ? '6' : '4');
+                    pinInput.placeholder = role === 'staff' ? '6-Digit PIN' : '4-Digit PIN';
+                    this.switchView('login');
+                },
+                handleLogin: function(e) {
+                    if(e) e.preventDefault();
+                    const pin = document.getElementById('pin-input').value;
+                    if (this.pendingRole === 'staff' && pin === '123456') { this.currentRole = 'staff'; this.loadDashboard('STAFF'); } 
+                    else if (this.pendingRole === 'admin' && pin === '1234') { this.currentRole = 'admin'; this.loadDashboard('ADMIN'); } 
+                    else { alert('Invalid PIN. Please try again.'); }
+                },
+                loadDashboard: function(roleTitle) {
+                    document.getElementById('dashboard-title').innerHTML = `${roleTitle} <span>PORTAL</span>`;
+                    document.querySelectorAll('.admin-only').forEach(el => { el.style.display = this.currentRole === 'admin' ? 'flex' : 'none'; });
+                    this.switchView('dashboard');
+                },
+                logout: function() { this.currentRole = null; this.pendingRole = null; this.switchView('home'); },
+                startAdmission: function() {
+                    IS_EDIT_MODE = false;
+                    document.getElementById('form-main-title').innerText = "Admission Registration";
+                    document.getElementById('step-1-ind').innerText = "Step 1 of 3: Member Details";
+                    document.getElementById('step-2-ind').innerText = "Step 2 of 3: Digital Verification";
+                    document.getElementById('btn-next-step-2').innerText = "Proceed to Payment →";
+                    document.getElementById('admissionForm').reset();
+                    document.getElementById('selfie-preview').style.display = 'none';
+                    document.querySelector('.camera-placeholder').style.display = 'block';
+                    document.getElementById('selfie-data').value = '';
+                    document.getElementById('signature-pad').getContext('2d').clearRect(0, 0, 450, 150);
+                    document.getElementById('reAdmissionSection').style.display = 'none';
+                    document.getElementById('validationResultBox').style.display = 'none';
+                    document.getElementById('step-3').classList.remove('active-step');
+                    document.getElementById('step-2').classList.remove('active-step');
+                    document.getElementById('step-1').classList.add('active-step');
+                    const today = new Date();
+                    document.getElementById('dateOfAdmission').value = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+                    this.switchView('admission');
+                },
+                closeModal: function() {
+                    document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+                    this.goHome();
                 }
-                container.innerHTML = '';
-                tariffMonthsOrder.forEach(month => {
-                    container.innerHTML += `<div class="tariff-row"><div class="tariff-month-name">${month}</div><div class="tariff-inputs">
-                        <div class="form-group"><label style="font-size:0.7rem;">Adm. Fee</label><input type="number" id="tariff-${month}-adm" data-month="${month}" placeholder="850" required></div>
-                        <div class="form-group"><label style="font-size:0.7rem;">Monthly Fee</label><input type="number" id="tariff-${month}-reg" data-month="${month}" placeholder="800" required></div>
-                        <div class="form-group"><label style="font-size:0.7rem;">PT Fee</label><input type="number" id="tariff-${month}-pt" data-month="${month}" placeholder="1500" required></div>
-                    </div></div>`;
-                });
-                this.loadTariffs();
-                fySelect.removeEventListener('change', this.loadTariffs.bind(this));
-                fySelect.addEventListener('change', this.loadTariffs.bind(this));
-            },
-            loadTariffs: function() {
-                const fy = document.getElementById('fy-select').value;
-                const db = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
-                const data = db[fy] || {};
-                tariffMonthsOrder.forEach(month => {
-                    const m = data[month] || { admFee: APP_CONFIG.baseAdmissionFee, regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
-                    document.getElementById(`tariff-${month}-adm`).value = m.admFee;
-                    document.getElementById(`tariff-${month}-reg`).value = m.regFee;
-                    document.getElementById(`tariff-${month}-pt`).value = m.ptFee;
-                });
-            },
-            saveTariffs: function() {
-                const fy = document.getElementById('fy-select').value;
-                let db = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
-                if(!db[fy]) db[fy] = {};
-                tariffMonthsOrder.forEach(month => {
-                    db[fy][month] = { admFee: document.getElementById(`tariff-${month}-adm`).value, regFee: document.getElementById(`tariff-${month}-reg`).value, ptFee: document.getElementById(`tariff-${month}-pt`).value };
-                });
-                localStorage.setItem('revive_tariffs', JSON.stringify(db));
-                alert(`Tariffs for ${fy} saved.`);
-            },
-            
-            openUserSearch: function(mode) {
-                currentHubMode = mode;
-                const fySelect = document.getElementById('search-fy');
-                const currYear = new Date().getFullYear(); fySelect.innerHTML = '';
-                for(let i = -1; i <= 1; i++) {
-                    const y = currYear + i; const opt = document.createElement('option'); opt.value = `${y}-${y+1}`; opt.innerText = `${y}-${y+1}`;
-                    if(i === 0) opt.selected = true; fySelect.appendChild(opt);
-                }
-                document.getElementById('search-phone').value = '';
-                document.getElementById('search-title').innerText = mode === 'fee' ? "Search for Fee Collection" : "Search User Details";
-                window.appContext.switchView('user-search');
-            },
-            fetchUserHub: function(e) {
-                e.preventDefault();
-                const phone = document.getElementById('search-phone').value;
-                const fy = document.getElementById('search-fy').value;
-                
-                const users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                const user = [...users].reverse().find(u => u.primaryContact === phone);
-                if(!user) { alert("User not found."); return; }
-                
-                currentActiveUser = user; currentActiveUser.selectedFY = fy; 
-                
-                const photoEl = document.getElementById('hub-photo');
-                photoEl.src = user.photo || 'https://via.placeholder.com/70x70/141414/a0a0a0?text=N/A';
-                
-                if (window.appContext.currentRole === 'staff') {
-                    photoEl.style.pointerEvents = 'none'; photoEl.style.userSelect = 'none'; photoEl.style.webkitUserDrag = 'none'; photoEl.oncontextmenu = (ev) => ev.preventDefault();
-                } else {
-                    photoEl.style.pointerEvents = 'auto'; photoEl.style.userSelect = 'auto'; photoEl.style.webkitUserDrag = 'auto'; photoEl.oncontextmenu = null;
-                }
+            };
 
-                document.getElementById('hub-name').innerText = user.fullName;
-                document.getElementById('hub-id').innerText = user.id;
-                document.getElementById('hub-phone').innerText = user.primaryContact;
-                document.getElementById('hub-details').innerText = `${user.admissionCategory} - ${user.trainingCategory}`;
-                document.getElementById('hub-fy-label').innerText = fy;
+            window.moduleContext = {
+                initUpiEditor: function() { document.getElementById('admin-upi-id').value = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId; },
+                saveUpi: function() {
+                    const newUpi = document.getElementById('admin-upi-id').value.trim();
+                    if(newUpi) { localStorage.setItem('revive_upi_id', newUpi); alert("UPI ID saved."); window.appContext.goHome(); } else alert("Invalid UPI ID.");
+                },
+                initTariffEditor: function() {
+                    const fySelect = document.getElementById('fy-select'); const container = document.getElementById('tariff-months-container');
+                    const currYear = new Date().getFullYear(); fySelect.innerHTML = '';
+                    for(let i = -1; i <= 2; i++) {
+                        const y = currYear + i; const opt = document.createElement('option'); opt.value = `${y}-${y+1}`; opt.innerText = `${y}-${y+1}`;
+                        if(i === 0) opt.selected = true; fySelect.appendChild(opt);
+                    }
+                    container.innerHTML = '';
+                    tariffMonthsOrder.forEach(month => {
+                        container.innerHTML += `<div class="tariff-row"><div class="tariff-month-name">${month}</div><div class="tariff-inputs">
+                            <div class="form-group"><label style="font-size:0.7rem;">Adm. Fee</label><input type="number" id="tariff-${month}-adm" data-month="${month}" placeholder="850" required></div>
+                            <div class="form-group"><label style="font-size:0.7rem;">Monthly Fee</label><input type="number" id="tariff-${month}-reg" data-month="${month}" placeholder="800" required></div>
+                            <div class="form-group"><label style="font-size:0.7rem;">PT Fee</label><input type="number" id="tariff-${month}-pt" data-month="${month}" placeholder="1500" required></div>
+                        </div></div>`;
+                    });
+                    this.loadTariffs();
+                    fySelect.removeEventListener('change', this.loadTariffs.bind(this));
+                    fySelect.addEventListener('change', this.loadTariffs.bind(this));
+                },
+                loadTariffs: function() {
+                    const fy = document.getElementById('fy-select').value;
+                    const db = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
+                    const data = db[fy] || {};
+                    tariffMonthsOrder.forEach(month => {
+                        const m = data[month] || { admFee: APP_CONFIG.baseAdmissionFee, regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
+                        document.getElementById(`tariff-${month}-adm`).value = m.admFee;
+                        document.getElementById(`tariff-${month}-reg`).value = m.regFee;
+                        document.getElementById(`tariff-${month}-pt`).value = m.ptFee;
+                    });
+                },
+                saveTariffs: function() {
+                    const fy = document.getElementById('fy-select').value;
+                    let db = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
+                    if(!db[fy]) db[fy] = {};
+                    tariffMonthsOrder.forEach(month => {
+                        db[fy][month] = { admFee: document.getElementById(`tariff-${month}-adm`).value, regFee: document.getElementById(`tariff-${month}-reg`).value, ptFee: document.getElementById(`tariff-${month}-pt`).value };
+                    });
+                    localStorage.setItem('revive_tariffs', JSON.stringify(db));
+                    alert(`Tariffs for ${fy} saved.`);
+                },
                 
-                if (currentHubMode === 'fee') {
-                    document.getElementById('hub-actions').style.display = 'none';
-                    document.getElementById('hub-instruction').style.display = 'block';
-                    document.getElementById('hub-instruction').innerText = "Click on a yellow or red month to process payment.";
-                } else {
-                    document.getElementById('hub-actions').style.display = 'flex';
-                    document.getElementById('hub-instruction').style.display = 'block';
-                    document.getElementById('hub-instruction').innerText = "Click on a paid green month to view the receipt.";
-                    document.getElementById('btn-hub-edit').style.display = 'flex'; 
-                    document.getElementById('btn-hub-pdf').style.display = window.appContext.currentRole === 'admin' ? 'flex' : 'none';
-                    document.getElementById('btn-hub-delete').style.display = window.appContext.currentRole === 'admin' ? 'flex' : 'none';
-                }
-                
-                this.renderFeeCalendar(user.id, fy, user.trainingCategory, user.date);
-                window.appContext.switchView('user-hub');
-            },
-            renderFeeCalendar: function(userId, fy, trainCat, adDateStr) {
-                const grid = document.getElementById('fee-calendar'); grid.innerHTML = '';
-                const paymentsDb = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
-                const userFyData = (paymentsDb[userId] && paymentsDb[userId][fy]) ? paymentsDb[userId][fy] : {};
-                const tariffDb = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
-                const fyTariffs = tariffDb[fy] || {};
-
-                const today = new Date();
-                const currentScore = today.getFullYear() * 100 + today.getMonth(); 
-
-                const p = adDateStr.split('-');
-                const adScore = parseInt(p[2]) * 100 + (parseInt(p[1]) - 1); 
-                const fyStartYear = parseInt(fy.split('-')[0]);
-
-                tariffMonthsOrder.forEach((month, index) => {
-                    const monthIdx = tariffMonthIndices[index]; 
-                    const mYear = monthIdx >= 3 ? fyStartYear : fyStartYear + 1;
-                    const mScore = mYear * 100 + monthIdx;
-
-                    if (mScore > currentScore) return; 
-
-                    if (mScore < adScore) {
-                        grid.innerHTML += `<div class="cal-month status-na"><h4>${month}</h4><p>N/A</p></div>`;
-                        return;
+                openUserSearch: function(mode) {
+                    currentHubMode = mode;
+                    const fySelect = document.getElementById('search-fy');
+                    const currYear = new Date().getFullYear(); fySelect.innerHTML = '';
+                    for(let i = -1; i <= 1; i++) {
+                        const y = currYear + i; const opt = document.createElement('option'); opt.value = `${y}-${y+1}`; opt.innerText = `${y}-${y+1}`;
+                        if(i === 0) opt.selected = true; fySelect.appendChild(opt);
+                    }
+                    document.getElementById('search-phone').value = '';
+                    document.getElementById('search-title').innerText = mode === 'fee' ? "Search for Fee Collection" : "Search User Details";
+                    window.appContext.switchView('user-search');
+                },
+                fetchUserHub: function(e) {
+                    e.preventDefault();
+                    const phone = document.getElementById('search-phone').value;
+                    const fy = document.getElementById('search-fy').value;
+                    
+                    const users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
+                    const user = [...users].reverse().find(u => u.primaryContact === phone);
+                    if(!user) { alert("User not found."); return; }
+                    
+                    currentActiveUser = user; currentActiveUser.selectedFY = fy; 
+                    
+                    const photoEl = document.getElementById('hub-photo');
+                    photoEl.src = user.photo || 'https://via.placeholder.com/70x70/141414/a0a0a0?text=N/A';
+                    
+                    if (window.appContext.currentRole === 'staff') {
+                        photoEl.style.pointerEvents = 'none'; photoEl.style.userSelect = 'none'; photoEl.style.webkitUserDrag = 'none'; photoEl.oncontextmenu = (ev) => ev.preventDefault();
+                    } else {
+                        photoEl.style.pointerEvents = 'auto'; photoEl.style.userSelect = 'auto'; photoEl.style.webkitUserDrag = 'auto'; photoEl.oncontextmenu = null;
                     }
 
-                    const record = userFyData[month];
-                    let statusClass = 'status-unpaid'; let displayAmt = ''; let action = '';
-
+                    document.getElementById('hub-name').innerText = user.fullName;
+                    document.getElementById('hub-id').innerText = user.id;
+                    document.getElementById('hub-phone').innerText = user.primaryContact;
+                    document.getElementById('hub-details').innerText = `${user.admissionCategory} - ${user.trainingCategory}`;
+                    document.getElementById('hub-fy-label').innerText = fy;
+                    
                     if (currentHubMode === 'fee') {
-                        action = `onclick="window.moduleContext.initPayment('${month}', '${fy}')"`;
+                        document.getElementById('hub-actions').style.display = 'none';
+                        document.getElementById('hub-instruction').style.display = 'block';
+                        document.getElementById('hub-instruction').innerText = "Click on a yellow or red month to process payment.";
+                    } else {
+                        document.getElementById('hub-actions').style.display = 'flex';
+                        document.getElementById('hub-instruction').style.display = 'block';
+                        document.getElementById('hub-instruction').innerText = "Click on a paid green month to view the receipt.";
+                        document.getElementById('btn-hub-edit').style.display = 'flex'; 
+                        document.getElementById('btn-hub-pdf').style.display = window.appContext.currentRole === 'admin' ? 'flex' : 'none';
+                        document.getElementById('btn-hub-delete').style.display = window.appContext.currentRole === 'admin' ? 'flex' : 'none';
                     }
+                    
+                    this.renderFeeCalendar(user.id, fy, user.trainingCategory, user.date);
+                    window.appContext.switchView('user-hub');
+                },
+                renderFeeCalendar: function(userId, fy, trainCat, adDateStr) {
+                    const grid = document.getElementById('fee-calendar'); grid.innerHTML = '';
+                    const paymentsDb = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
+                    const userFyData = (paymentsDb[userId] && paymentsDb[userId][fy]) ? paymentsDb[userId][fy] : {};
+                    const tariffDb = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
+                    const fyTariffs = tariffDb[fy] || {};
 
-                    if (record) {
-                        if (record.status === 'Paid') { 
-                            statusClass = 'status-paid'; 
-                            let payDateStr = record.lastDate ? `<br><span style="font-size:0.65rem; font-weight:normal;">Paid on: ${formatDateStr(record.lastDate)}</span>` : '';
-                            displayAmt = `Paid: ₹${record.amountPaid}${payDateStr}`; 
-                            if (currentHubMode === 'details') { action = `onclick="window.moduleContext.viewReceipt('${month}', '${fy}')"`; }
-                            else { action = ''; }
-                        } 
-                        else if (record.status === 'Partial') { 
-                            statusClass = 'status-partial'; 
-                            let bal = parseInt(record.totalDue) - parseInt(record.amountPaid); 
-                            displayAmt = `Paid: ₹${record.amountPaid}<br>Bal: ₹${bal}`; 
+                    const today = new Date();
+                    const currentScore = today.getFullYear() * 100 + today.getMonth(); 
+
+                    const p = adDateStr.split('-');
+                    const adScore = parseInt(p[2]) * 100 + (parseInt(p[1]) - 1); 
+                    const fyStartYear = parseInt(fy.split('-')[0]);
+
+                    tariffMonthsOrder.forEach((month, index) => {
+                        const monthIdx = tariffMonthIndices[index]; 
+                        const mYear = monthIdx >= 3 ? fyStartYear : fyStartYear + 1;
+                        const mScore = mYear * 100 + monthIdx;
+
+                        if (mScore > currentScore) return; 
+
+                        if (mScore < adScore) {
+                            grid.innerHTML += `<div class="cal-month status-na"><h4>${month}</h4><p>N/A</p></div>`;
+                            return;
+                        }
+
+                        const record = userFyData[month];
+                        let statusClass = 'status-unpaid'; let displayAmt = ''; let action = '';
+
+                        if (currentHubMode === 'fee') {
+                            action = `onclick="window.moduleContext.initPayment('${month}', '${fy}')"`;
+                        }
+
+                        if (record) {
+                            if (record.status === 'Paid') { 
+                                statusClass = 'status-paid'; 
+                                let payDateStr = record.lastDate ? `<br><span style="font-size:0.65rem; font-weight:normal;">Paid on: ${formatDateStr(record.lastDate)}</span>` : '';
+                                displayAmt = `Paid: ₹${record.amountPaid}${payDateStr}`; 
+                                if (currentHubMode === 'details') { action = `onclick="window.moduleContext.viewReceipt('${month}', '${fy}')"`; }
+                                else { action = ''; }
+                            } 
+                            else if (record.status === 'Partial') { 
+                                statusClass = 'status-partial'; 
+                                let bal = parseInt(record.totalDue) - parseInt(record.amountPaid); 
+                                displayAmt = `Paid: ₹${record.amountPaid}<br>Bal: ₹${bal}`; 
+                                if (currentHubMode === 'details') { action = ''; }
+                            }
+                        } else {
+                            const monthTariff = fyTariffs[month] || { regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
+                            const due = trainCat === 'Personal Training' ? monthTariff.ptFee : monthTariff.regFee;
+                            displayAmt = `Due: ₹${due}`;
                             if (currentHubMode === 'details') { action = ''; }
                         }
-                    } else {
-                        const monthTariff = fyTariffs[month] || { regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
-                        const due = trainCat === 'Personal Training' ? monthTariff.ptFee : monthTariff.regFee;
-                        displayAmt = `Due: ₹${due}`;
-                        if (currentHubMode === 'details') { action = ''; }
-                    }
-                    grid.innerHTML += `<div class="cal-month ${statusClass}" ${action}><h4>${month}</h4><p>${displayAmt}</p></div>`;
-                });
-            },
-            initPayment: function(month, fy) {
-                const paymentsDb = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
-                const record = (paymentsDb[currentActiveUser.id] && paymentsDb[currentActiveUser.id][fy] && paymentsDb[currentActiveUser.id][fy][month]) ? paymentsDb[currentActiveUser.id][fy][month] : null;
-                
-                let totalDue, alreadyPaid, balance;
-                if(record) { totalDue = parseInt(record.totalDue); alreadyPaid = parseInt(record.amountPaid); balance = totalDue - alreadyPaid; } 
-                else {
-                    const tariffDb = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
-                    const mTariff = (tariffDb[fy] && tariffDb[fy][month]) ? tariffDb[fy][month] : { regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
-                    totalDue = parseInt(currentActiveUser.trainingCategory === 'Personal Training' ? mTariff.ptFee : mTariff.regFee);
-                    alreadyPaid = 0; balance = totalDue;
-                }
-
-                activePaymentConfig = { month, fy, totalDue, alreadyPaid, balance };
-                document.getElementById('pay-month').innerText = month; document.getElementById('pay-total-due').innerText = totalDue;
-                document.getElementById('pay-already-paid').innerText = alreadyPaid; document.getElementById('pay-balance').innerText = balance;
-                
-                const inputAmt = document.getElementById('pay-amount-now'); inputAmt.value = balance; inputAmt.max = balance;
-                document.getElementById('pay-method').value = 'UPI'; this.updatePaymentModalUI();
-                document.getElementById('paymentProcessModal').style.display = 'flex';
-            },
-            updatePaymentModalUI: function() {
-                const method = document.getElementById('pay-method').value;
-                const amt = document.getElementById('pay-amount-now').value;
-                const upiSec = document.getElementById('pay-upi-section');
-                if(method === 'UPI' && amt > 0) {
-                    upiSec.style.display = 'block';
-                    const activeUpiId = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId;
-                    const upiString = `upi://pay?pa=${activeUpiId}&pn=ReviveFitness&am=${amt}&cu=INR`;
-                    document.getElementById('pay-upi-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiString)}`;
-                } else { upiSec.style.display = 'none'; }
-            },
-            confirmPayment: function() {
-                const payAmt = parseInt(document.getElementById('pay-amount-now').value);
-                if(isNaN(payAmt) || payAmt <= 0 || payAmt > activePaymentConfig.balance) { alert("Invalid amount."); return; }
-                
-                const method = document.getElementById('pay-method').value;
-                const newPaid = activePaymentConfig.alreadyPaid + payAmt;
-                const newStatus = newPaid >= activePaymentConfig.totalDue ? 'Paid' : 'Partial';
-
-                let paymentsDb = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
-                if(!paymentsDb[currentActiveUser.id]) paymentsDb[currentActiveUser.id] = {};
-                if(!paymentsDb[currentActiveUser.id][activePaymentConfig.fy]) paymentsDb[currentActiveUser.id][activePaymentConfig.fy] = {};
-                
-                paymentsDb[currentActiveUser.id][activePaymentConfig.fy][activePaymentConfig.month] = {
-                    totalDue: activePaymentConfig.totalDue, amountPaid: newPaid, status: newStatus, method: method, lastDate: new Date().toISOString()
-                };
-                localStorage.setItem('revive_payments_db', JSON.stringify(paymentsDb));
-                document.getElementById('paymentProcessModal').style.display = 'none';
-                
-                this.generateReceiptImage(payAmt, activePaymentConfig.balance - payAmt, method, 'success');
-                this.renderFeeCalendar(currentActiveUser.id, activePaymentConfig.fy, currentActiveUser.trainingCategory, currentActiveUser.date);
-            },
-            viewReceipt: function(month, fy) {
-                const paymentsDb = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
-                const record = (paymentsDb[currentActiveUser.id] && paymentsDb[currentActiveUser.id][fy] && paymentsDb[currentActiveUser.id][fy][month]) ? paymentsDb[currentActiveUser.id][fy][month] : null;
-                if(!record) return;
-
-                activePaymentConfig = { month, fy };
-                document.getElementById('vr-month-label').innerText = `${month} (${fy})`;
-                this.generateReceiptImage(record.amountPaid, 0, record.method || "N/A", 'view', record.lastDate);
-            },
-            generateReceiptImage: function(paidAmt, newBal, mode, triggerFlow, overrideDate) {
-                const dIso = overrideDate || new Date().toISOString();
-                const dStr = new Date(dIso).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
-                
-                document.getElementById('rcpt-name').innerText = currentActiveUser.fullName; document.getElementById('rcpt-id').innerText = currentActiveUser.id;
-                document.getElementById('rcpt-phone').innerText = currentActiveUser.primaryContact; document.getElementById('rcpt-month').innerText = `${activePaymentConfig.month} (${activePaymentConfig.fy})`;
-                document.getElementById('rcpt-paid').innerText = paidAmt; document.getElementById('rcpt-balance').innerText = newBal;
-                document.getElementById('rcpt-mode').innerText = mode; document.getElementById('rcpt-date').innerText = dStr;
-
-                const wrapper = document.getElementById('receipt-render-zone'); const target = document.getElementById('receipt-template');
-                wrapper.style.left = '0'; 
-
-                setTimeout(() => {
-                    html2canvas(target, { scale: 2 }).then(canvas => {
-                        canvas.toBlob(blob => {
-                            currentGeneratedReceiptBlob = blob;
-                            wrapper.style.left = '-9999px';
-                            if (triggerFlow === 'success') { document.getElementById('receiptSuccessModal').style.display = 'flex'; } 
-                            else if (triggerFlow === 'view') { document.getElementById('viewReceiptModal').style.display = 'flex'; }
-                        }, 'image/jpeg', 0.95);
+                        grid.innerHTML += `<div class="cal-month ${statusClass}" ${action}><h4>${month}</h4><p>${displayAmt}</p></div>`;
                     });
-                }, 300);
-            },
-            shareReceipt: async function(source = 'success') {
-                const btnId = source === 'vr' ? 'btn-vr-share' : 'btn-share-receipt';
-                const modalId = source === 'vr' ? 'viewReceiptModal' : 'receiptSuccessModal';
-                const btn = document.getElementById(btnId); btn.innerText = "Processing...";
-                try {
-                    const file = new File([currentGeneratedReceiptBlob], `Receipt_${currentActiveUser.id}.jpg`, { type: 'image/jpeg' });
-                    const msg = `Dear ${currentActiveUser.fullName},\n\nPayment of ₹${document.getElementById('rcpt-paid').innerText} successful for the month of ${activePaymentConfig.month}.\n\nThank you!\n- Revive Fitness Studio`;
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ title: 'Payment Receipt', text: msg, files: [file] }); } 
-                    else { alert("Native share unsupported. Opening WhatsApp."); window.open(`https://api.whatsapp.com/send?phone=91${currentActiveUser.primaryContact}&text=${encodeURIComponent(msg)}`, '_blank'); }
-                } catch(e) { console.error(e); }
-                finally { btn.innerText = "Share Receipt via WhatsApp"; document.getElementById(modalId).style.display = 'none'; }
-            },
-            editUser: function() {
-                IS_EDIT_MODE = true; const u = currentActiveUser;
-                document.getElementById('form-main-title').innerText = "Edit Member Details";
-                document.getElementById('step-1-ind').innerText = "Step 1 of 2: Update Details";
-                document.getElementById('step-2-ind').innerText = "Step 2 of 2: Update Verification";
-                document.getElementById('btn-next-step-2').innerText = "Save Changes";
-                
-                document.getElementById('dateOfAdmission').value = u.date;
-                document.getElementById('admissionTypeSelect').value = u.admissionType || 'New Admission';
-                document.getElementById('admissionCategory').value = u.admissionCategory;
-                document.getElementById('trainingCategory').value = u.trainingCategory;
-                document.getElementById('firstName').value = u.firstName;
-                document.getElementById('lastName').value = u.lastName;
-                document.getElementById('primaryContact').value = u.primaryContact;
-                document.getElementById('alternateContact').value = u.alternateContact;
-                document.getElementById('dob').value = u.dob; document.getElementById('age').value = u.age;
-                document.getElementById('address').value = u.address;
-                
-                document.getElementById('selfie-data').value = u.photo;
-                if(u.photo) {
-                    const prev = document.getElementById('selfie-preview');
-                    prev.src = u.photo; prev.style.display = 'block';
-                    document.querySelector('.camera-placeholder').style.display = 'none';
-                    document.getElementById('btn-start-camera').style.display = 'none';
-                    document.getElementById('btn-switch-camera').style.display = 'none';
-                    document.getElementById('btn-retake').style.display = 'inline-flex';
+                },
+                initPayment: function(month, fy) {
+                    const paymentsDb = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
+                    const record = (paymentsDb[currentActiveUser.id] && paymentsDb[currentActiveUser.id][fy] && paymentsDb[currentActiveUser.id][fy][month]) ? paymentsDb[currentActiveUser.id][fy][month] : null;
+                    
+                    let totalDue, alreadyPaid, balance;
+                    if(record) { totalDue = parseInt(record.totalDue); alreadyPaid = parseInt(record.amountPaid); balance = totalDue - alreadyPaid; } 
+                    else {
+                        const tariffDb = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
+                        const mTariff = (tariffDb[fy] && tariffDb[fy][month]) ? tariffDb[fy][month] : { regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
+                        totalDue = parseInt(currentActiveUser.trainingCategory === 'Personal Training' ? mTariff.ptFee : mTariff.regFee);
+                        alreadyPaid = 0; balance = totalDue;
+                    }
+
+                    activePaymentConfig = { month, fy, totalDue, alreadyPaid, balance };
+                    document.getElementById('pay-month').innerText = month; document.getElementById('pay-total-due').innerText = totalDue;
+                    document.getElementById('pay-already-paid').innerText = alreadyPaid; document.getElementById('pay-balance').innerText = balance;
+                    
+                    const inputAmt = document.getElementById('pay-amount-now'); inputAmt.value = balance; inputAmt.max = balance;
+                    document.getElementById('pay-method').value = 'UPI'; this.updatePaymentModalUI();
+                    document.getElementById('paymentProcessModal').style.display = 'flex';
+                },
+                updatePaymentModalUI: function() {
+                    const method = document.getElementById('pay-method').value;
+                    const amt = document.getElementById('pay-amount-now').value;
+                    const upiSec = document.getElementById('pay-upi-section');
+                    if(method === 'UPI' && amt > 0) {
+                        upiSec.style.display = 'block';
+                        const activeUpiId = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId;
+                        const upiString = `upi://pay?pa=${activeUpiId}&pn=ReviveFitness&am=${amt}&cu=INR`;
+                        document.getElementById('pay-upi-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiString)}`;
+                    } else { upiSec.style.display = 'none'; }
+                },
+                confirmPayment: function() {
+                    const payAmt = parseInt(document.getElementById('pay-amount-now').value);
+                    if(isNaN(payAmt) || payAmt <= 0 || payAmt > activePaymentConfig.balance) { alert("Invalid amount."); return; }
+                    
+                    const method = document.getElementById('pay-method').value;
+                    const newPaid = activePaymentConfig.alreadyPaid + payAmt;
+                    const newStatus = newPaid >= activePaymentConfig.totalDue ? 'Paid' : 'Partial';
+
+                    let paymentsDb = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
+                    if(!paymentsDb[currentActiveUser.id]) paymentsDb[currentActiveUser.id] = {};
+                    if(!paymentsDb[currentActiveUser.id][activePaymentConfig.fy]) paymentsDb[currentActiveUser.id][activePaymentConfig.fy] = {};
+                    
+                    paymentsDb[currentActiveUser.id][activePaymentConfig.fy][activePaymentConfig.month] = {
+                        totalDue: activePaymentConfig.totalDue, amountPaid: newPaid, status: newStatus, method: method, lastDate: new Date().toISOString()
+                    };
+                    localStorage.setItem('revive_payments_db', JSON.stringify(paymentsDb));
+                    document.getElementById('paymentProcessModal').style.display = 'none';
+                    
+                    this.generateReceiptImage(payAmt, activePaymentConfig.balance - payAmt, method, 'success');
+                    this.renderFeeCalendar(currentActiveUser.id, activePaymentConfig.fy, currentActiveUser.trainingCategory, currentActiveUser.date);
+                },
+                viewReceipt: function(month, fy) {
+                    const paymentsDb = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
+                    const record = (paymentsDb[currentActiveUser.id] && paymentsDb[currentActiveUser.id][fy] && paymentsDb[currentActiveUser.id][fy][month]) ? paymentsDb[currentActiveUser.id][fy][month] : null;
+                    if(!record) return;
+
+                    activePaymentConfig = { month, fy };
+                    document.getElementById('vr-month-label').innerText = `${month} (${fy})`;
+                    this.generateReceiptImage(record.amountPaid, 0, record.method || "N/A", 'view', record.lastDate);
+                },
+                generateReceiptImage: function(paidAmt, newBal, mode, triggerFlow, overrideDate) {
+                    const dIso = overrideDate || new Date().toISOString();
+                    const dStr = new Date(dIso).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+                    
+                    document.getElementById('rcpt-name').innerText = currentActiveUser.fullName; document.getElementById('rcpt-id').innerText = currentActiveUser.id;
+                    document.getElementById('rcpt-phone').innerText = currentActiveUser.primaryContact; document.getElementById('rcpt-month').innerText = `${activePaymentConfig.month} (${activePaymentConfig.fy})`;
+                    document.getElementById('rcpt-paid').innerText = paidAmt; document.getElementById('rcpt-balance').innerText = newBal;
+                    document.getElementById('rcpt-mode').innerText = mode; document.getElementById('rcpt-date').innerText = dStr;
+
+                    const wrapper = document.getElementById('receipt-render-zone'); const target = document.getElementById('receipt-template');
+                    wrapper.style.left = '0'; 
+
+                    setTimeout(() => {
+                        html2canvas(target, { scale: 2 }).then(canvas => {
+                            canvas.toBlob(blob => {
+                                currentGeneratedReceiptBlob = blob;
+                                wrapper.style.left = '-9999px';
+                                if (triggerFlow === 'success') { document.getElementById('receiptSuccessModal').style.display = 'flex'; } 
+                                else if (triggerFlow === 'view') { document.getElementById('viewReceiptModal').style.display = 'flex'; }
+                            }, 'image/jpeg', 0.95);
+                        });
+                    }, 300);
+                },
+                shareReceipt: async function(source = 'success') {
+                    const btnId = source === 'vr' ? 'btn-vr-share' : 'btn-share-receipt';
+                    const modalId = source === 'vr' ? 'viewReceiptModal' : 'receiptSuccessModal';
+                    const btn = document.getElementById(btnId); btn.innerText = "Processing...";
+                    try {
+                        const file = new File([currentGeneratedReceiptBlob], `Receipt_${currentActiveUser.id}.jpg`, { type: 'image/jpeg' });
+                        const msg = `Dear ${currentActiveUser.fullName},\n\nPayment of ₹${document.getElementById('rcpt-paid').innerText} successful for the month of ${activePaymentConfig.month}.\n\nThank you!\n- Revive Fitness Studio`;
+                        if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ title: 'Payment Receipt', text: msg, files: [file] }); } 
+                        else { alert("Native share unsupported. Opening WhatsApp."); window.open(`https://api.whatsapp.com/send?phone=91${currentActiveUser.primaryContact}&text=${encodeURIComponent(msg)}`, '_blank'); }
+                    } catch(e) { console.error(e); }
+                    finally { btn.innerText = source === 'vr' ? "Share Receipt via WhatsApp" : "Share Receipt Image"; document.getElementById(modalId).style.display = 'none'; }
+                },
+                editUser: function() {
+                    IS_EDIT_MODE = true; const u = currentActiveUser;
+                    document.getElementById('form-main-title').innerText = "Edit Member Details";
+                    document.getElementById('step-1-ind').innerText = "Step 1 of 2: Update Details";
+                    document.getElementById('step-2-ind').innerText = "Step 2 of 2: Update Verification";
+                    document.getElementById('btn-next-step-2').innerText = "Save Changes";
+                    
+                    document.getElementById('dateOfAdmission').value = u.date;
+                    document.getElementById('admissionTypeSelect').value = u.admissionType || 'New Admission';
+                    document.getElementById('admissionCategory').value = u.admissionCategory;
+                    document.getElementById('trainingCategory').value = u.trainingCategory;
+                    document.getElementById('firstName').value = u.firstName;
+                    document.getElementById('lastName').value = u.lastName;
+                    document.getElementById('primaryContact').value = u.primaryContact;
+                    document.getElementById('alternateContact').value = u.alternateContact;
+                    document.getElementById('dob').value = u.dob; document.getElementById('age').value = u.age;
+                    document.getElementById('address').value = u.address;
+                    
+                    document.getElementById('selfie-data').value = u.photo;
+                    if(u.photo) {
+                        const prev = document.getElementById('selfie-preview');
+                        prev.src = u.photo; prev.style.display = 'block';
+                        document.querySelector('.camera-placeholder').style.display = 'none';
+                        document.getElementById('btn-start-camera').style.display = 'none';
+                        document.getElementById('btn-switch-camera').style.display = 'none';
+                        document.getElementById('btn-retake').style.display = 'inline-flex';
+                    }
+                    window.appContext.switchView('admission');
+                },
+                deleteUser: function() {
+                    if(confirm(`Are you sure you want to completely remove ${currentActiveUser.fullName} (${currentActiveUser.id})? This cannot be undone.`)) {
+                        let users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
+                        users = users.filter(u => u.id !== currentActiveUser.id);
+                        localStorage.setItem('revive_users_db', JSON.stringify(users));
+                        alert("User deleted."); window.appContext.goHome();
+                    }
+                },
+                regeneratePdf: function() {
+                    currentMemberDetails = currentActiveUser;
+                    if(!currentMemberDetails.photo) currentMemberDetails.photo = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; 
+                    if(!currentMemberDetails.signature) currentMemberDetails.signature = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+
+                    const now = new Date(); const timestampStr = now.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+                    document.getElementById('pdf-id').innerText = currentMemberDetails.id; document.getElementById('pdf-date').innerText = currentMemberDetails.date;
+                    document.getElementById('pdf-photo').src = currentMemberDetails.photo; document.getElementById('pdf-name').innerText = currentMemberDetails.fullName;
+                    document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType || 'N/A'} - ${currentMemberDetails.admissionCategory}`;
+                    document.getElementById('pdf-training-category').innerText = currentMemberDetails.trainingCategory;
+                    document.getElementById('pdf-contact1').innerText = currentMemberDetails.primaryContact; document.getElementById('pdf-contact2').innerText = currentMemberDetails.alternateContact || 'N/A';
+                    document.getElementById('pdf-dob-age').innerText = `${currentMemberDetails.dob} (${currentMemberDetails.age} yrs)`; document.getElementById('pdf-address').innerText = currentMemberDetails.address;
+                    
+                    const sigImgEl = document.getElementById('pdf-member-sig'); sigImgEl.src = currentMemberDetails.signature; sigImgEl.style.display = 'inline-block';
+                    document.getElementById('member-verified').innerText = `+91 ${currentMemberDetails.primaryContact}`; document.getElementById('member-timestamp').innerText = timestampStr;
+                    document.getElementById('member-location').innerText = "System Generated Copy"; document.getElementById('official-timestamp').innerText = timestampStr;
+
+                    const appWrapper = document.getElementById('app-wrapper'); const pdfWrapper = document.getElementById('pdf-template-wrapper'); const element = document.getElementById('pdf-template');
+                    window.scrollTo(0, 0); appWrapper.style.display = 'none'; pdfWrapper.style.display = 'flex';
+
+                    setTimeout(() => {
+                        html2pdf().set({
+                            margin: 0, filename: `${currentMemberDetails.id}_Copy.pdf`, image: { type: 'jpeg', quality: 1.0 },
+                            html2canvas: { scale: 2, useCORS: true, scrollY: 0 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                        }).from(element).save().then(() => { pdfWrapper.style.display = 'none'; appWrapper.style.display = 'flex'; });
+                    }, 350);
                 }
-                window.appContext.switchView('admission');
-            },
-            deleteUser: function() {
-                if(confirm(`Are you sure you want to completely remove ${currentActiveUser.fullName} (${currentActiveUser.id})? This cannot be undone.`)) {
-                    let users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                    users = users.filter(u => u.id !== currentActiveUser.id);
-                    localStorage.setItem('revive_users_db', JSON.stringify(users));
-                    alert("User deleted."); window.appContext.goHome();
-                }
-            },
-            regeneratePdf: function() {
-                currentMemberDetails = currentActiveUser;
-                if(!currentMemberDetails.photo) currentMemberDetails.photo = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; 
-                if(!currentMemberDetails.signature) currentMemberDetails.signature = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+            };
 
-                const now = new Date(); const timestampStr = now.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
-                document.getElementById('pdf-id').innerText = currentMemberDetails.id; document.getElementById('pdf-date').innerText = currentMemberDetails.date;
-                document.getElementById('pdf-photo').src = currentMemberDetails.photo; document.getElementById('pdf-name').innerText = currentMemberDetails.fullName;
-                document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType || 'N/A'} - ${currentMemberDetails.admissionCategory}`;
-                document.getElementById('pdf-training-category').innerText = currentMemberDetails.trainingCategory;
-                document.getElementById('pdf-contact1').innerText = currentMemberDetails.primaryContact; document.getElementById('pdf-contact2').innerText = currentMemberDetails.alternateContact || 'N/A';
-                document.getElementById('pdf-dob-age').innerText = `${currentMemberDetails.dob} (${currentMemberDetails.age} yrs)`; document.getElementById('pdf-address').innerText = currentMemberDetails.address;
-                
-                const sigImgEl = document.getElementById('pdf-member-sig'); sigImgEl.src = currentMemberDetails.signature; sigImgEl.style.display = 'inline-block';
-                document.getElementById('member-verified').innerText = `+91 ${currentMemberDetails.primaryContact}`; document.getElementById('member-timestamp').innerText = timestampStr;
-                document.getElementById('member-location').innerText = "System Generated Copy"; document.getElementById('official-timestamp').innerText = timestampStr;
-
-                const appWrapper = document.getElementById('app-wrapper'); const pdfWrapper = document.getElementById('pdf-template-wrapper'); const element = document.getElementById('pdf-template');
-                window.scrollTo(0, 0); appWrapper.style.display = 'none'; pdfWrapper.style.display = 'flex';
-
-                setTimeout(() => {
-                    html2pdf().set({
-                        margin: 0, filename: `${currentMemberDetails.id}_Copy.pdf`, image: { type: 'jpeg', quality: 1.0 },
-                        html2canvas: { scale: 2, useCORS: true, scrollY: 0 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                    }).from(element).save().then(() => { pdfWrapper.style.display = 'none'; appWrapper.style.display = 'flex'; });
-                }, 350);
-            }
-        };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            
+            // Global Binds
             document.getElementById('btn-save-upi').addEventListener('click', () => window.moduleContext.saveUpi());
             document.getElementById('pay-amount-now').addEventListener('input', () => window.moduleContext.updatePaymentModalUI());
             document.getElementById('pay-method').addEventListener('change', () => window.moduleContext.updatePaymentModalUI());
@@ -1360,8 +1358,9 @@
             });
             
             document.getElementById('btn-whatsapp-welcome').addEventListener('click', () => {
-                const welcomeMsg = `🎉 Revive Fitness Studio-ലേക്ക് ഹൃദയം നിറഞ്ഞ സ്വാഗതം! 🏋️‍♂️✨\n\nനിങ്ങളുടെ Fitness Journey-യുടെ പുതിയ തുടക്കത്തിന് ഞങ്ങളോടൊപ്പം ചേർന്നതിൽ സന്തോഷം! 💪\n\nആരോഗ്യവും ഫിറ്റ്നസും ജീവിതത്തിന്റെ ഭാഗമാക്കി, നിങ്ങളുടെ ലക്ഷ്യങ്ങളിലേക്ക് ഓരോ ദിവസവും ഒരു പടി കൂടി മുന്നോട്ട് പോകാൻ Revive Fitness Studio നിങ്ങളോടൊപ്പം ഉണ്ടാകും. ❤️\n\n🔥 Train Better • Stay Strong • Live Healthy\n\nWelcome to the Revive Family! 🤝💪\n— Revive Fitness Studio`;
-                window.open(`https://api.whatsapp.com/send?phone=91${currentMemberDetails.primaryContact}&text=${encodeURIComponent(welcomeMsg)}`, '_blank');
+                const phone = currentMemberDetails.primaryContact;
+                const welcomeMsg = `🎉 Revive Fitness Studio-ലേക്ക് ഹൃദയം നിറഞ്ഞ സ്വാഗതം! 🏋️‍♂️✨\n\nനിങ്ങളുടെ Fitness Journey-യുടെ പുതിയ തുടക്കത്തിന് ഞങ്ങളോടൊപ്പം ചേർന്നതിൽ സന്തോഷം! 💪\n\nആരോഗ്യവും ഫിറ്റ്നസും ജീവിതത്തിന്റെ ഭാഗമാക്കി, നിങ്ങളുടെ ലക്ഷ്യങ്ങളിലേക്ക് ഓരോ മാസവും ഒരു പടി കൂടി മുന്നോട്ട് പോകാൻ Revive Fitness Studio നിങ്ങളോടൊപ്പം ഉണ്ടാകും. ❤️\n\n🔥 Train Better • Stay Strong • Live Healthy\n\nWelcome to the Revive Family! 🤝💪\n— Revive Fitness Studio`;
+                window.open(`https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(welcomeMsg)}`, '_blank');
             });
 
             document.getElementById('btn-whatsapp-pdf').addEventListener('click', async function() {
@@ -1375,32 +1374,48 @@
                 finally { btn.innerText = "3. Share PDF Record"; btn.disabled = false; }
             });
 
-            // RE-ADMISSION VALIDATION
+            // RE-ADMISSION VALIDATION LOGIC (Fully Restored & Fixed)
             document.getElementById('admissionTypeSelect').addEventListener('change', function() {
                 if (this.value === 'Re-Admission') { document.getElementById('reAdmissionSection').style.display = 'block'; } 
                 else { 
                     document.getElementById('reAdmissionSection').style.display = 'none'; 
                     document.getElementById('validationResultBox').style.display = 'none'; 
                     document.getElementById('prevPhoneInput').value = ''; 
-                    document.getElementById('firstName').value = ''; document.getElementById('lastName').value = ''; 
-                    document.getElementById('primaryContact').value = ''; document.getElementById('alternateContact').value = ''; 
-                    document.getElementById('dob').value = ''; document.getElementById('address').value = ''; 
+                    
+                    // Clear autofill data when switching back to "New Admission"
+                    document.getElementById('firstName').value = ''; 
+                    document.getElementById('lastName').value = ''; 
+                    document.getElementById('primaryContact').value = ''; 
+                    document.getElementById('alternateContact').value = ''; 
+                    document.getElementById('dob').value = ''; 
+                    document.getElementById('address').value = ''; 
                     calcAge();
                 }
             });
 
             document.getElementById('btn-validate-readmission').addEventListener('click', () => {
-                const phone = document.getElementById('prevPhoneInput').value; const resBox = document.getElementById('validationResultBox'); const admissionTypeSelect = document.getElementById('admissionTypeSelect');
-                if(phone.length !== 10) { resBox.style.display = 'block'; resBox.innerHTML = '<span style="color:var(--error-red);">Please enter a valid 10-digit number.</span>'; return; }
+                const phone = document.getElementById('prevPhoneInput').value; 
+                const resBox = document.getElementById('validationResultBox'); 
+                const admissionTypeSelect = document.getElementById('admissionTypeSelect');
+                
+                if(phone.length !== 10) { 
+                    resBox.style.display = 'block'; 
+                    resBox.innerHTML = '<span style="color:var(--error-red);">Please enter a valid 10-digit number.</span>'; 
+                    return; 
+                }
                 
                 let users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
                 let user = [...users].reverse().find(u => u.primaryContact === phone);
                 resBox.style.display = 'block';
                 
                 if(user) {
-                    const parts = user.date.split('-'); const prevDate = new Date(parts[2], parts[1]-1, parts[0]);
-                    const currParts = document.getElementById('dateOfAdmission').value.split('-'); const currDate = new Date(currParts[2], currParts[1]-1, currParts[0]);
-                    let expiryDate = new Date(prevDate); expiryDate.setMonth(expiryDate.getMonth() + 6);
+                    const parts = user.date.split('-'); 
+                    const prevDate = new Date(parts[2], parts[1]-1, parts[0]);
+                    const currParts = document.getElementById('dateOfAdmission').value.split('-'); 
+                    const currDate = new Date(currParts[2], currParts[1]-1, currParts[0]);
+                    
+                    let expiryDate = new Date(prevDate); 
+                    expiryDate.setMonth(expiryDate.getMonth() + 6);
                     
                     let statusHtml = '';
                     if (currDate > expiryDate) {
@@ -1411,19 +1426,26 @@
                         admissionTypeSelect.value = 'Re-Admission';
                     }
                     
-                    document.getElementById('firstName').value = user.firstName || ''; document.getElementById('lastName').value = user.lastName || '';
-                    document.getElementById('primaryContact').value = user.primaryContact || phone; document.getElementById('alternateContact').value = user.alternateContact || '';
-                    document.getElementById('dob').value = user.dob || ''; document.getElementById('address').value = user.address || '';
+                    document.getElementById('firstName').value = user.firstName || ''; 
+                    document.getElementById('lastName').value = user.lastName || '';
+                    document.getElementById('primaryContact').value = user.primaryContact || phone; 
+                    document.getElementById('alternateContact').value = user.alternateContact || '';
+                    document.getElementById('dob').value = user.dob || ''; 
+                    document.getElementById('address').value = user.address || '';
                     calcAge(); 
                     
                     resBox.innerHTML = `${statusHtml}<br><br><strong>Name:</strong> ${user.fullName}<br><strong>Contact:</strong> ${user.primaryContact}<br><strong>Prev. Registration Date:</strong> ${user.date}`;
                 } else {
                     resBox.innerHTML = '<span style="color:var(--error-red);">No previous registration found.</span><br><span style="color:var(--text-muted); font-size:0.85rem;">Type changed to New Admission.</span>';
-                    admissionTypeSelect.value = 'New Admission'; document.getElementById('primaryContact').value = phone;
+                    admissionTypeSelect.value = 'New Admission'; 
                     
-                    document.getElementById('firstName').value = ''; document.getElementById('lastName').value = '';
-                    document.getElementById('alternateContact').value = ''; document.getElementById('dob').value = '';
-                    document.getElementById('address').value = ''; document.getElementById('age').value = '';
+                    document.getElementById('primaryContact').value = phone;
+                    document.getElementById('firstName').value = ''; 
+                    document.getElementById('lastName').value = '';
+                    document.getElementById('alternateContact').value = ''; 
+                    document.getElementById('dob').value = '';
+                    document.getElementById('address').value = ''; 
+                    calcAge();
                 }
             });
 
