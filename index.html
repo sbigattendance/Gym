@@ -121,13 +121,19 @@
         input:focus, select:focus, textarea:focus { border-color: var(--accent-orange); background-color: var(--bg-card); box-shadow: 0 0 0 2px rgba(255, 102, 0, 0.15); }
         input[readonly] { background-color: var(--bg-dark); color: var(--text-muted); cursor: not-allowed; border-style: dashed; }
         
-        /* PIN Specific Input */
         .pin-input {
             font-size: 2rem; letter-spacing: 0.5rem; text-align: center; padding: 1rem;
             background-color: var(--bg-dark); color: var(--accent-orange); font-weight: 900;
         }
 
         .warning-text { color: var(--error-red); font-size: 0.85rem; margin-top: 0.5rem; display: none; font-weight: bold; }
+        
+        /* Re-admission validation box */
+        #reAdmissionSection {
+            background: var(--bg-card); padding: 1.5rem; border-radius: 8px; 
+            margin-bottom: 1.5rem; border: 1px dashed var(--accent-orange);
+            display: none; animation: fadeIn 0.3s ease;
+        }
 
         /* ==========================================================================
            5. MULTI-STEP LOGIC & VERIFICATION UI
@@ -200,24 +206,16 @@
         #pdf-template-wrapper {
             display: none; 
             background: #555; 
-            min-height: 100vh;
-            width: 100vw;
-            padding: 20px;
-            justify-content: center;
+            min-height: 100vh; width: 100vw;
+            padding: 20px; justify-content: center;
         }
         
         #pdf-template {
-            background: #ffffff;
-            color: #111111;
-            width: 210mm;
-            height: 296mm; /* Strictly under 297mm to guarantee a single page output */
+            background: #ffffff; color: #111111;
+            width: 210mm; height: 296mm; 
             padding: 12mm 15mm; 
-            box-sizing: border-box;
-            font-family: 'Helvetica', 'Arial', sans-serif;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            box-sizing: border-box; font-family: 'Helvetica', 'Arial', sans-serif;
+            position: relative; overflow: hidden; display: flex; flex-direction: column;
         }
 
         .pdf-flex-between { display: flex; justify-content: space-between; align-items: flex-end; }
@@ -245,28 +243,12 @@
 
         .pdf-rules-container { border-top: 2px solid var(--accent-orange); padding-top: 10px; flex-grow: 1; }
         .pdf-rules-container h3 { color: var(--accent-orange); font-size: 12px; margin: 0 0 10px 0; text-transform: uppercase; }
-        .pdf-rules-list {
-            column-count: 2;
-            column-gap: 25px;
-            font-size: 9px;
-            line-height: 1.35;
-            padding-left: 15px;
-            margin: 0;
-            color: #111;
-        }
+        .pdf-rules-list { column-count: 2; column-gap: 25px; font-size: 9px; line-height: 1.35; padding-left: 15px; margin: 0; color: #111; }
         .pdf-rules-list li { margin-bottom: 8px; break-inside: avoid; }
         .pdf-rules-list strong { display: block; font-size: 9.5px; color: #000; }
         .pdf-rules-list em { display: block; font-style: normal; color: #444; font-size: 9.5px; }
 
-        .pdf-footer {
-            margin-top: auto; 
-            border-top: 1px solid var(--accent-orange);
-            padding-top: 10px;
-            text-align: center;
-            font-size: 9px;
-            color: #555;
-            font-weight: 600;
-        }
+        .pdf-footer { margin-top: auto; border-top: 1px solid var(--accent-orange); padding-top: 10px; text-align: center; font-size: 9px; color: #555; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -290,7 +272,7 @@
             <div class="compact-grid">
                 <div class="module-card" onclick="appContext.switchView('admission')">
                     <span class="module-icon">📝</span>
-                    <h3>New Admission</h3>
+                    <h3>Admission Registration</h3>
                 </div>
                 <div class="module-card" onclick="appContext.openLogin('staff')">
                     <span class="module-icon">👨‍💼</span>
@@ -359,7 +341,7 @@
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
-                    <h2 class="module-title">New Admission</h2>
+                    <h2 class="module-title">Admission Registration</h2>
                 </div>
                 
                 <form id="admissionForm">
@@ -374,8 +356,35 @@
                                 <input type="text" id="dateOfAdmission" placeholder="DD-MM-YYYY" pattern="\d{2}-\d{2}-\d{4}" required>
                             </div>
                             <div class="form-group">
-                                <label for="admissionType">Type of Admission <span class="required">*</span></label>
-                                <select id="admissionType" required>
+                                <label for="admissionTypeSelect">Admission Type <span class="required">*</span></label>
+                                <select id="admissionTypeSelect" required>
+                                    <option value="New Admission">New Admission</option>
+                                    <option value="Re-Admission">Re-Admission</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Re-Admission Section -->
+                        <div id="reAdmissionSection">
+                            <label style="color: var(--accent-orange);">Validate Previous Registration</label>
+                            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                                <input type="tel" id="prevPhoneInput" placeholder="Enter previous registered phone number" pattern="\d{10}" maxlength="10" style="flex:1;">
+                                <button type="button" id="btn-validate-readmission" class="btn secondary" style="padding: 0.5rem 1rem;">Validate</button>
+                            </div>
+                            <div id="validationResultBox" style="display:none; font-size: 0.9rem; line-height: 1.5; padding: 1rem; background: var(--bg-dark); border-radius: 6px;"></div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="admissionCategory">Admission Category <span class="required">*</span></label>
+                                <select id="admissionCategory" required>
+                                    <option value="Individual">Individual</option>
+                                    <option value="Family">Family</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="trainingCategory">Training Category <span class="required">*</span></label>
+                                <select id="trainingCategory" required>
                                     <option value="Regular">Regular</option>
                                     <option value="Personal Training">Personal Training</option>
                                 </select>
@@ -508,7 +517,8 @@
                 <div style="flex: 1;">
                     <table class="pdf-table">
                         <tr><th>FULL NAME</th><td id="pdf-name"></td></tr>
-                        <tr><th>ADMISSION TYPE</th><td id="pdf-type"></td></tr>
+                        <tr><th>ADMISSION DETAILS</th><td id="pdf-admission-details"></td></tr>
+                        <tr><th>TRAINING CATEGORY</th><td id="pdf-training-category"></td></tr>
                         <tr><th>PRIMARY CONTACT</th><td id="pdf-contact1"></td></tr>
                         <tr><th>ALTERNATE CONTACT</th><td id="pdf-contact2"></td></tr>
                         <tr><th>DATE OF BIRTH & AGE</th><td id="pdf-dob-age"></td></tr>
@@ -524,7 +534,6 @@
 
             <div class="pdf-sigs-container">
                 <div class="pdf-sig-block">
-                    <!-- Member Signature strictly boxed above the line -->
                     <div class="pdf-sig-image-box">
                         <img id="pdf-member-sig" src="" alt="Member Signature" style="display:none;">
                     </div>
@@ -536,7 +545,6 @@
                     </div>
                 </div>
                 <div class="pdf-sig-block">
-                    <!-- Authorized Signature strictly boxed above the line -->
                     <div class="pdf-sig-image-box">
                         <img src="signature.png" alt="Authorized Signature" onerror="this.style.display='none'">
                     </div>
@@ -582,8 +590,8 @@
     <script>
         // Global App Context for routing and state
         const appContext = {
-            currentRole: null, // Active verified role ('staff' or 'admin')
-            pendingRole: null, // Temporary role selection for login screen
+            currentRole: null, 
+            pendingRole: null, 
             
             switchView: function(viewName) {
                 document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
@@ -592,18 +600,15 @@
             },
             
             goHome: function() {
-                // If a user is successfully logged in, 'Back' takes them to the dashboard
                 if (this.currentRole) {
                     this.switchView('dashboard');
                 } else {
-                    // Otherwise, safely clear any pending attempts and return to home
                     this.pendingRole = null;
                     this.switchView('home');
                 }
             },
             
             openLogin: function(role) {
-                // Set pending role ONLY. Do not grant access yet.
                 this.pendingRole = role;
                 document.getElementById('login-title').innerText = role === 'staff' ? 'Staff Login' : 'Admin Login';
                 const pinInput = document.getElementById('pin-input');
@@ -616,8 +621,6 @@
             handleLogin: function(e) {
                 e.preventDefault();
                 const pin = document.getElementById('pin-input').value;
-                
-                // Authorize and grant access
                 if (this.pendingRole === 'staff' && pin === '123456') {
                     this.currentRole = 'staff';
                     this.loadDashboard('STAFF');
@@ -631,13 +634,11 @@
             
             loadDashboard: function(roleTitle) {
                 document.getElementById('dashboard-title').innerHTML = `${roleTitle} <span>PORTAL</span>`;
-                // Hide reports if not admin
                 document.getElementById('card-reports').style.display = this.currentRole === 'admin' ? 'flex' : 'none';
                 this.switchView('dashboard');
             },
             
             logout: function() {
-                // Fully purge roles on logout
                 this.currentRole = null;
                 this.pendingRole = null;
                 this.switchView('home');
@@ -653,6 +654,8 @@
                 document.getElementById('btn-retake').style.display = 'none';
                 document.getElementById('btn-start-camera').style.display = 'inline-flex';
                 document.getElementById('ageWarning').style.display = 'none';
+                document.getElementById('reAdmissionSection').style.display = 'none';
+                document.getElementById('validationResultBox').style.display = 'none';
                 
                 document.getElementById('step-2').classList.remove('active-step');
                 document.getElementById('step-1').classList.add('active-step');
@@ -664,7 +667,6 @@
             }
         };
 
-        // Attach login handler
         document.getElementById('loginForm').addEventListener('submit', function(e) { appContext.handleLogin(e); });
 
         let userLocationStr = "Location details unavailable";
@@ -673,6 +675,61 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             
+            // Re-Admission Validation UI Logic
+            document.getElementById('admissionTypeSelect').addEventListener('change', function() {
+                const reAdSection = document.getElementById('reAdmissionSection');
+                if (this.value === 'Re-Admission') {
+                    reAdSection.style.display = 'block';
+                } else {
+                    reAdSection.style.display = 'none';
+                    document.getElementById('validationResultBox').style.display = 'none';
+                    document.getElementById('prevPhoneInput').value = '';
+                }
+            });
+
+            document.getElementById('btn-validate-readmission').addEventListener('click', () => {
+                const phone = document.getElementById('prevPhoneInput').value;
+                const resBox = document.getElementById('validationResultBox');
+                
+                if(phone.length !== 10) {
+                    resBox.style.display = 'block';
+                    resBox.innerHTML = '<span style="color:var(--error-red);">Please enter a valid 10-digit number.</span>';
+                    return;
+                }
+                
+                let users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
+                let user = users.find(u => u.primaryContact === phone);
+                
+                resBox.style.display = 'block';
+                if(user) {
+                    // Dates in format DD-MM-YYYY
+                    const parts = user.date.split('-');
+                    const prevDate = new Date(parts[2], parts[1]-1, parts[0]);
+                    
+                    const currParts = document.getElementById('dateOfAdmission').value.split('-');
+                    const currDate = new Date(currParts[2], currParts[1]-1, currParts[0]);
+                    
+                    let expiryDate = new Date(prevDate);
+                    expiryDate.setMonth(expiryDate.getMonth() + 6);
+                    
+                    let statusHtml = '';
+                    if (currDate > expiryDate) {
+                        statusHtml = '<span style="color:var(--error-red); font-weight:bold; font-size:1.1rem;">Status: NOT ELIGIBLE (> 6 Months)</span>';
+                    } else {
+                        statusHtml = '<span style="color:var(--success-green); font-weight:bold; font-size:1.1rem;">Status: ELIGIBLE</span>';
+                    }
+                    
+                    resBox.innerHTML = `
+                        ${statusHtml}<br><br>
+                        <strong>Name:</strong> ${user.fullName}<br>
+                        <strong>Contact:</strong> ${user.primaryContact}<br>
+                        <strong>Prev. Registration Date:</strong> ${user.date}
+                    `;
+                } else {
+                    resBox.innerHTML = '<span style="color:var(--error-red);">No previous registration found for this number.</span>';
+                }
+            });
+
             const step1 = document.getElementById('step-1');
             const step2 = document.getElementById('step-2');
             
@@ -852,7 +909,9 @@
                 currentMemberDetails = {
                     id: `REV-${String(currentCount).padStart(4, '0')}`,
                     date: dateInput.value,
-                    type: document.getElementById('admissionType').value,
+                    admissionType: document.getElementById('admissionTypeSelect').value,
+                    admissionCategory: document.getElementById('admissionCategory').value,
+                    trainingCategory: document.getElementById('trainingCategory').value,
                     firstName: firstNameVal,
                     fullName: fullName, 
                     primaryContact: document.getElementById('primaryContact').value,
@@ -863,6 +922,11 @@
                     photo: selfieData.value,
                     signature: sigCanvas.toDataURL('image/jpeg', 1.0)
                 };
+
+                // Save to local DB for future Re-Admission checks
+                let usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
+                usersDb.push(currentMemberDetails);
+                localStorage.setItem('revive_users_db', JSON.stringify(usersDb));
 
                 document.getElementById('generated-id').innerText = currentMemberDetails.id;
                 document.getElementById('successModal').style.display = 'flex';
@@ -881,7 +945,11 @@
                     document.getElementById('pdf-date').innerText = currentMemberDetails.date;
                     document.getElementById('pdf-photo').src = currentMemberDetails.photo;
                     document.getElementById('pdf-name').innerText = currentMemberDetails.fullName;
-                    document.getElementById('pdf-type').innerText = currentMemberDetails.type;
+                    
+                    // Map new variables
+                    document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType} - ${currentMemberDetails.admissionCategory}`;
+                    document.getElementById('pdf-training-category').innerText = currentMemberDetails.trainingCategory;
+                    
                     document.getElementById('pdf-contact1').innerText = currentMemberDetails.primaryContact;
                     document.getElementById('pdf-contact2').innerText = currentMemberDetails.alternateContact;
                     document.getElementById('pdf-dob-age').innerText = `${currentMemberDetails.dob} (${currentMemberDetails.age} yrs)`;
