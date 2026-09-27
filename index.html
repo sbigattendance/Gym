@@ -10,18 +10,18 @@
     
     <style>
         /* ==========================================================================
-           1. CSS VARIABLES & RESET
+           1. CSS VARIABLES & RESET (Light Theme Match for Logo)
            ========================================================================== */
         :root {
-            --bg-dark: #050505;
-            --bg-panel: #141414;
-            --bg-card: #1f1f1f;
-            --text-light: #ffffff;
-            --text-muted: #a0a0a0;
+            --bg-main: #f4f7f6;
+            --bg-panel: #ffffff;
+            --bg-card: #ffffff;
+            --text-main: #222222;
+            --text-muted: #666666;
             --accent-orange: #ff6600;
-            --border-color: #333333;
+            --border-color: #e0e0e0;
             --success-green: #25D366;
-            --error-red: #ff3333;
+            --error-red: #d32f2f;
         }
 
         * {
@@ -30,8 +30,8 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        html { font-size: 16px; background-color: var(--bg-dark); }
-        body { color: var(--text-light); min-height: 100vh; overflow-x: hidden; }
+        html { font-size: 16px; background-color: var(--bg-main); }
+        body { color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
         /* ==========================================================================
            2. MAIN LAYOUT & NAVIGATION
@@ -41,14 +41,14 @@
         .app-header {
             background-color: var(--bg-panel); padding: 1rem 1.5rem;
             display: flex; justify-content: center; align-items: center;
-            border-bottom: 2px solid var(--accent-orange);
+            border-bottom: 3px solid var(--accent-orange);
             position: sticky; top: 0; z-index: 100;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
         .logo-container { cursor: pointer; display: flex; align-items: center; transition: transform 0.2s; }
         .logo-container:active { transform: scale(0.95); }
-        .logo-container img { height: 40px; object-fit: contain; }
+        .logo-container img { height: 45px; object-fit: contain; }
 
         .view-section {
             display: none; flex: 1; width: 100%; max-width: 1200px;
@@ -57,27 +57,31 @@
         .view-section.active-view { display: block; }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         /* ==========================================================================
-           3. DASHBOARD MODULES
+           3. DASHBOARD MODULES (COMPACT 1-COLUMN LAYOUT)
            ========================================================================== */
         .dashboard-header { text-align: center; margin-bottom: 2rem; }
         .dashboard-header h1 { font-size: clamp(1.6rem, 5vw, 2.5rem); font-weight: 800; letter-spacing: 2px; margin-bottom: 0.5rem; }
         .dashboard-header span { color: var(--accent-orange); }
         
         .compact-grid {
-            display: grid; grid-template-columns: 1fr; gap: 1rem;
-            max-width: 400px; margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr; 
+            gap: 1rem;
+            max-width: 400px; 
+            margin: 0 auto;
         }
         
         .module-card {
             background-color: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 12px; padding: 1.25rem 0.5rem; text-align: center;
+            border-radius: 12px; padding: 1.5rem 1rem; text-align: center;
             cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
         }
         .module-card::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
@@ -85,44 +89,39 @@
         }
         .module-card:hover {
             transform: translateY(-3px); border-color: var(--accent-orange);
-            box-shadow: 0 8px 25px rgba(255, 102, 0, 0.15); background-color: #242424;
+            box-shadow: 0 8px 25px rgba(255, 102, 0, 0.1);
         }
         .module-card:hover::before { transform: scaleX(1); }
-        .module-icon { font-size: 2.2rem; margin-bottom: 0.5rem; display: block; }
-        .module-card h3 { font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0; line-height: 1.2; }
-
-        @media(min-width: 768px) {
-            .module-card { padding: 1.5rem 1rem; }
-            .module-icon { font-size: 2.5rem; }
-            .module-card h3 { font-size: 1.1rem; }
-        }
+        
+        .module-icon-svg { width: 42px; height: 42px; stroke: var(--accent-orange); fill: none; stroke-width: 1.5; margin-bottom: 0.8rem; }
+        .module-card h3 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0; color: var(--text-main); font-weight: 700; }
 
         /* ==========================================================================
-           4. FORM UI
+           4. FORM UI & PIN INPUT
            ========================================================================== */
         .module-toolbar { display: flex; align-items: center; margin-bottom: 2rem; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
-        .back-btn { background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; margin-left: -0.5rem; transition: color 0.2s; }
+        .back-btn { background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; margin-left: -0.5rem; transition: color 0.2s; font-weight: 600; }
         .back-btn:hover { color: var(--accent-orange); }
-        .module-title { font-size: clamp(1.2rem, 4vw, 1.8rem); color: var(--accent-orange); text-transform: uppercase; font-weight: 700; }
+        .module-title { font-size: clamp(1.2rem, 4vw, 1.8rem); color: var(--accent-orange); text-transform: uppercase; font-weight: 800; }
         
-        .form-layout { max-width: 800px; margin: 0 auto; }
+        .form-layout { max-width: 800px; margin: 0 auto; background: var(--bg-panel); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border-color); }
         .form-row { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; }
         .form-group { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
-        label { margin-bottom: 0.6rem; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+        label { margin-bottom: 0.6rem; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
         .required { color: var(--accent-orange); font-size: 1.1rem; line-height: 0; vertical-align: middle; }
         
         input, select, textarea {
-            background-color: var(--bg-panel); border: 1px solid var(--border-color);
-            color: var(--text-light); padding: 1rem; border-radius: 8px; outline: none; transition: all 0.3s; font-size: 1rem; width: 100%;
+            background-color: var(--bg-main); border: 1px solid var(--border-color);
+            color: var(--text-main); padding: 1rem; border-radius: 8px; outline: none; transition: all 0.3s; font-size: 1rem; width: 100%; font-weight: 500;
         }
-        input:focus, select:focus, textarea:focus { border-color: var(--accent-orange); background-color: var(--bg-card); box-shadow: 0 0 0 2px rgba(255, 102, 0, 0.15); }
-        input[readonly] { background-color: var(--bg-dark); color: var(--text-muted); cursor: not-allowed; border-style: dashed; }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent-orange); background-color: var(--bg-panel); box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1); }
+        input[readonly] { background-color: #e9ecef; color: var(--text-muted); cursor: not-allowed; border-style: dashed; }
         
-        .pin-input { font-size: 2rem; letter-spacing: 0.5rem; text-align: center; padding: 1rem; background-color: var(--bg-dark); color: var(--accent-orange); font-weight: 900; }
+        .pin-input { font-size: 2rem; letter-spacing: 0.5rem; text-align: center; padding: 1rem; background-color: var(--bg-main); color: var(--accent-orange); font-weight: 900; }
         .warning-text { color: var(--error-red); font-size: 0.85rem; margin-top: 0.5rem; display: none; font-weight: bold; }
         
         #reAdmissionSection {
-            background: var(--bg-card); padding: 1.5rem; border-radius: 8px; 
+            background: var(--bg-main); padding: 1.5rem; border-radius: 8px; 
             margin-bottom: 1.5rem; border: 1px dashed var(--accent-orange); display: none; animation: fadeIn 0.3s ease;
         }
 
@@ -131,52 +130,50 @@
            ========================================================================== */
         .step-container { display: none; animation: fadeIn 0.3s ease-in-out; }
         .step-container.active-step { display: block; }
-        .step-indicator { margin-bottom: 1.5rem; color: var(--accent-orange); font-weight: bold; text-align: center; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; border: 1px dashed var(--border-color); padding: 10px; border-radius: 8px; }
+        .step-indicator { margin-bottom: 1.5rem; color: var(--accent-orange); font-weight: 800; text-align: center; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; border: 1px dashed var(--border-color); padding: 10px; border-radius: 8px; background: var(--bg-main); }
 
         .verification-group {
             display: flex; flex-direction: column; align-items: center; margin-bottom: 2.5rem;
-            background-color: var(--bg-panel); padding: 2rem 1rem; border-radius: 12px; border: 1px dashed var(--border-color);
+            background-color: var(--bg-main); padding: 2rem 1rem; border-radius: 12px; border: 1px dashed var(--border-color);
         }
 
         .camera-container {
-            width: 100%; max-width: 260px; aspect-ratio: 1; background-color: #000; border: 3px solid var(--border-color);
-            margin: 1rem 0; display: flex; justify-content: center; align-items: center; overflow: hidden; border-radius: 50%; box-shadow: 0 8px 20px rgba(0,0,0,0.5); position: relative;
+            width: 100%; max-width: 260px; aspect-ratio: 1; background-color: #e9ecef; border: 3px solid var(--border-color);
+            margin: 1rem 0; display: flex; justify-content: center; align-items: center; overflow: hidden; border-radius: 50%; box-shadow: 0 8px 20px rgba(0,0,0,0.1); position: relative;
         }
-        .camera-placeholder { color: var(--text-muted); font-size: 3rem; position: absolute; }
+        .camera-placeholder svg { width: 50px; height: 50px; stroke: var(--text-muted); fill: none; stroke-width: 1.5; }
         video, #selfie-preview { width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 2; }
         
         .signature-container { width: 100%; margin-top: 1rem; text-align: center; }
         .signature-pad {
             border: 2px solid var(--accent-orange); border-radius: 8px; background-color: #ffffff;
-            cursor: crosshair; touch-action: none; width: 100%; max-width: 450px; height: 150px; display: block; margin: 0 auto 1rem auto;
+            cursor: crosshair; touch-action: none; width: 100%; max-width: 450px; height: 150px; display: block; margin: 0 auto 1rem auto; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
         }
         
-        /* FEE UI */
         .fee-summary-box {
-            background-color: var(--bg-panel); border: 2px solid var(--border-color); border-radius: 12px;
+            background-color: var(--bg-main); border: 2px solid var(--border-color); border-radius: 12px;
             padding: 2rem; margin-bottom: 2rem; font-size: 1.1rem;
         }
         .fee-row { display: flex; justify-content: space-between; margin-bottom: 1rem; align-items: center;}
-        .fee-row strong { color: #fff; }
+        .fee-row strong { color: var(--text-main); }
         .fee-total { font-size: 1.4rem; color: var(--accent-orange); font-weight: 900; border-top: 1px dashed var(--border-color); padding-top: 1rem; margin-top: 0.5rem;}
+        .fee-total strong { color: var(--accent-orange); }
         
-        .qr-wrapper {
-            background: #fff; padding: 15px; border-radius: 12px; display: inline-block;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+        .qr-wrapper { background: #fff; padding: 15px; border-radius: 12px; display: inline-block; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border-color); }
 
         .control-btns { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; width: 100%; margin-top: 1rem; }
         
         .btn {
             padding: 1rem 1.5rem; border: none; border-radius: 8px; cursor: pointer;
-            font-weight: 700; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; font-size: 0.95rem; display: inline-flex; justify-content: center; align-items: center; gap: 0.5rem;
+            font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; font-size: 0.95rem; display: inline-flex; justify-content: center; align-items: center; gap: 0.5rem;
         }
         .btn:active { transform: scale(0.98); }
         .btn.primary { background-color: var(--accent-orange); color: #fff; width: 100%; justify-content: center;}
-        .btn.primary:hover { filter: brightness(1.1); }
-        .btn.secondary { background-color: transparent; border: 1px solid var(--text-muted); color: var(--text-light); }
-        .btn.secondary:hover { border-color: var(--text-light); }
+        .btn.primary:hover { filter: brightness(1.1); box-shadow: 0 4px 15px rgba(255,102,0,0.3); }
+        .btn.secondary { background-color: transparent; border: 2px solid var(--text-muted); color: var(--text-muted); font-weight: 700; }
+        .btn.secondary:hover { border-color: var(--text-main); color: var(--text-main); }
         .btn.whatsapp { background-color: var(--success-green); color: #fff; width: 100%; justify-content: center;}
+        .btn.whatsapp:hover { box-shadow: 0 4px 15px rgba(37,211,102,0.3); }
         
         .action-row { display: flex; gap: 1rem; margin-top: 2rem; }
         .action-row .btn { flex: 1; }
@@ -186,39 +183,37 @@
            ========================================================================== */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 1000; padding: 1rem;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 1000; padding: 1rem;
         }
         .modal-content {
             background-color: var(--bg-panel); padding: clamp(1.5rem, 5vw, 3rem); border-radius: 16px;
-            text-align: center; border: 1px solid var(--accent-orange); max-width: 450px; width: 100%; animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center; border: 2px solid var(--accent-orange); max-width: 450px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.2); animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         
-        /* Payment Success Animation */
         .checkmark-circle {
             width: 80px; height: 80px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center;
-            background: rgba(37, 211, 102, 0.1); border: 4px solid var(--success-green); margin-bottom: 1.5rem;
+            background: rgba(37, 211, 102, 0.1); border: 4px solid var(--success-green); margin: 0 auto 1.5rem auto;
         }
-        .checkmark-icon { font-size: 3rem; color: var(--success-green); }
+        .checkmark-icon svg { width: 40px; height: 40px; stroke: var(--success-green); fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 
-        .orange-text { color: var(--accent-orange); margin: 1rem 0; font-size: 1.5rem; text-transform: uppercase; font-weight: 800; }
+        .orange-text { color: var(--accent-orange); margin: 1rem 0; font-size: 1.5rem; text-transform: uppercase; font-weight: 900; }
         .admission-badge {
-            background-color: var(--bg-dark); padding: 1.2rem; font-size: 2.2rem; font-weight: 900; letter-spacing: 2px;
-            color: var(--text-light); border: 2px dashed var(--accent-orange); border-radius: 8px; margin: 1.5rem 0; display: inline-block; width: 100%;
+            background-color: var(--bg-main); padding: 1.2rem; font-size: 2.2rem; font-weight: 900; letter-spacing: 2px;
+            color: var(--text-main); border: 2px dashed var(--accent-orange); border-radius: 8px; margin: 1.5rem 0; display: inline-block; width: 100%;
         }
         .modal-actions { display: flex; flex-direction: column; gap: 0.8rem; }
 
         @media(max-width: 768px) {
             .form-row { flex-direction: column; gap: 1rem; margin-bottom: 1rem; }
             .view-section { padding: 1.5rem 1rem; }
+            .form-layout { padding: 1.5rem; border: none; box-shadow: none; background: transparent; }
             .btn { padding: 0.9rem 1.5rem; }
         }
 
         /* ==========================================================================
            7. PDF TEMPLATE - STRICT 1-PAGE A4 LAYOUT
            ========================================================================== */
-        #pdf-template-wrapper {
-            display: none; background: #555; min-height: 100vh; width: 100vw; padding: 20px; justify-content: center;
-        }
+        #pdf-template-wrapper { display: none; background: #e0e0e0; min-height: 100vh; width: 100vw; padding: 20px; justify-content: center; }
         #pdf-template {
             background: #ffffff; color: #111111; width: 210mm; height: 296mm; 
             padding: 12mm 15mm; box-sizing: border-box; font-family: 'Helvetica', 'Arial', sans-serif;
@@ -260,13 +255,11 @@
 </head>
 <body>
 
-    <!-- =======================================================================
-         MAIN APPLICATION UI
-         ======================================================================= -->
     <div id="app-wrapper">
         <header class="app-header">
             <div class="logo-container" onclick="appContext.goHome()">
-                <img src="logo.png" alt="REVIVE FITNESS STUDIO" onerror="this.src='https://via.placeholder.com/150x40/000000/ff6600?text=REVIVE+FITNESS'">
+                <!-- Logo matched to the white background -->
+                <img src="logo.png" alt="REVIVE FITNESS STUDIO" onerror="this.src='https://via.placeholder.com/150x40/ffffff/ff6600?text=REVIVE+FITNESS'">
             </div>
         </header>
 
@@ -278,15 +271,15 @@
             </div>
             <div class="compact-grid">
                 <div class="module-card" onclick="appContext.switchView('admission')">
-                    <span class="module-icon">📝</span>
+                    <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                     <h3>Admission Registration</h3>
                 </div>
                 <div class="module-card" onclick="appContext.openLogin('staff')">
-                    <span class="module-icon">👨‍💼</span>
+                    <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     <h3>Staff Login</h3>
                 </div>
                 <div class="module-card" onclick="appContext.openLogin('admin')">
-                    <span class="module-icon">👑</span>
+                    <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                     <h3>Admin Login</h3>
                 </div>
             </div>
@@ -319,19 +312,19 @@
             </div>
             <div class="compact-grid">
                 <div class="module-card" onclick="alert('Module under construction.')">
-                    <span class="module-icon">💳</span>
+                    <svg class="module-icon-svg" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
                     <h3>Fee Collection</h3>
                 </div>
                 <div class="module-card" onclick="alert('Module under construction.')">
-                    <span class="module-icon">✅</span>
+                    <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                     <h3>Attendance</h3>
                 </div>
                 <div class="module-card" onclick="alert('Module under construction.')">
-                    <span class="module-icon">👥</span>
+                    <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                     <h3>User Detail Update</h3>
                 </div>
                 <div class="module-card" id="card-reports" onclick="alert('Module under construction.')">
-                    <span class="module-icon">📊</span>
+                    <svg class="module-icon-svg" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
                     <h3>Reports</h3>
                 </div>
             </div>
@@ -378,7 +371,7 @@
                                 <input type="tel" id="prevPhoneInput" placeholder="Enter previous registered phone number" pattern="\d{10}" maxlength="10" style="flex:1;">
                                 <button type="button" id="btn-validate-readmission" class="btn secondary" style="padding: 0.5rem 1rem;">Validate</button>
                             </div>
-                            <div id="validationResultBox" style="display:none; font-size: 0.9rem; line-height: 1.5; padding: 1rem; background: var(--bg-dark); border-radius: 6px;"></div>
+                            <div id="validationResultBox" style="display:none; font-size: 0.9rem; line-height: 1.5; padding: 1rem; background: var(--bg-main); border-radius: 6px; border: 1px solid var(--border-color);"></div>
                         </div>
 
                         <div class="form-row">
@@ -449,7 +442,9 @@
                         <div class="verification-group">
                             <label>Live Portrait Capture <span class="required">*</span></label>
                             <div class="camera-container">
-                                <div class="camera-placeholder">📷</div>
+                                <div class="camera-placeholder">
+                                    <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                                </div>
                                 <video id="camera-stream" autoplay playsinline style="display:none;"></video>
                                 <canvas id="canvas-snapshot" style="display:none;"></canvas>
                                 <img id="selfie-preview" style="display:none;" />
@@ -483,10 +478,11 @@
                         <div class="step-indicator">Step 3 of 3: Initial Payment Validation</div>
                         
                         <div class="fee-summary-box">
-                            <h3 style="color:var(--accent-orange); text-align:center; margin-bottom:1.5rem;">FEE SUMMARY</h3>
-                            <div class="fee-row"><span>Pre-Admission ID:</span> <strong id="calc-admission-id">REV-0000</strong></div>
+                            <h3 style="color:var(--accent-orange); text-align:center; margin-bottom:1.5rem; letter-spacing:1px;">FEE SUMMARY</h3>
+                            <div class="fee-row"><span>Admission ID:</span> <strong id="calc-admission-id" style="color:var(--accent-orange);">REV-0000</strong></div>
                             <div class="fee-row"><span>Admission Fee:</span> <strong>₹<span id="calc-admin-fee">850</span></strong></div>
-                            <div class="fee-row"><span>Monthly Fee (<span id="calc-days-tag"></span>):</span> <strong>₹<span id="calc-monthly-fee">800</span></strong></div>
+                            <!-- Days left text removed as per request -->
+                            <div class="fee-row"><span>Monthly Fee:</span> <strong>₹<span id="calc-monthly-fee">800</span></strong></div>
                             <div class="fee-row fee-total"><span>Total Amount:</span> <strong>₹<span id="calc-total-fee">1650</span></strong></div>
                         </div>
 
@@ -498,15 +494,14 @@
                             </select>
                         </div>
 
-                        <div id="upi-section" style="text-align:center; margin: 2rem 0; padding: 1.5rem; background: #000; border: 1px dashed var(--border-color); border-radius: 12px;">
-                            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem; text-transform:uppercase; letter-spacing:1px;">Scan to pay <strong style="color:var(--accent-orange); font-size:1.2rem;">₹<span id="qr-amount-display"></span></strong></p>
+                        <div id="upi-section" style="text-align:center; margin: 2rem 0; padding: 1.5rem; background: var(--bg-main); border: 1px dashed var(--border-color); border-radius: 12px;">
+                            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem; text-transform:uppercase; letter-spacing:1px; font-weight:700;">Scan to pay <strong style="color:var(--accent-orange); font-size:1.4rem;">₹<span id="qr-amount-display"></span></strong></p>
                             <div class="qr-wrapper">
                                 <img id="upi-qr-code" src="" alt="UPI QR Code" style="width:200px; height:200px; display:block;">
                             </div>
                         </div>
 
                         <div class="action-row" style="flex-direction: column; margin-top:2rem;">
-                            <!-- This button acts as the final submission trigger -->
                             <button type="button" id="btn-validate-payment" class="btn primary">Validate Payment</button>
                             <button type="button" id="btn-prev-step-2" class="btn secondary">← Back to Verification</button>
                         </div>
@@ -516,20 +511,18 @@
             </div>
         </main>
 
-        <!-- PAYMENT SUCCESS INTERMEDIATE MODAL -->
         <div id="paymentSuccessModal" class="modal">
             <div class="modal-content" style="text-align:center;">
-                <div class="checkmark-circle"><div class="checkmark-icon">✓</div></div>
-                <h2 style="color: var(--text-light); margin-bottom:0.5rem; font-size:1.8rem;">Payment Successful!</h2>
+                <div class="checkmark-circle"><div class="checkmark-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div></div>
+                <h2 style="color: var(--text-main); margin-bottom:0.5rem; font-size:1.8rem;">Payment Successful!</h2>
                 <p style="color: var(--text-muted); margin-bottom: 2rem;">Amount fully received for Admission ID: <strong id="success-paid-id" style="color:var(--accent-orange);"></strong></p>
                 <button id="btn-proceed-to-admission" class="btn primary" style="width:100%;">Generate Admission Record</button>
             </div>
         </div>
 
-        <!-- FINAL REGISTRATION SUCCESS MODAL -->
         <div id="successModal" class="modal">
             <div class="modal-content">
-                <img src="logo.png" alt="REVIVE FITNESS STUDIO" style="height: 50px; margin-bottom: 1rem;" onerror="this.style.display='none'">
+                <img src="logo.png" alt="REVIVE FITNESS STUDIO" style="height: 45px; margin-bottom: 1.5rem;" onerror="this.style.display='none'">
                 <h2 class="orange-text">Registration Complete!</h2>
                 <div class="admission-badge" id="generated-id">REV-0000</div>
                 <div class="modal-actions">
@@ -540,7 +533,7 @@
                 </div>
             </div>
         </div>
-    </div> <!-- END APP WRAPPER -->
+    </div>
 
     <!-- =======================================================================
          PDF TEMPLATE - STRICT 1 PAGE A4 LAYOUT
@@ -581,7 +574,7 @@
 
             <div class="pdf-declaration">
                 <h4>DECLARATION</h4>
-                <p>I hereby declare that the details furnished above are true and correct to the best of my knowledge. I agree to abide by the rules, regulations, and disciplinary guidelines of Revive Fitness. I understand that the membership is non-transferable and fees are non-refundable. I acknowledge that physical exercise involves inherent risks and I participate at my own risk.</p>
+                <p>I hereby declare that the details furnished above are true and correct to the best of my knowledge[span_0](start_span)[span_0](end_span). I agree to abide by the rules, regulations, and disciplinary guidelines of Revive Fitness[span_1](start_span)[span_1](end_span). I understand that the membership is non-transferable and fees are non-refundable[span_2](start_span)[span_2](end_span). I acknowledge that physical exercise involves inherent risks and I participate at my own risk[span_3](start_span)[span_3](end_span).</p>
             </div>
 
             <div class="pdf-sigs-container">
@@ -640,9 +633,8 @@
          JAVASCRIPT ENGINE
          ======================================================================= -->
     <script>
-        // CONFIGURABLE BACKEND VARIABLES
         const APP_CONFIG = {
-            upiId: "revivefitness@upi", // Replace with your actual UPI ID
+            upiId: "revivefitness@upi", 
             baseAdmissionFee: 850,
             baseMonthlyFee: 800
         };
@@ -736,7 +728,6 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             
-            // Re-Admission Validation UI Logic
             document.getElementById('admissionTypeSelect').addEventListener('change', function() {
                 const reAdSection = document.getElementById('reAdmissionSection');
                 if (this.value === 'Re-Admission') {
@@ -783,7 +774,6 @@
                         statusHtml = '<span style="color:var(--success-green); font-weight:bold; font-size:1.1rem;">Status: ELIGIBLE</span>';
                     }
                     
-                    // AUTO-POPULATE 
                     document.getElementById('firstName').value = user.firstName || '';
                     document.getElementById('lastName').value = user.lastName || '';
                     document.getElementById('primaryContact').value = user.primaryContact || phone;
@@ -837,6 +827,23 @@
             const dateInput = document.getElementById('dateOfAdmission');
             const today = new Date();
             dateInput.value = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+
+            function validateDateNotFuture() {
+                const val = dateInput.value;
+                if (val.length === 10 && val.includes('-')) {
+                    const parts = val.split('-');
+                    if (parts.length === 3) {
+                        const inputDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                        const todayObj = new Date();
+                        todayObj.setHours(0,0,0,0);
+                        if (inputDate > todayObj) {
+                            alert("Future dates are not allowed for admission.");
+                            dateInput.value = `${String(todayObj.getDate()).padStart(2, '0')}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${todayObj.getFullYear()}`;
+                        }
+                    }
+                }
+            }
+            dateInput.addEventListener('blur', validateDateNotFuture);
 
             const dobInput = document.getElementById('dob');
             const ageInput = document.getElementById('age');
@@ -963,40 +970,31 @@
             sigCanvas.addEventListener('touchend', endDraw);
 
 
-            // ---------------------------------------------------------------------
-            // TRANSITION TO STEP 3 (FEE CALCULATION)
-            // ---------------------------------------------------------------------
             document.getElementById('btn-next-step-2').addEventListener('click', () => {
                 if (!selfieData.value) { alert("Portrait capture is mandatory."); return; }
                 if (!signatureHasData) { alert("Digital signature is mandatory."); return; }
 
-                // Determine ID
                 let currentCount = localStorage.getItem('revive_admission_count');
                 currentCount = !currentCount ? 1 : parseInt(currentCount) + 1;
                 preAdmissionId = `REV-${String(currentCount).padStart(4, '0')}`;
                 
-                // Calculate Fees
                 const adDateVal = document.getElementById('dateOfAdmission').value;
                 const parts = adDateVal.split('-');
                 const adDate = new Date(parts[2], parts[1]-1, parts[0]);
-                const daysInMonth = new Date(parts[2], parts[1], 0).getDate(); // Total days in that month
-                const remainingDays = daysInMonth - adDate.getDate() + 1; // Inclusive of admission day
+                const daysInMonth = new Date(parts[2], parts[1], 0).getDate(); 
+                const remainingDays = daysInMonth - adDate.getDate() + 1; 
                 
                 let monthlyFeeToPay = APP_CONFIG.baseMonthlyFee;
-                let daysTagText = "Full Month";
 
                 if (remainingDays < 15) {
                     monthlyFeeToPay = Math.round((APP_CONFIG.baseMonthlyFee / 30) * remainingDays);
-                    daysTagText = `${remainingDays} Days Pro-rated`;
                 }
 
                 calculatedTotalFee = APP_CONFIG.baseAdmissionFee + monthlyFeeToPay;
 
-                // Populate Step 3 UI
                 document.getElementById('calc-admission-id').innerText = preAdmissionId;
                 document.getElementById('calc-admin-fee').innerText = APP_CONFIG.baseAdmissionFee;
                 document.getElementById('calc-monthly-fee').innerText = monthlyFeeToPay;
-                document.getElementById('calc-days-tag').innerText = daysTagText;
                 document.getElementById('calc-total-fee').innerText = calculatedTotalFee;
 
                 updatePaymentMethodUI();
@@ -1012,7 +1010,6 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
-            // Payment UI Logic
             const paymentMethodSelect = document.getElementById('paymentMethod');
             const upiSection = document.getElementById('upi-section');
             const btnValidatePayment = document.getElementById('btn-validate-payment');
@@ -1023,7 +1020,6 @@
                     btnValidatePayment.innerText = 'Validate Payment & Complete';
                     document.getElementById('qr-amount-display').innerText = calculatedTotalFee;
                     
-                    // Generate UPI QR Code URL
                     const upiString = `upi://pay?pa=${APP_CONFIG.upiId}&pn=ReviveFitness&am=${calculatedTotalFee}&cu=INR`;
                     document.getElementById('upi-qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
                 } else {
@@ -1034,9 +1030,6 @@
 
             paymentMethodSelect.addEventListener('change', updatePaymentMethodUI);
 
-            // ---------------------------------------------------------------------
-            // FINAL ADMISSION SUBMISSION
-            // ---------------------------------------------------------------------
             btnValidatePayment.addEventListener('click', () => {
                 
                 if (navigator.geolocation) {
@@ -1094,10 +1087,6 @@
                 localStorage.setItem('revive_admission_count', currentCount);
             }
 
-
-            // ---------------------------------------------------------------------
-            // PDF Engine & Action Buttons
-            // ---------------------------------------------------------------------
             function getPdfBlob() {
                 return new Promise((resolve, reject) => {
                     const now = new Date();
