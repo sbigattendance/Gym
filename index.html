@@ -62,7 +62,7 @@
         }
 
         /* ==========================================================================
-           3. DASHBOARD MODULES (COMPACT 1-COLUMN LAYOUT)
+           3. DASHBOARD MODULES
            ========================================================================== */
         .dashboard-header { text-align: center; margin-bottom: 2rem; }
         .dashboard-header h1 { font-size: clamp(1.6rem, 5vw, 2.5rem); font-weight: 800; letter-spacing: 2px; margin-bottom: 0.5rem; }
@@ -125,6 +125,15 @@
             margin-bottom: 1.5rem; border: 1px dashed var(--accent-orange); display: none; animation: fadeIn 0.3s ease;
         }
 
+        /* Tariff Editor UI */
+        .tariff-row {
+            background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .tariff-month-name {
+            font-weight: 800; color: var(--accent-orange); margin-bottom: 1rem; font-size: 1.1rem; text-transform: uppercase; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;
+        }
+        .tariff-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+
         /* ==========================================================================
            5. MULTI-STEP LOGIC & VERIFICATION & FEE UI
            ========================================================================== */
@@ -151,12 +160,12 @@
         }
         
         .fee-summary-box {
-            background-color: var(--bg-main); border: 2px solid var(--border-color); border-radius: 12px;
+            background-color: var(--bg-main); border: 2px dashed var(--accent-orange); border-radius: 12px;
             padding: 2rem; margin-bottom: 2rem; font-size: 1.1rem;
         }
         .fee-row { display: flex; justify-content: space-between; margin-bottom: 1rem; align-items: center;}
         .fee-row strong { color: var(--text-main); }
-        .fee-total { font-size: 1.4rem; color: var(--accent-orange); font-weight: 900; border-top: 1px dashed var(--border-color); padding-top: 1rem; margin-top: 0.5rem;}
+        .fee-total { font-size: 1.4rem; color: var(--accent-orange); font-weight: 900; border-top: 1px solid var(--border-color); padding-top: 1rem; margin-top: 0.5rem;}
         .fee-total strong { color: var(--accent-orange); }
         
         .qr-wrapper { background: #fff; padding: 15px; border-radius: 12px; display: inline-block; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border-color); }
@@ -327,9 +336,41 @@
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
                     <h3>Reports</h3>
                 </div>
+                <div class="module-card" id="card-tariff" onclick="appContext.switchView('tariff-editor')">
+                    <svg class="module-icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <h3>Tariff Editor</h3>
+                </div>
             </div>
             <div style="text-align: center; margin-top: 3rem;">
                 <button class="btn secondary" onclick="appContext.logout()" style="font-size: 0.85rem; padding: 0.8rem 2rem;">Log Out Securely</button>
+            </div>
+        </main>
+
+        <!-- TARIFF EDITOR VIEW -->
+        <main id="view-tariff-editor" class="view-section">
+            <div class="form-layout" style="max-width: 900px;">
+                <div class="module-toolbar">
+                    <button class="back-btn" onclick="appContext.goHome()" type="button">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                        Back
+                    </button>
+                    <h2 class="module-title">Master Tariff Configurator</h2>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group" style="max-width: 300px;">
+                        <label for="fy-select">Select Financial Year</label>
+                        <select id="fy-select"></select>
+                    </div>
+                </div>
+
+                <div id="tariff-months-container" style="margin-top: 1rem;">
+                    <!-- JS populated months -->
+                </div>
+
+                <div class="action-row">
+                    <button type="button" id="btn-save-tariff" class="btn primary">Save All Tariffs</button>
+                </div>
             </div>
         </main>
 
@@ -480,10 +521,9 @@
                         <div class="fee-summary-box">
                             <h3 style="color:var(--accent-orange); text-align:center; margin-bottom:1.5rem; letter-spacing:1px;">FEE SUMMARY</h3>
                             <div class="fee-row"><span>Admission ID:</span> <strong id="calc-admission-id" style="color:var(--accent-orange);">REV-0000</strong></div>
-                            <div class="fee-row"><span>Admission Fee:</span> <strong>₹<span id="calc-admin-fee">850</span></strong></div>
-                            <!-- Days left text removed as per request -->
-                            <div class="fee-row"><span>Monthly Fee:</span> <strong>₹<span id="calc-monthly-fee">800</span></strong></div>
-                            <div class="fee-row fee-total"><span>Total Amount:</span> <strong>₹<span id="calc-total-fee">1650</span></strong></div>
+                            <div class="fee-row"><span>Admission Fee:</span> <strong>₹<span id="calc-admin-fee">0</span></strong></div>
+                            <div class="fee-row"><span>Training Fee:</span> <strong>₹<span id="calc-monthly-fee">0</span></strong></div>
+                            <div class="fee-row fee-total"><span>Total Amount:</span> <strong>₹<span id="calc-total-fee">0</span></strong></div>
                         </div>
 
                         <div class="form-group">
@@ -533,7 +573,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> <!-- END APP WRAPPER -->
 
     <!-- =======================================================================
          PDF TEMPLATE - STRICT 1 PAGE A4 LAYOUT
@@ -633,10 +673,12 @@
          JAVASCRIPT ENGINE
          ======================================================================= -->
     <script>
+        // CONFIGURABLE SYSTEM DEFAULTS
         const APP_CONFIG = {
             upiId: "revivefitness@upi", 
             baseAdmissionFee: 850,
-            baseMonthlyFee: 800
+            baseMonthlyFee: 800,
+            basePTFee: 1500 // Default if missing in Tariff Editor
         };
 
         const appContext = {
@@ -647,6 +689,7 @@
                 document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
                 const target = document.getElementById(`view-${viewName}`);
                 if(target) { target.classList.add('active-view'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+                if(viewName === 'tariff-editor') initTariffEditor();
             },
             
             goHome: function() {
@@ -684,7 +727,9 @@
             
             loadDashboard: function(roleTitle) {
                 document.getElementById('dashboard-title').innerHTML = `${roleTitle} <span>PORTAL</span>`;
+                // Show Admin-only modules
                 document.getElementById('card-reports').style.display = this.currentRole === 'admin' ? 'flex' : 'none';
+                document.getElementById('card-tariff').style.display = this.currentRole === 'admin' ? 'flex' : 'none';
                 this.switchView('dashboard');
             },
             
@@ -720,6 +765,88 @@
 
         document.getElementById('loginForm').addEventListener('submit', function(e) { appContext.handleLogin(e); });
 
+        // TARIFF EDITOR LOGIC
+        const tariffMonthsOrder = ['April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March'];
+        
+        function initTariffEditor() {
+            const fySelect = document.getElementById('fy-select');
+            const container = document.getElementById('tariff-months-container');
+            
+            // Build FY Dropdown
+            const currentYear = new Date().getFullYear();
+            fySelect.innerHTML = '';
+            for(let i = -1; i <= 2; i++) {
+                const year = currentYear + i;
+                const option = document.createElement('option');
+                option.value = `${year}-${year+1}`;
+                option.innerText = `${year}-${year+1}`;
+                if(i === 0) option.selected = true;
+                fySelect.appendChild(option);
+            }
+
+            // Build Month Rows
+            container.innerHTML = '';
+            tariffMonthsOrder.forEach(month => {
+                const row = document.createElement('div');
+                row.className = 'tariff-row';
+                row.innerHTML = `
+                    <div class="tariff-month-name">${month}</div>
+                    <div class="tariff-inputs">
+                        <div class="form-group">
+                            <label style="font-size:0.7rem;">Adm. Fee</label>
+                            <input type="number" id="tariff-${month}-adm" data-month="${month}" data-type="admFee" placeholder="850" required>
+                        </div>
+                        <div class="form-group">
+                            <label style="font-size:0.7rem;">Monthly Fee</label>
+                            <input type="number" id="tariff-${month}-reg" data-month="${month}" data-type="regFee" placeholder="800" required>
+                        </div>
+                        <div class="form-group">
+                            <label style="font-size:0.7rem;">PT Fee</label>
+                            <input type="number" id="tariff-${month}-pt" data-month="${month}" data-type="ptFee" placeholder="1500" required>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+
+            loadTariffData();
+            fySelect.addEventListener('change', loadTariffData);
+        }
+
+        function loadTariffData() {
+            const fy = document.getElementById('fy-select').value;
+            const allTariffs = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
+            const fyData = allTariffs[fy] || {};
+
+            tariffMonthsOrder.forEach(month => {
+                const mData = fyData[month] || { admFee: APP_CONFIG.baseAdmissionFee, regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
+                document.getElementById(`tariff-${month}-adm`).value = mData.admFee;
+                document.getElementById(`tariff-${month}-reg`).value = mData.regFee;
+                document.getElementById(`tariff-${month}-pt`).value = mData.ptFee;
+            });
+        }
+
+        document.getElementById('btn-save-tariff').addEventListener('click', () => {
+            const fy = document.getElementById('fy-select').value;
+            const allTariffs = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
+            if(!allTariffs[fy]) allTariffs[fy] = {};
+
+            tariffMonthsOrder.forEach(month => {
+                allTariffs[fy][month] = {
+                    admFee: document.getElementById(`tariff-${month}-adm`).value,
+                    regFee: document.getElementById(`tariff-${month}-reg`).value,
+                    ptFee: document.getElementById(`tariff-${month}-pt`).value
+                };
+            });
+
+            localStorage.setItem('revive_tariffs', JSON.stringify(allTariffs));
+            alert(`Tariffs for FY ${fy} saved successfully.`);
+        });
+
+
+        // ---------------------------------------------------------------------
+        // ADMISSION LOGIC
+        // ---------------------------------------------------------------------
         let userLocationStr = "Location details unavailable";
         let isAgeValid = false;
         let currentMemberDetails = {};
@@ -969,7 +1096,7 @@
             sigCanvas.addEventListener('touchmove', draw, {passive: false});
             sigCanvas.addEventListener('touchend', endDraw);
 
-
+            // DYNAMIC TARIFF & FEE CALCULATION
             document.getElementById('btn-next-step-2').addEventListener('click', () => {
                 if (!selfieData.value) { alert("Portrait capture is mandatory."); return; }
                 if (!signatureHasData) { alert("Digital signature is mandatory."); return; }
@@ -978,22 +1105,43 @@
                 currentCount = !currentCount ? 1 : parseInt(currentCount) + 1;
                 preAdmissionId = `REV-${String(currentCount).padStart(4, '0')}`;
                 
+                // Parse date & calc logic
                 const adDateVal = document.getElementById('dateOfAdmission').value;
                 const parts = adDateVal.split('-');
-                const adDate = new Date(parts[2], parts[1]-1, parts[0]);
-                const daysInMonth = new Date(parts[2], parts[1], 0).getDate(); 
-                const remainingDays = daysInMonth - adDate.getDate() + 1; 
+                const adDateObj = new Date(parts[2], parts[1]-1, parts[0]);
+                const monthName = adDateObj.toLocaleString('default', { month: 'long' });
                 
-                let monthlyFeeToPay = APP_CONFIG.baseMonthlyFee;
+                // Determine FY
+                const y = adDateObj.getFullYear();
+                const m = adDateObj.getMonth(); // 0 = Jan, 3 = April
+                let fyStart = m >= 3 ? y : y - 1;
+                let fyString = `${fyStart}-${fyStart + 1}`;
+
+                // Fetch Custom Tariffs
+                const allTariffs = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
+                const monthTariff = (allTariffs[fyString] && allTariffs[fyString][monthName]) ? allTariffs[fyString][monthName] : {
+                    admFee: APP_CONFIG.baseAdmissionFee,
+                    regFee: APP_CONFIG.baseMonthlyFee,
+                    ptFee: APP_CONFIG.basePTFee
+                };
+
+                const isPT = document.getElementById('trainingCategory').value === 'Personal Training';
+                const applicableMonthlyFee = parseInt(isPT ? monthTariff.ptFee : monthTariff.regFee);
+                const baseAdmFee = parseInt(monthTariff.admFee);
+
+                const daysInMonth = new Date(parts[2], parts[1], 0).getDate(); 
+                const remainingDays = daysInMonth - parseInt(parts[0]) + 1; 
+                
+                let monthlyFeeToPay = applicableMonthlyFee;
 
                 if (remainingDays < 15) {
-                    monthlyFeeToPay = Math.round((APP_CONFIG.baseMonthlyFee / 30) * remainingDays);
+                    monthlyFeeToPay = Math.round((applicableMonthlyFee / 30) * remainingDays);
                 }
 
-                calculatedTotalFee = APP_CONFIG.baseAdmissionFee + monthlyFeeToPay;
+                calculatedTotalFee = baseAdmFee + monthlyFeeToPay;
 
                 document.getElementById('calc-admission-id').innerText = preAdmissionId;
-                document.getElementById('calc-admin-fee').innerText = APP_CONFIG.baseAdmissionFee;
+                document.getElementById('calc-admin-fee').innerText = baseAdmFee;
                 document.getElementById('calc-monthly-fee').innerText = monthlyFeeToPay;
                 document.getElementById('calc-total-fee').innerText = calculatedTotalFee;
 
@@ -1087,6 +1235,7 @@
                 localStorage.setItem('revive_admission_count', currentCount);
             }
 
+            // PDF Engine & Buttons
             function getPdfBlob() {
                 return new Promise((resolve, reject) => {
                     const now = new Date();
