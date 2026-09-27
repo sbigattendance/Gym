@@ -5,18 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Revive Fitness Studio | Portal</title>
     
-    <!-- Libraries for PDF and Image Generation -->
+    <!-- html2pdf for robust PDF generation & html2canvas for Receipt Images -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
         /* ==========================================================================
-           1. CSS VARIABLES & RESET
+           1. CSS VARIABLES & RESET (Light, Clean Theme for White Logo)
            ========================================================================== */
         :root {
-            --bg-main: #f4f7f6;
+            --bg-main: #f9f9f9;
             --bg-panel: #ffffff;
-            --bg-card: #ffffff;
             --text-main: #222222;
             --text-muted: #666666;
             --accent-orange: #ff6600;
@@ -58,7 +57,7 @@
         .compact-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; max-width: 400px; margin: 0 auto; }
         
         .module-card {
-            background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem 1rem;
+            background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem 1rem;
             text-align: center; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden;
             display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
         }
@@ -66,7 +65,7 @@
         .module-card:hover { transform: translateY(-3px); border-color: var(--accent-orange); box-shadow: 0 8px 25px rgba(255, 102, 0, 0.1); }
         .module-card:hover::before { transform: scaleX(1); }
         
-        .module-icon-svg { width: 42px; height: 42px; stroke: var(--accent-orange); fill: none; stroke-width: 1.5; margin-bottom: 0.8rem; }
+        .module-icon-svg { width: 42px; height: 42px; stroke: var(--accent-orange); fill: none; stroke-width: 1.5; margin-bottom: 0.8rem; stroke-linecap: round; stroke-linejoin: round; }
         .module-card h3 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0; color: var(--text-main); font-weight: 700; }
 
         /* ==========================================================================
@@ -88,7 +87,10 @@
         input[readonly] { background-color: #e9ecef; color: var(--text-muted); cursor: not-allowed; border-style: dashed; }
         
         .pin-input { font-size: 2rem; letter-spacing: 0.5rem; text-align: center; padding: 1rem; background-color: var(--bg-main); color: var(--accent-orange); font-weight: 900; }
-        .warning-text { color: var(--error-red); font-size: 0.85rem; margin-top: 0.5rem; display: none; font-weight: bold; }
+        .warning-text { color: var(--error-red); font-size: 0.85rem; margin-top: 0.5rem; display: none; font-weight: bold; align-items: center; gap: 5px; }
+        .warning-text svg { width: 16px; height: 16px; stroke: var(--error-red); fill: none; stroke-width: 2; }
+
+        .val-group { display: flex; gap: 10px; align-items: stretch; margin-bottom: 1rem; }
 
         /* ==========================================================================
            5. BUTTONS & CONTROLS
@@ -135,7 +137,6 @@
         .fee-total { font-size: 1.4rem; color: var(--accent-orange); font-weight: 900; border-top: 1px solid var(--border-color); padding-top: 1rem; margin-top: 0.5rem;}
         .qr-wrapper { background: #fff; padding: 15px; border-radius: 12px; display: inline-block; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border-color); }
 
-        /* Calendar Grid */
         .calendar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 1rem; }
         .cal-month { padding: 15px 5px; border-radius: 8px; text-align: center; border: 2px solid transparent; cursor: pointer; color: #fff; transition: transform 0.2s; }
         .cal-month:hover { transform: scale(1.05); }
@@ -156,12 +157,17 @@
            ========================================================================== */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 1000; padding: 1rem; overflow-y: auto; }
         .modal-content { background-color: var(--bg-panel); padding: clamp(1.5rem, 5vw, 3rem); border-radius: 16px; text-align: center; border: 2px solid var(--accent-orange); max-width: 450px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.2); animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin: auto; }
+        
         .checkmark-circle { width: 80px; height: 80px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; background: rgba(37, 211, 102, 0.1); border: 4px solid var(--success-green); margin: 0 auto 1.5rem auto; }
         .checkmark-icon svg { width: 40px; height: 40px; stroke: var(--success-green); fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+        
         .orange-text { color: var(--accent-orange); margin: 1rem 0; font-size: 1.5rem; text-transform: uppercase; font-weight: 900; }
         .admission-badge { background-color: var(--bg-main); padding: 1.2rem; font-size: 2.2rem; font-weight: 900; letter-spacing: 2px; color: var(--text-main); border: 2px dashed var(--accent-orange); border-radius: 8px; margin: 1.5rem 0; display: inline-block; width: 100%; }
+        
+        /* Modal actions explicitly stacked */
+        .modal-actions { display: flex; flex-direction: column; width: 100%; gap: 10px; align-items: stretch; margin-top: 1rem; }
+        .modal-actions .btn { width: 100%; }
 
-        /* Receipt Canvas Wrapper (Hidden visually) */
         #receipt-render-zone { position: absolute; left: -9999px; top: 0; }
         #receipt-template { width: 400px; padding: 25px; background: #ffffff; border: 3px solid var(--accent-orange); font-family: 'Segoe UI', Arial, sans-serif; color: #111; box-sizing: border-box; }
         .rcpt-header { text-align: center; border-bottom: 2px dashed #ccc; padding-bottom: 15px; margin-bottom: 15px; }
@@ -178,6 +184,7 @@
             .view-section { padding: 1.5rem 1rem; }
             .form-layout { padding: 1.5rem; border: none; box-shadow: none; background: transparent; }
             .btn { padding: 0.9rem 1.5rem; }
+            .val-group { flex-direction: column; }
         }
 
         /* Hidden PDF Area */
@@ -212,18 +219,13 @@
 <body>
 
     <div id="app-wrapper">
-        <!-- =======================================================================
-             HEADER
-             ======================================================================= -->
         <header class="app-header">
             <div class="logo-container" onclick="appContext.goHome()">
                 <img src="logo.png" alt="REVIVE FITNESS STUDIO" onerror="this.src='https://via.placeholder.com/150x40/ffffff/ff6600?text=REVIVE+FITNESS'">
             </div>
         </header>
 
-        <!-- =======================================================================
-             ENTRY SCREEN
-             ======================================================================= -->
+        <!-- PORTAL ENTRY SCREEN -->
         <main id="view-home" class="view-section active-view">
             <div class="dashboard-header">
                 <h1>WELCOME TO <span>REVIVE</span></h1>
@@ -245,9 +247,7 @@
             </div>
         </main>
 
-        <!-- =======================================================================
-             LOGIN SCREEN
-             ======================================================================= -->
+        <!-- PIN LOGIN SCREEN -->
         <main id="view-login" class="view-section">
             <div class="form-layout" style="max-width: 400px;">
                 <div class="module-toolbar">
@@ -266,9 +266,7 @@
             </div>
         </main>
 
-        <!-- =======================================================================
-             DASHBOARD
-             ======================================================================= -->
+        <!-- ROLE-BASED DASHBOARD -->
         <main id="view-dashboard" class="view-section">
             <div class="dashboard-header">
                 <h1 id="dashboard-title">STAFF <span>PORTAL</span></h1>
@@ -307,9 +305,7 @@
             </div>
         </main>
 
-        <!-- =======================================================================
-             USER SEARCH & DETAILS HUB (FEE / PROFILE)
-             ======================================================================= -->
+        <!-- USER SEARCH & HUB -->
         <main id="view-user-search" class="view-section">
             <div class="form-layout" style="max-width: 500px;">
                 <div class="module-toolbar">
@@ -343,7 +339,6 @@
                     <h2 class="module-title" id="hub-title">Member Profile</h2>
                 </div>
                 
-                <!-- Profile Snippet -->
                 <div class="profile-snippet">
                     <img id="hub-photo" src="" alt="User Photo">
                     <div class="profile-snippet-info" style="flex:1;">
@@ -354,23 +349,17 @@
                     <div id="hub-actions" style="display:flex; flex-direction:column; gap:0.5rem;">
                         <button class="btn secondary" onclick="moduleContext.editUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Edit Profile</button>
                         <button class="btn secondary" onclick="moduleContext.regeneratePdf()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Re-Download PDF</button>
-                        <button class="btn danger" onclick="moduleContext.deleteUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Delete User</button>
+                        <button class="btn danger admin-only" onclick="moduleContext.deleteUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Delete User</button>
                     </div>
                 </div>
 
-                <!-- Fee Calendar -->
                 <h3 style="color:var(--accent-orange); margin-bottom: 0.5rem;">FEE CALENDAR (<span id="hub-fy-label"></span>)</h3>
                 <p id="hub-instruction" style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">Click on a yellow or red month to process payment.</p>
-                
-                <div class="calendar-grid" id="fee-calendar">
-                    <!-- Populated by JS -->
-                </div>
+                <div class="calendar-grid" id="fee-calendar"></div>
             </div>
         </main>
 
-        <!-- =======================================================================
-             ADMIN EXTRAS (UPI & TARIFF)
-             ======================================================================= -->
+        <!-- ADMIN EXTRAS -->
         <main id="view-upi-editor" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
@@ -383,9 +372,7 @@
                         <input type="text" id="admin-upi-id" placeholder="e.g. revivefitness@upi" required>
                     </div>
                 </div>
-                <div class="action-row">
-                    <button type="button" id="btn-save-upi" class="btn primary">Save UPI ID</button>
-                </div>
+                <div class="action-row"><button type="button" id="btn-save-upi" class="btn primary">Save UPI ID</button></div>
             </div>
         </main>
 
@@ -401,9 +388,7 @@
             </div>
         </main>
 
-        <!-- =======================================================================
-             ADMISSION REGISTRATION / EDIT FORM
-             ======================================================================= -->
+        <!-- ADMISSION REGISTRATION / EDIT FORM -->
         <main id="view-admission" class="view-section">
             <div class="form-layout">
                 <div class="module-toolbar">
@@ -437,11 +422,11 @@
                         <!-- Dynamic Re-Admission Section -->
                         <div id="reAdmissionSection">
                             <label style="color: var(--accent-orange);">Validate Previous Registration</label>
-                            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                            <div class="val-group">
                                 <input type="tel" id="prevPhoneInput" placeholder="Enter previous registered phone number" pattern="\d{10}" maxlength="10" style="flex:1;">
-                                <button type="button" id="btn-validate-readmission" class="btn secondary" style="padding: 0.5rem 1rem;">Validate</button>
+                                <button type="button" id="btn-validate-readmission" class="btn secondary">Validate</button>
                             </div>
-                            <div id="validationResultBox" style="display:none; font-size: 0.9rem; line-height: 1.5; padding: 1rem; background: var(--bg-main); border-radius: 6px; border: 1px solid var(--border-color);"></div>
+                            <div id="validationResultBox" style="display:none; font-size: 0.9rem; line-height: 1.5; padding: 1rem; background: var(--bg-panel); border-radius: 6px; border: 1px solid var(--border-color);"></div>
                         </div>
 
                         <div class="form-row">
@@ -487,7 +472,9 @@
                             <div class="form-group">
                                 <label for="dob">Date of Birth <span class="required">*</span></label>
                                 <input type="text" id="dob" placeholder="DD-MM-YYYY" pattern="\d{2}-\d{2}-\d{4}" title="Format: DD-MM-YYYY" required>
-                                <div id="ageWarning" class="warning-text">⚠️ Minimum age requirement is 18 years.</div>
+                                <div id="ageWarning" class="warning-text">
+                                    <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> Minimum age requirement is 18 years.
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="age">Calculated Age</label>
@@ -512,16 +499,18 @@
                         <div class="verification-group">
                             <label>Live Portrait Capture <span class="required">*</span></label>
                             <div class="camera-container">
-                                <div class="camera-placeholder"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>
+                                <div class="camera-placeholder">
+                                    <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                                </div>
                                 <video id="camera-stream" autoplay playsinline style="display:none;"></video>
                                 <canvas id="canvas-snapshot" style="display:none;"></canvas>
                                 <img id="selfie-preview" style="display:none;" />
                             </div>
                             <div class="control-btns">
-                                <button type="button" id="btn-start-camera" class="btn secondary" style="width: 100%;">Open Camera</button>
-                                <button type="button" id="btn-switch-camera" class="btn secondary" style="display:none; width: 100%;">Switch Camera</button>
-                                <button type="button" id="btn-capture" class="btn primary" style="display:none; width: 100%;">Capture Photo</button>
-                                <button type="button" id="btn-retake" class="btn secondary" style="display:none; width: 100%;">Retake Photo</button>
+                                <button type="button" id="btn-start-camera" class="btn secondary">Open Camera</button>
+                                <button type="button" id="btn-switch-camera" class="btn secondary" style="display:none;">Switch Camera</button>
+                                <button type="button" id="btn-capture" class="btn primary" style="display:none;">Capture Photo</button>
+                                <button type="button" id="btn-retake" class="btn secondary" style="display:none;">Retake Photo</button>
                             </div>
                             <input type="hidden" id="selfie-data" required>
                         </div>
@@ -574,13 +563,12 @@
                             <button type="button" id="btn-prev-step-2" class="btn secondary">← Back to Verification</button>
                         </div>
                     </div>
+
                 </form>
             </div>
         </main>
 
-        <!-- =======================================================================
-             MODALS (PROCESS PAYMENT, SUCCESS, RECEIPT)
-             ======================================================================= -->
+        <!-- MODALS -->
         <div id="paymentProcessModal" class="modal">
             <div class="modal-content" style="text-align: left;">
                 <h2 class="orange-text" style="text-align:center; font-size:1.4rem;">Process Payment</h2>
@@ -619,7 +607,7 @@
                 <div class="checkmark-circle"><div class="checkmark-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div></div>
                 <h2 style="color: var(--text-main); margin-bottom:0.5rem; font-size:1.8rem;">Payment Successful!</h2>
                 <p style="color: var(--text-muted); margin-bottom: 2rem;">Amount received for Admission ID: <strong id="success-paid-id" style="color:var(--accent-orange);"></strong></p>
-                <button id="btn-proceed-to-admission" class="btn primary" style="width:100%;">Complete Registration</button>
+                <button id="btn-proceed-to-admission" class="btn primary">Complete Registration</button>
             </div>
         </div>
 
@@ -636,7 +624,9 @@
                 <div class="modal-actions" id="sm-edit-actions" style="display:none; margin-top:1rem;">
                     <button class="btn secondary" onclick="appContext.goHome()">Return to Dashboard</button>
                 </div>
-                <button class="btn secondary" style="margin-top:1rem;" onclick="appContext.closeModal()">Close</button>
+                <div class="modal-actions" style="margin-top:10px;">
+                    <button class="btn secondary" onclick="appContext.closeModal()">Close</button>
+                </div>
             </div>
         </div>
         
@@ -651,48 +641,20 @@
                 </div>
             </div>
         </div>
-
     </div> <!-- END APP WRAPPER -->
 
     <!-- =======================================================================
          HIDDEN GENERATION TEMPLATES (PDF & RECEIPT)
          ======================================================================= -->
-    
-    <!-- Receipt Canvas Wrapper -->
-    <div id="receipt-render-zone">
-        <div id="receipt-template">
-            <div class="rcpt-header">
-                <img src="logo.png" onerror="this.style.display='none'">
-                <div class="rcpt-address">Kadayil Arcade, Thanal Nagar, Keralapuram, Keralam 691504<br>Ph: 8921698044</div>
-                <h3 class="rcpt-title">PAYMENT RECEIPT</h3>
-            </div>
-            <table class="rcpt-table">
-                <tr><td><strong>Member Name:</strong></td><td id="rcpt-name" style="text-align:right;"></td></tr>
-                <tr><td><strong>Admission No:</strong></td><td id="rcpt-id" style="text-align:right;"></td></tr>
-                <tr><td><strong>Phone:</strong></td><td id="rcpt-phone" style="text-align:right;"></td></tr>
-                <tr><td><strong>Month Paid For:</strong></td><td id="rcpt-month" style="text-align:right; font-weight:bold; color:var(--accent-orange);"></td></tr>
-            </table>
-            <div class="rcpt-amount-box">
-                <table style="width: 100%; font-size: 14px; line-height:2;">
-                    <tr><td><strong>Amount Paid:</strong></td><td style="text-align: right; color: green; font-weight: 900; font-size:16px;">₹<span id="rcpt-paid"></span></td></tr>
-                    <tr><td><strong>Balance Due:</strong></td><td style="text-align: right; color: red; font-weight: bold;">₹<span id="rcpt-balance"></span></td></tr>
-                    <tr><td><strong>Payment Mode:</strong></td><td style="text-align: right; font-weight:bold;" id="rcpt-mode"></td></tr>
-                </table>
-            </div>
-            <div class="rcpt-footer">Generated on <span id="rcpt-date"></span><br>Thank you for choosing Revive!</div>
-        </div>
-    </div>
-
-    <!-- PDF Document Wrapper -->
     <div id="pdf-template-wrapper">
         <div id="pdf-template">
             <div class="pdf-flex-between pdf-border-bottom">
-                <div><img src="logo.png" class="pdf-logo" onerror="this.src='https://via.placeholder.com/150x45/ffffff/ff6600?text=REVIVE+FITNESS'"></div>
+                <div><img src="logo.png" alt="REVIVE FITNESS STUDIO" class="pdf-logo" onerror="this.src='https://via.placeholder.com/150x45/ffffff/ff6600?text=REVIVE+FITNESS'"></div>
                 <div style="text-align:right; font-weight:bold; font-size:12px; line-height:1.3;">OFFICIAL MEMBER<br>ADMISSION</div>
             </div>
             <div class="pdf-meta-box"><span>ADMISSION ID: <span id="pdf-id" style="color:var(--accent-orange);"></span></span><span>REGISTRATION DATE: <span id="pdf-date"></span></span></div>
             <div class="pdf-data-row">
-                <div style="flex: 0 0 120px;"><img id="pdf-photo" class="pdf-photo" src="" alt="Photo"></div>
+                <div style="flex: 0 0 120px;"><img id="pdf-photo" class="pdf-photo" src="" alt="Member Photo"></div>
                 <div style="flex: 1;">
                     <table class="pdf-table">
                         <tr><th>FULL NAME</th><td id="pdf-name"></td></tr>
@@ -711,12 +673,12 @@
             </div>
             <div class="pdf-sigs-container">
                 <div class="pdf-sig-block">
-                    <div class="pdf-sig-image-box"><img id="pdf-member-sig" src="" style="display:none;"></div>
+                    <div class="pdf-sig-image-box"><img id="pdf-member-sig" src="" alt="Member Signature" style="display:none;"></div>
                     <div class="pdf-sig-line">MEMBER SIGNATURE</div>
                     <div class="pdf-sig-meta"><strong>Verified by:</strong> <span id="member-verified"></span><br><strong>Timestamp:</strong> <span id="member-timestamp"></span><br><strong>Location:</strong> <span id="member-location"></span></div>
                 </div>
                 <div class="pdf-sig-block">
-                    <div class="pdf-sig-image-box"><img src="signature.png" onerror="this.style.display='none'"></div>
+                    <div class="pdf-sig-image-box"><img src="signature.png" alt="Authorized Signature" onerror="this.style.display='none'"></div>
                     <div class="pdf-sig-line">AUTHORIZED SIGNATURE</div>
                     <div class="pdf-sig-meta"><strong>Verified by:</strong> Revive System Admin<br><strong>Timestamp:</strong> <span id="official-timestamp"></span><br><strong>Location:</strong> Revive Fitness Studio H.O</div>
                 </div>
@@ -744,14 +706,40 @@
         </div>
     </div>
 
+    <!-- Receipt Generator -->
+    <div id="receipt-render-zone">
+        <div id="receipt-template">
+            <div class="rcpt-header">
+                <img src="logo.png" onerror="this.style.display='none'">
+                <div class="rcpt-address">Kadayil Arcade, Thanal Nagar, Keralapuram, Keralam 691504<br>Ph: 8921698044</div>
+                <h3 class="rcpt-title">PAYMENT RECEIPT</h3>
+            </div>
+            <table class="rcpt-table">
+                <tr><td><strong>Member Name:</strong></td><td id="rcpt-name" style="text-align:right;"></td></tr>
+                <tr><td><strong>Admission No:</strong></td><td id="rcpt-id" style="text-align:right;"></td></tr>
+                <tr><td><strong>Phone:</strong></td><td id="rcpt-phone" style="text-align:right;"></td></tr>
+                <tr><td><strong>Month Paid For:</strong></td><td id="rcpt-month" style="text-align:right; font-weight:bold; color:var(--accent-orange);"></td></tr>
+            </table>
+            <div class="rcpt-amount-box">
+                <table style="width: 100%; font-size: 14px; line-height:2;">
+                    <tr><td><strong>Amount Paid:</strong></td><td style="text-align: right; color: green; font-weight: 900; font-size:16px;">₹<span id="rcpt-paid"></span></td></tr>
+                    <tr><td><strong>Balance Due:</strong></td><td style="text-align: right; color: red; font-weight: bold;">₹<span id="rcpt-balance"></span></td></tr>
+                    <tr><td><strong>Payment Mode:</strong></td><td style="text-align: right; font-weight:bold;" id="rcpt-mode"></td></tr>
+                </table>
+            </div>
+            <div class="rcpt-footer">Generated on <span id="rcpt-date"></span><br>Thank you for choosing Revive!</div>
+        </div>
+    </div>
+
     <!-- =======================================================================
          JAVASCRIPT ENGINE
          ======================================================================= -->
     <script>
-        // GLOBALS & CONFIG
+        // CONFIG
         const APP_CONFIG = { upiId: "revivefitness@upi", baseAdmissionFee: 850, baseMonthlyFee: 800, basePTFee: 1500 };
         const tariffMonthsOrder = ['April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March'];
         
+        // GLOBALS
         let userLocationStr = "Location details unavailable";
         let isAgeValid = false;
         let currentMemberDetails = {};
@@ -762,15 +750,15 @@
         let currentGeneratedReceiptBlob = null; 
         let IS_EDIT_MODE = false;
 
-        // CORE APP CONTEXT (Exposed globally for HTML onclicks)
-        const appContext = {
+        // APP CONTEXT
+        window.appContext = {
             currentRole: null, pendingRole: null, 
             switchView: function(viewName) {
                 document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
                 const target = document.getElementById(`view-${viewName}`);
                 if(target) { target.classList.add('active-view'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-                if(viewName === 'tariff-editor') moduleContext.initTariffEditor();
-                if(viewName === 'upi-editor') moduleContext.initUpiEditor();
+                if(viewName === 'tariff-editor') window.moduleContext.initTariffEditor();
+                if(viewName === 'upi-editor') window.moduleContext.initUpiEditor();
                 if(viewName !== 'admission') { IS_EDIT_MODE = false; }
             },
             goHome: function() {
@@ -815,7 +803,6 @@
                 document.getElementById('step-3').classList.remove('active-step');
                 document.getElementById('step-2').classList.remove('active-step');
                 document.getElementById('step-1').classList.add('active-step');
-                
                 const today = new Date();
                 document.getElementById('dateOfAdmission').value = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
                 this.switchView('admission');
@@ -826,12 +813,12 @@
             }
         };
 
-        // MODULE CONTEXT (Exposed globally)
-        const moduleContext = {
+        // MODULE CONTEXT
+        window.moduleContext = {
             initUpiEditor: function() { document.getElementById('admin-upi-id').value = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId; },
             saveUpi: function() {
                 const newUpi = document.getElementById('admin-upi-id').value.trim();
-                if(newUpi) { localStorage.setItem('revive_upi_id', newUpi); alert("UPI ID saved."); appContext.goHome(); } else alert("Invalid UPI ID.");
+                if(newUpi) { localStorage.setItem('revive_upi_id', newUpi); alert("UPI ID saved."); window.appContext.goHome(); } else alert("Invalid UPI ID.");
             },
             initTariffEditor: function() {
                 const fySelect = document.getElementById('fy-select'); const container = document.getElementById('tariff-months-container');
@@ -873,7 +860,6 @@
                 localStorage.setItem('revive_tariffs', JSON.stringify(db));
                 alert(`Tariffs for ${fy} saved.`);
             },
-            
             openUserSearch: function(mode) {
                 const fySelect = document.getElementById('search-fy');
                 const currYear = new Date().getFullYear(); fySelect.innerHTML = '';
@@ -882,7 +868,7 @@
                     if(i === 0) opt.selected = true; fySelect.appendChild(opt);
                 }
                 document.getElementById('search-phone').value = '';
-                appContext.switchView('user-search');
+                window.appContext.switchView('user-search');
             },
             fetchUserHub: function(e) {
                 e.preventDefault();
@@ -903,7 +889,7 @@
                 document.getElementById('hub-fy-label').innerText = fy;
                 
                 this.renderFeeCalendar(user.id, fy, user.trainingCategory);
-                appContext.switchView('user-hub');
+                window.appContext.switchView('user-hub');
             },
             renderFeeCalendar: function(userId, fy, trainCat) {
                 const grid = document.getElementById('fee-calendar'); grid.innerHTML = '';
@@ -914,7 +900,7 @@
 
                 tariffMonthsOrder.forEach(month => {
                     const record = userFyData[month];
-                    let statusClass = 'status-unpaid'; let displayAmt = ''; let action = `onclick="moduleContext.initPayment('${month}', '${fy}')"`;
+                    let statusClass = 'status-unpaid'; let displayAmt = ''; let action = `onclick="window.moduleContext.initPayment('${month}', '${fy}')"`;
 
                     if (record) {
                         if (record.status === 'Paid') { statusClass = 'status-paid'; displayAmt = `Paid: ₹${record.amountPaid}`; action = ''; } 
@@ -989,7 +975,7 @@
                 document.getElementById('rcpt-mode').innerText = mode; document.getElementById('rcpt-date').innerText = dStr;
 
                 const wrapper = document.getElementById('receipt-render-zone'); const target = document.getElementById('receipt-template');
-                wrapper.style.left = '0'; // Bring to viewport for render
+                wrapper.style.left = '0'; 
 
                 setTimeout(() => {
                     html2canvas(target, { scale: 2 }).then(canvas => {
@@ -1011,7 +997,6 @@
                 } catch(e) { console.error(e); }
                 finally { btn.innerText = "Share Receipt via WhatsApp"; document.getElementById('receiptSuccessModal').style.display = 'none'; }
             },
-            
             editUser: function() {
                 IS_EDIT_MODE = true; const u = currentActiveUser;
                 document.getElementById('form-main-title').innerText = "Edit Member Details";
@@ -1038,14 +1023,14 @@
                     document.getElementById('btn-start-camera').style.display = 'none';
                     document.getElementById('btn-retake').style.display = 'inline-flex';
                 }
-                appContext.switchView('admission');
+                window.appContext.switchView('admission');
             },
             deleteUser: function() {
                 if(confirm(`Are you sure you want to completely remove ${currentActiveUser.fullName} (${currentActiveUser.id})? This cannot be undone.`)) {
                     let users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
                     users = users.filter(u => u.id !== currentActiveUser.id);
                     localStorage.setItem('revive_users_db', JSON.stringify(users));
-                    alert("User deleted."); appContext.goHome();
+                    alert("User deleted."); window.appContext.goHome();
                 }
             },
             regeneratePdf: function() {
@@ -1077,20 +1062,16 @@
             }
         };
 
-        // Expose to window for inline onclick execution
-        window.appContext = appContext;
-        window.moduleContext = moduleContext;
-
         document.addEventListener('DOMContentLoaded', () => {
-            // Bind remaining event listeners
-            document.getElementById('loginForm').addEventListener('submit', function(e) { appContext.handleLogin(e); });
-            document.getElementById('btn-save-upi').addEventListener('click', () => moduleContext.saveUpi());
-            document.getElementById('userSearchForm').addEventListener('submit', function(e) { moduleContext.fetchUserHub(e); });
-            document.getElementById('pay-amount-now').addEventListener('input', () => moduleContext.updatePaymentModalUI());
-            document.getElementById('pay-method').addEventListener('change', () => moduleContext.updatePaymentModalUI());
+            
+            document.getElementById('loginForm').addEventListener('submit', function(e) { window.appContext.handleLogin(e); });
+            document.getElementById('btn-save-upi').addEventListener('click', () => window.moduleContext.saveUpi());
+            document.getElementById('userSearchForm').addEventListener('submit', function(e) { window.moduleContext.fetchUserHub(e); });
+            document.getElementById('pay-amount-now').addEventListener('input', () => window.moduleContext.updatePaymentModalUI());
+            document.getElementById('pay-method').addEventListener('change', () => window.moduleContext.updatePaymentModalUI());
             document.getElementById('btn-cancel-pay').addEventListener('click', () => document.getElementById('paymentProcessModal').style.display='none');
-            document.getElementById('btn-confirm-pay').addEventListener('click', () => moduleContext.confirmPayment());
-            document.getElementById('btn-share-receipt').addEventListener('click', () => moduleContext.shareReceipt());
+            document.getElementById('btn-confirm-pay').addEventListener('click', () => window.moduleContext.confirmPayment());
+            document.getElementById('btn-share-receipt').addEventListener('click', () => window.moduleContext.shareReceipt());
 
             // CAMERA LOGIC
             const video = document.getElementById('camera-stream'); const canvas = document.getElementById('canvas-snapshot'); const preview = document.getElementById('selfie-preview');
@@ -1172,7 +1153,7 @@
                     document.getElementById('sm-title').innerText = "Update Complete!";
                     document.getElementById('generated-id').innerText = currentActiveUser.id;
                     document.getElementById('sm-adm-actions').style.display = 'none';
-                    document.getElementById('sm-edit-actions').style.display = 'block';
+                    document.getElementById('sm-edit-actions').style.display = 'flex';
                     document.getElementById('successModal').style.display = 'flex';
                     return;
                 }
@@ -1216,7 +1197,7 @@
                     _fy: fyString, _month: monthName 
                 };
 
-                const method = document.getElementById('pay-method').value;
+                const method = document.getElementById('paymentMethod').value;
                 const upiSec = document.getElementById('upi-section');
                 if (method === 'UPI') {
                     upiSec.style.display = 'block'; document.getElementById('btn-validate-payment').innerText = 'Validate Payment & Complete';
@@ -1257,7 +1238,10 @@
                 let payDb = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
                 if(!payDb[currentMemberDetails.id]) payDb[currentMemberDetails.id] = {};
                 if(!payDb[currentMemberDetails.id][currentMemberDetails._fy]) payDb[currentMemberDetails.id][currentMemberDetails._fy] = {};
-                payDb[currentMemberDetails.id][currentMemberDetails._fy][currentMemberDetails._month] = { totalDue: calculatedTotalFee, amountPaid: calculatedTotalFee, status: 'Paid', lastDate: new Date().toISOString() };
+                
+                payDb[currentMemberDetails.id][currentMemberDetails._fy][currentMemberDetails._month] = {
+                    totalDue: calculatedTotalFee, amountPaid: calculatedTotalFee, status: 'Paid', lastDate: new Date().toISOString()
+                };
                 localStorage.setItem('revive_payments_db', JSON.stringify(payDb));
 
                 const currentCount = parseInt(preAdmissionId.split('-')[1]);
@@ -1270,65 +1254,7 @@
                 document.getElementById('successModal').style.display = 'flex';
             }
 
-            // AUTO-FORMAT HOOKS
-            const dobInp = document.getElementById('dob'); const dtInp = document.getElementById('dateOfAdmission'); const ageInp = document.getElementById('age'); const ageWrn = document.getElementById('ageWarning');
-            function calcAge() {
-                const v = dobInp.value;
-                if(v.length===10 && v.includes('-')) {
-                    const p = v.split('-'); const dob = new Date(p[2], p[1]-1, p[0]);
-                    const age = Math.abs(new Date(Date.now() - dob.getTime()).getUTCFullYear() - 1970);
-                    ageInp.value = age;
-                    if(age < 18) { ageWrn.style.display='block'; isAgeValid=false; } else { ageWrn.style.display='none'; isAgeValid=true; }
-                } else { ageInp.value=''; ageWrn.style.display='none'; isAgeValid=false; }
-            }
-            function fmtDt() { let v = this.value.replace(/\D/g, ''); if(v.length>8) v=v.slice(0,8); if(v.length>=5) this.value=`${v.slice(0,2)}-${v.slice(2,4)}-${v.slice(4)}`; else if(v.length>=3) this.value=`${v.slice(0,2)}-${v.slice(2)}`; }
-            dobInp.addEventListener('keyup', calcAge); dobInp.addEventListener('blur', calcAge); dobInp.addEventListener('input', fmtDt); dtInp.addEventListener('input', fmtDt);
-            
-            dtInp.addEventListener('blur', function() {
-                const v = this.value; if(v.length===10) {
-                    const p = v.split('-'); const d = new Date(p[2], p[1]-1, p[0]); const t = new Date(); t.setHours(0,0,0,0);
-                    if(d > t) { alert("Future dates not allowed."); this.value=`${String(t.getDate()).padStart(2,'0')}-${String(t.getMonth()+1).padStart(2,'0')}-${t.getFullYear()}`; }
-                }
-            });
-
-            // RE-ADMISSION VALIDATION
-            document.getElementById('admissionTypeSelect').addEventListener('change', function() {
-                if (this.value === 'Re-Admission') { document.getElementById('reAdmissionSection').style.display = 'block'; } 
-                else { document.getElementById('reAdmissionSection').style.display = 'none'; document.getElementById('validationResultBox').style.display = 'none'; document.getElementById('prevPhoneInput').value = ''; }
-            });
-
-            document.getElementById('btn-validate-readmission').addEventListener('click', () => {
-                const phone = document.getElementById('prevPhoneInput').value; const resBox = document.getElementById('validationResultBox'); const admissionTypeSelect = document.getElementById('admissionTypeSelect');
-                if(phone.length !== 10) { resBox.style.display = 'block'; resBox.innerHTML = '<span style="color:var(--error-red);">Please enter a valid 10-digit number.</span>'; return; }
-                
-                let users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                let user = [...users].reverse().find(u => u.primaryContact === phone);
-                resBox.style.display = 'block';
-                
-                if(user) {
-                    const parts = user.date.split('-'); const prevDate = new Date(parts[2], parts[1]-1, parts[0]);
-                    const currParts = document.getElementById('dateOfAdmission').value.split('-'); const currDate = new Date(currParts[2], currParts[1]-1, currParts[0]);
-                    let expiryDate = new Date(prevDate); expiryDate.setMonth(expiryDate.getMonth() + 6);
-                    
-                    let statusHtml = '';
-                    if (currDate > expiryDate) {
-                        statusHtml = '<span style="color:var(--error-red); font-weight:bold; font-size:1.1rem;">Status: NOT ELIGIBLE (> 6 Months)</span><br><span style="color:var(--text-muted); font-size:0.85rem;">Type changed to New Admission.</span>';
-                        admissionTypeSelect.value = 'New Admission';
-                    } else { statusHtml = '<span style="color:var(--success-green); font-weight:bold; font-size:1.1rem;">Status: ELIGIBLE</span>'; }
-                    
-                    document.getElementById('firstName').value = user.firstName || ''; document.getElementById('lastName').value = user.lastName || '';
-                    document.getElementById('primaryContact').value = user.primaryContact || phone; document.getElementById('alternateContact').value = user.alternateContact || '';
-                    document.getElementById('dob').value = user.dob || ''; document.getElementById('address').value = user.address || '';
-                    calcAge(); 
-                    
-                    resBox.innerHTML = `${statusHtml}<br><br><strong>Name:</strong> ${user.fullName}<br><strong>Contact:</strong> ${user.primaryContact}<br><strong>Prev. Registration Date:</strong> ${user.date}`;
-                } else {
-                    resBox.innerHTML = '<span style="color:var(--error-red);">No previous registration found.</span><br><span style="color:var(--text-muted); font-size:0.85rem;">Type changed to New Admission.</span>';
-                    admissionTypeSelect.value = 'New Admission'; document.getElementById('primaryContact').value = phone;
-                }
-            });
-
-            // FINAL PDF & WHATSAPP BUTTONS
+            // PDF Generation
             function getPdfBlob() {
                 return new Promise((resolve, reject) => {
                     const now = new Date(); const timestampStr = now.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
@@ -1369,21 +1295,48 @@
             });
             
             document.getElementById('btn-whatsapp-welcome').addEventListener('click', () => {
-                const phone = currentMemberDetails.primaryContact;
                 const welcomeMsg = `🎉 Revive Fitness Studio-ലേക്ക് ഹൃദയം നിറഞ്ഞ സ്വാഗതം! 🏋️‍♂️✨\n\nനിങ്ങളുടെ Fitness Journey-യുടെ പുതിയ തുടക്കത്തിന് ഞങ്ങളോടൊപ്പം ചേർന്നതിൽ സന്തോഷം! 💪\n\nആരോഗ്യവും ഫിറ്റ്നസും ജീവിതത്തിന്റെ ഭാഗമാക്കി, നിങ്ങളുടെ ലക്ഷ്യങ്ങളിലേക്ക് ഓരോ ദിവസവും ഒരു പടി കൂടി മുന്നോട്ട് പോകാൻ Revive Fitness Studio നിങ്ങളോടൊപ്പം ഉണ്ടാകും. ❤️\n\n🔥 Train Better • Stay Strong • Live Healthy\n\nWelcome to the Revive Family! 🤝💪\n— Revive Fitness Studio`;
-                window.open(`https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(welcomeMsg)}`, '_blank');
+                window.open(`https://api.whatsapp.com/send?phone=91${currentMemberDetails.primaryContact}&text=${encodeURIComponent(welcomeMsg)}`, '_blank');
             });
 
             document.getElementById('btn-whatsapp-pdf').addEventListener('click', async function() {
                 const btn = this; btn.innerText = "Preparing Share..."; btn.disabled = true;
-                const phone = currentMemberDetails.primaryContact;
                 const msg = `Dear ${currentMemberDetails.fullName},\n\nThank you for joining Revive Fitness Studio!\nYour registration is successful. Your Admission Number is *${currentMemberDetails.id}*.\n\n*Please find your Official Admission Record attached.*`;
                 try {
                     const blob = await getPdfBlob(); const file = new File([blob], `${currentMemberDetails.id}.pdf`, { type: 'application/pdf' });
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ title: `Admission Record - ${currentMemberDetails.id}`, text: msg, files: [file] }); } 
-                    else { alert("Native file sharing is unsupported. Opening WhatsApp."); window.open(`https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(msg)}`, '_blank'); }
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ title: `Admission Record`, text: msg, files: [file] }); } 
+                    else { alert("Native file sharing is unsupported. Opening WhatsApp."); window.open(`https://api.whatsapp.com/send?phone=91${currentMemberDetails.primaryContact}&text=${encodeURIComponent(msg)}`, '_blank'); }
                 } catch (err) { if (err.name !== 'AbortError') { console.error(err); alert("Error sharing document."); } } 
                 finally { btn.innerText = "3. Share PDF Record"; btn.disabled = false; }
+            });
+
+            // Date validation & Formatting Hooks
+            const dobInp = document.getElementById('dob'); const dtInp = document.getElementById('dateOfAdmission'); const ageInp = document.getElementById('age'); const ageWrn = document.getElementById('ageWarning');
+            
+            function calcAge() {
+                const v = dobInp.value;
+                if(v.length===10 && v.includes('-')) {
+                    const p = v.split('-'); const dob = new Date(p[2], p[1]-1, p[0]);
+                    const age = Math.abs(new Date(Date.now() - dob.getTime()).getUTCFullYear() - 1970);
+                    ageInp.value = age;
+                    if(age < 18) { ageWrn.style.display='flex'; isAgeValid=false; } else { ageWrn.style.display='none'; isAgeValid=true; }
+                } else { ageInp.value=''; ageWrn.style.display='none'; isAgeValid=false; }
+            }
+            
+            function fmtDt() {
+                let v = this.value.replace(/\D/g, ''); if(v.length>8) v=v.slice(0,8);
+                if(v.length>=5) this.value=`${v.slice(0,2)}-${v.slice(2,4)}-${v.slice(4)}`; else if(v.length>=3) this.value=`${v.slice(0,2)}-${v.slice(2)}`;
+            }
+
+            dobInp.addEventListener('keyup', calcAge); dobInp.addEventListener('blur', calcAge);
+            dobInp.addEventListener('input', fmtDt); dtInp.addEventListener('input', fmtDt);
+            
+            dtInp.addEventListener('blur', function() {
+                const v = this.value; if(v.length===10) {
+                    const p = v.split('-'); const d = new Date(p[2], p[1]-1, p[0]);
+                    const t = new Date(); t.setHours(0,0,0,0);
+                    if(d > t) { alert("Future dates not allowed."); this.value=`${String(t.getDate()).padStart(2,'0')}-${String(t.getMonth()+1).padStart(2,'0')}-${t.getFullYear()}`; }
+                }
             });
         });
     </script>
