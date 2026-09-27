@@ -259,7 +259,7 @@
         .pdf-rules-list em { display: block; font-style: normal; color: #444; font-size: 9.5px; }
 
         .pdf-footer {
-            margin-top: auto; /* Pushes to bottom */
+            margin-top: auto; 
             border-top: 1px solid var(--accent-orange);
             padding-top: 10px;
             text-align: center;
@@ -582,7 +582,8 @@
     <script>
         // Global App Context for routing and state
         const appContext = {
-            currentRole: null, // 'staff' or 'admin'
+            currentRole: null, // Active verified role ('staff' or 'admin')
+            pendingRole: null, // Temporary role selection for login screen
             
             switchView: function(viewName) {
                 document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
@@ -591,15 +592,19 @@
             },
             
             goHome: function() {
+                // If a user is successfully logged in, 'Back' takes them to the dashboard
                 if (this.currentRole) {
                     this.switchView('dashboard');
                 } else {
+                    // Otherwise, safely clear any pending attempts and return to home
+                    this.pendingRole = null;
                     this.switchView('home');
                 }
             },
             
             openLogin: function(role) {
-                this.currentRole = role;
+                // Set pending role ONLY. Do not grant access yet.
+                this.pendingRole = role;
                 document.getElementById('login-title').innerText = role === 'staff' ? 'Staff Login' : 'Admin Login';
                 const pinInput = document.getElementById('pin-input');
                 pinInput.value = '';
@@ -611,9 +616,13 @@
             handleLogin: function(e) {
                 e.preventDefault();
                 const pin = document.getElementById('pin-input').value;
-                if (this.currentRole === 'staff' && pin === '123456') {
+                
+                // Authorize and grant access
+                if (this.pendingRole === 'staff' && pin === '123456') {
+                    this.currentRole = 'staff';
                     this.loadDashboard('STAFF');
-                } else if (this.currentRole === 'admin' && pin === '1234') {
+                } else if (this.pendingRole === 'admin' && pin === '1234') {
+                    this.currentRole = 'admin';
                     this.loadDashboard('ADMIN');
                 } else {
                     alert('Invalid PIN. Please try again.');
@@ -628,7 +637,9 @@
             },
             
             logout: function() {
+                // Fully purge roles on logout
                 this.currentRole = null;
+                this.pendingRole = null;
                 this.switchView('home');
             },
             
@@ -653,6 +664,7 @@
             }
         };
 
+        // Attach login handler
         document.getElementById('loginForm').addEventListener('submit', function(e) { appContext.handleLogin(e); });
 
         let userLocationStr = "Location details unavailable";
@@ -941,7 +953,7 @@
                     btn.disabled = false;
                 }
             });
-
+            
             // Action 2: WhatsApp Welcome Message
             document.getElementById('btn-whatsapp-welcome').addEventListener('click', () => {
                 const phone = currentMemberDetails.primaryContact;
