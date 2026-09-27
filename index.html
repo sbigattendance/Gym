@@ -62,7 +62,7 @@
         }
 
         /* ==========================================================================
-           3. DASHBOARD MODULES (COMPACTED FOR MOBILE)
+           3. DASHBOARD MODULES (COMPACT 1-COLUMN LAYOUT)
            ========================================================================== */
         .dashboard-header { text-align: center; margin-bottom: 2rem; }
         .dashboard-header h1 { font-size: clamp(1.6rem, 5vw, 2.5rem); font-weight: 800; letter-spacing: 2px; margin-bottom: 0.5rem; }
@@ -70,9 +70,9 @@
         
         .compact-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* Forces 2 items per row on mobile */
+            grid-template-columns: 1fr; /* Restored to One-by-One layout */
             gap: 1rem;
-            max-width: 800px;
+            max-width: 400px; /* Constrained width so it doesn't stretch too wide */
             margin: 0 auto;
         }
         
@@ -92,12 +92,11 @@
         }
         .module-card:hover::before { transform: scaleX(1); }
         .module-icon { font-size: 2.2rem; margin-bottom: 0.5rem; display: block; }
-        .module-card h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0; line-height: 1.2; }
+        .module-card h3 { font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0; line-height: 1.2; }
 
         @media(min-width: 768px) {
-            .compact-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
-            .module-card { padding: 2rem 1rem; }
-            .module-icon { font-size: 2.8rem; }
+            .module-card { padding: 1.5rem 1rem; }
+            .module-icon { font-size: 2.5rem; }
             .module-card h3 { font-size: 1.1rem; }
         }
 
@@ -201,16 +200,24 @@
         #pdf-template-wrapper {
             display: none; 
             background: #555; 
-            min-height: 100vh; width: 100vw;
-            padding: 20px; justify-content: center;
+            min-height: 100vh;
+            width: 100vw;
+            padding: 20px;
+            justify-content: center;
         }
         
         #pdf-template {
-            background: #ffffff; color: #111111;
-            width: 210mm; height: 296mm; /* Strictly under 297mm to guarantee a single page output */
+            background: #ffffff;
+            color: #111111;
+            width: 210mm;
+            height: 296mm; /* Strictly under 297mm to guarantee a single page output */
             padding: 12mm 15mm; 
-            box-sizing: border-box; font-family: 'Helvetica', 'Arial', sans-serif;
-            position: relative; overflow: hidden; display: flex; flex-direction: column;
+            box-sizing: border-box;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .pdf-flex-between { display: flex; justify-content: space-between; align-items: flex-end; }
@@ -238,12 +245,28 @@
 
         .pdf-rules-container { border-top: 2px solid var(--accent-orange); padding-top: 10px; flex-grow: 1; }
         .pdf-rules-container h3 { color: var(--accent-orange); font-size: 12px; margin: 0 0 10px 0; text-transform: uppercase; }
-        .pdf-rules-list { column-count: 2; column-gap: 25px; font-size: 9px; line-height: 1.35; padding-left: 15px; margin: 0; color: #111; }
+        .pdf-rules-list {
+            column-count: 2;
+            column-gap: 25px;
+            font-size: 9px;
+            line-height: 1.35;
+            padding-left: 15px;
+            margin: 0;
+            color: #111;
+        }
         .pdf-rules-list li { margin-bottom: 8px; break-inside: avoid; }
         .pdf-rules-list strong { display: block; font-size: 9.5px; color: #000; }
         .pdf-rules-list em { display: block; font-style: normal; color: #444; font-size: 9.5px; }
 
-        .pdf-footer { margin-top: auto; border-top: 1px solid var(--accent-orange); padding-top: 10px; text-align: center; font-size: 9px; color: #555; font-weight: 600; }
+        .pdf-footer {
+            margin-top: auto; /* Pushes to bottom */
+            border-top: 1px solid var(--accent-orange);
+            padding-top: 10px;
+            text-align: center;
+            font-size: 9px;
+            color: #555;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -273,7 +296,7 @@
                     <span class="module-icon">👨‍💼</span>
                     <h3>Staff Login</h3>
                 </div>
-                <div class="module-card" onclick="appContext.openLogin('admin')" style="grid-column: 1 / -1; max-width: 250px; margin: 0 auto; width: 100%;">
+                <div class="module-card" onclick="appContext.openLogin('admin')">
                     <span class="module-icon">👑</span>
                     <h3>Admin Login</h3>
                 </div>
