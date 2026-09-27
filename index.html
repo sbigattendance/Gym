@@ -62,18 +62,15 @@
         }
 
         /* ==========================================================================
-           3. DASHBOARD MODULES (COMPACT 1-COLUMN LAYOUT)
+           3. DASHBOARD MODULES
            ========================================================================== */
         .dashboard-header { text-align: center; margin-bottom: 2rem; }
         .dashboard-header h1 { font-size: clamp(1.6rem, 5vw, 2.5rem); font-weight: 800; letter-spacing: 2px; margin-bottom: 0.5rem; }
         .dashboard-header span { color: var(--accent-orange); }
         
         .compact-grid {
-            display: grid;
-            grid-template-columns: 1fr; 
-            gap: 1rem;
-            max-width: 400px; 
-            margin: 0 auto;
+            display: grid; grid-template-columns: 1fr; gap: 1rem;
+            max-width: 400px; margin: 0 auto;
         }
         
         .module-card {
@@ -101,7 +98,7 @@
         }
 
         /* ==========================================================================
-           4. FORM UI & PIN INPUT
+           4. FORM UI
            ========================================================================== */
         .module-toolbar { display: flex; align-items: center; margin-bottom: 2rem; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
         .back-btn { background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; margin-left: -0.5rem; transition: color 0.2s; }
@@ -124,15 +121,13 @@
         .pin-input { font-size: 2rem; letter-spacing: 0.5rem; text-align: center; padding: 1rem; background-color: var(--bg-dark); color: var(--accent-orange); font-weight: 900; }
         .warning-text { color: var(--error-red); font-size: 0.85rem; margin-top: 0.5rem; display: none; font-weight: bold; }
         
-        /* Re-admission UI */
         #reAdmissionSection {
             background: var(--bg-card); padding: 1.5rem; border-radius: 8px; 
-            margin-bottom: 1.5rem; border: 1px dashed var(--accent-orange);
-            display: none; animation: fadeIn 0.3s ease;
+            margin-bottom: 1.5rem; border: 1px dashed var(--accent-orange); display: none; animation: fadeIn 0.3s ease;
         }
 
         /* ==========================================================================
-           5. VERIFICATION UI (CAMERA & SIGNATURE)
+           5. MULTI-STEP LOGIC & VERIFICATION & FEE UI
            ========================================================================== */
         .step-container { display: none; animation: fadeIn 0.3s ease-in-out; }
         .step-container.active-step { display: block; }
@@ -156,6 +151,20 @@
             cursor: crosshair; touch-action: none; width: 100%; max-width: 450px; height: 150px; display: block; margin: 0 auto 1rem auto;
         }
         
+        /* FEE UI */
+        .fee-summary-box {
+            background-color: var(--bg-panel); border: 2px solid var(--border-color); border-radius: 12px;
+            padding: 2rem; margin-bottom: 2rem; font-size: 1.1rem;
+        }
+        .fee-row { display: flex; justify-content: space-between; margin-bottom: 1rem; align-items: center;}
+        .fee-row strong { color: #fff; }
+        .fee-total { font-size: 1.4rem; color: var(--accent-orange); font-weight: 900; border-top: 1px dashed var(--border-color); padding-top: 1rem; margin-top: 0.5rem;}
+        
+        .qr-wrapper {
+            background: #fff; padding: 15px; border-radius: 12px; display: inline-block;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
         .control-btns { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; width: 100%; margin-top: 1rem; }
         
         .btn {
@@ -173,16 +182,24 @@
         .action-row .btn { flex: 1; }
 
         /* ==========================================================================
-           6. SUCCESS MODAL
+           6. MODALS
            ========================================================================== */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 1000; padding: 1rem;
+            background: rgba(0,0,0,0.95); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 1000; padding: 1rem;
         }
         .modal-content {
             background-color: var(--bg-panel); padding: clamp(1.5rem, 5vw, 3rem); border-radius: 16px;
             text-align: center; border: 1px solid var(--accent-orange); max-width: 450px; width: 100%; animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        
+        /* Payment Success Animation */
+        .checkmark-circle {
+            width: 80px; height: 80px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center;
+            background: rgba(37, 211, 102, 0.1); border: 4px solid var(--success-green); margin-bottom: 1.5rem;
+        }
+        .checkmark-icon { font-size: 3rem; color: var(--success-green); }
+
         .orange-text { color: var(--accent-orange); margin: 1rem 0; font-size: 1.5rem; text-transform: uppercase; font-weight: 800; }
         .admission-badge {
             background-color: var(--bg-dark); padding: 1.2rem; font-size: 2.2rem; font-weight: 900; letter-spacing: 2px;
@@ -200,17 +217,11 @@
            7. PDF TEMPLATE - STRICT 1-PAGE A4 LAYOUT
            ========================================================================== */
         #pdf-template-wrapper {
-            display: none; 
-            background: #555; 
-            min-height: 100vh; width: 100vw;
-            padding: 20px; justify-content: center;
+            display: none; background: #555; min-height: 100vh; width: 100vw; padding: 20px; justify-content: center;
         }
-        
         #pdf-template {
-            background: #ffffff; color: #111111;
-            width: 210mm; height: 296mm; 
-            padding: 12mm 15mm; 
-            box-sizing: border-box; font-family: 'Helvetica', 'Arial', sans-serif;
+            background: #ffffff; color: #111111; width: 210mm; height: 296mm; 
+            padding: 12mm 15mm; box-sizing: border-box; font-family: 'Helvetica', 'Arial', sans-serif;
             position: relative; overflow: hidden; display: flex; flex-direction: column;
         }
 
@@ -344,7 +355,7 @@
                     
                     <!-- STEP 1: Details -->
                     <div id="step-1" class="step-container active-step">
-                        <div class="step-indicator">Step 1 of 2: Member Details</div>
+                        <div class="step-indicator">Step 1 of 3: Member Details</div>
                         
                         <div class="form-row">
                             <div class="form-group">
@@ -433,7 +444,7 @@
 
                     <!-- STEP 2: Verification -->
                     <div id="step-2" class="step-container">
-                        <div class="step-indicator">Step 2 of 2: Digital Verification</div>
+                        <div class="step-indicator">Step 2 of 3: Digital Verification</div>
                         
                         <div class="verification-group">
                             <label>Live Portrait Capture <span class="required">*</span></label>
@@ -462,8 +473,42 @@
                         </div>
 
                         <div class="action-row" style="flex-direction: column;">
-                            <button type="submit" class="btn primary">Complete Admission</button>
+                            <button type="button" id="btn-next-step-2" class="btn primary">Proceed to Payment →</button>
                             <button type="button" id="btn-prev-step" class="btn secondary">← Back to Details</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Payment UI -->
+                    <div id="step-3" class="step-container">
+                        <div class="step-indicator">Step 3 of 3: Initial Payment Validation</div>
+                        
+                        <div class="fee-summary-box">
+                            <h3 style="color:var(--accent-orange); text-align:center; margin-bottom:1.5rem;">FEE SUMMARY</h3>
+                            <div class="fee-row"><span>Pre-Admission ID:</span> <strong id="calc-admission-id">REV-0000</strong></div>
+                            <div class="fee-row"><span>Admission Fee:</span> <strong>₹<span id="calc-admin-fee">850</span></strong></div>
+                            <div class="fee-row"><span>Monthly Fee (<span id="calc-days-tag"></span>):</span> <strong>₹<span id="calc-monthly-fee">800</span></strong></div>
+                            <div class="fee-row fee-total"><span>Total Amount:</span> <strong>₹<span id="calc-total-fee">1650</span></strong></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Select Payment Method <span class="required">*</span></label>
+                            <select id="paymentMethod">
+                                <option value="UPI">UPI Payment (QR Code)</option>
+                                <option value="CASH">Cash Payment</option>
+                            </select>
+                        </div>
+
+                        <div id="upi-section" style="text-align:center; margin: 2rem 0; padding: 1.5rem; background: #000; border: 1px dashed var(--border-color); border-radius: 12px;">
+                            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem; text-transform:uppercase; letter-spacing:1px;">Scan to pay <strong style="color:var(--accent-orange); font-size:1.2rem;">₹<span id="qr-amount-display"></span></strong></p>
+                            <div class="qr-wrapper">
+                                <img id="upi-qr-code" src="" alt="UPI QR Code" style="width:200px; height:200px; display:block;">
+                            </div>
+                        </div>
+
+                        <div class="action-row" style="flex-direction: column; margin-top:2rem;">
+                            <!-- This button acts as the final submission trigger -->
+                            <button type="button" id="btn-validate-payment" class="btn primary">Validate Payment</button>
+                            <button type="button" id="btn-prev-step-2" class="btn secondary">← Back to Verification</button>
                         </div>
                     </div>
 
@@ -471,10 +516,21 @@
             </div>
         </main>
 
+        <!-- PAYMENT SUCCESS INTERMEDIATE MODAL -->
+        <div id="paymentSuccessModal" class="modal">
+            <div class="modal-content" style="text-align:center;">
+                <div class="checkmark-circle"><div class="checkmark-icon">✓</div></div>
+                <h2 style="color: var(--text-light); margin-bottom:0.5rem; font-size:1.8rem;">Payment Successful!</h2>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">Amount fully received for Admission ID: <strong id="success-paid-id" style="color:var(--accent-orange);"></strong></p>
+                <button id="btn-proceed-to-admission" class="btn primary" style="width:100%;">Generate Admission Record</button>
+            </div>
+        </div>
+
+        <!-- FINAL REGISTRATION SUCCESS MODAL -->
         <div id="successModal" class="modal">
             <div class="modal-content">
                 <img src="logo.png" alt="REVIVE FITNESS STUDIO" style="height: 50px; margin-bottom: 1rem;" onerror="this.style.display='none'">
-                <h2 class="orange-text">Registration Success!</h2>
+                <h2 class="orange-text">Registration Complete!</h2>
                 <div class="admission-badge" id="generated-id">REV-0000</div>
                 <div class="modal-actions">
                     <button id="btn-download-pdf" class="btn primary">1. Download PDF Record</button>
@@ -584,6 +640,13 @@
          JAVASCRIPT ENGINE
          ======================================================================= -->
     <script>
+        // CONFIGURABLE BACKEND VARIABLES
+        const APP_CONFIG = {
+            upiId: "revivefitness@upi", // Replace with your actual UPI ID
+            baseAdmissionFee: 850,
+            baseMonthlyFee: 800
+        };
+
         const appContext = {
             currentRole: null, 
             pendingRole: null, 
@@ -652,6 +715,7 @@
                 document.getElementById('reAdmissionSection').style.display = 'none';
                 document.getElementById('validationResultBox').style.display = 'none';
                 
+                document.getElementById('step-3').classList.remove('active-step');
                 document.getElementById('step-2').classList.remove('active-step');
                 document.getElementById('step-1').classList.add('active-step');
                 
@@ -667,6 +731,8 @@
         let userLocationStr = "Location details unavailable";
         let isAgeValid = false;
         let currentMemberDetails = {};
+        let calculatedTotalFee = 0;
+        let preAdmissionId = "";
 
         document.addEventListener('DOMContentLoaded', () => {
             
@@ -694,7 +760,6 @@
                 }
                 
                 let users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                // Find most recent match
                 let user = [...users].reverse().find(u => u.primaryContact === phone);
                 
                 resBox.style.display = 'block';
@@ -712,15 +777,13 @@
                     let statusHtml = '';
                     
                     if (currDate > expiryDate) {
-                        // NOT ELIGIBLE
                         statusHtml = '<span style="color:var(--error-red); font-weight:bold; font-size:1.1rem;">Status: NOT ELIGIBLE (> 6 Months)</span><br><span style="color:var(--text-muted); font-size:0.85rem;">Admission Type automatically changed to New Admission.</span>';
                         admissionTypeSelect.value = 'New Admission';
                     } else {
-                        // ELIGIBLE
                         statusHtml = '<span style="color:var(--success-green); font-weight:bold; font-size:1.1rem;">Status: ELIGIBLE</span>';
                     }
                     
-                    // AUTO-POPULATE (Occurs for both Eligible and Not Eligible as requested)
+                    // AUTO-POPULATE 
                     document.getElementById('firstName').value = user.firstName || '';
                     document.getElementById('lastName').value = user.lastName || '';
                     document.getElementById('primaryContact').value = user.primaryContact || phone;
@@ -728,7 +791,7 @@
                     document.getElementById('dob').value = user.dob || '';
                     document.getElementById('address').value = user.address || '';
                     
-                    calculateAge(); // Force age recalculation based on auto-populated DOB
+                    calculateAge(); 
                     
                     resBox.innerHTML = `
                         ${statusHtml}<br><br>
@@ -738,16 +801,15 @@
                     `;
                     
                 } else {
-                    // NO RECORD FOUND
                     resBox.innerHTML = '<span style="color:var(--error-red);">No previous registration found for this number.</span><br><span style="color:var(--text-muted); font-size:0.85rem;">Admission Type automatically changed to New Admission.</span>';
                     admissionTypeSelect.value = 'New Admission';
-                    // Auto-fill phone number to save time
                     document.getElementById('primaryContact').value = phone;
                 }
             });
 
             const step1 = document.getElementById('step-1');
             const step2 = document.getElementById('step-2');
+            const step3 = document.getElementById('step-3');
             
             document.getElementById('btn-next-step').addEventListener('click', () => {
                 const inputs = step1.querySelectorAll('input, select, textarea');
@@ -900,13 +962,83 @@
             sigCanvas.addEventListener('touchmove', draw, {passive: false});
             sigCanvas.addEventListener('touchend', endDraw);
 
-            // Submissions & Data Handlers
-            document.getElementById('admissionForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-                
+
+            // ---------------------------------------------------------------------
+            // TRANSITION TO STEP 3 (FEE CALCULATION)
+            // ---------------------------------------------------------------------
+            document.getElementById('btn-next-step-2').addEventListener('click', () => {
                 if (!selfieData.value) { alert("Portrait capture is mandatory."); return; }
                 if (!signatureHasData) { alert("Digital signature is mandatory."); return; }
 
+                // Determine ID
+                let currentCount = localStorage.getItem('revive_admission_count');
+                currentCount = !currentCount ? 1 : parseInt(currentCount) + 1;
+                preAdmissionId = `REV-${String(currentCount).padStart(4, '0')}`;
+                
+                // Calculate Fees
+                const adDateVal = document.getElementById('dateOfAdmission').value;
+                const parts = adDateVal.split('-');
+                const adDate = new Date(parts[2], parts[1]-1, parts[0]);
+                const daysInMonth = new Date(parts[2], parts[1], 0).getDate(); // Total days in that month
+                const remainingDays = daysInMonth - adDate.getDate() + 1; // Inclusive of admission day
+                
+                let monthlyFeeToPay = APP_CONFIG.baseMonthlyFee;
+                let daysTagText = "Full Month";
+
+                if (remainingDays < 15) {
+                    monthlyFeeToPay = Math.round((APP_CONFIG.baseMonthlyFee / 30) * remainingDays);
+                    daysTagText = `${remainingDays} Days Pro-rated`;
+                }
+
+                calculatedTotalFee = APP_CONFIG.baseAdmissionFee + monthlyFeeToPay;
+
+                // Populate Step 3 UI
+                document.getElementById('calc-admission-id').innerText = preAdmissionId;
+                document.getElementById('calc-admin-fee').innerText = APP_CONFIG.baseAdmissionFee;
+                document.getElementById('calc-monthly-fee').innerText = monthlyFeeToPay;
+                document.getElementById('calc-days-tag').innerText = daysTagText;
+                document.getElementById('calc-total-fee').innerText = calculatedTotalFee;
+
+                updatePaymentMethodUI();
+
+                step2.classList.remove('active-step');
+                step3.classList.add('active-step');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('btn-prev-step-2').addEventListener('click', () => {
+                step3.classList.remove('active-step');
+                step2.classList.add('active-step');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // Payment UI Logic
+            const paymentMethodSelect = document.getElementById('paymentMethod');
+            const upiSection = document.getElementById('upi-section');
+            const btnValidatePayment = document.getElementById('btn-validate-payment');
+
+            function updatePaymentMethodUI() {
+                if (paymentMethodSelect.value === 'UPI') {
+                    upiSection.style.display = 'block';
+                    btnValidatePayment.innerText = 'Validate Payment & Complete';
+                    document.getElementById('qr-amount-display').innerText = calculatedTotalFee;
+                    
+                    // Generate UPI QR Code URL
+                    const upiString = `upi://pay?pa=${APP_CONFIG.upiId}&pn=ReviveFitness&am=${calculatedTotalFee}&cu=INR`;
+                    document.getElementById('upi-qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
+                } else {
+                    upiSection.style.display = 'none';
+                    btnValidatePayment.innerText = 'Collect Cash & Complete';
+                }
+            }
+
+            paymentMethodSelect.addEventListener('change', updatePaymentMethodUI);
+
+            // ---------------------------------------------------------------------
+            // FINAL ADMISSION SUBMISSION
+            // ---------------------------------------------------------------------
+            btnValidatePayment.addEventListener('click', () => {
+                
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
                         (pos) => { userLocationStr = `Lat: ${pos.coords.latitude.toFixed(5)}, Long: ${pos.coords.longitude.toFixed(5)}`; },
@@ -914,8 +1046,21 @@
                     );
                 }
 
-                let currentCount = localStorage.getItem('revive_admission_count');
-                currentCount = !currentCount ? 1 : parseInt(currentCount) + 1;
+                if (paymentMethodSelect.value === 'UPI') {
+                    document.getElementById('success-paid-id').innerText = preAdmissionId;
+                    document.getElementById('paymentSuccessModal').style.display = 'flex';
+                } else {
+                    finalizeRegistration();
+                }
+            });
+
+            document.getElementById('btn-proceed-to-admission').addEventListener('click', () => {
+                document.getElementById('paymentSuccessModal').style.display = 'none';
+                finalizeRegistration();
+            });
+
+            function finalizeRegistration() {
+                const currentCount = parseInt(preAdmissionId.split('-')[1]);
                 
                 const firstNameVal = document.getElementById('firstName').value.trim();
                 const lastNameVal = document.getElementById('lastName').value.trim();
@@ -923,8 +1068,8 @@
                 const fullName = lastNameVal ? `${firstNameVal} ${lastNameVal}` : firstNameVal;
                 
                 currentMemberDetails = {
-                    id: `REV-${String(currentCount).padStart(4, '0')}`,
-                    date: dateInput.value,
+                    id: preAdmissionId,
+                    date: document.getElementById('dateOfAdmission').value,
                     admissionType: document.getElementById('admissionTypeSelect').value,
                     admissionCategory: document.getElementById('admissionCategory').value,
                     trainingCategory: document.getElementById('trainingCategory').value,
@@ -933,10 +1078,10 @@
                     fullName: fullName, 
                     primaryContact: document.getElementById('primaryContact').value,
                     alternateContact: altContactVal ? altContactVal : "",
-                    dob: dobInput.value,
-                    age: ageInput.value,
+                    dob: document.getElementById('dob').value,
+                    age: document.getElementById('age').value,
                     address: document.getElementById('address').value.trim(),
-                    photo: selfieData.value,
+                    photo: document.getElementById('selfie-data').value,
                     signature: sigCanvas.toDataURL('image/jpeg', 1.0)
                 };
 
@@ -947,10 +1092,11 @@
                 document.getElementById('generated-id').innerText = currentMemberDetails.id;
                 document.getElementById('successModal').style.display = 'flex';
                 localStorage.setItem('revive_admission_count', currentCount);
-            });
+            }
+
 
             // ---------------------------------------------------------------------
-            // 8. PDF Engine & Action Buttons
+            // PDF Engine & Action Buttons
             // ---------------------------------------------------------------------
             function getPdfBlob() {
                 return new Promise((resolve, reject) => {
