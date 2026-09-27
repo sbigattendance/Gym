@@ -121,14 +121,10 @@
         input:focus, select:focus, textarea:focus { border-color: var(--accent-orange); background-color: var(--bg-card); box-shadow: 0 0 0 2px rgba(255, 102, 0, 0.15); }
         input[readonly] { background-color: var(--bg-dark); color: var(--text-muted); cursor: not-allowed; border-style: dashed; }
         
-        .pin-input {
-            font-size: 2rem; letter-spacing: 0.5rem; text-align: center; padding: 1rem;
-            background-color: var(--bg-dark); color: var(--accent-orange); font-weight: 900;
-        }
-
+        .pin-input { font-size: 2rem; letter-spacing: 0.5rem; text-align: center; padding: 1rem; background-color: var(--bg-dark); color: var(--accent-orange); font-weight: 900; }
         .warning-text { color: var(--error-red); font-size: 0.85rem; margin-top: 0.5rem; display: none; font-weight: bold; }
         
-        /* Re-admission validation box */
+        /* Re-admission UI */
         #reAdmissionSection {
             background: var(--bg-card); padding: 1.5rem; border-radius: 8px; 
             margin-bottom: 1.5rem; border: 1px dashed var(--accent-orange);
@@ -136,7 +132,7 @@
         }
 
         /* ==========================================================================
-           5. MULTI-STEP LOGIC & VERIFICATION UI
+           5. VERIFICATION UI (CAMERA & SIGNATURE)
            ========================================================================== */
         .step-container { display: none; animation: fadeIn 0.3s ease-in-out; }
         .step-container.active-step { display: block; }
@@ -588,7 +584,6 @@
          JAVASCRIPT ENGINE
          ======================================================================= -->
     <script>
-        // Global App Context for routing and state
         const appContext = {
             currentRole: null, 
             pendingRole: null, 
@@ -690,6 +685,7 @@
             document.getElementById('btn-validate-readmission').addEventListener('click', () => {
                 const phone = document.getElementById('prevPhoneInput').value;
                 const resBox = document.getElementById('validationResultBox');
+                const admissionTypeSelect = document.getElementById('admissionTypeSelect');
                 
                 if(phone.length !== 10) {
                     resBox.style.display = 'block';
@@ -698,11 +694,12 @@
                 }
                 
                 let users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                let user = users.find(u => u.primaryContact === phone);
+                // Find most recent match
+                let user = [...users].reverse().find(u => u.primaryContact === phone);
                 
                 resBox.style.display = 'block';
+                
                 if(user) {
-                    // Dates in format DD-MM-YYYY
                     const parts = user.date.split('-');
                     const prevDate = new Date(parts[2], parts[1]-1, parts[0]);
                     
@@ -713,11 +710,25 @@
                     expiryDate.setMonth(expiryDate.getMonth() + 6);
                     
                     let statusHtml = '';
+                    
                     if (currDate > expiryDate) {
-                        statusHtml = '<span style="color:var(--error-red); font-weight:bold; font-size:1.1rem;">Status: NOT ELIGIBLE (> 6 Months)</span>';
+                        // NOT ELIGIBLE
+                        statusHtml = '<span style="color:var(--error-red); font-weight:bold; font-size:1.1rem;">Status: NOT ELIGIBLE (> 6 Months)</span><br><span style="color:var(--text-muted); font-size:0.85rem;">Admission Type automatically changed to New Admission.</span>';
+                        admissionTypeSelect.value = 'New Admission';
                     } else {
+                        // ELIGIBLE
                         statusHtml = '<span style="color:var(--success-green); font-weight:bold; font-size:1.1rem;">Status: ELIGIBLE</span>';
                     }
+                    
+                    // AUTO-POPULATE (Occurs for both Eligible and Not Eligible as requested)
+                    document.getElementById('firstName').value = user.firstName || '';
+                    document.getElementById('lastName').value = user.lastName || '';
+                    document.getElementById('primaryContact').value = user.primaryContact || phone;
+                    document.getElementById('alternateContact').value = user.alternateContact || '';
+                    document.getElementById('dob').value = user.dob || '';
+                    document.getElementById('address').value = user.address || '';
+                    
+                    calculateAge(); // Force age recalculation based on auto-populated DOB
                     
                     resBox.innerHTML = `
                         ${statusHtml}<br><br>
@@ -725,8 +736,13 @@
                         <strong>Contact:</strong> ${user.primaryContact}<br>
                         <strong>Prev. Registration Date:</strong> ${user.date}
                     `;
+                    
                 } else {
-                    resBox.innerHTML = '<span style="color:var(--error-red);">No previous registration found for this number.</span>';
+                    // NO RECORD FOUND
+                    resBox.innerHTML = '<span style="color:var(--error-red);">No previous registration found for this number.</span><br><span style="color:var(--text-muted); font-size:0.85rem;">Admission Type automatically changed to New Admission.</span>';
+                    admissionTypeSelect.value = 'New Admission';
+                    // Auto-fill phone number to save time
+                    document.getElementById('primaryContact').value = phone;
                 }
             });
 
@@ -913,6 +929,7 @@
                     admissionCategory: document.getElementById('admissionCategory').value,
                     trainingCategory: document.getElementById('trainingCategory').value,
                     firstName: firstNameVal,
+                    lastName: lastNameVal, 
                     fullName: fullName, 
                     primaryContact: document.getElementById('primaryContact').value,
                     alternateContact: altContactVal ? altContactVal : "",
@@ -923,7 +940,6 @@
                     signature: sigCanvas.toDataURL('image/jpeg', 1.0)
                 };
 
-                // Save to local DB for future Re-Admission checks
                 let usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
                 usersDb.push(currentMemberDetails);
                 localStorage.setItem('revive_users_db', JSON.stringify(usersDb));
@@ -946,7 +962,6 @@
                     document.getElementById('pdf-photo').src = currentMemberDetails.photo;
                     document.getElementById('pdf-name').innerText = currentMemberDetails.fullName;
                     
-                    // Map new variables
                     document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType} - ${currentMemberDetails.admissionCategory}`;
                     document.getElementById('pdf-training-category').innerText = currentMemberDetails.trainingCategory;
                     
@@ -994,7 +1009,6 @@
                 });
             }
 
-            // Forced File Download
             document.getElementById('btn-download-pdf').addEventListener('click', async function() {
                 const btn = this;
                 btn.innerText = "Generating..."; btn.disabled = true;
@@ -1022,7 +1036,6 @@
                 }
             });
             
-            // Action 2: WhatsApp Welcome Message
             document.getElementById('btn-whatsapp-welcome').addEventListener('click', () => {
                 const phone = currentMemberDetails.primaryContact;
                 const welcomeMsg = `🎉 Revive Fitness Studio-ലേക്ക് ഹൃദയം നിറഞ്ഞ സ്വാഗതം! 🏋️‍♂️✨\n\nനിങ്ങളുടെ Fitness Journey-യുടെ പുതിയ തുടക്കത്തിന് ഞങ്ങളോടൊപ്പം ചേർന്നതിൽ സന്തോഷം! 💪\n\nആരോഗ്യവും ഫിറ്റ്നസും ജീവിതത്തിന്റെ ഭാഗമാക്കി, നിങ്ങളുടെ ലക്ഷ്യങ്ങളിലേക്ക് ഓരോ ദിവസവും ഒരു പടി കൂടി മുന്നോട്ട് പോകാൻ Revive Fitness Studio നിങ്ങളോടൊപ്പം ഉണ്ടാകും. ❤️\n\n🔥 Train Better • Stay Strong • Live Healthy\n\nWelcome to the Revive Family! 🤝💪\n— Revive Fitness Studio`;
@@ -1030,7 +1043,6 @@
                 window.open(`https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(welcomeMsg)}`, '_blank');
             });
 
-            // Action 3: Web Share API for PDF
             document.getElementById('btn-whatsapp-pdf').addEventListener('click', async function() {
                 const btn = this;
                 btn.innerText = "Preparing Share..."; btn.disabled = true;
