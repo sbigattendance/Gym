@@ -73,7 +73,7 @@
         .module-card h3 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0; color: var(--text-main); font-weight: 700; }
 
         /* ==========================================================================
-           4. FORM UI & UTILS
+           4. FORM UI
            ========================================================================== */
         .module-toolbar { display: flex; align-items: center; margin-bottom: 2rem; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); justify-content: space-between; }
         .back-btn { background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; margin-left: -0.5rem; transition: color 0.2s; font-weight: 600; }
@@ -122,9 +122,9 @@
 
         /* Re-Admission Validation Input Layout Fix */
         #reAdmissionSection { background: var(--bg-main); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px dashed var(--accent-orange); display: none; animation: fadeIn 0.3s ease; }
-        .val-group { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: stretch; margin-bottom: 1rem; width: 100%; }
-        .val-group input { margin-bottom: 0 !important; width: 100%; min-width: 0; }
-        .val-group button { margin-bottom: 0 !important; padding: 0 1.5rem; height: 100%; white-space: nowrap; display: flex; align-items: center;}
+        .val-group { display: flex; flex-wrap: nowrap; gap: 10px; align-items: stretch; margin-bottom: 1rem; width: 100%; }
+        .val-group input { flex: 1 1 0%; min-width: 0; width: 100%; margin-bottom: 0 !important; }
+        .val-group button { flex: 0 0 auto; margin-bottom: 0 !important; padding: 0 1.5rem; height: 100%; white-space: nowrap; display: flex; align-items: center; justify-content: center; }
 
         /* ==========================================================================
            6. REPORTS, HUB & CALENDAR UI
@@ -172,7 +172,7 @@
         .data-table th, .data-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
         .data-table th { background-color: var(--bg-main); color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
         .data-table tr:last-child td { border-bottom: none; }
-        .analysis-box { background: var(--bg-panel); border-left: 4px solid var(--accent-orange); padding: 1.5rem; border-radius: 4px; font-size: 0.95rem; line-height: 1.6; border: 1px solid var(--border-color); border-left-width: 4px; }
+        .analysis-box { background: var(--bg-panel); border-left: 4px solid var(--accent-orange); padding: 1.5rem; border-radius: 4px; font-size: 0.95rem; line-height: 1.6; border-top: 1px solid var(--border-color); border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);}
 
         /* ==========================================================================
            7. MODALS & RECEIPTS
@@ -231,8 +231,6 @@
             .form-row { flex-direction: column; gap: 1rem; margin-bottom: 1rem; }
             .form-layout { padding: 1.5rem; border: none; box-shadow: none; background: transparent; }
             .btn { padding: 0.9rem 1.5rem; }
-            .val-group { grid-template-columns: 1fr auto; }
-            .val-group button { padding: 0 1rem; }
             .profile-snippet { flex-direction: column; text-align: center; }
             .profile-snippet img { width: 90px; height: 90px; }
             #hub-actions { width: 100%; max-width: 100%; }
@@ -281,12 +279,11 @@
                     </button>
                     <h2 class="module-title" id="login-title">Login</h2>
                 </div>
-                <!-- Pure Javascript bind removes native form hijacking crashes -->
-                <form id="loginForm" onsubmit="return false;">
+                <form id="loginForm" onsubmit="event.preventDefault(); window.appContext.handleLogin();">
                     <div class="form-group">
                         <input type="password" id="pin-input" class="pin-input" inputmode="numeric" required autocomplete="off">
                     </div>
-                    <button type="button" id="btn-login-submit" class="btn primary" style="margin-top:1rem;">Verify & Access</button>
+                    <button type="submit" class="btn primary" style="margin-top:1rem;">Verify & Access</button>
                 </form>
             </div>
         </main>
@@ -340,7 +337,7 @@
                     </button>
                     <h2 class="module-title" id="search-title">Search User</h2>
                 </div>
-                <form id="userSearchForm">
+                <form id="userSearchForm" onsubmit="event.preventDefault(); window.moduleContext.fetchUserHub();">
                     <div class="form-group">
                         <label>Member Phone Number <span class="required">*</span></label>
                         <input type="tel" id="search-phone" pattern="\d{10}" maxlength="10" required>
@@ -404,7 +401,7 @@
                             <option value="All">Entire Year (All Months)</option>
                         </select>
                     </div>
-                    <button class="btn primary" id="btn-gen-report" style="max-width:150px; padding: 1rem;">Generate</button>
+                    <button class="btn primary" onclick="moduleContext.generateReport()" style="max-width:150px; padding: 1rem;">Generate</button>
                 </div>
 
                 <div id="report-content" style="display:none; margin-top:2rem;">
@@ -434,7 +431,7 @@
                     <div class="report-section">
                         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
                             <h3 style="margin:0; border:none;">1. New Admissions</h3>
-                            <button class="btn secondary" id="btn-export-adm" style="width:auto; padding:0.4rem 1rem; font-size:0.8rem;">Export CSV</button>
+                            <button class="btn secondary" onclick="moduleContext.exportTableToCSV('table-admissions', 'Admissions_Report.csv')" style="width:auto; padding:0.4rem 1rem; font-size:0.8rem;">Export CSV</button>
                         </div>
                         <div class="table-responsive">
                             <table class="data-table" id="table-admissions">
@@ -447,7 +444,7 @@
                     <div class="report-section">
                         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
                             <h3 style="margin:0; border:none;">2. Fee Collections</h3>
-                            <button class="btn secondary" id="btn-export-fee" style="width:auto; padding:0.4rem 1rem; font-size:0.8rem;">Export CSV</button>
+                            <button class="btn secondary" onclick="moduleContext.exportTableToCSV('table-fees', 'Fee_Collections_Report.csv')" style="width:auto; padding:0.4rem 1rem; font-size:0.8rem;">Export CSV</button>
                         </div>
                         <div class="table-responsive">
                             <table class="data-table" id="table-fees">
@@ -478,7 +475,7 @@
                         <input type="text" id="admin-upi-id" placeholder="e.g. revivefitness@upi" required>
                     </div>
                 </div>
-                <div class="action-row"><button type="button" id="btn-save-upi" class="btn primary">Save UPI ID</button></div>
+                <div class="action-row"><button type="button" onclick="moduleContext.saveUpi()" class="btn primary">Save UPI ID</button></div>
             </div>
         </main>
 
@@ -490,7 +487,7 @@
                 </div>
                 <div class="form-row"><div class="form-group" style="max-width: 300px;"><label for="fy-select">Financial Year</label><select id="fy-select"></select></div></div>
                 <div id="tariff-months-container" style="margin-top: 1rem;"></div>
-                <div class="action-row"><button type="button" id="btn-save-tariff" class="btn primary">Save All Tariffs</button></div>
+                <div class="action-row"><button type="button" onclick="moduleContext.saveTariffs()" class="btn primary">Save All Tariffs</button></div>
             </div>
         </main>
 
@@ -506,6 +503,7 @@
                 </div>
                 
                 <form id="admissionForm">
+                    
                     <div id="step-1" class="step-container active-step">
                         <div class="step-indicator" id="step-1-ind">Step 1 of 3: Member Details</div>
                         
@@ -523,9 +521,9 @@
                             </div>
                         </div>
 
-                        <!-- Fixed Re-Admission Layout using CSS Grid -->
+                        <!-- Fixed Re-Admission Layout using Pure Flex -->
                         <div id="reAdmissionSection">
-                            <label style="color: var(--accent-orange); margin-bottom: 0.8rem; display: block; font-weight: 800;">Validate Previous Registration</label>
+                            <label style="color: var(--accent-orange); margin-bottom: 0.5rem; display: block; font-weight: 800;">Validate Previous Registration</label>
                             <div class="val-group">
                                 <input type="tel" id="prevPhoneInput" placeholder="10-digit number" pattern="\d{10}" maxlength="10">
                                 <button type="button" id="btn-validate-readmission" class="btn secondary">Validate</button>
@@ -692,8 +690,8 @@
                     <div class="qr-wrapper"><img id="pay-upi-qr" src="" style="width:150px; height:150px;"></div>
                 </div>
                 <div class="action-row">
-                    <button type="button" id="btn-cancel-pay" class="btn secondary">Cancel</button>
-                    <button type="button" id="btn-confirm-pay" class="btn primary">Confirm</button>
+                    <button type="button" onclick="document.getElementById('paymentProcessModal').style.display='none'" class="btn secondary">Cancel</button>
+                    <button type="button" onclick="moduleContext.confirmPayment()" class="btn primary">Confirm</button>
                 </div>
             </div>
         </div>
@@ -732,7 +730,7 @@
                 <h2 class="orange-text">Payment Recorded!</h2>
                 <p style="margin-bottom: 1.5rem;">Receipt has been successfully generated.</p>
                 <div class="modal-actions">
-                    <button id="btn-share-receipt" class="btn whatsapp">Share Receipt Image</button>
+                    <button onclick="moduleContext.shareReceipt('success')" class="btn whatsapp">Share Receipt Image</button>
                     <button class="btn secondary" onclick="appContext.switchView('user-hub')">Return to Profile</button>
                 </div>
             </div>
@@ -743,7 +741,7 @@
                 <h2 class="orange-text">Payment Receipt</h2>
                 <p style="margin-bottom: 1.5rem;">Receipt for <span id="vr-month-label" style="font-weight:bold;"></span></p>
                 <div class="modal-actions">
-                    <button id="btn-vr-share" class="btn whatsapp">Share Receipt via WhatsApp</button>
+                    <button onclick="moduleContext.shareReceipt('vr')" class="btn whatsapp">Share Receipt via WhatsApp</button>
                     <button class="btn secondary" onclick="document.getElementById('viewReceiptModal').style.display='none'">Close</button>
                 </div>
             </div>
@@ -818,7 +816,6 @@
         </div>
     </div>
 
-    <!-- Receipt Generator -->
     <div id="receipt-render-zone">
         <div id="receipt-template">
             <div class="rcpt-header">
@@ -847,7 +844,6 @@
          JAVASCRIPT ENGINE
          ======================================================================= -->
     <script>
-        // GLOBAL CONFIG
         const APP_CONFIG = { upiId: "revivefitness@upi", baseAdmissionFee: 850, baseMonthlyFee: 800, basePTFee: 1500 };
         const tariffMonthsOrder = ['April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March'];
         const tariffMonthIndices = [3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2]; 
@@ -862,21 +858,13 @@
         let IS_EDIT_MODE = false;
         let currentHubMode = 'details'; 
 
-        // HELPER FUNCTIONS
-        function calculateAgeFromDate(dateStr) {
-            if(!dateStr || dateStr.length !== 10 || !dateStr.includes('-')) return '';
-            const p = dateStr.split('-');
-            const dob = new Date(p[2], p[1]-1, p[0]);
-            return Math.abs(new Date(Date.now() - dob.getTime()).getUTCFullYear() - 1970);
-        }
-
         function formatDateStr(isoStr) {
             if(!isoStr) return '';
             const d = new Date(isoStr);
             return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
         }
 
-        // GLOBALLY ATTACHED APP CONTEXT
+        // Establish pure global context mathematically prior to DOM parsing
         var appContext = {
             currentRole: null, pendingRole: null, 
             switchView: function(viewName) {
@@ -939,12 +927,11 @@
             }
         };
 
-        // GLOBALLY ATTACHED MODULE CONTEXT
         var moduleContext = {
             initUpiEditor: function() { document.getElementById('admin-upi-id').value = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId; },
             saveUpi: function() {
                 const newUpi = document.getElementById('admin-upi-id').value.trim();
-                if(newUpi) { localStorage.setItem('revive_upi_id', newUpi); alert("UPI ID saved."); appContext.goHome(); } else alert("Invalid UPI ID.");
+                if(newUpi) { localStorage.setItem('revive_upi_id', newUpi); alert("UPI ID saved."); window.appContext.goHome(); } else alert("Invalid UPI ID.");
             },
             initTariffEditor: function() {
                 const fySelect = document.getElementById('fy-select'); const container = document.getElementById('tariff-months-container');
@@ -998,10 +985,9 @@
                 }
                 document.getElementById('search-phone').value = '';
                 document.getElementById('search-title').innerText = mode === 'fee' ? "Search for Fee Collection" : "Search User Details";
-                appContext.switchView('user-search');
+                window.appContext.switchView('user-search');
             },
-            fetchUserHub: function(e) {
-                if(e) e.preventDefault();
+            fetchUserHub: function() {
                 const phone = document.getElementById('search-phone').value;
                 const fy = document.getElementById('search-fy').value;
                 
@@ -1014,7 +1000,7 @@
                 const photoEl = document.getElementById('hub-photo');
                 photoEl.src = user.photo || 'https://via.placeholder.com/70x70/141414/a0a0a0?text=N/A';
                 
-                if (appContext.currentRole === 'staff') {
+                if (window.appContext.currentRole === 'staff') {
                     photoEl.style.pointerEvents = 'none'; photoEl.style.userSelect = 'none'; photoEl.style.webkitUserDrag = 'none'; photoEl.oncontextmenu = (ev) => ev.preventDefault();
                 } else {
                     photoEl.style.pointerEvents = 'auto'; photoEl.style.userSelect = 'auto'; photoEl.style.webkitUserDrag = 'auto'; photoEl.oncontextmenu = null;
@@ -1035,12 +1021,12 @@
                     document.getElementById('hub-instruction').style.display = 'block';
                     document.getElementById('hub-instruction').innerText = "Click on a paid green month to view the receipt.";
                     document.getElementById('btn-hub-edit').style.display = 'flex'; 
-                    document.getElementById('btn-hub-pdf').style.display = appContext.currentRole === 'admin' ? 'flex' : 'none';
-                    document.getElementById('btn-hub-delete').style.display = appContext.currentRole === 'admin' ? 'flex' : 'none';
+                    document.getElementById('btn-hub-pdf').style.display = window.appContext.currentRole === 'admin' ? 'flex' : 'none';
+                    document.getElementById('btn-hub-delete').style.display = window.appContext.currentRole === 'admin' ? 'flex' : 'none';
                 }
                 
                 this.renderFeeCalendar(user.id, fy, user.trainingCategory, user.date);
-                appContext.switchView('user-hub');
+                window.appContext.switchView('user-hub');
             },
             renderFeeCalendar: function(userId, fy, trainCat, adDateStr) {
                 const grid = document.getElementById('fee-calendar'); grid.innerHTML = '';
@@ -1072,7 +1058,7 @@
                     let statusClass = 'status-unpaid'; let displayAmt = ''; let action = '';
 
                     if (currentHubMode === 'fee') {
-                        action = `onclick="moduleContext.initPayment('${month}', '${fy}')"`;
+                        action = `onclick="window.moduleContext.initPayment('${month}', '${fy}')"`;
                     }
 
                     if (record) {
@@ -1080,7 +1066,7 @@
                             statusClass = 'status-paid'; 
                             let payDateStr = record.lastDate ? `<br><span style="font-size:0.65rem; font-weight:normal;">Paid on: ${formatDateStr(record.lastDate)}</span>` : '';
                             displayAmt = `Paid: ₹${record.amountPaid}${payDateStr}`; 
-                            if (currentHubMode === 'details') { action = `onclick="moduleContext.viewReceipt('${month}', '${fy}')"`; }
+                            if (currentHubMode === 'details') { action = `onclick="window.moduleContext.viewReceipt('${month}', '${fy}')"`; }
                             else { action = ''; }
                         } 
                         else if (record.status === 'Partial') { 
@@ -1210,7 +1196,7 @@
                 document.getElementById('lastName').value = u.lastName;
                 document.getElementById('primaryContact').value = u.primaryContact;
                 document.getElementById('alternateContact').value = u.alternateContact;
-                document.getElementById('dob').value = u.dob || ''; document.getElementById('age').value = u.age;
+                document.getElementById('dob').value = u.dob || ''; 
                 document.getElementById('address').value = u.address;
                 
                 document.getElementById('selfie-data').value = u.photo;
@@ -1222,14 +1208,14 @@
                     document.getElementById('btn-switch-camera').style.display = 'none';
                     document.getElementById('btn-retake').style.display = 'inline-flex';
                 }
-                appContext.switchView('admission');
+                window.appContext.switchView('admission');
             },
             deleteUser: function() {
                 if(confirm(`Are you sure you want to completely remove ${currentActiveUser.fullName} (${currentActiveUser.id})? This cannot be undone.`)) {
                     let users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
                     users = users.filter(u => u.id !== currentActiveUser.id);
                     localStorage.setItem('revive_users_db', JSON.stringify(users));
-                    alert("User deleted."); appContext.goHome();
+                    alert("User deleted."); window.appContext.goHome();
                 }
             },
             regeneratePdf: function() {
@@ -1260,7 +1246,6 @@
                 }, 350);
             },
 
-            // REPORTS MODULE
             initReports: function() {
                 const fySelect = document.getElementById('report-fy'); 
                 const monthSelect = document.getElementById('report-month');
@@ -1286,14 +1271,12 @@
                 const users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
                 const payments = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
                 
-                // Filter Admissions
                 let filteredAdmissions = users.filter(u => {
                     if(u._fy !== fy) return false;
                     if(month !== 'All' && u._month !== month) return false;
                     return true;
                 });
 
-                // Filter Payments
                 let filteredPayments = [];
                 let totalRev = 0; let upiRev = 0; let cashRev = 0; let totalPending = 0;
                 
@@ -1321,14 +1304,12 @@
                     }
                 }
 
-                // Render KPIs
                 document.getElementById('kpi-revenue').innerText = totalRev.toLocaleString();
                 document.getElementById('kpi-split').innerText = `UPI: ₹${upiRev.toLocaleString()} | Cash: ₹${cashRev.toLocaleString()}`;
                 document.getElementById('kpi-pending').innerText = totalPending.toLocaleString();
                 document.getElementById('kpi-admissions').innerText = filteredAdmissions.length;
                 document.getElementById('kpi-fees').innerText = filteredPayments.length;
 
-                // Render Admissions Table
                 const admTbody = document.querySelector('#table-admissions tbody');
                 admTbody.innerHTML = '';
                 if(filteredAdmissions.length === 0) admTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No admissions found for this period.</td></tr>';
@@ -1336,7 +1317,6 @@
                     admTbody.innerHTML += `<tr><td>${u.date}</td><td><strong>${u.id}</strong></td><td>${u.fullName}</td><td>${u.primaryContact}</td><td>${u.admissionCategory}</td></tr>`;
                 });
 
-                // Render Fees Table
                 const feeTbody = document.querySelector('#table-fees tbody');
                 feeTbody.innerHTML = '';
                 if(filteredPayments.length === 0) feeTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No fee collections found for this period.</td></tr>';
@@ -1346,7 +1326,6 @@
                     feeTbody.innerHTML += `<tr><td>${dateStr}</td><td><strong>${p.userId}</strong></td><td>${p.month}</td><td style="color:green; font-weight:bold;">₹${p.amountPaid}</td><td style="color:${pending > 0 ? 'red' : 'green'};">₹${pending}</td><td>${p.method || 'CASH'}</td></tr>`;
                 });
 
-                // Render YoY Analysis
                 const prevFyStart = parseInt(fy.split('-')[0]) - 1;
                 const prevFy = `${prevFyStart}-${prevFyStart+1}`;
                 
@@ -1389,167 +1368,121 @@
             }
         };
 
-        // BIND CORE DOM EVENTS
+        window.appContext = appContext;
+        window.moduleContext = moduleContext;
+
         document.addEventListener('DOMContentLoaded', () => {
+            // Document Level Event Mapping
+            const mapClick = (id, fn) => { const el = document.getElementById(id); if(el) el.addEventListener('click', fn); };
+            const mapChange = (id, fn) => { const el = document.getElementById(id); if(el) el.addEventListener('change', fn); };
+            const mapInput = (id, fn) => { const el = document.getElementById(id); if(el) el.addEventListener('input', fn); };
 
-            // Event Bindings
-            function bindEvt(id, event, cb) { const el = document.getElementById(id); if(el) el.addEventListener(event, cb); }
-
-            bindEvt('btn-save-upi', 'click', () => moduleContext.saveUpi());
-            bindEvt('btn-gen-report', 'click', () => moduleContext.generateReport());
-            bindEvt('btn-export-adm', 'click', () => moduleContext.exportTableToCSV('table-admissions', 'Admissions_Report.csv'));
-            bindEvt('btn-export-fee', 'click', () => moduleContext.exportTableToCSV('table-fees', 'Fee_Collections_Report.csv'));
-            bindEvt('pay-amount-now', 'input', () => moduleContext.updatePaymentModalUI());
-            bindEvt('pay-method', 'change', () => moduleContext.updatePaymentModalUI());
-            bindEvt('btn-cancel-pay', 'click', () => document.getElementById('paymentProcessModal').style.display='none');
-            bindEvt('btn-confirm-pay', 'click', () => moduleContext.confirmPayment());
-            bindEvt('btn-share-receipt', 'click', () => moduleContext.shareReceipt('success'));
-            bindEvt('btn-vr-share', 'click', () => moduleContext.shareReceipt('vr'));
-            bindEvt('userSearchForm', 'submit', (e) => { e.preventDefault(); moduleContext.fetchUserHub(e); });
-
-            // CAMERA LOGIC
-            const video = document.getElementById('camera-stream'); const canvas = document.getElementById('canvas-snapshot'); const preview = document.getElementById('selfie-preview');
-            const btnStart = document.getElementById('btn-start-camera'); const btnSwitch = document.getElementById('btn-switch-camera'); const btnCapture = document.getElementById('btn-capture');
-            const btnRetake = document.getElementById('btn-retake'); const selfieData = document.getElementById('selfie-data');
-            let stream = null; let currentFacingMode = 'user';
-
-            async function startCamera() {
-                if(stream) stream.getTracks().forEach(t => t.stop());
-                try {
-                    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: currentFacingMode } });
-                    video.srcObject = stream; video.style.display = 'block'; document.querySelector('.camera-placeholder').style.display = 'none'; preview.style.display = 'none';
-                    btnStart.style.display = 'none'; btnSwitch.style.display = 'inline-flex'; btnCapture.style.display = 'inline-flex'; btnCapture.disabled = false;
-                } catch (err) { alert("Camera access denied or unavailable."); }
-            }
-            if(btnStart) btnStart.addEventListener('click', startCamera);
-            if(btnSwitch) btnSwitch.addEventListener('click', () => { currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user'; startCamera(); });
-
-            if(btnCapture) btnCapture.addEventListener('click', () => {
-                canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-                selfieData.value = canvas.toDataURL('image/jpeg', 0.9); preview.src = selfieData.value;
-                video.style.display = 'none'; preview.style.display = 'block'; btnCapture.style.display = 'none'; btnSwitch.style.display = 'none'; btnRetake.style.display = 'inline-flex';
-                if(stream) stream.getTracks().forEach(track => track.stop());
+            mapClick('btn-next-step', () => {
+                let isValid = true; 
+                document.getElementById('step-1').querySelectorAll('input, select, textarea').forEach(input => { if (!input.checkValidity()) { input.reportValidity(); isValid = false; } });
+                if(isValid) { document.getElementById('step-1').classList.remove('active-step'); document.getElementById('step-2').classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' }); window.dispatchEvent(new Event('resize')); } 
             });
-            if(btnRetake) btnRetake.addEventListener('click', () => { selfieData.value = ''; btnRetake.style.display = 'none'; startCamera(); });
 
-            // SIGNATURE PAD LOGIC
-            const sigCanvas = document.getElementById('signature-pad'); 
-            if(sigCanvas) {
-                const sigCtx = sigCanvas.getContext('2d');
-                let isDrawing = false; let signatureHasData = false;
+            mapClick('btn-prev-step', () => { document.getElementById('step-2').classList.remove('active-step'); document.getElementById('step-1').classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
-                function resizeCanvas() { const ratio = Math.max(window.devicePixelRatio || 1, 1); sigCanvas.width = sigCanvas.offsetWidth * ratio; sigCanvas.height = sigCanvas.offsetHeight * ratio; sigCtx.scale(ratio, ratio); clearSignature(); }
-                window.addEventListener("resize", resizeCanvas);
-                function clearSignature() { sigCtx.fillStyle = "#ffffff"; sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height); signatureHasData = false; }
-                const btnClrSig = document.getElementById('btn-clear-sig'); if(btnClrSig) btnClrSig.addEventListener('click', clearSignature);
-                function getPointerPos(e) { const rect = sigCanvas.getBoundingClientRect(); const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY; return { x: clientX - rect.left, y: clientY - rect.top }; }
-                function startDraw(e) { isDrawing = true; signatureHasData = true; sigCtx.beginPath(); const pos = getPointerPos(e); sigCtx.moveTo(pos.x, pos.y); if(e.type.includes('touch')) e.preventDefault(); }
-                function draw(e) { if (!isDrawing) return; const pos = getPointerPos(e); sigCtx.lineWidth = 3; sigCtx.lineCap = 'round'; sigCtx.strokeStyle = '#000000'; sigCtx.lineTo(pos.x, pos.y); sigCtx.stroke(); if(e.type.includes('touch')) e.preventDefault(); }
-                function endDraw(e) { isDrawing = false; sigCtx.closePath(); }
-                sigCanvas.addEventListener('mousedown', startDraw); sigCanvas.addEventListener('mousemove', draw); sigCanvas.addEventListener('mouseup', endDraw); sigCanvas.addEventListener('mouseout', endDraw);
-                sigCanvas.addEventListener('touchstart', startDraw, {passive: false}); sigCanvas.addEventListener('touchmove', draw, {passive: false}); sigCanvas.addEventListener('touchend', endDraw);
+            mapClick('btn-next-step-2', () => {
+                const selfieData = document.getElementById('selfie-data');
+                const sigCanvas = document.getElementById('signature-pad');
+                let isSigEmpty = true;
+                if(sigCanvas) {
+                    const ctx = sigCanvas.getContext('2d');
+                    const canvasData = ctx.getImageData(0, 0, sigCanvas.width, sigCanvas.height).data;
+                    for (let i = 0; i < canvasData.length; i += 4) { if (canvasData[i+3] > 0) { isSigEmpty = false; break; } }
+                }
 
-                // FORM MULTI-STEP LOGIC
-                const step1 = document.getElementById('step-1'); const step2 = document.getElementById('step-2'); const step3 = document.getElementById('step-3');
+                if (!selfieData.value) { alert("Portrait capture is mandatory."); return; }
+                if (isSigEmpty && !IS_EDIT_MODE) { alert("Digital signature is mandatory."); return; }
+
+                const fName = document.getElementById('firstName').value.trim(); const lName = document.getElementById('lastName').value.trim(); const fullName = lName ? `${fName} ${lName}` : fName;
+                let finalSig = !isSigEmpty ? sigCanvas.toDataURL('image/jpeg', 1.0) : (IS_EDIT_MODE ? currentActiveUser.signature : '');
+
+                if (IS_EDIT_MODE) {
+                    currentActiveUser.date = document.getElementById('dateOfAdmission').value;
+                    currentActiveUser.admissionType = document.getElementById('admissionTypeSelect').value;
+                    currentActiveUser.admissionCategory = document.getElementById('admissionCategory').value;
+                    currentActiveUser.trainingCategory = document.getElementById('trainingCategory').value;
+                    currentActiveUser.firstName = fName; currentActiveUser.lastName = lName; currentActiveUser.fullName = fullName;
+                    currentActiveUser.primaryContact = document.getElementById('primaryContact').value;
+                    currentActiveUser.alternateContact = document.getElementById('alternateContact').value;
+                    currentActiveUser.dob = document.getElementById('dob').value;
+                    currentActiveUser.address = document.getElementById('address').value.trim();
+                    currentActiveUser.photo = selfieData.value;
+                    currentActiveUser.signature = finalSig;
+
+                    let usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
+                    let idx = usersDb.findIndex(u => u.id === currentActiveUser.id);
+                    if(idx !== -1) { usersDb[idx] = currentActiveUser; localStorage.setItem('revive_users_db', JSON.stringify(usersDb)); }
+                    
+                    document.getElementById('sm-title').innerText = "Update Complete!";
+                    document.getElementById('generated-id').innerText = currentActiveUser.id;
+                    document.getElementById('sm-adm-actions').style.display = 'none';
+                    document.getElementById('sm-edit-actions').style.display = 'flex';
+                    document.getElementById('successModal').style.display = 'flex';
+                    return;
+                }
+
+                let currentCount = localStorage.getItem('revive_admission_count');
+                currentCount = !currentCount ? 1 : parseInt(currentCount) + 1;
+                preAdmissionId = `REV-${String(currentCount).padStart(4, '0')}`;
                 
-                bindEvt('btn-next-step', 'click', () => {
-                    let isValid = true; step1.querySelectorAll('input, select, textarea').forEach(input => { if (!input.checkValidity()) { input.reportValidity(); isValid = false; } });
-                    if(isValid) { step1.classList.remove('active-step'); step2.classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' }); resizeCanvas(); } 
-                });
+                const adDateVal = document.getElementById('dateOfAdmission').value;
+                const parts = adDateVal.split('-'); const adDateObj = new Date(parts[2], parts[1]-1, parts[0]);
+                const monthName = adDateObj.toLocaleString('default', { month: 'long' });
+                
+                const y = adDateObj.getFullYear(); const m = adDateObj.getMonth(); 
+                let fyStart = m >= 3 ? y : y - 1; let fyString = `${fyStart}-${fyStart + 1}`;
 
-                bindEvt('btn-prev-step', 'click', () => { step2.classList.remove('active-step'); step1.classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+                const allTariffs = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
+                const monthTariff = (allTariffs[fyString] && allTariffs[fyString][monthName]) ? allTariffs[fyString][monthName] : { admFee: APP_CONFIG.baseAdmissionFee, regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
 
-                bindEvt('btn-next-step-2', 'click', () => {
-                    if (!selfieData.value) { alert("Portrait capture is mandatory."); return; }
-                    if (!signatureHasData && !IS_EDIT_MODE) { alert("Digital signature is mandatory."); return; }
+                const isPT = document.getElementById('trainingCategory').value === 'Personal Training';
+                const applicableMonthlyFee = parseInt(isPT ? monthTariff.ptFee : monthTariff.regFee);
+                const baseAdmFee = parseInt(monthTariff.admFee);
 
-                    const fName = document.getElementById('firstName').value.trim(); const lName = document.getElementById('lastName').value.trim(); const fullName = lName ? `${fName} ${lName}` : fName;
-                    let finalSig = signatureHasData ? sigCanvas.toDataURL('image/jpeg', 1.0) : (IS_EDIT_MODE ? currentActiveUser.signature : '');
+                const daysInMonth = new Date(parts[2], parts[1], 0).getDate(); 
+                const remainingDays = daysInMonth - parseInt(parts[0]) + 1; 
+                
+                let monthlyFeeToPay = applicableMonthlyFee;
+                if (remainingDays < 15) { monthlyFeeToPay = Math.round((applicableMonthlyFee / 30) * remainingDays); }
 
-                    if (IS_EDIT_MODE) {
-                        currentActiveUser.date = document.getElementById('dateOfAdmission').value;
-                        currentActiveUser.admissionType = document.getElementById('admissionTypeSelect').value;
-                        currentActiveUser.admissionCategory = document.getElementById('admissionCategory').value;
-                        currentActiveUser.trainingCategory = document.getElementById('trainingCategory').value;
-                        currentActiveUser.firstName = fName; currentActiveUser.lastName = lName; currentActiveUser.fullName = fullName;
-                        currentActiveUser.primaryContact = document.getElementById('primaryContact').value;
-                        currentActiveUser.alternateContact = document.getElementById('alternateContact').value;
-                        currentActiveUser.dob = document.getElementById('dob').value;
-                        currentActiveUser.address = document.getElementById('address').value.trim();
-                        currentActiveUser.photo = selfieData.value;
-                        currentActiveUser.signature = finalSig;
+                calculatedTotalFee = baseAdmFee + monthlyFeeToPay;
 
-                        let usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                        let idx = usersDb.findIndex(u => u.id === currentActiveUser.id);
-                        if(idx !== -1) { usersDb[idx] = currentActiveUser; localStorage.setItem('revive_users_db', JSON.stringify(usersDb)); }
-                        
-                        document.getElementById('sm-title').innerText = "Update Complete!";
-                        document.getElementById('generated-id').innerText = currentActiveUser.id;
-                        document.getElementById('sm-adm-actions').style.display = 'none';
-                        document.getElementById('sm-edit-actions').style.display = 'flex';
-                        document.getElementById('successModal').style.display = 'flex';
-                        return;
-                    }
+                document.getElementById('calc-admission-id').innerText = preAdmissionId; document.getElementById('calc-admin-fee').innerText = baseAdmFee;
+                document.getElementById('calc-monthly-fee').innerText = monthlyFeeToPay; document.getElementById('calc-total-fee').innerText = calculatedTotalFee;
 
-                    let currentCount = localStorage.getItem('revive_admission_count');
-                    currentCount = !currentCount ? 1 : parseInt(currentCount) + 1;
-                    preAdmissionId = `REV-${String(currentCount).padStart(4, '0')}`;
-                    
-                    const adDateVal = document.getElementById('dateOfAdmission').value;
-                    const parts = adDateVal.split('-'); const adDateObj = new Date(parts[2], parts[1]-1, parts[0]);
-                    const monthName = adDateObj.toLocaleString('default', { month: 'long' });
-                    
-                    const y = adDateObj.getFullYear(); const m = adDateObj.getMonth(); 
-                    let fyStart = m >= 3 ? y : y - 1; let fyString = `${fyStart}-${fyStart + 1}`;
+                currentMemberDetails = {
+                    id: preAdmissionId, date: adDateVal,
+                    admissionType: document.getElementById('admissionTypeSelect').value, admissionCategory: document.getElementById('admissionCategory').value, trainingCategory: document.getElementById('trainingCategory').value,
+                    firstName: fName, lastName: lName, fullName: fullName, 
+                    primaryContact: document.getElementById('primaryContact').value, alternateContact: document.getElementById('alternateContact').value,
+                    dob: document.getElementById('dob').value, address: document.getElementById('address').value.trim(),
+                    photo: selfieData.value, signature: finalSig,
+                    _fy: fyString, _month: monthName 
+                };
 
-                    const allTariffs = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
-                    const monthTariff = (allTariffs[fyString] && allTariffs[fyString][monthName]) ? allTariffs[fyString][monthName] : { admFee: APP_CONFIG.baseAdmissionFee, regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
-
-                    const isPT = document.getElementById('trainingCategory').value === 'Personal Training';
-                    const applicableMonthlyFee = parseInt(isPT ? monthTariff.ptFee : monthTariff.regFee);
-                    const baseAdmFee = parseInt(monthTariff.admFee);
-
-                    const daysInMonth = new Date(parts[2], parts[1], 0).getDate(); 
-                    const remainingDays = daysInMonth - parseInt(parts[0]) + 1; 
-                    
-                    let monthlyFeeToPay = applicableMonthlyFee;
-                    if (remainingDays < 15) { monthlyFeeToPay = Math.round((applicableMonthlyFee / 30) * remainingDays); }
-
-                    calculatedTotalFee = baseAdmFee + monthlyFeeToPay;
-
-                    document.getElementById('calc-admission-id').innerText = preAdmissionId; document.getElementById('calc-admin-fee').innerText = baseAdmFee;
-                    document.getElementById('calc-monthly-fee').innerText = monthlyFeeToPay; document.getElementById('calc-total-fee').innerText = calculatedTotalFee;
-
-                    currentMemberDetails = {
-                        id: preAdmissionId, date: adDateVal,
-                        admissionType: document.getElementById('admissionTypeSelect').value, admissionCategory: document.getElementById('admissionCategory').value, trainingCategory: document.getElementById('trainingCategory').value,
-                        firstName: fName, lastName: lName, fullName: fullName, 
-                        primaryContact: document.getElementById('primaryContact').value, alternateContact: document.getElementById('alternateContact').value,
-                        dob: document.getElementById('dob').value, address: document.getElementById('address').value.trim(),
-                        photo: selfieData.value, signature: finalSig,
-                        _fy: fyString, _month: monthName 
-                    };
-
-                    const method = document.getElementById('paymentMethod').value;
-                    const upiSec = document.getElementById('upi-section');
-                    if (method === 'UPI') {
-                        upiSec.style.display = 'block'; document.getElementById('btn-validate-payment').innerText = 'Validate Payment & Complete';
-                        document.getElementById('qr-amount-display').innerText = calculatedTotalFee;
-                        const activeUpiId = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId;
-                        const upiString = `upi://pay?pa=${activeUpiId}&pn=ReviveFitness&am=${calculatedTotalFee}&cu=INR`;
-                        document.getElementById('upi-qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
-                    } else { upiSec.style.display = 'none'; document.getElementById('btn-validate-payment').innerText = 'Collect Cash & Complete'; }
-
-                    step2.classList.remove('active-step'); step3.classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' });
-                });
-            }
-
-            bindEvt('btn-prev-step-2', 'click', () => { document.getElementById('step-3').classList.remove('active-step'); document.getElementById('step-2').classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
-
-            bindEvt('paymentMethod', 'change', function() {
+                const method = document.getElementById('paymentMethod').value;
                 const upiSec = document.getElementById('upi-section');
-                if (this.value === 'UPI') {
+                if (method === 'UPI') {
+                    upiSec.style.display = 'block'; document.getElementById('btn-validate-payment').innerText = 'Validate Payment & Complete';
+                    document.getElementById('qr-amount-display').innerText = calculatedTotalFee;
+                    const activeUpiId = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId;
+                    const upiString = `upi://pay?pa=${activeUpiId}&pn=ReviveFitness&am=${calculatedTotalFee}&cu=INR`;
+                    document.getElementById('upi-qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
+                } else { upiSec.style.display = 'none'; document.getElementById('btn-validate-payment').innerText = 'Collect Cash & Complete'; }
+
+                document.getElementById('step-2').classList.remove('active-step'); document.getElementById('step-3').classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            mapClick('btn-prev-step-2', () => { document.getElementById('step-3').classList.remove('active-step'); document.getElementById('step-2').classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+            mapChange('paymentMethod', function(e) {
+                const upiSec = document.getElementById('upi-section');
+                if (e.target.value === 'UPI') {
                     upiSec.style.display = 'block'; document.getElementById('btn-validate-payment').innerText = 'Validate Payment & Complete';
                     document.getElementById('qr-amount-display').innerText = calculatedTotalFee;
                     const activeUpiId = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId;
@@ -1558,13 +1491,13 @@
                 } else { upiSec.style.display = 'none'; document.getElementById('btn-validate-payment').innerText = 'Collect Cash & Complete'; }
             });
 
-            bindEvt('btn-validate-payment', 'click', () => {
+            mapClick('btn-validate-payment', () => {
                 if (navigator.geolocation) { navigator.geolocation.getCurrentPosition((pos) => { userLocationStr = `Lat: ${pos.coords.latitude.toFixed(5)}, Long: ${pos.coords.longitude.toFixed(5)}`; }, (err) => { userLocationStr = "Location permissions denied"; }); }
                 if (document.getElementById('paymentMethod').value === 'UPI') { document.getElementById('success-paid-id').innerText = preAdmissionId; document.getElementById('paymentSuccessModal').style.display = 'flex'; } 
                 else { finalizeRegistration(); }
             });
 
-            bindEvt('btn-proceed-to-admission', 'click', () => { document.getElementById('paymentSuccessModal').style.display = 'none'; finalizeRegistration(); });
+            mapClick('btn-proceed-to-admission', () => { document.getElementById('paymentSuccessModal').style.display = 'none'; finalizeRegistration(); });
 
             function finalizeRegistration() {
                 let usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
@@ -1588,7 +1521,7 @@
                 document.getElementById('successModal').style.display = 'flex';
             }
 
-            // PDF Generation
+            // PDF Downloading
             function getPdfBlob() {
                 return new Promise((resolve, reject) => {
                     const now = new Date(); const timestampStr = now.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
@@ -1618,8 +1551,8 @@
                 });
             }
 
-            bindEvt('btn-download-pdf', 'click', async function() {
-                const btn = this; btn.innerText = "Generating..."; btn.disabled = true;
+            mapClick('btn-download-pdf', async function() {
+                const btn = document.getElementById('btn-download-pdf'); btn.innerText = "Generating..."; btn.disabled = true;
                 try {
                     const blob = await getPdfBlob(); const url = URL.createObjectURL(blob);
                     const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = `${currentMemberDetails.id}.pdf`; document.body.appendChild(a); a.click();
@@ -1628,14 +1561,14 @@
                 finally { btn.innerText = "1. Download PDF Record"; btn.disabled = false; }
             });
             
-            bindEvt('btn-whatsapp-welcome', 'click', () => {
+            mapClick('btn-whatsapp-welcome', () => {
                 const phone = currentMemberDetails.primaryContact;
                 const welcomeMsg = `🎉 Revive Fitness Studio-ലേക്ക് ഹൃദയം നിറഞ്ഞ സ്വാഗതം! 🏋️‍♂️✨\n\nനിങ്ങളുടെ Fitness Journey-യുടെ പുതിയ തുടക്കത്തിന് ഞങ്ങളോടൊപ്പം ചേർന്നതിൽ സന്തോഷം! 💪\n\nആരോഗ്യവും ഫിറ്റ്നസും ജീവിതത്തിന്റെ ഭാഗമാക്കി, നിങ്ങളുടെ ലക്ഷ്യങ്ങളിലേക്ക് ഓരോ ദിവസവും ഒരു പടി കൂടി മുന്നോട്ട് പോകാൻ Revive Fitness Studio നിങ്ങളോടൊപ്പം ഉണ്ടാകും. ❤️\n\n🔥 Train Better • Stay Strong • Live Healthy\n\nWelcome to the Revive Family! 🤝💪\n— Revive Fitness Studio`;
                 window.open(`https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(welcomeMsg)}`, '_blank');
             });
 
-            bindEvt('btn-whatsapp-pdf', 'click', async function() {
-                const btn = this; btn.innerText = "Preparing Share..."; btn.disabled = true;
+            mapClick('btn-whatsapp-pdf', async function() {
+                const btn = document.getElementById('btn-whatsapp-pdf'); btn.innerText = "Preparing Share..."; btn.disabled = true;
                 const phone = currentMemberDetails.primaryContact;
                 const msg = `Dear ${currentMemberDetails.fullName},\n\nThank you for joining Revive Fitness Studio!\nYour registration is successful. Your Admission Number is *${currentMemberDetails.id}*.\n\n*Please find your Official Admission Record attached.*`;
                 try {
@@ -1647,21 +1580,19 @@
             });
 
             // RE-ADMISSION VALIDATION LOGIC
-            bindEvt('admissionTypeSelect', 'change', function() {
-                if (this.value === 'Re-Admission') { document.getElementById('reAdmissionSection').style.display = 'block'; } 
+            mapChange('admissionTypeSelect', function(e) {
+                if (e.target.value === 'Re-Admission') { document.getElementById('reAdmissionSection').style.display = 'block'; } 
                 else { 
                     document.getElementById('reAdmissionSection').style.display = 'none'; 
                     document.getElementById('validationResultBox').style.display = 'none'; 
                     document.getElementById('prevPhoneInput').value = ''; 
-                    
                     document.getElementById('firstName').value = ''; document.getElementById('lastName').value = ''; 
                     document.getElementById('primaryContact').value = ''; document.getElementById('alternateContact').value = ''; 
-                    document.getElementById('dob').value = ''; document.getElementById('address').value = ''; 
-                    document.getElementById('age').value = '';
+                    document.getElementById('dob').value = ''; document.getElementById('address').value = ''; document.getElementById('age').value = '';
                 }
             });
 
-            bindEvt('btn-validate-readmission', 'click', () => {
+            mapClick('btn-validate-readmission', () => {
                 const phone = document.getElementById('prevPhoneInput').value; 
                 const resBox = document.getElementById('validationResultBox'); 
                 const admissionTypeSelect = document.getElementById('admissionTypeSelect');
@@ -1703,7 +1634,6 @@
                 } else {
                     resBox.innerHTML = '<span style="color:var(--error-red);">No previous registration found.</span><br><span style="color:var(--text-muted); font-size:0.85rem;">Type changed to New Admission.</span>';
                     admissionTypeSelect.value = 'New Admission'; 
-                    
                     document.getElementById('primaryContact').value = phone;
                     document.getElementById('firstName').value = ''; document.getElementById('lastName').value = '';
                     document.getElementById('alternateContact').value = ''; document.getElementById('dob').value = '';
