@@ -284,11 +284,11 @@
                     </button>
                     <h2 class="module-title" id="login-title">Login</h2>
                 </div>
-                <form id="loginForm" onsubmit="event.preventDefault(); window.appContext.handleLogin(event);">
+                <form id="loginForm">
                     <div class="form-group">
                         <input type="password" id="pin-input" class="pin-input" inputmode="numeric" required autocomplete="off">
                     </div>
-                    <button type="submit" class="btn primary">Verify & Access</button>
+                    <button type="submit" class="btn primary" style="margin-top:1rem;">Verify & Access</button>
                 </form>
             </div>
         </main>
@@ -342,7 +342,7 @@
                     </button>
                     <h2 class="module-title" id="search-title">Search User</h2>
                 </div>
-                <form id="userSearchForm" onsubmit="event.preventDefault(); window.moduleContext.fetchUserHub(event);">
+                <form id="userSearchForm">
                     <div class="form-group">
                         <label>Member Phone Number <span class="required">*</span></label>
                         <input type="tel" id="search-phone" pattern="\d{10}" maxlength="10" required>
@@ -375,9 +375,9 @@
                         <p id="hub-details" style="margin-top:5px;">Regular - Individual</p>
                     </div>
                     <div id="hub-actions" style="display:flex; flex-direction:column; gap:0.5rem; width:100%; max-width:200px;">
-                        <button id="btn-hub-edit" class="btn secondary" onclick="moduleContext.editUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Edit Profile</button>
-                        <button id="btn-hub-pdf" class="btn secondary" onclick="moduleContext.regeneratePdf()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Re-Download PDF</button>
-                        <button id="btn-hub-delete" class="btn danger" onclick="moduleContext.deleteUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Delete User</button>
+                        <button id="btn-hub-edit" class="btn secondary" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Edit Profile</button>
+                        <button id="btn-hub-pdf" class="btn secondary" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Re-Download PDF</button>
+                        <button id="btn-hub-delete" class="btn danger" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Delete User</button>
                     </div>
                 </div>
 
@@ -406,7 +406,7 @@
                             <option value="All">Entire Year (All Months)</option>
                         </select>
                     </div>
-                    <button class="btn primary" onclick="moduleContext.generateReport()" style="max-width:150px; padding: 1rem;">Generate</button>
+                    <button class="btn primary" id="btn-gen-report" style="max-width:150px; padding: 1rem;">Generate</button>
                 </div>
 
                 <div id="report-content" style="display:none; margin-top:2rem;">
@@ -419,7 +419,7 @@
                         <div class="kpi-card">
                             <h4>Pending Dues</h4>
                             <div class="val" style="color:var(--error-red);">₹<span id="kpi-pending">0</span></div>
-                            <span class="sub-val" style="color:var(--text-muted);">Shortfall collected</span>
+                            <span class="sub-val" style="color:var(--text-muted);">Shortfall uncollected</span>
                         </div>
                         <div class="kpi-card">
                             <h4>New Admissions</h4>
@@ -436,7 +436,7 @@
                     <div class="report-section">
                         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
                             <h3 style="margin:0; border:none;">1. New Admissions</h3>
-                            <button class="btn secondary" onclick="moduleContext.exportTableToCSV('table-admissions', 'Admissions_Report.csv')" style="width:auto; padding:0.4rem 1rem; font-size:0.8rem;">Export CSV</button>
+                            <button class="btn secondary" id="btn-export-adm" style="width:auto; padding:0.4rem 1rem; font-size:0.8rem;">Export CSV</button>
                         </div>
                         <div class="table-responsive">
                             <table class="data-table" id="table-admissions">
@@ -449,7 +449,7 @@
                     <div class="report-section">
                         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
                             <h3 style="margin:0; border:none;">2. Fee Collections</h3>
-                            <button class="btn secondary" onclick="moduleContext.exportTableToCSV('table-fees', 'Fee_Collections_Report.csv')" style="width:auto; padding:0.4rem 1rem; font-size:0.8rem;">Export CSV</button>
+                            <button class="btn secondary" id="btn-export-fee" style="width:auto; padding:0.4rem 1rem; font-size:0.8rem;">Export CSV</button>
                         </div>
                         <div class="table-responsive">
                             <table class="data-table" id="table-fees">
@@ -508,6 +508,7 @@
                 </div>
                 
                 <form id="admissionForm">
+                    
                     <div id="step-1" class="step-container active-step">
                         <div class="step-indicator" id="step-1-ind">Step 1 of 3: Member Details</div>
                         
@@ -525,6 +526,7 @@
                             </div>
                         </div>
 
+                        <!-- Fixed Re-Admission Layout using CSS Grid explicitly attached to val-group -->
                         <div id="reAdmissionSection">
                             <label style="color: var(--accent-orange); margin-bottom: 0.5rem; display: block;">Validate Previous Registration</label>
                             <div class="val-group">
@@ -576,6 +578,7 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="dob">Date of Birth <span class="required">*</span></label>
+                                <!-- Required DOB, No 18+ limit -->
                                 <input type="text" id="dob" placeholder="DD-MM-YYYY" pattern="\d{2}-\d{2}-\d{4}" title="Format: DD-MM-YYYY" required>
                             </div>
                             <div class="form-group">
@@ -663,7 +666,6 @@
                             <button type="button" id="btn-prev-step-2" class="btn secondary">← Back to Verification</button>
                         </div>
                     </div>
-
                 </form>
             </div>
         </main>
@@ -757,7 +759,7 @@
     </div> <!-- END APP WRAPPER -->
 
     <!-- =======================================================================
-         HIDDEN GENERATION TEMPLATES (PDF & RECEIPT) - STRICTLY 1 COPY
+         HIDDEN GENERATION TEMPLATES (PDF & RECEIPT)
          ======================================================================= -->
     <div id="pdf-template-wrapper">
         <div id="pdf-template">
@@ -1389,6 +1391,9 @@
 
             // Global Binds
             document.getElementById('btn-save-upi').addEventListener('click', () => window.moduleContext.saveUpi());
+            document.getElementById('btn-gen-report').addEventListener('click', () => window.moduleContext.generateReport());
+            document.getElementById('btn-export-adm').addEventListener('click', () => window.moduleContext.exportTableToCSV('table-admissions', 'Admissions_Report.csv'));
+            document.getElementById('btn-export-fee').addEventListener('click', () => window.moduleContext.exportTableToCSV('table-fees', 'Fee_Collections_Report.csv'));
             document.getElementById('pay-amount-now').addEventListener('input', () => window.moduleContext.updatePaymentModalUI());
             document.getElementById('pay-method').addEventListener('change', () => window.moduleContext.updatePaymentModalUI());
             document.getElementById('btn-cancel-pay').addEventListener('click', () => document.getElementById('paymentProcessModal').style.display='none');
@@ -1581,7 +1586,7 @@
                     
                     document.getElementById('pdf-id').innerText = currentMemberDetails.id; document.getElementById('pdf-date').innerText = currentMemberDetails.date;
                     document.getElementById('pdf-photo').src = currentMemberDetails.photo; document.getElementById('pdf-name').innerText = currentMemberDetails.fullName;
-                    document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType} - ${currentMemberDetails.admissionCategory}`;
+                    document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType || 'N/A'} - ${currentMemberDetails.admissionCategory}`;
                     document.getElementById('pdf-training-category').innerText = currentMemberDetails.trainingCategory;
                     document.getElementById('pdf-contact1').innerText = currentMemberDetails.primaryContact; document.getElementById('pdf-contact2').innerText = currentMemberDetails.alternateContact || 'N/A';
                     document.getElementById('pdf-dob-age').innerText = `${currentMemberDetails.dob || 'N/A'}`; document.getElementById('pdf-address').innerText = currentMemberDetails.address;
@@ -1684,6 +1689,7 @@
                 } else {
                     resBox.innerHTML = '<span style="color:var(--error-red);">No previous registration found.</span><br><span style="color:var(--text-muted); font-size:0.85rem;">Type changed to New Admission.</span>';
                     admissionTypeSelect.value = 'New Admission'; 
+                    
                     document.getElementById('primaryContact').value = phone;
                     document.getElementById('firstName').value = ''; document.getElementById('lastName').value = '';
                     document.getElementById('alternateContact').value = ''; document.getElementById('dob').value = '';
