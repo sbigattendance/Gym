@@ -5,14 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Revive Fitness Studio | Portal</title>
     
-    <!-- Libraries for PDF and Image Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
-        /* ==========================================================================
-           1. CSS VARIABLES & RESET
-           ========================================================================== */
         :root {
             --bg-main: #f9f9f9;
             --bg-panel: #ffffff;
@@ -29,9 +25,6 @@
         html { font-size: 16px; background-color: var(--bg-main); }
         body { color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
-        /* ==========================================================================
-           2. MAIN LAYOUT & NAVIGATION (FIXED HEADER & FOOTER)
-           ========================================================================== */
         #app-wrapper { display: flex; flex-direction: column; min-height: 100vh; padding-top: 75px; padding-bottom: 60px; }
 
         .app-header {
@@ -52,9 +45,6 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ==========================================================================
-           3. DASHBOARD MODULES
-           ========================================================================== */
         .dashboard-header { text-align: center; margin-bottom: 2rem; }
         .dashboard-header h1 { font-size: clamp(1.6rem, 5vw, 2.5rem); font-weight: 900; letter-spacing: 2px; margin-bottom: 0.5rem; text-transform: uppercase; }
         .dashboard-header span { color: var(--accent-orange); }
@@ -73,9 +63,6 @@
         .module-icon-svg { width: 42px; height: 42px; stroke: var(--accent-orange); fill: none; stroke-width: 1.5; margin-bottom: 0.8rem; stroke-linecap: round; stroke-linejoin: round; }
         .module-card h3 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0; color: var(--text-main); font-weight: 700; }
 
-        /* ==========================================================================
-           4. FORM UI & PIN INPUT
-           ========================================================================== */
         .module-toolbar { display: flex; align-items: center; margin-bottom: 2rem; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); justify-content: space-between; }
         .back-btn { background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; margin-left: -0.5rem; transition: color 0.2s; font-weight: 600; }
         .back-btn:hover { color: var(--accent-orange); }
@@ -107,9 +94,6 @@
         .action-row { display: flex; gap: 1rem; margin-top: 2rem; }
         .action-row .btn { flex: 1; }
 
-        /* ==========================================================================
-           5. MULTI-STEP LOGIC & VERIFICATION UI
-           ========================================================================== */
         .step-container { display: none; animation: fadeIn 0.3s ease-in-out; }
         .step-container.active-step { display: block; }
         .step-indicator { margin-bottom: 1.5rem; color: var(--accent-orange); font-weight: 800; text-align: center; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; border: 1px dashed var(--border-color); padding: 10px; border-radius: 8px; background: var(--bg-main); }
@@ -121,15 +105,6 @@
         .signature-container { width: 100%; margin-top: 1rem; text-align: center; }
         .signature-pad { border: 2px solid var(--accent-orange); border-radius: 8px; background-color: #ffffff; cursor: crosshair; touch-action: none; width: 100%; max-width: 450px; height: 150px; display: block; margin: 0 auto 1rem auto; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05); }
 
-        /* Re-Admission Validation Input Layout Fix */
-        #reAdmissionSection { background: var(--bg-main); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px dashed var(--accent-orange); display: none; animation: fadeIn 0.3s ease; }
-        .val-group { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: stretch; margin-bottom: 1rem; width: 100%; }
-        .val-group input { margin-bottom: 0 !important; width: 100%; min-width: 0; }
-        .val-group button { margin-bottom: 0 !important; padding: 0 1.5rem; height: 100%; white-space: nowrap; display: flex; align-items: center;}
-
-        /* ==========================================================================
-           6. REPORTS & TARIFF EDITOR UI
-           ========================================================================== */
         .tariff-row { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .tariff-month-name { font-weight: 800; color: var(--accent-orange); margin-bottom: 1rem; font-size: 1.1rem; text-transform: uppercase; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
         .tariff-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
@@ -159,7 +134,6 @@
         .profile-snippet-info h3 { margin: 0 0 5px 0; color: var(--accent-orange); }
         .profile-snippet-info p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
 
-        /* Report Specifics */
         .report-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
         .kpi-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; text-align: center; border-bottom: 3px solid var(--accent-orange); }
         .kpi-card h4 { color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.5rem; }
@@ -168,7 +142,6 @@
         
         .report-section { margin-bottom: 3rem; }
         .report-section h3 { border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem; color: var(--accent-orange); text-transform: uppercase; font-size: 1.2rem; }
-        
         .table-responsive { overflow-x: auto; background: var(--bg-panel); border-radius: 8px; border: 1px solid var(--border-color); }
         .data-table { width: 100%; border-collapse: collapse; min-width: 600px; font-size: 0.9rem; }
         .data-table th, .data-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
@@ -177,9 +150,6 @@
         
         .analysis-box { background: var(--bg-panel); border-left: 4px solid var(--accent-orange); padding: 1.5rem; border-radius: 4px; font-size: 0.95rem; line-height: 1.6; border-top: 1px solid var(--border-color); border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);}
 
-        /* ==========================================================================
-           7. MODALS & RECEIPTS
-           ========================================================================== */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 1000; padding: 1rem; overflow-y: auto; }
         .modal-content { background-color: var(--bg-panel); padding: clamp(1.5rem, 5vw, 3rem); border-radius: 16px; text-align: center; border: 2px solid var(--accent-orange); max-width: 450px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.2); animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin: auto; }
         .checkmark-circle { width: 80px; height: 80px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; background: rgba(37, 211, 102, 0.1); border: 4px solid var(--success-green); margin: 0 auto 1.5rem auto; }
@@ -189,7 +159,6 @@
         
         .modal-actions { display: flex; flex-direction: column; width: 100%; gap: 10px; align-items: stretch; margin-top: 1rem; }
 
-        /* Receipt Canvas Wrapper (Hidden visually) */
         #receipt-render-zone { position: absolute; left: -9999px; top: 0; opacity: 0; pointer-events: none; z-index: -100; }
         #receipt-template { width: 400px; padding: 25px; background: #ffffff; border: 3px solid var(--accent-orange); font-family: 'Segoe UI', Arial, sans-serif; color: #111; box-sizing: border-box; }
         .rcpt-header { text-align: center; border-bottom: 2px dashed #ccc; padding-bottom: 15px; margin-bottom: 15px; }
@@ -201,7 +170,6 @@
         .rcpt-amount-box { margin-top: 20px; padding: 15px; background: #fdfdfd; border-radius: 8px; border: 1px solid #eee; }
         .rcpt-footer { text-align: center; font-size: 11px; color: #888; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; }
 
-        /* PDF Temp Wrapper (Hidden visually) */
         #pdf-template-wrapper { display: none; background: #e0e0e0; min-height: 100vh; width: 100vw; padding: 20px; justify-content: center; }
         #pdf-template { background: #ffffff; color: #111111; width: 210mm; height: 296mm; padding: 12mm 15mm; box-sizing: border-box; font-family: 'Helvetica', 'Arial', sans-serif; position: relative; overflow: hidden; display: flex; flex-direction: column; }
         .pdf-flex-between { display: flex; justify-content: space-between; align-items: flex-end; }
@@ -234,8 +202,6 @@
             .form-row { flex-direction: column; gap: 1rem; margin-bottom: 1rem; }
             .form-layout { padding: 1.5rem; border: none; box-shadow: none; background: transparent; }
             .btn { padding: 0.9rem 1.5rem; }
-            .val-group { grid-template-columns: 1fr auto; }
-            .val-group button { padding: 0 1rem; }
             .profile-snippet { flex-direction: column; text-align: center; }
             .profile-snippet img { width: 90px; height: 90px; }
             #hub-actions { width: 100%; max-width: 100%; }
@@ -332,7 +298,7 @@
             </div>
         </main>
 
-        <!-- USER SEARCH (Handles Details & Fee Selection) -->
+        <!-- USER SEARCH -->
         <main id="view-user-search" class="view-section">
             <div class="form-layout" style="max-width: 500px;">
                 <div class="module-toolbar">
@@ -356,7 +322,7 @@
             </div>
         </main>
 
-        <!-- USER HUB (Profile View & Calendar) -->
+        <!-- USER HUB -->
         <main id="view-user-hub" class="view-section">
             <div class="form-layout" style="max-width: 900px;">
                 <div class="module-toolbar">
@@ -508,7 +474,6 @@
                 </div>
                 
                 <form id="admissionForm">
-                    
                     <div id="step-1" class="step-container active-step">
                         <div class="step-indicator" id="step-1-ind">Step 1 of 3: Member Details</div>
                         
@@ -526,14 +491,14 @@
                             </div>
                         </div>
 
-                        <!-- Fixed Re-Admission Layout using CSS Grid explicitly attached to val-group -->
+                        <!-- Fixed Re-Admission Layout -->
                         <div id="reAdmissionSection">
-                            <label style="color: var(--accent-orange); margin-bottom: 0.5rem; display: block;">Validate Previous Registration</label>
-                            <div class="val-group">
-                                <input type="tel" id="prevPhoneInput" placeholder="10-digit number" pattern="\d{10}" maxlength="10">
-                                <button type="button" id="btn-validate-readmission" class="btn secondary">Validate</button>
+                            <label style="color: var(--accent-orange); margin-bottom: 0.8rem; display: block; font-weight: 800;">Validate Previous Registration</label>
+                            <div style="display: flex; flex-direction: row; gap: 10px; width: 100%; align-items: stretch;">
+                                <input type="tel" id="prevPhoneInput" placeholder="10-digit number" pattern="\d{10}" maxlength="10" style="flex-grow: 1; flex-shrink: 1; width: 100%; min-width: 0; margin-bottom: 0 !important;">
+                                <button type="button" id="btn-validate-readmission" class="btn secondary" style="flex-grow: 0; flex-shrink: 0; width: auto; white-space: nowrap; margin-bottom: 0 !important;">Validate</button>
                             </div>
-                            <div id="validationResultBox" style="display:none; font-size: 0.9rem; line-height: 1.5; padding: 1rem; background: var(--bg-panel); border-radius: 6px; border: 1px solid var(--border-color);"></div>
+                            <div id="validationResultBox" style="display:none; font-size: 0.9rem; line-height: 1.5; padding: 1rem; margin-top: 1rem; background: var(--bg-panel); border-radius: 6px; border: 1px solid var(--border-color);"></div>
                         </div>
 
                         <div class="form-row">
@@ -578,7 +543,6 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="dob">Date of Birth <span class="required">*</span></label>
-                                <!-- Required DOB, No 18+ limit -->
                                 <input type="text" id="dob" placeholder="DD-MM-YYYY" pattern="\d{2}-\d{2}-\d{4}" title="Format: DD-MM-YYYY" required>
                             </div>
                             <div class="form-group">
@@ -821,6 +785,7 @@
         </div>
     </div>
 
+    <!-- Receipt Generator -->
     <div id="receipt-render-zone">
         <div id="receipt-template">
             <div class="rcpt-header">
@@ -869,18 +834,23 @@
             return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
         }
 
+        // Global Event Binder (Fail-safe)
+        function bindEvt(id, event, cb) {
+            const el = document.getElementById(id);
+            if(el) el.addEventListener(event, cb);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
 
             document.getElementById('footer-year').innerText = new Date().getFullYear();
 
-            document.getElementById('btn-login-submit').addEventListener('click', function(e) {
-                const pinInput = document.getElementById('pin-input');
-                if (!pinInput.checkValidity()) {
-                    pinInput.reportValidity();
-                    return;
-                }
-                window.appContext.handleLogin();
-            });
+            const loginForm = document.getElementById('loginForm');
+            if(loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    window.appContext.handleLogin();
+                });
+            }
 
             window.appContext = {
                 currentRole: null, pendingRole: null, 
@@ -902,8 +872,7 @@
                     this.pendingRole = role;
                     document.getElementById('login-title').innerText = role === 'staff' ? 'Staff Login' : 'Admin Login';
                     const pinInput = document.getElementById('pin-input');
-                    pinInput.value = ''; pinInput.setAttribute('maxlength', role === 'staff' ? '6' : '4');
-                    pinInput.placeholder = role === 'staff' ? '6-Digit PIN' : '4-Digit PIN';
+                    if(pinInput) { pinInput.value = ''; pinInput.setAttribute('maxlength', role === 'staff' ? '6' : '4'); pinInput.placeholder = role === 'staff' ? '6-Digit PIN' : '4-Digit PIN'; }
                     this.switchView('login');
                 },
                 handleLogin: function() {
@@ -924,11 +893,12 @@
                     document.getElementById('step-1-ind').innerText = "Step 1 of 3: Member Details";
                     document.getElementById('step-2-ind').innerText = "Step 2 of 3: Digital Verification";
                     document.getElementById('btn-next-step-2').innerText = "Proceed to Payment →";
-                    document.getElementById('admissionForm').reset();
+                    const f = document.getElementById('admissionForm'); if(f) f.reset();
                     document.getElementById('selfie-preview').style.display = 'none';
                     document.querySelector('.camera-placeholder').style.display = 'block';
                     document.getElementById('selfie-data').value = '';
-                    document.getElementById('signature-pad').getContext('2d').clearRect(0, 0, 450, 150);
+                    const sigC = document.getElementById('signature-pad');
+                    if(sigC) sigC.getContext('2d').clearRect(0, 0, 450, 150);
                     document.getElementById('reAdmissionSection').style.display = 'none';
                     document.getElementById('validationResultBox').style.display = 'none';
                     document.getElementById('step-3').classList.remove('active-step');
@@ -966,18 +936,17 @@
                         </div></div>`;
                     });
                     this.loadTariffs();
-                    fySelect.removeEventListener('change', this.loadTariffs.bind(this));
-                    fySelect.addEventListener('change', this.loadTariffs.bind(this));
                 },
                 loadTariffs: function() {
-                    const fy = document.getElementById('fy-select').value;
+                    const fySelect = document.getElementById('fy-select'); if(!fySelect) return;
+                    const fy = fySelect.value;
                     const db = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
                     const data = db[fy] || {};
                     tariffMonthsOrder.forEach(month => {
                         const m = data[month] || { admFee: APP_CONFIG.baseAdmissionFee, regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
-                        document.getElementById(`tariff-${month}-adm`).value = m.admFee;
-                        document.getElementById(`tariff-${month}-reg`).value = m.regFee;
-                        document.getElementById(`tariff-${month}-pt`).value = m.ptFee;
+                        const iAdm = document.getElementById(`tariff-${month}-adm`); if(iAdm) iAdm.value = m.admFee;
+                        const iReg = document.getElementById(`tariff-${month}-reg`); if(iReg) iReg.value = m.regFee;
+                        const iPt = document.getElementById(`tariff-${month}-pt`); if(iPt) iPt.value = m.ptFee;
                     });
                 },
                 saveTariffs: function() {
@@ -1004,7 +973,7 @@
                     window.appContext.switchView('user-search');
                 },
                 fetchUserHub: function(e) {
-                    e.preventDefault();
+                    if(e) e.preventDefault();
                     const phone = document.getElementById('search-phone').value;
                     const fy = document.getElementById('search-fy').value;
                     
@@ -1279,7 +1248,7 @@
                         const opt = document.createElement('option'); opt.value = month; opt.innerText = month;
                         monthSelect.appendChild(opt);
                     });
-                    
+                    document.getElementById('report-fy').addEventListener('change', () => this.generateReport());
                     document.getElementById('report-content').style.display = 'none';
                 },
                 generateReport: function() {
@@ -1309,7 +1278,7 @@
                                     const paid = parseInt(p.amountPaid || 0);
                                     const due = parseInt(p.totalDue || 0);
                                     totalRev += paid;
-                                    totalPending += (due - paid);
+                                    totalPending += (due > paid ? due - paid : 0);
                                     if(p.method === 'UPI') upiRev += paid; else cashRev += paid;
                                 }
                             } else if (payments[userId][fy][month]) {
@@ -1318,7 +1287,7 @@
                                 const paid = parseInt(p.amountPaid || 0);
                                 const due = parseInt(p.totalDue || 0);
                                 totalRev += paid;
-                                totalPending += (due - paid);
+                                totalPending += (due > paid ? due - paid : 0);
                                 if(p.method === 'UPI') upiRev += paid; else cashRev += paid;
                             }
                         }
@@ -1346,7 +1315,7 @@
                     filteredPayments.forEach(p => {
                         const dateStr = p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : 'N/A';
                         const pending = parseInt(p.totalDue || 0) - parseInt(p.amountPaid || 0);
-                        feeTbody.innerHTML += `<tr><td>${dateStr}</td><td><strong>${p.userId}</strong></td><td>${p.month}</td><td style="color:green; font-weight:bold;">₹${p.amountPaid}</td><td style="color:red;">₹${pending}</td><td>${p.method || 'CASH'}</td></tr>`;
+                        feeTbody.innerHTML += `<tr><td>${dateStr}</td><td><strong>${p.userId}</strong></td><td>${p.month}</td><td style="color:green; font-weight:bold;">₹${p.amountPaid}</td><td style="color:${pending > 0 ? 'red' : 'green'};">₹${pending}</td><td>${p.method || 'CASH'}</td></tr>`;
                     });
 
                     // Render YoY Analysis
@@ -1389,17 +1358,18 @@
                 }
             };
 
-            // Global Binds
-            document.getElementById('btn-save-upi').addEventListener('click', () => window.moduleContext.saveUpi());
-            document.getElementById('btn-gen-report').addEventListener('click', () => window.moduleContext.generateReport());
-            document.getElementById('btn-export-adm').addEventListener('click', () => window.moduleContext.exportTableToCSV('table-admissions', 'Admissions_Report.csv'));
-            document.getElementById('btn-export-fee').addEventListener('click', () => window.moduleContext.exportTableToCSV('table-fees', 'Fee_Collections_Report.csv'));
-            document.getElementById('pay-amount-now').addEventListener('input', () => window.moduleContext.updatePaymentModalUI());
-            document.getElementById('pay-method').addEventListener('change', () => window.moduleContext.updatePaymentModalUI());
-            document.getElementById('btn-cancel-pay').addEventListener('click', () => document.getElementById('paymentProcessModal').style.display='none');
-            document.getElementById('btn-confirm-pay').addEventListener('click', () => window.moduleContext.confirmPayment());
-            document.getElementById('btn-share-receipt').addEventListener('click', () => window.moduleContext.shareReceipt('success'));
-            document.getElementById('btn-vr-share').addEventListener('click', () => window.moduleContext.shareReceipt('vr'));
+            // Event Bindings
+            bindEvt('btn-save-upi', 'click', () => window.moduleContext.saveUpi());
+            bindEvt('btn-gen-report', 'click', () => window.moduleContext.generateReport());
+            bindEvt('btn-export-adm', 'click', () => window.moduleContext.exportTableToCSV('table-admissions', 'Admissions_Report.csv'));
+            bindEvt('btn-export-fee', 'click', () => window.moduleContext.exportTableToCSV('table-fees', 'Fee_Collections_Report.csv'));
+            bindEvt('pay-amount-now', 'input', () => window.moduleContext.updatePaymentModalUI());
+            bindEvt('pay-method', 'change', () => window.moduleContext.updatePaymentModalUI());
+            bindEvt('btn-cancel-pay', 'click', () => document.getElementById('paymentProcessModal').style.display='none');
+            bindEvt('btn-confirm-pay', 'click', () => window.moduleContext.confirmPayment());
+            bindEvt('btn-share-receipt', 'click', () => window.moduleContext.shareReceipt('success'));
+            bindEvt('btn-vr-share', 'click', () => window.moduleContext.shareReceipt('vr'));
+            bindEvt('userSearchForm', 'submit', (e) => { e.preventDefault(); window.moduleContext.fetchUserHub(e); });
 
             // CAMERA LOGIC
             const video = document.getElementById('camera-stream'); const canvas = document.getElementById('canvas-snapshot'); const preview = document.getElementById('selfie-preview');
@@ -1415,130 +1385,133 @@
                     btnStart.style.display = 'none'; btnSwitch.style.display = 'inline-flex'; btnCapture.style.display = 'inline-flex'; btnCapture.disabled = false;
                 } catch (err) { alert("Camera access denied or unavailable."); }
             }
-            btnStart.addEventListener('click', startCamera);
-            btnSwitch.addEventListener('click', () => { currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user'; startCamera(); });
+            if(btnStart) btnStart.addEventListener('click', startCamera);
+            if(btnSwitch) btnSwitch.addEventListener('click', () => { currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user'; startCamera(); });
 
-            btnCapture.addEventListener('click', () => {
+            if(btnCapture) btnCapture.addEventListener('click', () => {
                 canvas.width = video.videoWidth; canvas.height = video.videoHeight;
                 canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
                 selfieData.value = canvas.toDataURL('image/jpeg', 0.9); preview.src = selfieData.value;
                 video.style.display = 'none'; preview.style.display = 'block'; btnCapture.style.display = 'none'; btnSwitch.style.display = 'none'; btnRetake.style.display = 'inline-flex';
                 if(stream) stream.getTracks().forEach(track => track.stop());
             });
-            btnRetake.addEventListener('click', () => { selfieData.value = ''; btnRetake.style.display = 'none'; startCamera(); });
+            if(btnRetake) btnRetake.addEventListener('click', () => { selfieData.value = ''; btnRetake.style.display = 'none'; startCamera(); });
 
             // SIGNATURE PAD LOGIC
-            const sigCanvas = document.getElementById('signature-pad'); const sigCtx = sigCanvas.getContext('2d');
-            let isDrawing = false; let signatureHasData = false;
+            const sigCanvas = document.getElementById('signature-pad'); 
+            if(sigCanvas) {
+                const sigCtx = sigCanvas.getContext('2d');
+                let isDrawing = false; let signatureHasData = false;
 
-            function resizeCanvas() { const ratio = Math.max(window.devicePixelRatio || 1, 1); sigCanvas.width = sigCanvas.offsetWidth * ratio; sigCanvas.height = sigCanvas.offsetHeight * ratio; sigCtx.scale(ratio, ratio); clearSignature(); }
-            window.addEventListener("resize", resizeCanvas);
-            function clearSignature() { sigCtx.fillStyle = "#ffffff"; sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height); signatureHasData = false; }
-            document.getElementById('btn-clear-sig').addEventListener('click', clearSignature);
-            function getPointerPos(e) { const rect = sigCanvas.getBoundingClientRect(); const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY; return { x: clientX - rect.left, y: clientY - rect.top }; }
-            function startDraw(e) { isDrawing = true; signatureHasData = true; sigCtx.beginPath(); const pos = getPointerPos(e); sigCtx.moveTo(pos.x, pos.y); if(e.type.includes('touch')) e.preventDefault(); }
-            function draw(e) { if (!isDrawing) return; const pos = getPointerPos(e); sigCtx.lineWidth = 3; sigCtx.lineCap = 'round'; sigCtx.strokeStyle = '#000000'; sigCtx.lineTo(pos.x, pos.y); sigCtx.stroke(); if(e.type.includes('touch')) e.preventDefault(); }
-            function endDraw(e) { isDrawing = false; sigCtx.closePath(); }
-            sigCanvas.addEventListener('mousedown', startDraw); sigCanvas.addEventListener('mousemove', draw); sigCanvas.addEventListener('mouseup', endDraw); sigCanvas.addEventListener('mouseout', endDraw);
-            sigCanvas.addEventListener('touchstart', startDraw, {passive: false}); sigCanvas.addEventListener('touchmove', draw, {passive: false}); sigCanvas.addEventListener('touchend', endDraw);
+                function resizeCanvas() { const ratio = Math.max(window.devicePixelRatio || 1, 1); sigCanvas.width = sigCanvas.offsetWidth * ratio; sigCanvas.height = sigCanvas.offsetHeight * ratio; sigCtx.scale(ratio, ratio); clearSignature(); }
+                window.addEventListener("resize", resizeCanvas);
+                function clearSignature() { sigCtx.fillStyle = "#ffffff"; sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height); signatureHasData = false; }
+                const btnClrSig = document.getElementById('btn-clear-sig'); if(btnClrSig) btnClrSig.addEventListener('click', clearSignature);
+                function getPointerPos(e) { const rect = sigCanvas.getBoundingClientRect(); const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY; return { x: clientX - rect.left, y: clientY - rect.top }; }
+                function startDraw(e) { isDrawing = true; signatureHasData = true; sigCtx.beginPath(); const pos = getPointerPos(e); sigCtx.moveTo(pos.x, pos.y); if(e.type.includes('touch')) e.preventDefault(); }
+                function draw(e) { if (!isDrawing) return; const pos = getPointerPos(e); sigCtx.lineWidth = 3; sigCtx.lineCap = 'round'; sigCtx.strokeStyle = '#000000'; sigCtx.lineTo(pos.x, pos.y); sigCtx.stroke(); if(e.type.includes('touch')) e.preventDefault(); }
+                function endDraw(e) { isDrawing = false; sigCtx.closePath(); }
+                sigCanvas.addEventListener('mousedown', startDraw); sigCanvas.addEventListener('mousemove', draw); sigCanvas.addEventListener('mouseup', endDraw); sigCanvas.addEventListener('mouseout', endDraw);
+                sigCanvas.addEventListener('touchstart', startDraw, {passive: false}); sigCanvas.addEventListener('touchmove', draw, {passive: false}); sigCanvas.addEventListener('touchend', endDraw);
 
-            // FORM MULTI-STEP LOGIC
-            const step1 = document.getElementById('step-1'); const step2 = document.getElementById('step-2'); const step3 = document.getElementById('step-3');
-            
-            document.getElementById('btn-next-step').addEventListener('click', () => {
-                let isValid = true; step1.querySelectorAll('input, select, textarea').forEach(input => { if (!input.checkValidity()) { input.reportValidity(); isValid = false; } });
-                if(isValid) { step1.classList.remove('active-step'); step2.classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' }); resizeCanvas(); } 
-            });
+                // FORM MULTI-STEP LOGIC
+                const step1 = document.getElementById('step-1'); const step2 = document.getElementById('step-2'); const step3 = document.getElementById('step-3');
+                
+                bindEvt('btn-next-step', 'click', () => {
+                    let isValid = true; step1.querySelectorAll('input, select, textarea').forEach(input => { if (!input.checkValidity()) { input.reportValidity(); isValid = false; } });
+                    if(isValid) { step1.classList.remove('active-step'); step2.classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' }); resizeCanvas(); } 
+                });
 
-            document.getElementById('btn-prev-step').addEventListener('click', () => { step2.classList.remove('active-step'); step1.classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+                bindEvt('btn-prev-step', 'click', () => { step2.classList.remove('active-step'); step1.classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
-            document.getElementById('btn-next-step-2').addEventListener('click', () => {
-                if (!selfieData.value) { alert("Portrait capture is mandatory."); return; }
-                if (!signatureHasData && !IS_EDIT_MODE) { alert("Digital signature is mandatory."); return; }
+                bindEvt('btn-next-step-2', 'click', () => {
+                    if (!selfieData.value) { alert("Portrait capture is mandatory."); return; }
+                    if (!signatureHasData && !IS_EDIT_MODE) { alert("Digital signature is mandatory."); return; }
 
-                const fName = document.getElementById('firstName').value.trim(); const lName = document.getElementById('lastName').value.trim(); const fullName = lName ? `${fName} ${lName}` : fName;
-                let finalSig = signatureHasData ? sigCanvas.toDataURL('image/jpeg', 1.0) : (IS_EDIT_MODE ? currentActiveUser.signature : '');
+                    const fName = document.getElementById('firstName').value.trim(); const lName = document.getElementById('lastName').value.trim(); const fullName = lName ? `${fName} ${lName}` : fName;
+                    let finalSig = signatureHasData ? sigCanvas.toDataURL('image/jpeg', 1.0) : (IS_EDIT_MODE ? currentActiveUser.signature : '');
 
-                if (IS_EDIT_MODE) {
-                    currentActiveUser.date = document.getElementById('dateOfAdmission').value;
-                    currentActiveUser.admissionType = document.getElementById('admissionTypeSelect').value;
-                    currentActiveUser.admissionCategory = document.getElementById('admissionCategory').value;
-                    currentActiveUser.trainingCategory = document.getElementById('trainingCategory').value;
-                    currentActiveUser.firstName = fName; currentActiveUser.lastName = lName; currentActiveUser.fullName = fullName;
-                    currentActiveUser.primaryContact = document.getElementById('primaryContact').value;
-                    currentActiveUser.alternateContact = document.getElementById('alternateContact').value;
-                    currentActiveUser.dob = document.getElementById('dob').value;
-                    currentActiveUser.address = document.getElementById('address').value.trim();
-                    currentActiveUser.photo = selfieData.value;
-                    currentActiveUser.signature = finalSig;
+                    if (IS_EDIT_MODE) {
+                        currentActiveUser.date = document.getElementById('dateOfAdmission').value;
+                        currentActiveUser.admissionType = document.getElementById('admissionTypeSelect').value;
+                        currentActiveUser.admissionCategory = document.getElementById('admissionCategory').value;
+                        currentActiveUser.trainingCategory = document.getElementById('trainingCategory').value;
+                        currentActiveUser.firstName = fName; currentActiveUser.lastName = lName; currentActiveUser.fullName = fullName;
+                        currentActiveUser.primaryContact = document.getElementById('primaryContact').value;
+                        currentActiveUser.alternateContact = document.getElementById('alternateContact').value;
+                        currentActiveUser.dob = document.getElementById('dob').value;
+                        currentActiveUser.address = document.getElementById('address').value.trim();
+                        currentActiveUser.photo = selfieData.value;
+                        currentActiveUser.signature = finalSig;
 
-                    let usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                    let idx = usersDb.findIndex(u => u.id === currentActiveUser.id);
-                    if(idx !== -1) { usersDb[idx] = currentActiveUser; localStorage.setItem('revive_users_db', JSON.stringify(usersDb)); }
+                        let usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
+                        let idx = usersDb.findIndex(u => u.id === currentActiveUser.id);
+                        if(idx !== -1) { usersDb[idx] = currentActiveUser; localStorage.setItem('revive_users_db', JSON.stringify(usersDb)); }
+                        
+                        document.getElementById('sm-title').innerText = "Update Complete!";
+                        document.getElementById('generated-id').innerText = currentActiveUser.id;
+                        document.getElementById('sm-adm-actions').style.display = 'none';
+                        document.getElementById('sm-edit-actions').style.display = 'flex';
+                        document.getElementById('successModal').style.display = 'flex';
+                        return;
+                    }
+
+                    let currentCount = localStorage.getItem('revive_admission_count');
+                    currentCount = !currentCount ? 1 : parseInt(currentCount) + 1;
+                    preAdmissionId = `REV-${String(currentCount).padStart(4, '0')}`;
                     
-                    document.getElementById('sm-title').innerText = "Update Complete!";
-                    document.getElementById('generated-id').innerText = currentActiveUser.id;
-                    document.getElementById('sm-adm-actions').style.display = 'none';
-                    document.getElementById('sm-edit-actions').style.display = 'flex';
-                    document.getElementById('successModal').style.display = 'flex';
-                    return;
-                }
+                    const adDateVal = document.getElementById('dateOfAdmission').value;
+                    const parts = adDateVal.split('-'); const adDateObj = new Date(parts[2], parts[1]-1, parts[0]);
+                    const monthName = adDateObj.toLocaleString('default', { month: 'long' });
+                    
+                    const y = adDateObj.getFullYear(); const m = adDateObj.getMonth(); 
+                    let fyStart = m >= 3 ? y : y - 1; let fyString = `${fyStart}-${fyStart + 1}`;
 
-                let currentCount = localStorage.getItem('revive_admission_count');
-                currentCount = !currentCount ? 1 : parseInt(currentCount) + 1;
-                preAdmissionId = `REV-${String(currentCount).padStart(4, '0')}`;
-                
-                const adDateVal = document.getElementById('dateOfAdmission').value;
-                const parts = adDateVal.split('-'); const adDateObj = new Date(parts[2], parts[1]-1, parts[0]);
-                const monthName = adDateObj.toLocaleString('default', { month: 'long' });
-                
-                const y = adDateObj.getFullYear(); const m = adDateObj.getMonth(); 
-                let fyStart = m >= 3 ? y : y - 1; let fyString = `${fyStart}-${fyStart + 1}`;
+                    const allTariffs = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
+                    const monthTariff = (allTariffs[fyString] && allTariffs[fyString][monthName]) ? allTariffs[fyString][monthName] : { admFee: APP_CONFIG.baseAdmissionFee, regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
 
-                const allTariffs = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
-                const monthTariff = (allTariffs[fyString] && allTariffs[fyString][monthName]) ? allTariffs[fyString][monthName] : { admFee: APP_CONFIG.baseAdmissionFee, regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
+                    const isPT = document.getElementById('trainingCategory').value === 'Personal Training';
+                    const applicableMonthlyFee = parseInt(isPT ? monthTariff.ptFee : monthTariff.regFee);
+                    const baseAdmFee = parseInt(monthTariff.admFee);
 
-                const isPT = document.getElementById('trainingCategory').value === 'Personal Training';
-                const applicableMonthlyFee = parseInt(isPT ? monthTariff.ptFee : monthTariff.regFee);
-                const baseAdmFee = parseInt(monthTariff.admFee);
+                    const daysInMonth = new Date(parts[2], parts[1], 0).getDate(); 
+                    const remainingDays = daysInMonth - parseInt(parts[0]) + 1; 
+                    
+                    let monthlyFeeToPay = applicableMonthlyFee;
+                    if (remainingDays < 15) { monthlyFeeToPay = Math.round((applicableMonthlyFee / 30) * remainingDays); }
 
-                const daysInMonth = new Date(parts[2], parts[1], 0).getDate(); 
-                const remainingDays = daysInMonth - parseInt(parts[0]) + 1; 
-                
-                let monthlyFeeToPay = applicableMonthlyFee;
-                if (remainingDays < 15) { monthlyFeeToPay = Math.round((applicableMonthlyFee / 30) * remainingDays); }
+                    calculatedTotalFee = baseAdmFee + monthlyFeeToPay;
 
-                calculatedTotalFee = baseAdmFee + monthlyFeeToPay;
+                    document.getElementById('calc-admission-id').innerText = preAdmissionId; document.getElementById('calc-admin-fee').innerText = baseAdmFee;
+                    document.getElementById('calc-monthly-fee').innerText = monthlyFeeToPay; document.getElementById('calc-total-fee').innerText = calculatedTotalFee;
 
-                document.getElementById('calc-admission-id').innerText = preAdmissionId; document.getElementById('calc-admin-fee').innerText = baseAdmFee;
-                document.getElementById('calc-monthly-fee').innerText = monthlyFeeToPay; document.getElementById('calc-total-fee').innerText = calculatedTotalFee;
+                    currentMemberDetails = {
+                        id: preAdmissionId, date: adDateVal,
+                        admissionType: document.getElementById('admissionTypeSelect').value, admissionCategory: document.getElementById('admissionCategory').value, trainingCategory: document.getElementById('trainingCategory').value,
+                        firstName: fName, lastName: lName, fullName: fullName, 
+                        primaryContact: document.getElementById('primaryContact').value, alternateContact: document.getElementById('alternateContact').value,
+                        dob: document.getElementById('dob').value, address: document.getElementById('address').value.trim(),
+                        photo: selfieData.value, signature: finalSig,
+                        _fy: fyString, _month: monthName 
+                    };
 
-                currentMemberDetails = {
-                    id: preAdmissionId, date: adDateVal,
-                    admissionType: document.getElementById('admissionTypeSelect').value, admissionCategory: document.getElementById('admissionCategory').value, trainingCategory: document.getElementById('trainingCategory').value,
-                    firstName: fName, lastName: lName, fullName: fullName, 
-                    primaryContact: document.getElementById('primaryContact').value, alternateContact: document.getElementById('alternateContact').value,
-                    dob: document.getElementById('dob').value, address: document.getElementById('address').value.trim(),
-                    photo: selfieData.value, signature: finalSig,
-                    _fy: fyString, _month: monthName 
-                };
+                    const method = document.getElementById('paymentMethod').value;
+                    const upiSec = document.getElementById('upi-section');
+                    if (method === 'UPI') {
+                        upiSec.style.display = 'block'; document.getElementById('btn-validate-payment').innerText = 'Validate Payment & Complete';
+                        document.getElementById('qr-amount-display').innerText = calculatedTotalFee;
+                        const activeUpiId = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId;
+                        const upiString = `upi://pay?pa=${activeUpiId}&pn=ReviveFitness&am=${calculatedTotalFee}&cu=INR`;
+                        document.getElementById('upi-qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
+                    } else { upiSec.style.display = 'none'; document.getElementById('btn-validate-payment').innerText = 'Collect Cash & Complete'; }
 
-                const method = document.getElementById('paymentMethod').value;
-                const upiSec = document.getElementById('upi-section');
-                if (method === 'UPI') {
-                    upiSec.style.display = 'block'; document.getElementById('btn-validate-payment').innerText = 'Validate Payment & Complete';
-                    document.getElementById('qr-amount-display').innerText = calculatedTotalFee;
-                    const activeUpiId = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId;
-                    const upiString = `upi://pay?pa=${activeUpiId}&pn=ReviveFitness&am=${calculatedTotalFee}&cu=INR`;
-                    document.getElementById('upi-qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
-                } else { upiSec.style.display = 'none'; document.getElementById('btn-validate-payment').innerText = 'Collect Cash & Complete'; }
+                    step2.classList.remove('active-step'); step3.classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
 
-                step2.classList.remove('active-step'); step3.classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
+            bindEvt('btn-prev-step-2', 'click', () => { document.getElementById('step-3').classList.remove('active-step'); document.getElementById('step-2').classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
-            document.getElementById('btn-prev-step-2').addEventListener('click', () => { step3.classList.remove('active-step'); step2.classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
-
-            document.getElementById('paymentMethod').addEventListener('change', function() {
+            bindEvt('paymentMethod', 'change', function() {
                 const upiSec = document.getElementById('upi-section');
                 if (this.value === 'UPI') {
                     upiSec.style.display = 'block'; document.getElementById('btn-validate-payment').innerText = 'Validate Payment & Complete';
@@ -1549,13 +1522,13 @@
                 } else { upiSec.style.display = 'none'; document.getElementById('btn-validate-payment').innerText = 'Collect Cash & Complete'; }
             });
 
-            document.getElementById('btn-validate-payment').addEventListener('click', () => {
+            bindEvt('btn-validate-payment', 'click', () => {
                 if (navigator.geolocation) { navigator.geolocation.getCurrentPosition((pos) => { userLocationStr = `Lat: ${pos.coords.latitude.toFixed(5)}, Long: ${pos.coords.longitude.toFixed(5)}`; }, (err) => { userLocationStr = "Location permissions denied"; }); }
                 if (document.getElementById('paymentMethod').value === 'UPI') { document.getElementById('success-paid-id').innerText = preAdmissionId; document.getElementById('paymentSuccessModal').style.display = 'flex'; } 
                 else { finalizeRegistration(); }
             });
 
-            document.getElementById('btn-proceed-to-admission').addEventListener('click', () => { document.getElementById('paymentSuccessModal').style.display = 'none'; finalizeRegistration(); });
+            bindEvt('btn-proceed-to-admission', 'click', () => { document.getElementById('paymentSuccessModal').style.display = 'none'; finalizeRegistration(); });
 
             function finalizeRegistration() {
                 let usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
@@ -1579,7 +1552,6 @@
                 document.getElementById('successModal').style.display = 'flex';
             }
 
-            // PDF Generation
             function getPdfBlob() {
                 return new Promise((resolve, reject) => {
                     const now = new Date(); const timestampStr = now.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
@@ -1593,14 +1565,14 @@
                     
                     const sigImgEl = document.getElementById('pdf-member-sig'); sigImgEl.src = currentMemberDetails.signature; sigImgEl.style.display = 'inline-block';
                     document.getElementById('member-verified').innerText = `+91 ${currentMemberDetails.primaryContact}`; document.getElementById('member-timestamp').innerText = timestampStr;
-                    document.getElementById('member-location').innerText = userLocationStr; document.getElementById('official-timestamp').innerText = timestampStr;
+                    document.getElementById('member-location').innerText = "System Generated Copy"; document.getElementById('official-timestamp').innerText = timestampStr;
 
                     const appWrapper = document.getElementById('app-wrapper'); const pdfWrapper = document.getElementById('pdf-template-wrapper'); const element = document.getElementById('pdf-template');
                     window.scrollTo(0, 0); appWrapper.style.display = 'none'; pdfWrapper.style.display = 'flex';
 
                     setTimeout(() => {
                         html2pdf().set({
-                            margin: 0, filename: `${currentMemberDetails.id}.pdf`, image: { type: 'jpeg', quality: 1.0 },
+                            margin: 0, filename: `${currentMemberDetails.id}_Copy.pdf`, image: { type: 'jpeg', quality: 1.0 },
                             html2canvas: { scale: 2, useCORS: true, scrollY: 0 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                         }).from(element).output('blob').then((blob) => {
                             pdfWrapper.style.display = 'none'; appWrapper.style.display = 'flex'; resolve(blob);
@@ -1609,7 +1581,7 @@
                 });
             }
 
-            document.getElementById('btn-download-pdf').addEventListener('click', async function() {
+            bindEvt('btn-download-pdf', 'click', async function() {
                 const btn = this; btn.innerText = "Generating..."; btn.disabled = true;
                 try {
                     const blob = await getPdfBlob(); const url = URL.createObjectURL(blob);
@@ -1619,13 +1591,13 @@
                 finally { btn.innerText = "1. Download PDF Record"; btn.disabled = false; }
             });
             
-            document.getElementById('btn-whatsapp-welcome').addEventListener('click', () => {
+            bindEvt('btn-whatsapp-welcome', 'click', () => {
                 const phone = currentMemberDetails.primaryContact;
                 const welcomeMsg = `🎉 Revive Fitness Studio-ലേക്ക് ഹൃദയം നിറഞ്ഞ സ്വാഗതം! 🏋️‍♂️✨\n\nനിങ്ങളുടെ Fitness Journey-യുടെ പുതിയ തുടക്കത്തിന് ഞങ്ങളോടൊപ്പം ചേർന്നതിൽ സന്തോഷം! 💪\n\nആരോഗ്യവും ഫിറ്റ്നസും ജീവിതത്തിന്റെ ഭാഗമാക്കി, നിങ്ങളുടെ ലക്ഷ്യങ്ങളിലേക്ക് ഓരോ ദിവസവും ഒരു പടി കൂടി മുന്നോട്ട് പോകാൻ Revive Fitness Studio നിങ്ങളോടൊപ്പം ഉണ്ടാകും. ❤️\n\n🔥 Train Better • Stay Strong • Live Healthy\n\nWelcome to the Revive Family! 🤝💪\n— Revive Fitness Studio`;
                 window.open(`https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(welcomeMsg)}`, '_blank');
             });
 
-            document.getElementById('btn-whatsapp-pdf').addEventListener('click', async function() {
+            bindEvt('btn-whatsapp-pdf', 'click', async function() {
                 const btn = this; btn.innerText = "Preparing Share..."; btn.disabled = true;
                 const phone = currentMemberDetails.primaryContact;
                 const msg = `Dear ${currentMemberDetails.fullName},\n\nThank you for joining Revive Fitness Studio!\nYour registration is successful. Your Admission Number is *${currentMemberDetails.id}*.\n\n*Please find your Official Admission Record attached.*`;
@@ -1638,7 +1610,7 @@
             });
 
             // RE-ADMISSION VALIDATION LOGIC
-            document.getElementById('admissionTypeSelect').addEventListener('change', function() {
+            bindEvt('admissionTypeSelect', 'change', function() {
                 if (this.value === 'Re-Admission') { document.getElementById('reAdmissionSection').style.display = 'block'; } 
                 else { 
                     document.getElementById('reAdmissionSection').style.display = 'none'; 
@@ -1651,7 +1623,7 @@
                 }
             });
 
-            document.getElementById('btn-validate-readmission').addEventListener('click', () => {
+            bindEvt('btn-validate-readmission', 'click', () => {
                 const phone = document.getElementById('prevPhoneInput').value; 
                 const resBox = document.getElementById('validationResultBox'); 
                 const admissionTypeSelect = document.getElementById('admissionTypeSelect');
@@ -1689,7 +1661,6 @@
                 } else {
                     resBox.innerHTML = '<span style="color:var(--error-red);">No previous registration found.</span><br><span style="color:var(--text-muted); font-size:0.85rem;">Type changed to New Admission.</span>';
                     admissionTypeSelect.value = 'New Admission'; 
-                    
                     document.getElementById('primaryContact').value = phone;
                     document.getElementById('firstName').value = ''; document.getElementById('lastName').value = '';
                     document.getElementById('alternateContact').value = ''; document.getElementById('dob').value = '';
@@ -1697,7 +1668,7 @@
                 }
             });
 
-            // Date validation & Formatting Hooks
+            // Date Formatting Hook
             const dobInp = document.getElementById('dob'); const dtInp = document.getElementById('dateOfAdmission'); 
             
             function fmtDt() {
@@ -1705,9 +1676,10 @@
                 if(v.length>=5) this.value=`${v.slice(0,2)}-${v.slice(2,4)}-${v.slice(4)}`; else if(v.length>=3) this.value=`${v.slice(0,2)}-${v.slice(2)}`;
             }
 
-            dobInp.addEventListener('input', fmtDt); dtInp.addEventListener('input', fmtDt);
+            if(dobInp) dobInp.addEventListener('input', fmtDt); 
+            if(dtInp) dtInp.addEventListener('input', fmtDt);
             
-            dtInp.addEventListener('blur', function() {
+            if(dtInp) dtInp.addEventListener('blur', function() {
                 const v = this.value; if(v.length===10) {
                     const p = v.split('-'); const d = new Date(p[2], p[1]-1, p[0]);
                     const t = new Date(); t.setHours(0,0,0,0);
