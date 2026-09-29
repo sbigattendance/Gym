@@ -369,6 +369,8 @@
                         <h3 id="hub-name">John Doe</h3>
                         <p><strong id="hub-id" style="color:var(--text-main);">REV-0000</strong> | <span id="hub-phone">9999999999</span></p>
                         <p id="hub-details" style="margin-top:5px;">Regular - Individual</p>
+                        <!-- ADDED DATE OF JOINING VISUAL -->
+                        <p id="hub-doj" style="margin-top:5px; font-weight:700; color:var(--success-green); font-size: 0.85rem;"></p>
                     </div>
                     <div id="hub-actions" style="display:flex; flex-direction:column; gap:0.5rem; width:100%; max-width:200px;">
                         <button id="btn-hub-edit" class="btn secondary" onclick="moduleContext.editUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Edit Profile</button>
@@ -588,6 +590,7 @@
                         </div>
 
                         <div class="action-row">
+                            <!-- DYNAMICALLY RENAMED ON EDIT -->
                             <button type="button" id="btn-next-step" class="btn primary">Proceed to Verification →</button>
                         </div>
                     </div>
@@ -631,7 +634,7 @@
                     </div>
 
                     <div id="step-3" class="step-container">
-                        <div class="step-indicator">Step 3 of 3: Initial Payment Validation</div>
+                        <div class="step-indicator" id="step-3-ind">Step 3 of 3: Initial Payment Validation</div>
                         
                         <div class="fee-summary-box">
                             <h3 style="color:var(--accent-orange); text-align:center; margin-bottom:1.5rem; letter-spacing:1px;">FEE SUMMARY</h3>
@@ -706,7 +709,6 @@
             </div>
         </div>
 
-        <!-- FIXED: ADMISSION SUCCESS MODAL WITH FULLY FUNCTIONAL EVENT HANDLERS -->
         <div id="successModal" class="modal">
             <div class="modal-content">
                 <img src="logo.png" alt="REVIVE FITNESS STUDIO" style="height: 45px; margin-bottom: 1.5rem;" onerror="this.style.display='none'">
@@ -717,9 +719,6 @@
                     <button id="btn-whatsapp-welcome" class="btn whatsapp" onclick="moduleContext.sendWelcomeMessage()">2. Send Welcome Message</button>
                     <button id="btn-whatsapp-pdf" class="btn whatsapp" onclick="moduleContext.sharePdfRecord()">3. Share PDF Record</button>
                     <button id="btn-share-adm-receipt" class="btn whatsapp" onclick="moduleContext.shareAdmissionReceipt()">4. Share Payment Receipt</button>
-                </div>
-                <div class="modal-actions" id="sm-edit-actions" style="display:none;">
-                    <button class="btn primary" onclick="appContext.goHome()">Return to Dashboard</button>
                 </div>
                 <div class="modal-actions">
                     <button class="btn secondary" onclick="appContext.closeModal()">Close Window</button>
@@ -808,7 +807,7 @@
                     <li><strong>It is mandatory to use a towel during practice. Practice will not be allowed without a towel.</strong><em>നിർബന്ധമായും ടവ്വൽ ഉപയോഗിച്ച് പ്രാക്ടീസ് ചെയ്യുക. ടവ്വൽ ഇല്ലാത്തപക്ഷം പ്രാക്ടീസ് ചെയ്യാൻ അനുവദിക്കുന്നതല്ല.</em></li>
                     <li><strong>Workout using a t-shirt and track pants.</strong><em>ടീഷർട്ട്, ട്രാക്ക് പാന്റ് എന്നിവ ഉപയോഗിച്ച് വർക്കൗട്ട് ചെയ്യുക.</em></li>
                     <li><strong>If absent continuously for 6 months, readmission must be taken.</strong><em>തുടർച്ചയായി 6 മാസം വരാതിരുന്നാൽ തുടർന്ന് റീ അഡ്മിഷൻ എടുക്കേണ്ടി വരുന്നതാണ്.</em></li>
-                    <li><strong>Do not enter the club under the influence of alcohol or drugs. If found, membership will be cancelled.</strong><em>ലഹരി കഴിച്ചുകൊണ്ട് ക്ലബ്ബിൽ പ്രവേശിക്കാൻ പാടില്ല. അങ്ങനെ കണ്ടെത്തിയാൽ അംഗത്വം റദ്ദ് ചെയ്യുന്നതായിരിക്കും.</em></li>
+                    <li><strong>Do not enter the club under the influence of alcohol or drugs. If found, membership will be cancelled.</strong><em>ലഹരി കഴിച്ചുകൊണ്ട് ക്ലബ്ബിൽ പ്രവേശിക്കാൻ പാടില്ല. അങ്ങനെ കണ്ടെത്തിയാൽ അംഗത്വം গঠন റദ്ദ് ചെയ്യുന്നതായിരിക്കും.</em></li>
                     <li><strong>Management is not responsible for any accidents during training.</strong><em>പരിശീലനത്തിനിടയിൽ ഉണ്ടാകുന്ന അത്യാഹിതങ്ങൾക്ക് മാനേജ്മെന്റിന് യാതൊരു ഉത്തരവാദിത്വവും ഉണ്ടായിരിക്കുന്നതല്ല.</em></li>
                     <li><strong>Members are fully responsible for any damages caused to the club by them.</strong><em>അംഗങ്ങൾമൂലം ക്ലബ്ബിൽ ഉണ്ടാകുന്ന നാശനഷ്ടങ്ങളുടെ പൂർണ്ണ ഉത്തരവാദിത്വം അതത് അംഗങ്ങൾക്ക് തന്നെയായിരിക്കും.</em></li>
                     <li><strong>Those with any confirmed medical conditions must produce a full medical clearance certificate from a doctor.</strong><em>വൈദ്യശാസ്ത്രപരമായ ഏതെങ്കിലും രോഗം ഉള്ളതായി സ്ഥിരീകരിക്കപ്പെട്ടിട്ടുള്ളവർ ഡോക്ടറുടെ പൂർണ്ണ ആരോഗ്യ സർട്ടിഫിക്കറ്റ് ഹാജരാക്കേണ്ടതാണ്.</em></li>
@@ -920,7 +919,11 @@
                 document.getElementById('form-main-title').innerText = "Admission Registration";
                 document.getElementById('step-1-ind').innerText = "Step 1 of 3: Member Details";
                 document.getElementById('step-2-ind').innerText = "Step 2 of 3: Digital Verification";
+                
+                // Show Step 3 indicator naturally
+                document.getElementById('btn-next-step').innerText = "Proceed to Verification →";
                 document.getElementById('btn-next-step-2').innerText = "Proceed to Payment →";
+                
                 const f = document.getElementById('admissionForm'); if(f) f.reset();
                 document.getElementById('selfie-preview').style.display = 'none';
                 document.querySelector('.camera-placeholder').style.display = 'block';
@@ -1026,6 +1029,10 @@
                 document.getElementById('hub-id').innerText = user.id;
                 document.getElementById('hub-phone').innerText = user.primaryContact;
                 document.getElementById('hub-details').innerText = `${user.admissionCategory} - ${user.trainingCategory}`;
+                
+                // INJECTED: Show exact Date of Joining logically on the profile
+                document.getElementById('hub-doj').innerText = `Date of Joining: ${user.date}`;
+                
                 document.getElementById('hub-fy-label').innerText = fy;
                 
                 if (currentHubMode === 'fee') {
@@ -1187,7 +1194,6 @@
                 }, 300);
             },
             
-            // FIXED: Bulletproof Receipt Sharing Fallback logic built-in for iOS/Android restrictions
             shareReceipt: async function(source = 'success') {
                 const btnId = source === 'vr' ? 'btn-vr-share' : 'btn-share-receipt';
                 const modalId = source === 'vr' ? 'viewReceiptModal' : 'receiptSuccessModal';
@@ -1213,7 +1219,6 @@
                 finally { btn.innerText = source === 'vr' ? "Share Receipt via WhatsApp" : "Share Receipt Image"; document.getElementById(modalId).style.display = 'none'; }
             },
 
-            // FIXED: Built out dedicated Initial Admission Receipt generator
             shareAdmissionReceipt: function() {
                 const btn = document.getElementById('btn-share-adm-receipt');
                 btn.innerText = "Generating...";
@@ -1263,9 +1268,18 @@
             editUser: function() {
                 IS_EDIT_MODE = true; const u = currentActiveUser;
                 document.getElementById('form-main-title').innerText = "Edit Member Details";
+                
+                // FIXED: Reformat layout to accurately show a 2-step process for edits
                 document.getElementById('step-1-ind').innerText = "Step 1 of 2: Update Details";
                 document.getElementById('step-2-ind').innerText = "Step 2 of 2: Update Verification";
+                
+                document.getElementById('btn-next-step').innerText = "Proceed to Verification →";
                 document.getElementById('btn-next-step-2').innerText = "Save Changes";
+                
+                // Clear any leftover state logic
+                document.getElementById('step-3').classList.remove('active-step');
+                document.getElementById('step-2').classList.remove('active-step');
+                document.getElementById('step-1').classList.add('active-step');
                 
                 document.getElementById('dateOfAdmission').value = u.date;
                 document.getElementById('admissionTypeSelect').value = u.admissionType || 'New Admission';
@@ -1298,7 +1312,6 @@
                 }
             },
             
-            // FIXED: Abstracted PDF DOM setup so it can be reused for Share and Download
             preparePdfDom: function() {
                 if(!currentMemberDetails.photo) currentMemberDetails.photo = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; 
                 if(!currentMemberDetails.signature) currentMemberDetails.signature = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
@@ -1323,7 +1336,6 @@
                 document.getElementById('official-timestamp').innerText = timestampStr;
             },
 
-            // FIXED: Download Logic Built Out natively
             regeneratePdf: function() {
                 if (!currentMemberDetails || !currentMemberDetails.id) currentMemberDetails = currentActiveUser;
                 this.preparePdfDom();
@@ -1341,7 +1353,6 @@
                 }, 350);
             },
             
-            // FIXED: Dedicated Welcome Message Implementation
             sendWelcomeMessage: function() {
                 if (!currentMemberDetails || !currentMemberDetails.id) currentMemberDetails = currentActiveUser;
                 const phone = currentMemberDetails.primaryContact;
@@ -1351,7 +1362,6 @@
                 window.open(`https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(msg)}`, '_blank');
             },
 
-            // FIXED: Web Share API handling for raw PDFs + fallbacks
             sharePdfRecord: function() {
                 const btn = document.getElementById('btn-whatsapp-pdf');
                 const origText = btn.innerText;
@@ -1382,7 +1392,6 @@
                                 files: [file]
                             }).catch(console.error);
                         } else {
-                            // Fallback for native restrictions
                             const url = window.URL.createObjectURL(pdfBlob);
                             const a = document.createElement("a");
                             a.href = url; a.download = file.name;
@@ -1657,8 +1666,15 @@
                     const fName = document.getElementById('firstName').value.trim(); const lName = document.getElementById('lastName').value.trim(); const fullName = lName ? `${fName} ${lName}` : fName;
                     let finalSig = signatureHasData ? sigCanvas.toDataURL('image/jpeg', 1.0) : (IS_EDIT_MODE ? currentActiveUser.signature : '');
 
+                    // FIXED: Immediate Save and Return sequence for Edit Mode (Bypasses Payment/Step-3 entirely)
                     if (IS_EDIT_MODE) {
-                        currentActiveUser.date = document.getElementById('dateOfAdmission').value;
+                        const adDateVal = document.getElementById('dateOfAdmission').value;
+                        const parts = adDateVal.split('-'); const adDateObj = new Date(parts[2], parts[1]-1, parts[0]);
+                        const monthName = adDateObj.toLocaleString('default', { month: 'long' });
+                        const y = adDateObj.getFullYear(); const m = adDateObj.getMonth(); 
+                        let fyStart = m >= 3 ? y : y - 1; let fyString = `${fyStart}-${fyStart + 1}`;
+
+                        currentActiveUser.date = adDateVal;
                         currentActiveUser.admissionType = document.getElementById('admissionTypeSelect').value;
                         currentActiveUser.admissionCategory = document.getElementById('admissionCategory').value;
                         currentActiveUser.trainingCategory = document.getElementById('trainingCategory').value;
@@ -1669,16 +1685,19 @@
                         currentActiveUser.address = document.getElementById('address').value.trim();
                         currentActiveUser.photo = selfieData.value;
                         currentActiveUser.signature = finalSig;
+                        currentActiveUser._fy = fyString;
+                        currentActiveUser._month = monthName;
 
                         let usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
                         let idx = usersDb.findIndex(u => u.id === currentActiveUser.id);
                         if(idx !== -1) { usersDb[idx] = currentActiveUser; localStorage.setItem('revive_users_db', JSON.stringify(usersDb)); }
                         
-                        document.getElementById('sm-title').innerText = "Update Complete!";
-                        document.getElementById('generated-id').innerText = currentActiveUser.id;
-                        document.getElementById('sm-adm-actions').style.display = 'none';
-                        document.getElementById('sm-edit-actions').style.display = 'flex';
-                        document.getElementById('successModal').style.display = 'flex';
+                        document.getElementById('search-phone').value = currentActiveUser.primaryContact;
+                        
+                        alert("User details updated successfully!");
+                        
+                        // Bounce gracefully straight back to user-hub to view updated details.
+                        moduleContext.fetchUserHub();
                         return;
                     }
 
@@ -1777,8 +1796,6 @@
                 
                 document.getElementById('sm-title').innerText = "Registration Complete!";
                 document.getElementById('generated-id').innerText = currentMemberDetails.id;
-                document.getElementById('sm-edit-actions').style.display = 'none';
-                document.getElementById('sm-adm-actions').style.display = 'flex';
                 document.getElementById('successModal').style.display = 'flex';
             }
             
