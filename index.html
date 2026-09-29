@@ -121,7 +121,6 @@
         .signature-container { width: 100%; margin-top: 1rem; text-align: center; }
         .signature-pad { border: 2px solid var(--accent-orange); border-radius: 8px; background-color: #ffffff; cursor: crosshair; touch-action: none; width: 100%; max-width: 450px; height: 150px; display: block; margin: 0 auto 1rem auto; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05); }
 
-        /* Re-Admission Validation Input Layout Fix (Bulletproof Grid) */
         #reAdmissionSection { background: var(--bg-main); padding: 1.2rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px dashed var(--accent-orange); display: none; animation: fadeIn 0.3s ease; }
         .val-group { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: stretch; margin-bottom: 0.5rem; width: 100%; }
         .val-group input, .val-group button { margin: 0 !important; box-sizing: border-box; }
@@ -300,7 +299,8 @@
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
                     <h3>Fee Collection</h3>
                 </div>
-                <div class="module-card" onclick="alert('Module under construction.')">
+                <!-- ATTENDANCE MODULE LINK -->
+                <div class="module-card" onclick="appContext.switchView('attendance')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                     <h3>Attendance</h3>
                 </div>
@@ -325,6 +325,53 @@
             </div>
             <div style="text-align: center; margin-top: 3rem;">
                 <button class="btn secondary" onclick="appContext.logout()" style="font-size: 0.85rem; padding: 0.8rem 2rem;">Log Out Securely</button>
+            </div>
+        </main>
+
+        <!-- ATTENDANCE MODULE VIEW -->
+        <main id="view-attendance" class="view-section">
+            <div class="form-layout" style="max-width: 700px;">
+                <div class="module-toolbar">
+                    <button class="back-btn" onclick="appContext.goHome()" type="button">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                        Back
+                    </button>
+                    <h2 class="module-title">Daily Attendance Marker</h2>
+                </div>
+
+                <!-- Mark Attendance Form -->
+                <form id="attendanceForm" onsubmit="moduleContext.markAttendance(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Enter Phone Number or Admission ID <span class="required">*</span></label>
+                            <input type="text" id="att-input" placeholder="e.g. 9999999999 or REV-0001" required autocomplete="off">
+                        </div>
+                        <div class="form-group" style="max-width: 150px; justify-content: flex-end;">
+                            <label>&nbsp;</label>
+                            <button type="submit" class="btn primary">Mark In</button>
+                        </div>
+                    </div>
+                </form>
+
+                <div id="att-result-box" style="display:none; margin-top: 1rem; padding: 1rem; background: var(--bg-main); border-radius: 8px; border: 1px solid var(--border-color);"></div>
+
+                <!-- Attendance Log Viewer Section -->
+                <div style="margin-top: 2.5rem; border-top: 2px solid var(--border-color); padding-top: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="color: var(--accent-orange); text-transform: uppercase; font-size: 1.1rem;">Attendance Logs</h3>
+                        <input type="date" id="att-filter-date" style="max-width: 180px; padding: 0.5rem;" onchange="moduleContext.renderAttendanceLogs()">
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table" id="table-attendance">
+                            <thead>
+                                <tr><th>Time</th><th>ID</th><th>Member Name</th><th>Contact</th></tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamic logs inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </main>
 
@@ -378,7 +425,7 @@
                     </div>
                 </div>
 
-                <h3 style="color:var(--accent-orange); margin-bottom: 0.5rem;">FEE CALENDAR (<span id="hub-fy-label"></span>)</h3>
+                <h3 style="color:var(--accent-orange); margin-bottom: 0.5rem;">FEE CALENDAR & ATTENDANCE (<span id="hub-fy-label"></span>)</h3>
                 <p id="hub-instruction" style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;"></p>
                 <div class="calendar-grid" id="fee-calendar"></div>
             </div>
@@ -523,7 +570,6 @@
                             </div>
                         </div>
 
-                        <!-- Fixed Re-Admission Layout using CSS Grid -->
                         <div id="reAdmissionSection">
                             <label style="color: var(--accent-orange); margin-bottom: 0.8rem; display: block; font-weight: 800;">Validate Previous Registration</label>
                             <div class="val-group">
@@ -589,7 +635,6 @@
                         </div>
 
                         <div class="action-row">
-                            <!-- DYNAMICALLY RENAMED ON EDIT -->
                             <button type="button" id="btn-next-step" class="btn primary">Proceed to Verification →</button>
                         </div>
                     </div>
@@ -887,6 +932,7 @@
                 if(viewName === 'tariff-editor') moduleContext.initTariffEditor();
                 if(viewName === 'upi-editor') moduleContext.initUpiEditor();
                 if(viewName === 'reports') moduleContext.initReports();
+                if(viewName === 'attendance') moduleContext.initAttendanceView();
                 if(viewName !== 'admission') { IS_EDIT_MODE = false; }
             },
             goHome: function() {
@@ -991,6 +1037,117 @@
                 alert(`Tariffs for ${fy} saved.`);
             },
             
+            // =======================================================================
+            // ATTENDANCE ENGINE & LOGIC
+            // =======================================================================
+            initAttendanceView: function() {
+                const todayIso = new Date().toISOString().split('T')[0];
+                const datePicker = document.getElementById('att-filter-date');
+                if(datePicker) datePicker.value = todayIso;
+                document.getElementById('att-input').value = '';
+                document.getElementById('att-result-box').style.display = 'none';
+                this.renderAttendanceLogs();
+            },
+            markAttendance: function(e) {
+                if(e) e.preventDefault();
+                const val = document.getElementById('att-input').value.trim();
+                const resBox = document.getElementById('att-result-box');
+                resBox.style.display = 'block';
+
+                if(!val) {
+                    resBox.innerHTML = '<span style="color:var(--error-red); font-weight:bold;">Please enter a valid Phone Number or Admission ID.</span>';
+                    return;
+                }
+
+                let users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
+                // Search by admission ID or primary phone number
+                let user = users.find(u => u.id.toLowerCase() === val.toLowerCase() || u.primaryContact === val);
+
+                if(!user) {
+                    resBox.innerHTML = `<span style="color:var(--error-red); font-weight:bold;">Member not found for: "${val}". Check entry or register member first.</span>`;
+                    return;
+                }
+
+                const now = new Date();
+                const dateKey = now.toISOString().split('T')[0]; // YYYY-MM-DD
+                const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                const monthName = now.toLocaleString('default', { month: 'long' }); // e.g., September
+
+                let attDb = JSON.parse(localStorage.getItem('revive_attendance_db')) || {};
+                if(!attDb[dateKey]) attDb[dateKey] = [];
+
+                // Prevent duplicate scanning on the exact same day
+                const alreadyMarked = attDb[dateKey].some(a => a.userId === user.id);
+                if(alreadyMarked) {
+                    resBox.innerHTML = `<span style="color:var(--warning-yellow); font-weight:bold;">⚠️ Attendance already marked today for ${user.fullName} (${user.id})!</span>`;
+                    document.getElementById('att-input').value = '';
+                    return;
+                }
+
+                attDb[dateKey].push({
+                    userId: user.id,
+                    fullName: user.fullName,
+                    primaryContact: user.primaryContact,
+                    timestamp: timeStr,
+                    month: monthName
+                });
+
+                localStorage.setItem('revive_attendance_db', JSON.stringify(attDb));
+
+                resBox.innerHTML = `<span style="color:var(--success-green); font-weight:bold; font-size:1.1rem;">✔ Attendance Marked Successfully!</span><br><br><strong>Name:</strong> ${user.fullName} (${user.id})<br><strong>Time In:</strong> ${timeStr}`;
+                document.getElementById('att-input').value = '';
+                this.renderAttendanceLogs();
+            },
+            renderAttendanceLogs: function() {
+                const datePicker = document.getElementById('att-filter-date');
+                const selectedDate = datePicker ? datePicker.value : new Date().toISOString().split('T')[0];
+                
+                let attDb = JSON.parse(localStorage.getItem('revive_attendance_db')) || {};
+                let dayLogs = attDb[selectedDate] || [];
+
+                const tbody = document.querySelector('#table-attendance tbody');
+                tbody.innerHTML = '';
+
+                if(dayLogs.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No attendance recorded for this date.</td></tr>';
+                    return;
+                }
+
+                [...dayLogs].reverse().forEach(log => {
+                    tbody.innerHTML += `<tr>
+                        <td>${log.timestamp}</td>
+                        <td><strong>${log.userId}</strong></td>
+                        <td>${log.fullName}</td>
+                        <td>${log.primaryContact}</td>
+                    </tr>`;
+                });
+            },
+            
+            // Helper to get total attendance count for a specific user in a specific month/year
+            getUserMonthAttendanceCount: function(userId, monthName, fy) {
+                let attDb = JSON.parse(localStorage.getItem('revive_attendance_db')) || {};
+                let count = 0;
+                const fyStartYear = parseInt(fy.split('-')[0]);
+                const fyEndYear = parseInt(fy.split('-')[1]);
+
+                for (const dateStr in attDb) {
+                    const d = new Date(dateStr);
+                    const mName = d.toLocaleString('default', { month: 'long' });
+                    const y = d.getFullYear();
+                    const m = d.getMonth(); // 0-11
+                    
+                    // Determine financial year association (April = index 3)
+                    let recordFy = m >= 3 ? `${y}-${y+1}` : `${y-1}-${y}`;
+
+                    if (recordFy === fy && mName === monthName) {
+                        if (attDb[dateStr].some(a => a.userId === userId)) {
+                            count++;
+                        }
+                    }
+                }
+                return count;
+            },
+
             openUserSearch: function(mode) {
                 currentHubMode = mode;
                 const fySelect = document.getElementById('search-fy');
@@ -1073,26 +1230,27 @@
                         return;
                     }
 
+                    // Fetch exact captured attendance count for this member for this month
+                    const attCount = moduleContext.getUserMonthAttendanceCount(userId, month, fy);
+                    const attBadge = `<br><span style="font-size:0.7rem; background:rgba(0,0,0,0.2); padding:1px 5px; border-radius:4px;">Att: ${attCount} days</span>`;
+
                     const record = userFyData[month];
                     let statusClass = 'status-unpaid'; let displayAmt = ''; let action = '';
 
                     if (record && record.status === 'Paid') {
-                        // FIX 1: Make Paid Receipt accessible globally, regardless of Hub Mode!
                         statusClass = 'status-paid'; 
                         let payDateStr = record.lastDate ? `<br><span style="font-size:0.65rem; font-weight:normal;">Paid on: ${formatDateStr(record.lastDate)}</span>` : '';
-                        displayAmt = `Paid: ₹${record.amountPaid}${payDateStr}`; 
+                        displayAmt = `Paid: ₹${record.amountPaid}${payDateStr}${attBadge}`; 
                         action = `onclick="moduleContext.viewReceipt('${month}', '${fy}')"`;
                     } else if (record && record.status === 'Partial') {
                         statusClass = 'status-partial'; 
                         let bal = parseInt(record.totalDue) - parseInt(record.amountPaid); 
-                        displayAmt = `Paid: ₹${record.amountPaid}<br>Bal: ₹${bal}`; 
-                        // Only allow paying balance if we are in Fee mode
+                        displayAmt = `Paid: ₹${record.amountPaid}<br>Bal: ₹${bal}${attBadge}`; 
                         if (currentHubMode === 'fee') { action = `onclick="moduleContext.initPayment('${month}', '${fy}')"`; }
                     } else {
                         const monthTariff = fyTariffs[month] || { regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
                         const due = trainCat === 'Personal Training' ? monthTariff.ptFee : monthTariff.regFee;
-                        displayAmt = `Due: ₹${due}`;
-                        // Only allow creating a new payment if we are in Fee mode
+                        displayAmt = `Due: ₹${due}${attBadge}`;
                         if (currentHubMode === 'fee') { action = `onclick="moduleContext.initPayment('${month}', '${fy}')"`; }
                     }
                     
@@ -1193,7 +1351,6 @@
                 
                 try {
                     const file = new File([currentGeneratedReceiptBlob], `Receipt_${currentActiveUser.id}.jpg`, { type: 'image/jpeg' });
-                    // FIX 2: Better, more professional Fee Receipt Text
                     const msg = `Dear ${currentActiveUser.fullName},\n\nWe have successfully received your payment of *₹${document.getElementById('rcpt-paid').innerText}* for the month of *${activePaymentConfig.month}*.\n\nYour official payment receipt is attached.\n\nThank you for choosing us!\n\nBest Regards,\n*Revive Fitness Studio*\n📞 8921698044`;
                     
                     if (navigator.canShare && navigator.canShare({ files: [file] })) { 
@@ -1239,7 +1396,6 @@
                             
                             try {
                                 const file = new File([blob], `Admission_Receipt_${currentMemberDetails.id}.jpg`, { type: 'image/jpeg' });
-                                // FIX 2: Official text for the Initial Admission Receipt
                                 const msg = `Dear ${currentMemberDetails.fullName},\n\nWe have successfully received your payment of *₹${document.getElementById('rcpt-paid').innerText}* towards your Admission & Initial Fee.\n\nYour official payment receipt is attached.\n\nThank you for joining us!\n\nBest Regards,\n*Revive Fitness Studio*\n📞 8921698044`;
                                 
                                 if (navigator.canShare && navigator.canShare({ files: [file] })) { 
@@ -1354,7 +1510,6 @@
                 window.open(`https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(msg)}`, '_blank');
             },
 
-            // FIX 2: Official WhatsApp Pretext Template perfectly formatted for Admission PDF
             sharePdfRecord: function() {
                 const btn = document.getElementById('btn-whatsapp-pdf');
                 const origText = btn.innerText;
@@ -1377,7 +1532,6 @@
                         pdfWrapper.style.display = 'none'; appWrapper.style.display = 'flex';
                         btn.innerText = origText;
                         
-                        // New Official Text Layout
                         const msg = `Dear ${currentMemberDetails.fullName},\n\nWelcome to Revive Fitness Studio! 🏋️‍♂️\n\nYour admission process has been successfully completed. Please find your Official Admission Record attached/downloaded with this message.\n\n*Admission Details:*\n• ID: ${currentMemberDetails.id}\n• Category: ${currentMemberDetails.admissionCategory} - ${currentMemberDetails.trainingCategory}\n• Date: ${currentMemberDetails.date}\n\nPlease keep this document safe for future reference. We look forward to helping you achieve your fitness goals!\n\nBest Regards,\n*Revive Fitness Studio*\n📞 8921698044\n📍 Kadayil Arcade, Thanal Nagar`;
 
                         const file = new File([pdfBlob], `${currentMemberDetails.id}_Record.pdf`, { type: 'application/pdf' });
@@ -1689,7 +1843,6 @@
                         document.getElementById('search-phone').value = currentActiveUser.primaryContact;
                         
                         alert("User details updated successfully!");
-                        
                         moduleContext.fetchUserHub();
                         return;
                     }
