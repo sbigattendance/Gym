@@ -158,6 +158,12 @@
         .profile-snippet-info h3 { margin: 0 0 5px 0; color: var(--accent-orange); }
         .profile-snippet-info p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
 
+        /* Quick Action Icon Buttons */
+        .contact-action-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; background: var(--bg-panel); border: 1px solid var(--border-color); margin-left: 6px; cursor: pointer; text-decoration: none; transition: transform 0.2s; }
+        .contact-action-btn:hover { transform: scale(1.1); }
+        .contact-action-btn.call-icon { color: #007bff; }
+        .contact-action-btn.wa-icon { color: var(--success-green); }
+
         /* Report Specifics */
         .report-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
         .kpi-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; text-align: center; border-bottom: 3px solid var(--accent-orange); }
@@ -171,6 +177,7 @@
         .data-table { width: 100%; border-collapse: collapse; min-width: 600px; font-size: 0.9rem; }
         .data-table th, .data-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
         .data-table th { background-color: var(--bg-main); color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
+        .data-table tr:hover { background-color: #f1f3f5; cursor: pointer; } /* Clickable row UX cue */
         .data-table tr:last-child td { border-bottom: none; }
         .analysis-box { background: var(--bg-panel); border-left: 4px solid var(--accent-orange); padding: 1.5rem; border-radius: 4px; font-size: 0.95rem; line-height: 1.6; border-top: 1px solid var(--border-color); border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);}
 
@@ -342,9 +349,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Enter Phone Number or Admission ID <span class="required">*</span></label>
-                            <!-- LIVE TYPING PREVIEW LISTENER ADDED -->
                             <input type="text" id="att-input" placeholder="e.g. 9999999999 or REV-0001" oninput="moduleContext.previewMemberName(this.value)" required autocomplete="off">
-                            <!-- LIVE PREVIEW DISPLAY BOX -->
                             <div id="att-live-preview" style="margin-top: 6px; font-weight: 700; color: var(--accent-orange); font-size: 0.95rem;"></div>
                         </div>
                         <div class="form-group" style="max-width: 150px; justify-content: flex-end;">
@@ -364,7 +369,6 @@
                     <div class="table-responsive">
                         <table class="data-table" id="table-attendance">
                             <thead>
-                                <!-- PRIVACY ENHANCED: Contact number column removed entirely -->
                                 <tr><th>Time</th><th>ID</th><th>Member Name</th></tr>
                             </thead>
                             <tbody>
@@ -403,7 +407,7 @@
         <main id="view-user-hub" class="view-section">
             <div class="form-layout" style="max-width: 900px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="appContext.switchView('user-search')" type="button">
+                    <button class="back-btn" onclick="appContext.goHome()" type="button">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
@@ -414,7 +418,13 @@
                     <img id="hub-photo" src="" alt="User Photo">
                     <div class="profile-snippet-info" style="flex:1;">
                         <h3 id="hub-name">John Doe</h3>
-                        <p><strong id="hub-id" style="color:var(--text-main);">REV-0000</strong> | <span id="hub-phone">9999999999</span></p>
+                        <p>
+                            <strong id="hub-id" style="color:var(--text-main);">REV-0000</strong> | 
+                            <span id="hub-phone">9999999999</span>
+                            <!-- CALL & WHATSAPP ACTION BUTTON ICONS -->
+                            <a id="hub-call-btn" href="#" class="contact-action-btn call-icon" title="Call Member">📞</a>
+                            <a id="hub-wa-btn" href="#" target="_blank" class="contact-action-btn wa-icon" title="WhatsApp Member">💬</a>
+                        </p>
                         <p id="hub-details" style="margin-top:5px;">Regular - Individual</p>
                         <p id="hub-doj" style="margin-top:5px; font-weight:700; color:var(--success-green); font-size: 0.85rem;"></p>
                     </div>
@@ -460,10 +470,11 @@
                             <div class="val">₹<span id="kpi-revenue">0</span></div>
                             <span class="sub-val" id="kpi-split" style="color:var(--text-muted);">UPI: ₹0 | Cash: ₹0</span>
                         </div>
-                        <div class="kpi-card">
-                            <h4>Pending Dues</h4>
+                        <!-- INTERACTIVE PENDING DUES KPI CARD -->
+                        <div class="kpi-card" style="cursor:pointer;" onclick="moduleContext.filterReportByShortfall()" title="Click to view profiles with shortfall payments">
+                            <h4>Pending Dues (Shortfall) <span style="font-size:0.75rem; color:var(--accent-orange);">🔍 View</span></h4>
                             <div class="val" style="color:var(--error-red);">₹<span id="kpi-pending">0</span></div>
-                            <span class="sub-val" style="color:var(--text-muted);">Shortfall uncollected</span>
+                            <span class="sub-val" style="color:var(--text-muted);">Click to inspect shortfalls</span>
                         </div>
                         <div class="kpi-card">
                             <h4>New Admissions</h4>
@@ -479,7 +490,7 @@
 
                     <div class="report-section">
                         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
-                            <h3 style="margin:0; border:none;">1. New Admissions</h3>
+                            <h3 style="margin:0; border:none;">1. New Admissions (Click row to inspect profile)</h3>
                             <button class="btn secondary" onclick="moduleContext.exportTableToCSV('table-admissions', 'Admissions_Report.csv')" style="width:auto; padding:0.4rem 1rem; font-size:0.8rem;">Export CSV</button>
                         </div>
                         <div class="table-responsive">
@@ -492,7 +503,7 @@
 
                     <div class="report-section">
                         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
-                            <h3 style="margin:0; border:none;">2. Fee Collections</h3>
+                            <h3 style="margin:0; border:none;">2. Fee Collections (Click row to inspect profile)</h3>
                             <button class="btn secondary" onclick="moduleContext.exportTableToCSV('table-fees', 'Fee_Collections_Report.csv')" style="width:auto; padding:0.4rem 1rem; font-size:0.8rem;">Export CSV</button>
                         </div>
                         <div class="table-responsive">
@@ -1047,7 +1058,6 @@
                 this.renderAttendanceLogs();
             },
             
-            // FEATURE ADDITION: Real-time member name display while typing
             previewMemberName: function(val) {
                 const previewEl = document.getElementById('att-live-preview');
                 const cleanVal = val.trim();
@@ -1129,7 +1139,6 @@
                     return;
                 }
 
-                // PRIVACY ENHANCED: Contact column completely removed from HTML generation
                 [...dayLogs].reverse().forEach(log => {
                     tbody.innerHTML += `<tr>
                         <td>${log.timestamp}</td>
@@ -1173,14 +1182,15 @@
                 document.getElementById('search-title').innerText = mode === 'fee' ? "Search for Fee Collection" : "Search User Details";
                 appContext.switchView('user-search');
             },
-            fetchUserHub: function(e) {
-                if(e && e.preventDefault) e.preventDefault();
-                const phone = document.getElementById('search-phone').value;
-                const fy = document.getElementById('search-fy').value;
-                
+
+            // DIRECTLY LOAD PROFILE HUB BY PHONE NUMBER OR USER ID
+            loadProfileByPhoneOrId: function(identifier) {
                 const users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                const user = [...users].reverse().find(u => u.primaryContact === phone);
-                if(!user) { alert("User not found."); return; }
+                const user = users.find(u => u.primaryContact === identifier || u.id === identifier);
+                if(!user) { alert("User profile not found."); return; }
+
+                const fySelect = document.getElementById('search-fy');
+                const fy = fySelect ? fySelect.value : `${new Date().getFullYear()}-${new Date().getFullYear()+1}`;
                 
                 currentActiveUser = user; currentActiveUser.selectedFY = fy; 
                 
@@ -1196,25 +1206,35 @@
                 document.getElementById('hub-name').innerText = user.fullName;
                 document.getElementById('hub-id').innerText = user.id;
                 document.getElementById('hub-phone').innerText = user.primaryContact;
+
+                // INJECTED: Call & WhatsApp interactive links setup
+                const callBtn = document.getElementById('hub-call-btn');
+                const waBtn = document.getElementById('hub-wa-btn');
+                if(callBtn) callBtn.href = `tel:${user.primaryContact}`;
+                if(waBtn) waBtn.href = `https://api.whatsapp.com/send?phone=91${user.primaryContact}&text=${encodeURIComponent(`Hello ${user.firstName}, regarding your membership at Revive Fitness Studio:`)}`;
+
                 document.getElementById('hub-details').innerText = `${user.admissionCategory} - ${user.trainingCategory}`;
                 document.getElementById('hub-doj').innerText = `Date of Joining: ${user.date}`;
                 document.getElementById('hub-fy-label').innerText = fy;
                 
-                if (currentHubMode === 'fee') {
-                    document.getElementById('hub-actions').style.display = 'none';
-                    document.getElementById('hub-instruction').style.display = 'block';
-                    document.getElementById('hub-instruction').innerText = "Click on a yellow or red month to process payment. Click on green months to view receipt.";
-                } else {
-                    document.getElementById('hub-actions').style.display = 'flex';
-                    document.getElementById('hub-instruction').style.display = 'block';
-                    document.getElementById('hub-instruction').innerText = "Click on a paid green month to view the receipt.";
-                    document.getElementById('btn-hub-edit').style.display = 'flex'; 
-                    document.getElementById('btn-hub-pdf').style.display = appContext.currentRole === 'admin' ? 'flex' : 'none';
-                    document.getElementById('btn-hub-delete').style.display = appContext.currentRole === 'admin' ? 'flex' : 'none';
-                }
+                document.getElementById('hub-actions').style.display = 'flex';
+                document.getElementById('hub-instruction').style.display = 'block';
+                document.getElementById('hub-instruction').innerText = "Click on a paid green month to view the receipt.";
+                document.getElementById('btn-hub-edit').style.display = 'flex'; 
+                document.getElementById('btn-hub-pdf').style.display = appContext.currentRole === 'admin' ? 'flex' : 'none';
+                document.getElementById('btn-hub-delete').style.display = appContext.currentRole === 'admin' ? 'flex' : 'none';
                 
                 this.renderFeeCalendar(user.id, fy, user.trainingCategory, user.date);
                 appContext.switchView('user-hub');
+            },
+
+            fetchUserHub: function(e) {
+                if(e && e.preventDefault) e.preventDefault();
+                const phone = document.getElementById('search-phone').value;
+                const users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
+                const user = [...users].reverse().find(u => u.primaryContact === phone);
+                if(!user) { alert("User not found."); return; }
+                this.loadProfileByPhoneOrId(user.primaryContact);
             },
 
             renderFeeCalendar: function(userId, fy, trainCat, adDateStr) {
@@ -1584,6 +1604,50 @@
                 
                 document.getElementById('report-content').style.display = 'none';
             },
+            
+            // FEATURE ADDITION: Filter report tables specifically to show shortfalls/pending dues when clicking the KPI card
+            filterReportByShortfall: function() {
+                const fy = document.getElementById('report-fy').value;
+                const month = document.getElementById('report-month').value;
+                const payments = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
+                
+                let filteredPayments = [];
+                for (const userId in payments) {
+                    if (payments[userId][fy]) {
+                        if (month === 'All') {
+                            for (const m in payments[userId][fy]) {
+                                const p = payments[userId][fy][m];
+                                const paid = parseInt(p.amountPaid || 0);
+                                const due = parseInt(p.totalDue || 0);
+                                if (due > paid) {
+                                    filteredPayments.push({ userId, month: m, ...p });
+                                }
+                            }
+                        } else if (payments[userId][fy][month]) {
+                            const p = payments[userId][fy][month];
+                            const paid = parseInt(p.amountPaid || 0);
+                            const due = parseInt(p.totalDue || 0);
+                            if (due > paid) {
+                                filteredPayments.push({ userId, month, ...p });
+                            }
+                        }
+                    }
+                }
+
+                const feeTbody = document.querySelector('#table-fees tbody');
+                feeTbody.innerHTML = '';
+                if(filteredPayments.length === 0) {
+                    feeTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No shortfall/pending dues found for this period! Excellent.</td></tr>';
+                    return;
+                }
+                filteredPayments.forEach(p => {
+                    const dateStr = p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : 'N/A';
+                    const pending = parseInt(p.totalDue || 0) - parseInt(p.amountPaid || 0);
+                    feeTbody.innerHTML += `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${dateStr}</td><td><strong>${p.userId}</strong></td><td>${p.month}</td><td style="color:green; font-weight:bold;">₹${p.amountPaid}</td><td style="color:red; font-weight:bold;">₹${pending}</td><td>${p.method || 'CASH'}</td></tr>`;
+                });
+                alert("Report filtered to show pending shortfalls. Click any row to view that member's profile.");
+            },
+
             generateReport: function() {
                 const fy = document.getElementById('report-fy').value;
                 const month = document.getElementById('report-month').value;
@@ -1630,20 +1694,22 @@
                 document.getElementById('kpi-admissions').innerText = filteredAdmissions.length;
                 document.getElementById('kpi-fees').innerText = filteredPayments.length;
 
+                // FEATURE ADDITION: Clickable admission rows opening profile hub directly
                 const admTbody = document.querySelector('#table-admissions tbody');
                 admTbody.innerHTML = '';
                 if(filteredAdmissions.length === 0) admTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No admissions found for this period.</td></tr>';
                 filteredAdmissions.forEach(u => {
-                    admTbody.innerHTML += `<tr><td>${u.date}</td><td><strong>${u.id}</strong></td><td>${u.fullName}</td><td>${u.primaryContact}</td><td>${u.admissionCategory}</td></tr>`;
+                    admTbody.innerHTML += `<tr onclick="moduleContext.loadProfileByPhoneOrId('${u.id}')" title="Click to view member profile"><td>${u.date}</td><td><strong>${u.id}</strong></td><td>${u.fullName}</td><td>${u.primaryContact}</td><td>${u.admissionCategory}</td></tr>`;
                 });
 
+                // FEATURE ADDITION: Clickable fee collection rows opening profile hub directly
                 const feeTbody = document.querySelector('#table-fees tbody');
                 feeTbody.innerHTML = '';
                 if(filteredPayments.length === 0) feeTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No fee collections found for this period.</td></tr>';
                 filteredPayments.forEach(p => {
                     const dateStr = p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : 'N/A';
                     const pending = parseInt(p.totalDue || 0) - parseInt(p.amountPaid || 0);
-                    feeTbody.innerHTML += `<tr><td>${dateStr}</td><td><strong>${p.userId}</strong></td><td>${p.month}</td><td style="color:green; font-weight:bold;">₹${p.amountPaid}</td><td style="color:${pending > 0 ? 'red' : 'green'};">₹${pending}</td><td>${p.method || 'CASH'}</td></tr>`;
+                    feeTbody.innerHTML += `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${dateStr}</td><td><strong>${p.userId}</strong></td><td>${p.month}</td><td style="color:green; font-weight:bold;">₹${p.amountPaid}</td><td style="color:${pending > 0 ? 'red' : 'green'};">₹${pending}</td><td>${p.method || 'CASH'}</td></tr>`;
                 });
 
                 const prevFyStart = parseInt(fy.split('-')[0]) - 1;
@@ -1855,7 +1921,7 @@
                         document.getElementById('search-phone').value = currentActiveUser.primaryContact;
                         
                         alert("User details updated successfully!");
-                        moduleContext.fetchUserHub();
+                        moduleContext.loadProfileByPhoneOrId(currentActiveUser.id);
                         return;
                     }
 
