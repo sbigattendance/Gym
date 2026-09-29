@@ -280,12 +280,10 @@
                     </button>
                     <h2 class="module-title" id="login-title">Login</h2>
                 </div>
-                <!-- FIXED: 'return false;' prevents native form hijacking without crashing on undefined event -->
                 <form id="loginForm" onsubmit="appContext.handleLogin(); return false;">
                     <div class="form-group">
                         <input type="password" id="pin-input" class="pin-input" inputmode="numeric" required autocomplete="off">
                     </div>
-                    <!-- FIXED: explicit appContext reference -->
                     <button type="button" onclick="appContext.handleLogin()" class="btn primary" style="margin-top:1rem;">Verify & Access</button>
                 </form>
             </div>
@@ -340,7 +338,6 @@
                     </button>
                     <h2 class="module-title" id="search-title">Search User</h2>
                 </div>
-                <!-- FIXED: 'return false;' prevents native form hijacking without crashing -->
                 <form id="userSearchForm" onsubmit="moduleContext.fetchUserHub(event); return false;">
                     <div class="form-group">
                         <label>Member Phone Number <span class="required">*</span></label>
@@ -709,21 +706,23 @@
             </div>
         </div>
 
+        <!-- FIXED: ADMISSION SUCCESS MODAL WITH FULLY FUNCTIONAL EVENT HANDLERS -->
         <div id="successModal" class="modal">
             <div class="modal-content">
                 <img src="logo.png" alt="REVIVE FITNESS STUDIO" style="height: 45px; margin-bottom: 1.5rem;" onerror="this.style.display='none'">
                 <h2 class="orange-text" id="sm-title">Registration Complete!</h2>
                 <div class="admission-badge" id="generated-id">REV-0000</div>
                 <div class="modal-actions" id="sm-adm-actions">
-                    <button id="btn-download-pdf" class="btn primary">1. Download PDF Record</button>
-                    <button id="btn-whatsapp-welcome" class="btn whatsapp">2. Send Welcome Message</button>
-                    <button id="btn-whatsapp-pdf" class="btn whatsapp">3. Share PDF Record</button>
+                    <button id="btn-download-pdf" class="btn primary" onclick="moduleContext.regeneratePdf()">1. Download PDF Record</button>
+                    <button id="btn-whatsapp-welcome" class="btn whatsapp" onclick="moduleContext.sendWelcomeMessage()">2. Send Welcome Message</button>
+                    <button id="btn-whatsapp-pdf" class="btn whatsapp" onclick="moduleContext.sharePdfRecord()">3. Share PDF Record</button>
+                    <button id="btn-share-adm-receipt" class="btn whatsapp" onclick="moduleContext.shareAdmissionReceipt()">4. Share Payment Receipt</button>
                 </div>
                 <div class="modal-actions" id="sm-edit-actions" style="display:none;">
                     <button class="btn primary" onclick="appContext.goHome()">Return to Dashboard</button>
                 </div>
                 <div class="modal-actions">
-                    <button class="btn secondary" onclick="appContext.closeModal()">Close</button>
+                    <button class="btn secondary" onclick="appContext.closeModal()">Close Window</button>
                 </div>
             </div>
         </div>
@@ -734,7 +733,7 @@
                 <h2 class="orange-text">Payment Recorded!</h2>
                 <p style="margin-bottom: 1.5rem;">Receipt has been successfully generated.</p>
                 <div class="modal-actions">
-                    <button onclick="moduleContext.shareReceipt('success')" class="btn whatsapp">Share Receipt Image</button>
+                    <button id="btn-share-receipt" onclick="moduleContext.shareReceipt('success')" class="btn whatsapp">Share Receipt Image</button>
                     <button class="btn secondary" onclick="appContext.switchView('user-hub')">Return to Profile</button>
                 </div>
             </div>
@@ -745,7 +744,7 @@
                 <h2 class="orange-text">Payment Receipt</h2>
                 <p style="margin-bottom: 1.5rem;">Receipt for <span id="vr-month-label" style="font-weight:bold;"></span></p>
                 <div class="modal-actions">
-                    <button onclick="moduleContext.shareReceipt('vr')" class="btn whatsapp">Share Receipt via WhatsApp</button>
+                    <button id="btn-vr-share" onclick="moduleContext.shareReceipt('vr')" class="btn whatsapp">Share Receipt via WhatsApp</button>
                     <button class="btn secondary" onclick="document.getElementById('viewReceiptModal').style.display='none'">Close</button>
                 </div>
             </div>
@@ -881,7 +880,6 @@
             return age >= 0 ? age : '';
         }
 
-        // FIXED: Context loss protection ('this' -> 'appContext')
         var appContext = {
             currentRole: null, pendingRole: null, 
             switchView: function(viewName) {
@@ -906,21 +904,10 @@
                 appContext.switchView('login');
             },
             handleLogin: function() {
-                // FIXED: .trim() to wipe out mobile keyboard autospacing
                 const pin = document.getElementById('pin-input').value.trim();
-                
-                // FIXED: Strict appContext binding
-                if (appContext.pendingRole === 'staff' && pin === '123456') { 
-                    appContext.currentRole = 'staff'; 
-                    appContext.loadDashboard('STAFF'); 
-                } 
-                else if (appContext.pendingRole === 'admin' && pin === '1234') { 
-                    appContext.currentRole = 'admin'; 
-                    appContext.loadDashboard('ADMIN'); 
-                } 
-                else { 
-                    alert('Invalid PIN. Please try again.'); 
-                }
+                if (appContext.pendingRole === 'staff' && pin === '123456') { appContext.currentRole = 'staff'; appContext.loadDashboard('STAFF'); } 
+                else if (appContext.pendingRole === 'admin' && pin === '1234') { appContext.currentRole = 'admin'; appContext.loadDashboard('ADMIN'); } 
+                else { alert('Invalid PIN. Please try again.'); }
             },
             loadDashboard: function(roleTitle) {
                 document.getElementById('dashboard-title').innerHTML = `${roleTitle} <span>PORTAL</span>`;
@@ -1175,6 +1162,7 @@
                 document.getElementById('vr-month-label').innerText = `${month} (${fy})`;
                 this.generateReceiptImage(record.amountPaid, 0, record.method || "N/A", 'view', record.lastDate);
             },
+            
             generateReceiptImage: function(paidAmt, newBal, mode, triggerFlow, overrideDate) {
                 const dIso = overrideDate || new Date().toISOString();
                 const dStr = new Date(dIso).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
@@ -1198,18 +1186,80 @@
                     });
                 }, 300);
             },
+            
+            // FIXED: Bulletproof Receipt Sharing Fallback logic built-in for iOS/Android restrictions
             shareReceipt: async function(source = 'success') {
                 const btnId = source === 'vr' ? 'btn-vr-share' : 'btn-share-receipt';
                 const modalId = source === 'vr' ? 'viewReceiptModal' : 'receiptSuccessModal';
                 const btn = document.getElementById(btnId); btn.innerText = "Processing...";
+                
                 try {
                     const file = new File([currentGeneratedReceiptBlob], `Receipt_${currentActiveUser.id}.jpg`, { type: 'image/jpeg' });
                     const msg = `Dear ${currentActiveUser.fullName},\n\nPayment of ₹${document.getElementById('rcpt-paid').innerText} successful for the month of ${activePaymentConfig.month}.\n\nThank you!\n- Revive Fitness Studio`;
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ title: 'Payment Receipt', text: msg, files: [file] }); } 
-                    else { alert("Native share unsupported. Opening WhatsApp."); window.open(`https://api.whatsapp.com/send?phone=91${currentActiveUser.primaryContact}&text=${encodeURIComponent(msg)}`, '_blank'); }
+                    
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) { 
+                        await navigator.share({ title: 'Payment Receipt', text: msg, files: [file] }); 
+                    } 
+                    else { 
+                        const url = window.URL.createObjectURL(currentGeneratedReceiptBlob);
+                        const a = document.createElement("a");
+                        a.href = url; a.download = file.name;
+                        document.body.appendChild(a); a.click(); document.body.removeChild(a); window.URL.revokeObjectURL(url);
+                        
+                        alert("Direct image sharing unsupported on this browser. The receipt has been safely downloaded. Opening WhatsApp now so you can attach it manually!"); 
+                        window.open(`https://api.whatsapp.com/send?phone=91${currentActiveUser.primaryContact}&text=${encodeURIComponent(msg)}`, '_blank'); 
+                    }
                 } catch(e) { console.error(e); }
                 finally { btn.innerText = source === 'vr' ? "Share Receipt via WhatsApp" : "Share Receipt Image"; document.getElementById(modalId).style.display = 'none'; }
             },
+
+            // FIXED: Built out dedicated Initial Admission Receipt generator
+            shareAdmissionReceipt: function() {
+                const btn = document.getElementById('btn-share-adm-receipt');
+                btn.innerText = "Generating...";
+                
+                if (!currentMemberDetails || !currentMemberDetails.id) currentMemberDetails = currentActiveUser;
+
+                document.getElementById('rcpt-name').innerText = currentMemberDetails.fullName; 
+                document.getElementById('rcpt-id').innerText = currentMemberDetails.id;
+                document.getElementById('rcpt-phone').innerText = currentMemberDetails.primaryContact; 
+                document.getElementById('rcpt-month').innerText = `Admission + ${currentMemberDetails._month}`;
+                document.getElementById('rcpt-paid').innerText = calculatedTotalFee || document.getElementById('calc-total-fee').innerText; 
+                document.getElementById('rcpt-balance').innerText = "0";
+                document.getElementById('rcpt-mode').innerText = document.getElementById('paymentMethod') ? document.getElementById('paymentMethod').value : 'CASH'; 
+                document.getElementById('rcpt-date').innerText = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+                const wrapper = document.getElementById('receipt-render-zone'); 
+                const target = document.getElementById('receipt-template');
+                wrapper.style.left = '0'; wrapper.style.opacity = '1';
+
+                setTimeout(() => {
+                    html2canvas(target, { scale: 2 }).then(canvas => {
+                        canvas.toBlob(async blob => {
+                            wrapper.style.left = '-9999px'; wrapper.style.opacity = '0';
+                            btn.innerText = "4. Share Payment Receipt";
+                            
+                            try {
+                                const file = new File([blob], `Admission_Receipt_${currentMemberDetails.id}.jpg`, { type: 'image/jpeg' });
+                                const msg = `Dear ${currentMemberDetails.fullName},\n\nPayment of ₹${document.getElementById('rcpt-paid').innerText} successful for Admission & Initial Fee.\n\nThank you!\n- Revive Fitness Studio`;
+                                
+                                if (navigator.canShare && navigator.canShare({ files: [file] })) { 
+                                    await navigator.share({ title: 'Admission Receipt', text: msg, files: [file] }); 
+                                } else { 
+                                    const url = window.URL.createObjectURL(blob);
+                                    const a = document.createElement("a");
+                                    a.href = url; a.download = file.name;
+                                    document.body.appendChild(a); a.click(); document.body.removeChild(a); window.URL.revokeObjectURL(url);
+                                    
+                                    alert("Direct image sharing unsupported. The receipt has been safely downloaded. Opening WhatsApp now so you can attach it manually!");
+                                    window.open(`https://api.whatsapp.com/send?phone=91${currentMemberDetails.primaryContact}&text=${encodeURIComponent(msg)}`, '_blank'); 
+                                }
+                            } catch(e) { console.error(e); }
+                        }, 'image/jpeg', 0.95);
+                    });
+                }, 300);
+            },
+
             editUser: function() {
                 IS_EDIT_MODE = true; const u = currentActiveUser;
                 document.getElementById('form-main-title').innerText = "Edit Member Details";
@@ -1247,24 +1297,40 @@
                     alert("User deleted."); appContext.goHome();
                 }
             },
-            regeneratePdf: function() {
-                currentMemberDetails = currentActiveUser;
+            
+            // FIXED: Abstracted PDF DOM setup so it can be reused for Share and Download
+            preparePdfDom: function() {
                 if(!currentMemberDetails.photo) currentMemberDetails.photo = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; 
                 if(!currentMemberDetails.signature) currentMemberDetails.signature = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
                 const now = new Date(); const timestampStr = now.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
-                document.getElementById('pdf-id').innerText = currentMemberDetails.id; document.getElementById('pdf-date').innerText = currentMemberDetails.date;
-                document.getElementById('pdf-photo').src = currentMemberDetails.photo; document.getElementById('pdf-name').innerText = currentMemberDetails.fullName;
+                document.getElementById('pdf-id').innerText = currentMemberDetails.id; 
+                document.getElementById('pdf-date').innerText = currentMemberDetails.date;
+                document.getElementById('pdf-photo').src = currentMemberDetails.photo; 
+                document.getElementById('pdf-name').innerText = currentMemberDetails.fullName;
                 document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType || 'N/A'} - ${currentMemberDetails.admissionCategory}`;
                 document.getElementById('pdf-training-category').innerText = currentMemberDetails.trainingCategory;
-                document.getElementById('pdf-contact1').innerText = currentMemberDetails.primaryContact; document.getElementById('pdf-contact2').innerText = currentMemberDetails.alternateContact || 'N/A';
-                document.getElementById('pdf-dob-age').innerText = `${currentMemberDetails.dob || 'N/A'}`; document.getElementById('pdf-address').innerText = currentMemberDetails.address;
+                document.getElementById('pdf-contact1').innerText = currentMemberDetails.primaryContact; 
+                document.getElementById('pdf-contact2').innerText = currentMemberDetails.alternateContact || 'N/A';
+                document.getElementById('pdf-dob-age').innerText = `${currentMemberDetails.dob || 'N/A'}`; 
+                document.getElementById('pdf-address').innerText = currentMemberDetails.address;
                 
-                const sigImgEl = document.getElementById('pdf-member-sig'); sigImgEl.src = currentMemberDetails.signature; sigImgEl.style.display = 'inline-block';
-                document.getElementById('member-verified').innerText = `+91 ${currentMemberDetails.primaryContact}`; document.getElementById('member-timestamp').innerText = timestampStr;
-                document.getElementById('member-location').innerText = "System Generated Copy"; document.getElementById('official-timestamp').innerText = timestampStr;
+                const sigImgEl = document.getElementById('pdf-member-sig'); 
+                sigImgEl.src = currentMemberDetails.signature; sigImgEl.style.display = 'inline-block';
+                document.getElementById('member-verified').innerText = `+91 ${currentMemberDetails.primaryContact}`; 
+                document.getElementById('member-timestamp').innerText = timestampStr;
+                document.getElementById('member-location').innerText = "System Generated Copy"; 
+                document.getElementById('official-timestamp').innerText = timestampStr;
+            },
 
-                const appWrapper = document.getElementById('app-wrapper'); const pdfWrapper = document.getElementById('pdf-template-wrapper'); const element = document.getElementById('pdf-template');
+            // FIXED: Download Logic Built Out natively
+            regeneratePdf: function() {
+                if (!currentMemberDetails || !currentMemberDetails.id) currentMemberDetails = currentActiveUser;
+                this.preparePdfDom();
+
+                const appWrapper = document.getElementById('app-wrapper'); 
+                const pdfWrapper = document.getElementById('pdf-template-wrapper'); 
+                const element = document.getElementById('pdf-template');
                 window.scrollTo(0, 0); appWrapper.style.display = 'none'; pdfWrapper.style.display = 'flex';
 
                 setTimeout(() => {
@@ -1272,6 +1338,61 @@
                         margin: 0, filename: `${currentMemberDetails.id}_Copy.pdf`, image: { type: 'jpeg', quality: 1.0 },
                         html2canvas: { scale: 2, useCORS: true, scrollY: 0 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                     }).from(element).save().then(() => { pdfWrapper.style.display = 'none'; appWrapper.style.display = 'flex'; });
+                }, 350);
+            },
+            
+            // FIXED: Dedicated Welcome Message Implementation
+            sendWelcomeMessage: function() {
+                if (!currentMemberDetails || !currentMemberDetails.id) currentMemberDetails = currentActiveUser;
+                const phone = currentMemberDetails.primaryContact;
+                const name = currentMemberDetails.firstName;
+                const id = currentMemberDetails.id;
+                const msg = `Welcome to Revive Fitness Studio, ${name}!\n\nYour admission is confirmed.\nAdmission ID: ${id}\n\nWe are excited to help you achieve your fitness goals. Let's get started!`;
+                window.open(`https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(msg)}`, '_blank');
+            },
+
+            // FIXED: Web Share API handling for raw PDFs + fallbacks
+            sharePdfRecord: function() {
+                const btn = document.getElementById('btn-whatsapp-pdf');
+                const origText = btn.innerText;
+                btn.innerText = "Processing PDF...";
+                
+                if (!currentMemberDetails || !currentMemberDetails.id) currentMemberDetails = currentActiveUser;
+                this.preparePdfDom();
+                
+                const appWrapper = document.getElementById('app-wrapper'); 
+                const pdfWrapper = document.getElementById('pdf-template-wrapper'); 
+                const element = document.getElementById('pdf-template');
+                
+                window.scrollTo(0, 0); appWrapper.style.display = 'none'; pdfWrapper.style.display = 'flex';
+
+                setTimeout(() => {
+                    html2pdf().set({
+                        margin: 0, filename: `${currentMemberDetails.id}_Record.pdf`, image: { type: 'jpeg', quality: 1.0 },
+                        html2canvas: { scale: 2, useCORS: true, scrollY: 0 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                    }).from(element).output('blob').then(function (pdfBlob) {
+                        pdfWrapper.style.display = 'none'; appWrapper.style.display = 'flex';
+                        btn.innerText = origText;
+                        
+                        const file = new File([pdfBlob], `${currentMemberDetails.id}_Record.pdf`, { type: 'application/pdf' });
+                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                            navigator.share({
+                                title: 'Revive Fitness - Admission Record',
+                                text: `Hi ${currentMemberDetails.firstName}, attached is your official admission record.`,
+                                files: [file]
+                            }).catch(console.error);
+                        } else {
+                            // Fallback for native restrictions
+                            const url = window.URL.createObjectURL(pdfBlob);
+                            const a = document.createElement("a");
+                            a.href = url; a.download = file.name;
+                            document.body.appendChild(a); a.click(); document.body.removeChild(a); window.URL.revokeObjectURL(url);
+                            
+                            const msg = `Hi ${currentMemberDetails.firstName}, your admission record has been safely generated.`;
+                            alert("Native file sharing is unsupported on this device/browser. The PDF has been safely downloaded. Opening WhatsApp now so you can attach it manually!");
+                            window.open(`https://api.whatsapp.com/send?phone=91${currentMemberDetails.primaryContact}&text=${encodeURIComponent(msg)}`, '_blank'); 
+                        }
+                    });
                 }, 350);
             },
 
@@ -1445,16 +1566,13 @@
             }
         };
 
-        // Date Formatting Hook (Global accessible to listeners)
         function fmtDt(e) {
             let v = e.target.value.replace(/\D/g, ''); if(v.length>8) v=v.slice(0,8);
             if(v.length>=5) e.target.value=`${v.slice(0,2)}-${v.slice(2,4)}-${v.slice(4)}`; else if(v.length>=3) e.target.value=`${v.slice(0,2)}-${v.slice(2)}`;
         }
 
-        // BIND CORE DOM EVENTS
         document.addEventListener('DOMContentLoaded', () => {
 
-            // Date Events Setup
             const dobInp = document.getElementById('dob'); 
             const dtInp = document.getElementById('dateOfAdmission'); 
             const ageInp = document.getElementById('age');
@@ -1479,7 +1597,6 @@
                 });
             }
 
-            // CAMERA LOGIC
             const video = document.getElementById('camera-stream'); const canvas = document.getElementById('canvas-snapshot'); const preview = document.getElementById('selfie-preview');
             const btnStart = document.getElementById('btn-start-camera'); const btnSwitch = document.getElementById('btn-switch-camera'); const btnCapture = document.getElementById('btn-capture');
             const btnRetake = document.getElementById('btn-retake'); const selfieData = document.getElementById('selfie-data');
@@ -1505,7 +1622,6 @@
             });
             if(btnRetake) btnRetake.addEventListener('click', () => { selfieData.value = ''; btnRetake.style.display = 'none'; startCamera(); });
 
-            // SIGNATURE PAD LOGIC
             const sigCanvas = document.getElementById('signature-pad'); 
             if(sigCanvas) {
                 const sigCtx = sigCanvas.getContext('2d');
@@ -1522,7 +1638,6 @@
                 sigCanvas.addEventListener('mousedown', startDraw); sigCanvas.addEventListener('mousemove', draw); sigCanvas.addEventListener('mouseup', endDraw); sigCanvas.addEventListener('mouseout', endDraw);
                 sigCanvas.addEventListener('touchstart', startDraw, {passive: false}); sigCanvas.addEventListener('touchmove', draw, {passive: false}); sigCanvas.addEventListener('touchend', endDraw);
 
-                // FORM MULTI-STEP LOGIC
                 const step1 = document.getElementById('step-1'); const step2 = document.getElementById('step-2'); const step3 = document.getElementById('step-3');
                 
                 const btnNext = document.getElementById('btn-next-step');
