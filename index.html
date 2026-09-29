@@ -369,7 +369,6 @@
                         <h3 id="hub-name">John Doe</h3>
                         <p><strong id="hub-id" style="color:var(--text-main);">REV-0000</strong> | <span id="hub-phone">9999999999</span></p>
                         <p id="hub-details" style="margin-top:5px;">Regular - Individual</p>
-                        <!-- ADDED DATE OF JOINING VISUAL -->
                         <p id="hub-doj" style="margin-top:5px; font-weight:700; color:var(--success-green); font-size: 0.85rem;"></p>
                     </div>
                     <div id="hub-actions" style="display:flex; flex-direction:column; gap:0.5rem; width:100%; max-width:200px;">
@@ -807,7 +806,7 @@
                     <li><strong>It is mandatory to use a towel during practice. Practice will not be allowed without a towel.</strong><em>നിർബന്ധമായും ടവ്വൽ ഉപയോഗിച്ച് പ്രാക്ടീസ് ചെയ്യുക. ടവ്വൽ ഇല്ലാത്തപക്ഷം പ്രാക്ടീസ് ചെയ്യാൻ അനുവദിക്കുന്നതല്ല.</em></li>
                     <li><strong>Workout using a t-shirt and track pants.</strong><em>ടീഷർട്ട്, ട്രാക്ക് പാന്റ് എന്നിവ ഉപയോഗിച്ച് വർക്കൗട്ട് ചെയ്യുക.</em></li>
                     <li><strong>If absent continuously for 6 months, readmission must be taken.</strong><em>തുടർച്ചയായി 6 മാസം വരാതിരുന്നാൽ തുടർന്ന് റീ അഡ്മിഷൻ എടുക്കേണ്ടി വരുന്നതാണ്.</em></li>
-                    <li><strong>Do not enter the club under the influence of alcohol or drugs. If found, membership will be cancelled.</strong><em>ലഹരി കഴിച്ചുകൊണ്ട് ക്ലബ്ബിൽ പ്രവേശിക്കാൻ പാടില്ല. അങ്ങനെ കണ്ടെത്തിയാൽ അംഗത്വം গঠন റദ്ദ് ചെയ്യുന്നതായിരിക്കും.</em></li>
+                    <li><strong>Do not enter the club under the influence of alcohol or drugs. If found, membership will be cancelled.</strong><em>ലഹരി കഴിച്ചുകൊണ്ട് ക്ലബ്ബിൽ പ്രവേശിക്കാൻ പാടില്ല. അങ്ങനെ കണ്ടെത്തിയാൽ അംഗത്വം റദ്ദ് ചെയ്യുന്നതായിരിക്കും.</em></li>
                     <li><strong>Management is not responsible for any accidents during training.</strong><em>പരിശീലനത്തിനിടയിൽ ഉണ്ടാകുന്ന അത്യാഹിതങ്ങൾക്ക് മാനേജ്മെന്റിന് യാതൊരു ഉത്തരവാദിത്വവും ഉണ്ടായിരിക്കുന്നതല്ല.</em></li>
                     <li><strong>Members are fully responsible for any damages caused to the club by them.</strong><em>അംഗങ്ങൾമൂലം ക്ലബ്ബിൽ ഉണ്ടാകുന്ന നാശനഷ്ടങ്ങളുടെ പൂർണ്ണ ഉത്തരവാദിത്വം അതത് അംഗങ്ങൾക്ക് തന്നെയായിരിക്കും.</em></li>
                     <li><strong>Those with any confirmed medical conditions must produce a full medical clearance certificate from a doctor.</strong><em>വൈദ്യശാസ്ത്രപരമായ ഏതെങ്കിലും രോഗം ഉള്ളതായി സ്ഥിരീകരിക്കപ്പെട്ടിട്ടുള്ളവർ ഡോക്ടറുടെ പൂർണ്ണ ആരോഗ്യ സർട്ടിഫിക്കറ്റ് ഹാജരാക്കേണ്ടതാണ്.</em></li>
@@ -920,7 +919,6 @@
                 document.getElementById('step-1-ind').innerText = "Step 1 of 3: Member Details";
                 document.getElementById('step-2-ind').innerText = "Step 2 of 3: Digital Verification";
                 
-                // Show Step 3 indicator naturally
                 document.getElementById('btn-next-step').innerText = "Proceed to Verification →";
                 document.getElementById('btn-next-step-2').innerText = "Proceed to Payment →";
                 
@@ -1029,16 +1027,13 @@
                 document.getElementById('hub-id').innerText = user.id;
                 document.getElementById('hub-phone').innerText = user.primaryContact;
                 document.getElementById('hub-details').innerText = `${user.admissionCategory} - ${user.trainingCategory}`;
-                
-                // INJECTED: Show exact Date of Joining logically on the profile
                 document.getElementById('hub-doj').innerText = `Date of Joining: ${user.date}`;
-                
                 document.getElementById('hub-fy-label').innerText = fy;
                 
                 if (currentHubMode === 'fee') {
                     document.getElementById('hub-actions').style.display = 'none';
                     document.getElementById('hub-instruction').style.display = 'block';
-                    document.getElementById('hub-instruction').innerText = "Click on a yellow or red month to process payment.";
+                    document.getElementById('hub-instruction').innerText = "Click on a yellow or red month to process payment. Click on green months to view receipt.";
                 } else {
                     document.getElementById('hub-actions').style.display = 'flex';
                     document.getElementById('hub-instruction').style.display = 'block';
@@ -1051,6 +1046,7 @@
                 this.renderFeeCalendar(user.id, fy, user.trainingCategory, user.date);
                 appContext.switchView('user-hub');
             },
+
             renderFeeCalendar: function(userId, fy, trainCat, adDateStr) {
                 const grid = document.getElementById('fee-calendar'); grid.innerHTML = '';
                 const paymentsDb = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
@@ -1080,30 +1076,26 @@
                     const record = userFyData[month];
                     let statusClass = 'status-unpaid'; let displayAmt = ''; let action = '';
 
-                    if (currentHubMode === 'fee') {
-                        action = `onclick="moduleContext.initPayment('${month}', '${fy}')"`;
-                    }
-
-                    if (record) {
-                        if (record.status === 'Paid') { 
-                            statusClass = 'status-paid'; 
-                            let payDateStr = record.lastDate ? `<br><span style="font-size:0.65rem; font-weight:normal;">Paid on: ${formatDateStr(record.lastDate)}</span>` : '';
-                            displayAmt = `Paid: ₹${record.amountPaid}${payDateStr}`; 
-                            if (currentHubMode === 'details') { action = `onclick="moduleContext.viewReceipt('${month}', '${fy}')"`; }
-                            else { action = ''; }
-                        } 
-                        else if (record.status === 'Partial') { 
-                            statusClass = 'status-partial'; 
-                            let bal = parseInt(record.totalDue) - parseInt(record.amountPaid); 
-                            displayAmt = `Paid: ₹${record.amountPaid}<br>Bal: ₹${bal}`; 
-                            if (currentHubMode === 'details') { action = ''; }
-                        }
+                    if (record && record.status === 'Paid') {
+                        // FIX 1: Make Paid Receipt accessible globally, regardless of Hub Mode!
+                        statusClass = 'status-paid'; 
+                        let payDateStr = record.lastDate ? `<br><span style="font-size:0.65rem; font-weight:normal;">Paid on: ${formatDateStr(record.lastDate)}</span>` : '';
+                        displayAmt = `Paid: ₹${record.amountPaid}${payDateStr}`; 
+                        action = `onclick="moduleContext.viewReceipt('${month}', '${fy}')"`;
+                    } else if (record && record.status === 'Partial') {
+                        statusClass = 'status-partial'; 
+                        let bal = parseInt(record.totalDue) - parseInt(record.amountPaid); 
+                        displayAmt = `Paid: ₹${record.amountPaid}<br>Bal: ₹${bal}`; 
+                        // Only allow paying balance if we are in Fee mode
+                        if (currentHubMode === 'fee') { action = `onclick="moduleContext.initPayment('${month}', '${fy}')"`; }
                     } else {
                         const monthTariff = fyTariffs[month] || { regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
                         const due = trainCat === 'Personal Training' ? monthTariff.ptFee : monthTariff.regFee;
                         displayAmt = `Due: ₹${due}`;
-                        if (currentHubMode === 'details') { action = ''; }
+                        // Only allow creating a new payment if we are in Fee mode
+                        if (currentHubMode === 'fee') { action = `onclick="moduleContext.initPayment('${month}', '${fy}')"`; }
                     }
+                    
                     grid.innerHTML += `<div class="cal-month ${statusClass}" ${action}><h4>${month}</h4><p>${displayAmt}</p></div>`;
                 });
             },
@@ -1201,7 +1193,8 @@
                 
                 try {
                     const file = new File([currentGeneratedReceiptBlob], `Receipt_${currentActiveUser.id}.jpg`, { type: 'image/jpeg' });
-                    const msg = `Dear ${currentActiveUser.fullName},\n\nPayment of ₹${document.getElementById('rcpt-paid').innerText} successful for the month of ${activePaymentConfig.month}.\n\nThank you!\n- Revive Fitness Studio`;
+                    // FIX 2: Better, more professional Fee Receipt Text
+                    const msg = `Dear ${currentActiveUser.fullName},\n\nWe have successfully received your payment of *₹${document.getElementById('rcpt-paid').innerText}* for the month of *${activePaymentConfig.month}*.\n\nYour official payment receipt is attached.\n\nThank you for choosing us!\n\nBest Regards,\n*Revive Fitness Studio*\n📞 8921698044`;
                     
                     if (navigator.canShare && navigator.canShare({ files: [file] })) { 
                         await navigator.share({ title: 'Payment Receipt', text: msg, files: [file] }); 
@@ -1246,7 +1239,8 @@
                             
                             try {
                                 const file = new File([blob], `Admission_Receipt_${currentMemberDetails.id}.jpg`, { type: 'image/jpeg' });
-                                const msg = `Dear ${currentMemberDetails.fullName},\n\nPayment of ₹${document.getElementById('rcpt-paid').innerText} successful for Admission & Initial Fee.\n\nThank you!\n- Revive Fitness Studio`;
+                                // FIX 2: Official text for the Initial Admission Receipt
+                                const msg = `Dear ${currentMemberDetails.fullName},\n\nWe have successfully received your payment of *₹${document.getElementById('rcpt-paid').innerText}* towards your Admission & Initial Fee.\n\nYour official payment receipt is attached.\n\nThank you for joining us!\n\nBest Regards,\n*Revive Fitness Studio*\n📞 8921698044`;
                                 
                                 if (navigator.canShare && navigator.canShare({ files: [file] })) { 
                                     await navigator.share({ title: 'Admission Receipt', text: msg, files: [file] }); 
@@ -1269,14 +1263,12 @@
                 IS_EDIT_MODE = true; const u = currentActiveUser;
                 document.getElementById('form-main-title').innerText = "Edit Member Details";
                 
-                // FIXED: Reformat layout to accurately show a 2-step process for edits
                 document.getElementById('step-1-ind').innerText = "Step 1 of 2: Update Details";
                 document.getElementById('step-2-ind').innerText = "Step 2 of 2: Update Verification";
                 
                 document.getElementById('btn-next-step').innerText = "Proceed to Verification →";
                 document.getElementById('btn-next-step-2').innerText = "Save Changes";
                 
-                // Clear any leftover state logic
                 document.getElementById('step-3').classList.remove('active-step');
                 document.getElementById('step-2').classList.remove('active-step');
                 document.getElementById('step-1').classList.add('active-step');
@@ -1362,6 +1354,7 @@
                 window.open(`https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(msg)}`, '_blank');
             },
 
+            // FIX 2: Official WhatsApp Pretext Template perfectly formatted for Admission PDF
             sharePdfRecord: function() {
                 const btn = document.getElementById('btn-whatsapp-pdf');
                 const origText = btn.innerText;
@@ -1384,11 +1377,14 @@
                         pdfWrapper.style.display = 'none'; appWrapper.style.display = 'flex';
                         btn.innerText = origText;
                         
+                        // New Official Text Layout
+                        const msg = `Dear ${currentMemberDetails.fullName},\n\nWelcome to Revive Fitness Studio! 🏋️‍♂️\n\nYour admission process has been successfully completed. Please find your Official Admission Record attached/downloaded with this message.\n\n*Admission Details:*\n• ID: ${currentMemberDetails.id}\n• Category: ${currentMemberDetails.admissionCategory} - ${currentMemberDetails.trainingCategory}\n• Date: ${currentMemberDetails.date}\n\nPlease keep this document safe for future reference. We look forward to helping you achieve your fitness goals!\n\nBest Regards,\n*Revive Fitness Studio*\n📞 8921698044\n📍 Kadayil Arcade, Thanal Nagar`;
+
                         const file = new File([pdfBlob], `${currentMemberDetails.id}_Record.pdf`, { type: 'application/pdf' });
                         if (navigator.canShare && navigator.canShare({ files: [file] })) {
                             navigator.share({
                                 title: 'Revive Fitness - Admission Record',
-                                text: `Hi ${currentMemberDetails.firstName}, attached is your official admission record.`,
+                                text: msg,
                                 files: [file]
                             }).catch(console.error);
                         } else {
@@ -1397,7 +1393,6 @@
                             a.href = url; a.download = file.name;
                             document.body.appendChild(a); a.click(); document.body.removeChild(a); window.URL.revokeObjectURL(url);
                             
-                            const msg = `Hi ${currentMemberDetails.firstName}, your admission record has been safely generated.`;
                             alert("Native file sharing is unsupported on this device/browser. The PDF has been safely downloaded. Opening WhatsApp now so you can attach it manually!");
                             window.open(`https://api.whatsapp.com/send?phone=91${currentMemberDetails.primaryContact}&text=${encodeURIComponent(msg)}`, '_blank'); 
                         }
@@ -1666,7 +1661,6 @@
                     const fName = document.getElementById('firstName').value.trim(); const lName = document.getElementById('lastName').value.trim(); const fullName = lName ? `${fName} ${lName}` : fName;
                     let finalSig = signatureHasData ? sigCanvas.toDataURL('image/jpeg', 1.0) : (IS_EDIT_MODE ? currentActiveUser.signature : '');
 
-                    // FIXED: Immediate Save and Return sequence for Edit Mode (Bypasses Payment/Step-3 entirely)
                     if (IS_EDIT_MODE) {
                         const adDateVal = document.getElementById('dateOfAdmission').value;
                         const parts = adDateVal.split('-'); const adDateObj = new Date(parts[2], parts[1]-1, parts[0]);
@@ -1696,7 +1690,6 @@
                         
                         alert("User details updated successfully!");
                         
-                        // Bounce gracefully straight back to user-hub to view updated details.
                         moduleContext.fetchUserHub();
                         return;
                     }
