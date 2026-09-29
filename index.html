@@ -52,6 +52,16 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* ==========================================================================
+           CLOUD SYNC UI OVERLAY
+           ========================================================================== */
+        #cloud-sync-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-main); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .spinner { width: 50px; height: 50px; border: 5px solid var(--border-color); border-top-color: var(--accent-orange); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1.5rem; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        #cloud-toast { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%) translateY(100px); background: #333; color: #fff; padding: 10px 20px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: transform 0.3s ease; z-index: 9000; opacity: 0; pointer-events: none; }
+        #cloud-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        /* ==========================================================================
            3. DASHBOARD MODULES
            ========================================================================== */
         .dashboard-header { text-align: center; margin-bottom: 2rem; }
@@ -243,6 +253,14 @@
     </style>
 </head>
 <body>
+
+    <!-- CLOUD SYNC UI OVERLAYS -->
+    <div id="cloud-sync-overlay">
+        <div class="spinner"></div>
+        <h2 style="color:var(--accent-orange); letter-spacing:1px;">CONNECTING TO SERVER...</h2>
+        <p style="color:var(--text-muted); margin-top:10px;">Downloading latest database records</p>
+    </div>
+    <div id="cloud-toast">Syncing to cloud...</div>
 
     <div id="app-wrapper">
         <header class="app-header">
@@ -468,8 +486,8 @@
                             <div class="val" id="kpi-fee-count">0</div>
                             <span class="sub-val">₹<span id="kpi-fee-amt">0</span></span>
                         </div>
-                        <div class="kpi-card">
-                            <h4>4. Due (Shortfall)</h4>
+                        <div class="kpi-card" style="cursor:pointer;" onclick="moduleContext.filterReportByShortfall()" title="Click to view profiles with shortfall payments">
+                            <h4>4. Due (Shortfall) <span style="font-size:0.75rem; color:var(--accent-orange);">🔍 View</span></h4>
                             <div class="val" id="kpi-shortfall-count" style="color:var(--warning-yellow);">0</div>
                             <span class="sub-val" style="color:var(--warning-yellow);">₹<span id="kpi-shortfall-amt">0</span></span>
                         </div>
@@ -487,8 +505,7 @@
 
                     <div class="report-section">
                         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
-                            <h3 style="margin:0; border:none;">New Admissions Register (Click to view profile)</h3>
-                            <button class="btn secondary" onclick="moduleContext.exportTableToCSV('table-admissions', 'Admissions_Report.csv')" style="width:auto; padding:0.4rem 1rem; font-size:0.8rem;">Export CSV</button>
+                            <h3 style="margin:0; border:none;">New Admissions Register</h3>
                         </div>
                         <div class="table-responsive">
                             <table class="data-table" id="table-admissions">
@@ -500,8 +517,7 @@
 
                     <div class="report-section">
                         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
-                            <h3 style="margin:0; border:none;">Fee Collections Register (Click to view profile)</h3>
-                            <button class="btn secondary" onclick="moduleContext.exportTableToCSV('table-fees', 'Fee_Collections_Report.csv')" style="width:auto; padding:0.4rem 1rem; font-size:0.8rem;">Export CSV</button>
+                            <h3 style="margin:0; border:none;">Fee Collections Register</h3>
                         </div>
                         <div class="table-responsive">
                             <table class="data-table" id="table-fees">
@@ -513,8 +529,7 @@
 
                     <div class="report-section">
                         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
-                            <h3 style="margin:0; border:none; color:var(--error-red);">Due / Shortfall Register (Click to view profile)</h3>
-                            <button class="btn secondary" onclick="moduleContext.exportTableToCSV('table-shortfalls', 'Shortfalls_Report.csv')" style="width:auto; padding:0.4rem 1rem; font-size:0.8rem; border-color:var(--error-red); color:var(--error-red);">Export CSV</button>
+                            <h3 style="margin:0; border:none; color:var(--error-red);">Due / Shortfall Register</h3>
                         </div>
                         <div class="table-responsive">
                             <table class="data-table" id="table-shortfalls">
@@ -532,15 +547,25 @@
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
                     <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
-                    <h2 class="module-title">UPI Account Detail</h2>
+                    <h2 class="module-title">System Settings</h2>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="admin-upi-id">Linked UPI ID <span class="required">*</span></label>
+                        <label>Linked UPI ID <span class="required">*</span></label>
                         <input type="text" id="admin-upi-id" placeholder="e.g. revivefitness@upi" required>
                     </div>
                 </div>
-                <div class="action-row"><button type="button" onclick="moduleContext.saveUpi()" class="btn primary">Save UPI ID</button></div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Staff PIN <span class="required">*</span></label>
+                        <input type="password" id="admin-staff-pin" placeholder="6-digit PIN" maxlength="6" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Admin PIN <span class="required">*</span></label>
+                        <input type="password" id="admin-admin-pin" placeholder="4-digit PIN" maxlength="4" required>
+                    </div>
+                </div>
+                <div class="action-row"><button type="button" onclick="moduleContext.saveSettings()" class="btn primary">Save Settings</button></div>
             </div>
         </main>
 
@@ -808,12 +833,11 @@
                 </div>
             </div>
         </div>
-
-        <footer class="app-footer">
-            &copy; <span id="footer-year"></span> Revive Fitness Studio. All Rights Reserved.
-        </footer>
     </div> 
 
+    <!-- =======================================================================
+         HIDDEN GENERATION TEMPLATES (PDF & RECEIPT)
+         ======================================================================= -->
     <div id="pdf-template-wrapper">
         <div id="pdf-template">
             <div class="pdf-flex-between pdf-border-bottom">
@@ -899,10 +923,12 @@
     </div>
 
     <!-- =======================================================================
-         JAVASCRIPT ENGINE
+         JAVASCRIPT ENGINE & CLOUD SYNC
          ======================================================================= -->
     <script>
-        const APP_CONFIG = { upiId: "revivefitness@upi", baseAdmissionFee: 850, baseMonthlyFee: 800, basePTFee: 1500 };
+        const CLOUD_SYNC_URL = "https://script.google.com/macros/s/AKfycbyz3_gCdZ77qeAPe-1NVeQvstrvRzaV-0GurIN6BD0a-AUdqwyh4tYZ6XVNVPECad3e/exec"; 
+        
+        const APP_CONFIG = { baseAdmissionFee: 850, baseMonthlyFee: 800, basePTFee: 1500 };
         const tariffMonthsOrder = ['April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March'];
         const tariffMonthIndices = [3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2]; 
         
@@ -916,22 +942,90 @@
         let IS_EDIT_MODE = false;
         let currentHubMode = 'details'; 
 
+        // --- OPTIMISTIC CLOUD SYNC ENGINE ---
+        const cloudSync = {
+            queue: [],
+            isSyncing: false,
+            
+            pullInitial: async function() {
+                if(!CLOUD_SYNC_URL || CLOUD_SYNC_URL === "YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE") return;
+                document.getElementById('cloud-sync-overlay').style.display = 'flex';
+                try {
+                    const res = await fetch(CLOUD_SYNC_URL + '?action=pull');
+                    const data = await res.json();
+                    
+                    if(data.settings) localStorage.setItem('revive_settings_db', JSON.stringify(data.settings));
+                    if(data.tariffs) localStorage.setItem('revive_tariffs', JSON.stringify(data.tariffs));
+                    if(data.users) localStorage.setItem('revive_users_db', JSON.stringify(data.users));
+                    
+                    if(data.payments) {
+                        const pObj = {};
+                        data.payments.forEach(p => {
+                            if(!pObj[p.userId]) pObj[p.userId] = {};
+                            if(!pObj[p.userId][p.fy]) pObj[p.userId][p.fy] = {};
+                            pObj[p.userId][p.fy][p.month] = p;
+                        });
+                        localStorage.setItem('revive_payments_db', JSON.stringify(pObj));
+                    }
+                    
+                    if(data.attendance) {
+                        const aObj = {};
+                        data.attendance.forEach(a => {
+                            if(!aObj[a.dateKey]) aObj[a.dateKey] = [];
+                            aObj[a.dateKey].push(a);
+                        });
+                        localStorage.setItem('revive_attendance_db', JSON.stringify(aObj));
+                    }
+                } catch(e) { console.error("Cloud Pull Error:", e); }
+                document.getElementById('cloud-sync-overlay').style.display = 'none';
+            },
+
+            push: function(action, payload) {
+                if(!CLOUD_SYNC_URL || CLOUD_SYNC_URL === "YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE") return;
+                this.queue.push({ action, payload });
+                this.processQueue();
+            },
+
+            processQueue: async function() {
+                if(this.isSyncing || this.queue.length === 0) return;
+                this.isSyncing = true;
+                const toast = document.getElementById('cloud-toast');
+                toast.innerText = "Syncing to cloud...";
+                toast.classList.add('show');
+
+                const task = this.queue[0];
+                try {
+                    await fetch(CLOUD_SYNC_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'text/plain' },
+                        body: JSON.stringify(task)
+                    });
+                    this.queue.shift();
+                    toast.innerText = "Cloud synced.";
+                    setTimeout(() => toast.classList.remove('show'), 1500);
+                } catch (e) {
+                    toast.innerText = "Sync failed. Retrying...";
+                }
+                
+                this.isSyncing = false;
+                if(this.queue.length > 0) setTimeout(() => this.processQueue(), 2000);
+            }
+        };
+
         function formatDateStr(isoStr) {
             if(!isoStr) return '';
             const d = new Date(isoStr);
             return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
         }
-
         function calculateAgeFromDate(dateStr) {
             if(!dateStr || dateStr.length !== 10 || !dateStr.includes('-')) return '';
             const p = dateStr.split('-');
             const dob = new Date(p[2], p[1]-1, p[0]);
             if (isNaN(dob.getTime())) return '';
-            const today = new Date();
-            let age = today.getFullYear() - dob.getFullYear();
+            const today = new Date(); let age = today.getFullYear() - dob.getFullYear();
             const m = today.getMonth() - dob.getMonth();
-            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) { age--; }
-            return age >= 0 ? age : '';
+            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) { age--; } return age >= 0 ? age : '';
         }
 
         var appContext = {
@@ -955,13 +1049,26 @@
                 appContext.pendingRole = role;
                 document.getElementById('login-title').innerText = role === 'staff' ? 'Staff Login' : 'Admin Login';
                 const pinInput = document.getElementById('pin-input');
-                if(pinInput) { pinInput.value = ''; pinInput.setAttribute('maxlength', role === 'staff' ? '6' : '4'); pinInput.placeholder = role === 'staff' ? '6-Digit PIN' : '4-Digit PIN'; }
+                
+                const settings = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
+                const staffPinLen = settings.staffPin ? settings.staffPin.length : 6;
+                const adminPinLen = settings.adminPin ? settings.adminPin.length : 4;
+
+                if(pinInput) { 
+                    pinInput.value = ''; 
+                    pinInput.setAttribute('maxlength', role === 'staff' ? staffPinLen : adminPinLen); 
+                    pinInput.placeholder = role === 'staff' ? 'Enter PIN' : 'Enter PIN'; 
+                }
                 appContext.switchView('login');
             },
             handleLogin: function() {
                 const pin = document.getElementById('pin-input').value.trim();
-                if (appContext.pendingRole === 'staff' && pin === '123456') { appContext.currentRole = 'staff'; appContext.loadDashboard('STAFF'); } 
-                else if (appContext.pendingRole === 'admin' && pin === '1234') { appContext.currentRole = 'admin'; appContext.loadDashboard('ADMIN'); } 
+                const settings = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
+                const staffPin = settings.staffPin || '123456';
+                const adminPin = settings.adminPin || '1234';
+
+                if (appContext.pendingRole === 'staff' && pin === staffPin) { appContext.currentRole = 'staff'; appContext.loadDashboard('STAFF'); } 
+                else if (appContext.pendingRole === 'admin' && pin === adminPin) { appContext.currentRole = 'admin'; appContext.loadDashboard('ADMIN'); } 
                 else { alert('Invalid PIN. Please try again.'); }
             },
             loadDashboard: function(roleTitle) {
@@ -1001,10 +1108,22 @@
         };
 
         var moduleContext = {
-            initUpiEditor: function() { document.getElementById('admin-upi-id').value = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId; },
-            saveUpi: function() {
-                const newUpi = document.getElementById('admin-upi-id').value.trim();
-                if(newUpi) { localStorage.setItem('revive_upi_id', newUpi); alert("UPI ID saved."); appContext.goHome(); } else alert("Invalid UPI ID.");
+            initUpiEditor: function() { 
+                const s = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
+                document.getElementById('admin-upi-id').value = s.upiId || ''; 
+                document.getElementById('admin-staff-pin').value = s.staffPin || '';
+                document.getElementById('admin-admin-pin').value = s.adminPin || '';
+            },
+            saveSettings: function() {
+                const upi = document.getElementById('admin-upi-id').value.trim();
+                const sp = document.getElementById('admin-staff-pin').value.trim();
+                const ap = document.getElementById('admin-admin-pin').value.trim();
+                
+                if(!upi || !sp || !ap) { alert("Fill all fields"); return; }
+                const s = { upiId: upi, staffPin: sp, adminPin: ap };
+                localStorage.setItem('revive_settings_db', JSON.stringify(s));
+                cloudSync.push('pushSettings', s);
+                alert("System Settings Saved."); appContext.goHome();
             },
             initTariffEditor: function() {
                 const fySelect = document.getElementById('fy-select'); const container = document.getElementById('tariff-months-container');
@@ -1045,6 +1164,7 @@
                     db[fy][month] = { admFee: document.getElementById(`tariff-${month}-adm`).value, regFee: document.getElementById(`tariff-${month}-reg`).value, ptFee: document.getElementById(`tariff-${month}-pt`).value };
                 });
                 localStorage.setItem('revive_tariffs', JSON.stringify(db));
+                cloudSync.push('pushTariffs', db);
                 alert(`Tariffs for ${fy} saved.`);
             },
             
@@ -1109,14 +1229,11 @@
                     return;
                 }
 
-                attDb[dateKey].push({
-                    userId: user.id,
-                    fullName: user.fullName,
-                    timestamp: timeStr,
-                    month: monthName
-                });
+                const newAtt = { dateKey: dateKey, userId: user.id, fullName: user.fullName, timestamp: timeStr, month: monthName };
+                attDb[dateKey].push(newAtt);
 
                 localStorage.setItem('revive_attendance_db', JSON.stringify(attDb));
+                cloudSync.push('pushAttendance', newAtt);
 
                 resBox.innerHTML = `<span style="color:var(--success-green); font-weight:bold; font-size:1.1rem;">✔ Attendance Marked Successfully!</span><br><br><strong>Name:</strong> ${user.fullName} (${user.id})<br><strong>Time In:</strong> ${timeStr}`;
                 document.getElementById('att-input').value = '';
@@ -1206,11 +1323,6 @@
                     pContact.innerText = `******${user.primaryContact.slice(-4)}`;
                     if(callBtn) callBtn.style.display = 'none';
                     if(waBtn) waBtn.style.display = 'none';
-                    document.getElementById('btn-whatsapp-welcome').style.display = 'none';
-                    document.getElementById('btn-whatsapp-pdf').style.display = 'none';
-                    document.getElementById('btn-share-adm-receipt').style.display = 'none';
-                    document.getElementById('btn-share-receipt').style.display = 'none';
-                    document.getElementById('btn-vr-share').style.display = 'none';
 
                 } else {
                     photoEl.style.pointerEvents = 'auto'; photoEl.style.userSelect = 'auto'; photoEl.style.webkitUserDrag = 'auto'; photoEl.oncontextmenu = null;
@@ -1218,12 +1330,6 @@
                     pContact.innerText = user.primaryContact;
                     if(callBtn) { callBtn.style.display = 'inline-flex'; callBtn.href = `tel:${user.primaryContact}`; }
                     if(waBtn) { waBtn.style.display = 'inline-flex'; waBtn.href = `https://api.whatsapp.com/send?phone=91${user.primaryContact}&text=${encodeURIComponent(`Hello ${user.firstName}, regarding your membership at Revive Fitness Studio:`)}`; }
-                    
-                    document.getElementById('btn-whatsapp-welcome').style.display = 'inline-flex';
-                    document.getElementById('btn-whatsapp-pdf').style.display = 'inline-flex';
-                    document.getElementById('btn-share-adm-receipt').style.display = 'inline-flex';
-                    document.getElementById('btn-share-receipt').style.display = 'inline-flex';
-                    document.getElementById('btn-vr-share').style.display = 'inline-flex';
                 }
 
                 document.getElementById('hub-name').innerText = user.fullName;
@@ -1341,7 +1447,8 @@
                 const upiSec = document.getElementById('pay-upi-section');
                 if(method === 'UPI' && amt > 0) {
                     upiSec.style.display = 'block';
-                    const activeUpiId = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId;
+                    const s = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
+                    const activeUpiId = s.upiId || APP_CONFIG.upiId;
                     const upiString = `upi://pay?pa=${activeUpiId}&pn=ReviveFitness&am=${amt}&cu=INR`;
                     document.getElementById('pay-upi-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiString)}`;
                 } else { upiSec.style.display = 'none'; }
@@ -1358,12 +1465,18 @@
                 if(!paymentsDb[currentActiveUser.id]) paymentsDb[currentActiveUser.id] = {};
                 if(!paymentsDb[currentActiveUser.id][activePaymentConfig.fy]) paymentsDb[currentActiveUser.id][activePaymentConfig.fy] = {};
                 
-                paymentsDb[currentActiveUser.id][activePaymentConfig.fy][activePaymentConfig.month] = {
+                const pData = {
+                    userId: currentActiveUser.id,
+                    fy: activePaymentConfig.fy,
+                    month: activePaymentConfig.month,
                     totalDue: activePaymentConfig.totalDue, amountPaid: newPaid, status: newStatus, method: method, lastDate: new Date().toISOString()
                 };
-                localStorage.setItem('revive_payments_db', JSON.stringify(paymentsDb));
-                document.getElementById('paymentProcessModal').style.display = 'none';
                 
+                paymentsDb[currentActiveUser.id][activePaymentConfig.fy][activePaymentConfig.month] = pData;
+                localStorage.setItem('revive_payments_db', JSON.stringify(paymentsDb));
+                cloudSync.push('pushPayment', pData);
+
+                document.getElementById('paymentProcessModal').style.display = 'none';
                 this.generateReceiptImage(payAmt, activePaymentConfig.balance - payAmt, method, 'success');
                 this.renderFeeCalendar(currentActiveUser.id, activePaymentConfig.fy, currentActiveUser.trainingCategory, currentActiveUser.date);
             },
@@ -1513,6 +1626,7 @@
                     let users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
                     users = users.filter(u => u.id !== currentActiveUser.id);
                     localStorage.setItem('revive_users_db', JSON.stringify(users));
+                    cloudSync.push('deleteUser', {id: currentActiveUser.id});
                     alert("User deleted."); appContext.goHome();
                 }
             },
@@ -1629,8 +1743,79 @@
                 
                 document.getElementById('report-content').style.display = 'none';
             },
+            
+            filterReportByShortfall: function() {
+                const fy = document.getElementById('report-fy').value;
+                const month = document.getElementById('report-month').value;
+                const users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
+                const payments = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
+                const tariffDb = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
+                const fyTariffs = tariffDb[fy] || {};
+                
+                const today = new Date();
+                const currentScore = today.getFullYear() * 100 + today.getMonth();
+                const fyStartYear = parseInt(fy.split('-')[0]);
 
-            // CORE REPORTS ENGINE
+                let pendingItems = [];
+
+                users.forEach(u => {
+                    const adDateStr = u.date;
+                    if(!adDateStr) return;
+                    const p = adDateStr.split('-');
+                    const adScore = parseInt(p[2]) * 100 + (parseInt(p[1]) - 1);
+
+                    tariffMonthsOrder.forEach((mName, index) => {
+                        if(month !== 'All' && month !== mName) return;
+                        const monthIdx = tariffMonthIndices[index];
+                        const mYear = monthIdx >= 3 ? fyStartYear : fyStartYear + 1;
+                        const mScore = mYear * 100 + monthIdx;
+
+                        if (mScore > currentScore || mScore < adScore) return;
+
+                        const userFyData = (payments[u.id] && payments[u.id][fy]) ? payments[u.id][fy] : {};
+                        const record = userFyData[mName];
+                        const monthTariff = fyTariffs[mName] || { regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
+                        const dueAmt = parseInt(u.trainingCategory === 'Personal Training' ? monthTariff.ptFee : monthTariff.regFee);
+
+                        let shortfall = 0;
+                        if (!record) {
+                            shortfall = dueAmt;
+                        } else if (record.status === 'Partial') {
+                            shortfall = parseInt(record.totalDue) - parseInt(record.amountPaid);
+                        }
+
+                        if (shortfall > 0) {
+                            pendingItems.push({
+                                userId: u.id,
+                                fullName: u.fullName,
+                                month: mName,
+                                pendingAmt: shortfall,
+                                lastDate: record && record.lastDate ? record.lastDate : null
+                            });
+                        }
+                    });
+                });
+
+                const feeTbody = document.querySelector('#table-fees tbody');
+                feeTbody.innerHTML = '';
+                if(pendingItems.length === 0) {
+                    feeTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No pending dues or shortfalls found for this period! Excellent.</td></tr>';
+                    return;
+                }
+                pendingItems.forEach(p => {
+                    const dateStr = p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : 'Unpaid / Due';
+                    feeTbody.innerHTML += `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile">
+                        <td>${dateStr}</td>
+                        <td><strong>${p.userId}</strong> - ${p.fullName}</td>
+                        <td>${p.month}</td>
+                        <td style="color:var(--text-muted);">₹0 (Unpaid)</td>
+                        <td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td>
+                        <td>PENDING</td>
+                    </tr>`;
+                });
+                alert("Report filtered to show all pending dues and shortfalls. Click any row to view that member's profile.");
+            },
+
             generateReport: function() {
                 const fy = document.getElementById('report-fy').value;
                 const month = document.getElementById('report-month').value;
@@ -1722,7 +1907,6 @@
                     `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td></tr>`
                 ).join('') : '<tr><td colspan="4" style="text-align:center;">No shortfalls found.</td></tr>';
 
-                // MOM & YOY GROWTH
                 let yoyMsg = '', momMsg = '';
                 const prevFyStart = parseInt(fy.split('-')[0]) - 1;
                 const prevFy = `${prevFyStart}-${prevFyStart+1}`;
@@ -1824,6 +2008,8 @@
 
         document.addEventListener('DOMContentLoaded', () => {
 
+            cloudSync.pullInitial();
+
             const dobInp = document.getElementById('dob'); 
             const dtInp = document.getElementById('dateOfAdmission'); 
             const ageInp = document.getElementById('age');
@@ -1867,7 +2053,8 @@
             if(btnCapture) btnCapture.addEventListener('click', () => {
                 canvas.width = video.videoWidth; canvas.height = video.videoHeight;
                 canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-                selfieData.value = canvas.toDataURL('image/jpeg', 0.9); preview.src = selfieData.value;
+                selfieData.value = canvas.toDataURL('image/jpeg', 0.6); // Slightly compressed for sync speed
+                preview.src = selfieData.value;
                 video.style.display = 'none'; preview.style.display = 'block'; btnCapture.style.display = 'none'; btnSwitch.style.display = 'none'; btnRetake.style.display = 'inline-flex';
                 if(stream) stream.getTracks().forEach(track => track.stop());
             });
@@ -1906,7 +2093,7 @@
                     if (!signatureHasData && !IS_EDIT_MODE) { alert("Digital signature is mandatory."); return; }
 
                     const fName = document.getElementById('firstName').value.trim(); const lName = document.getElementById('lastName').value.trim(); const fullName = lName ? `${fName} ${lName}` : fName;
-                    let finalSig = signatureHasData ? sigCanvas.toDataURL('image/jpeg', 1.0) : (IS_EDIT_MODE ? currentActiveUser.signature : '');
+                    let finalSig = signatureHasData ? sigCanvas.toDataURL('image/jpeg', 0.8) : (IS_EDIT_MODE ? currentActiveUser.signature : '');
 
                     if (IS_EDIT_MODE) {
                         const adDateVal = document.getElementById('dateOfAdmission').value;
@@ -1932,6 +2119,8 @@
                         let usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
                         let idx = usersDb.findIndex(u => u.id === currentActiveUser.id);
                         if(idx !== -1) { usersDb[idx] = currentActiveUser; localStorage.setItem('revive_users_db', JSON.stringify(usersDb)); }
+                        
+                        cloudSync.push('pushUser', currentActiveUser);
                         
                         document.getElementById('search-phone').value = currentActiveUser.primaryContact;
                         
@@ -1984,7 +2173,8 @@
                     if (method === 'UPI') {
                         upiSec.style.display = 'block'; document.getElementById('btn-validate-payment').innerText = 'Validate Payment & Complete';
                         document.getElementById('qr-amount-display').innerText = calculatedTotalFee;
-                        const activeUpiId = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId;
+                        const s = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
+                        const activeUpiId = s.upiId || APP_CONFIG.upiId;
                         const upiString = `upi://pay?pa=${activeUpiId}&pn=ReviveFitness&am=${calculatedTotalFee}&cu=INR`;
                         document.getElementById('upi-qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
                     } else { upiSec.style.display = 'none'; document.getElementById('btn-validate-payment').innerText = 'Collect Cash & Complete'; }
@@ -2002,7 +2192,8 @@
                 if (this.value === 'UPI') {
                     upiSec.style.display = 'block'; document.getElementById('btn-validate-payment').innerText = 'Validate Payment & Complete';
                     document.getElementById('qr-amount-display').innerText = calculatedTotalFee;
-                    const activeUpiId = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId;
+                    const s = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
+                    const activeUpiId = s.upiId || APP_CONFIG.upiId;
                     const upiString = `upi://pay?pa=${activeUpiId}&pn=ReviveFitness&am=${calculatedTotalFee}&cu=INR`;
                     document.getElementById('upi-qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
                 } else { upiSec.style.display = 'none'; document.getElementById('btn-validate-payment').innerText = 'Collect Cash & Complete'; }
@@ -2021,14 +2212,17 @@
             function finalizeRegistration() {
                 let usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
                 usersDb.push(currentMemberDetails); localStorage.setItem('revive_users_db', JSON.stringify(usersDb));
+                cloudSync.push('pushUser', currentMemberDetails);
                 
                 let payDb = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
                 if(!payDb[currentMemberDetails.id]) payDb[currentMemberDetails.id] = {};
                 if(!payDb[currentMemberDetails.id][currentMemberDetails._fy]) payDb[currentMemberDetails.id][currentMemberDetails._fy] = {};
                 
                 const method = document.getElementById('paymentMethod').value;
-                payDb[currentMemberDetails.id][currentMemberDetails._fy][currentMemberDetails._month] = { totalDue: calculatedTotalFee, amountPaid: calculatedTotalFee, status: 'Paid', method: method, lastDate: new Date().toISOString() };
+                const pData = { userId: currentMemberDetails.id, fy: currentMemberDetails._fy, month: currentMemberDetails._month, totalDue: calculatedTotalFee, amountPaid: calculatedTotalFee, status: 'Paid', method: method, lastDate: new Date().toISOString() };
+                payDb[currentMemberDetails.id][currentMemberDetails._fy][currentMemberDetails._month] = pData;
                 localStorage.setItem('revive_payments_db', JSON.stringify(payDb));
+                cloudSync.push('pushPayment', pData);
 
                 const currentCount = parseInt(preAdmissionId.split('-')[1]);
                 localStorage.setItem('revive_admission_count', currentCount);
