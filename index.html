@@ -280,12 +280,13 @@
                     </button>
                     <h2 class="module-title" id="login-title">Login</h2>
                 </div>
-                <!-- Pure Javascript bind removes native form hijacking crashes -->
-                <form id="loginForm" onsubmit="event.preventDefault(); window.appContext.handleLogin();">
+                <!-- FIXED: 'return false;' prevents native form hijacking without crashing on undefined event -->
+                <form id="loginForm" onsubmit="appContext.handleLogin(); return false;">
                     <div class="form-group">
                         <input type="password" id="pin-input" class="pin-input" inputmode="numeric" required autocomplete="off">
                     </div>
-                    <button type="button" onclick="window.appContext.handleLogin()" class="btn primary" style="margin-top:1rem;">Verify & Access</button>
+                    <!-- FIXED: explicit appContext reference -->
+                    <button type="button" onclick="appContext.handleLogin()" class="btn primary" style="margin-top:1rem;">Verify & Access</button>
                 </form>
             </div>
         </main>
@@ -339,7 +340,8 @@
                     </button>
                     <h2 class="module-title" id="search-title">Search User</h2>
                 </div>
-                <form id="userSearchForm" onsubmit="event.preventDefault(); window.moduleContext.fetchUserHub();">
+                <!-- FIXED: 'return false;' prevents native form hijacking without crashing -->
+                <form id="userSearchForm" onsubmit="moduleContext.fetchUserHub(event); return false;">
                     <div class="form-group">
                         <label>Member Phone Number <span class="required">*</span></label>
                         <input type="tel" id="search-phone" pattern="\d{10}" maxlength="10" required>
@@ -879,7 +881,7 @@
             return age >= 0 ? age : '';
         }
 
-        // Establish pure global context mathematically prior to DOM parsing
+        // FIXED: Context loss protection ('this' -> 'appContext')
         var appContext = {
             currentRole: null, pendingRole: null, 
             switchView: function(viewName) {
@@ -893,28 +895,39 @@
             },
             goHome: function() {
                 if (document.getElementById('successModal').style.display === 'flex' || document.getElementById('receiptSuccessModal').style.display === 'flex' || document.getElementById('viewReceiptModal').style.display === 'flex') return;
-                if (this.currentRole) this.switchView('dashboard');
-                else { this.pendingRole = null; this.switchView('home'); }
+                if (appContext.currentRole) appContext.switchView('dashboard');
+                else { appContext.pendingRole = null; appContext.switchView('home'); }
             },
             openLogin: function(role) {
-                this.pendingRole = role;
+                appContext.pendingRole = role;
                 document.getElementById('login-title').innerText = role === 'staff' ? 'Staff Login' : 'Admin Login';
                 const pinInput = document.getElementById('pin-input');
                 if(pinInput) { pinInput.value = ''; pinInput.setAttribute('maxlength', role === 'staff' ? '6' : '4'); pinInput.placeholder = role === 'staff' ? '6-Digit PIN' : '4-Digit PIN'; }
-                this.switchView('login');
+                appContext.switchView('login');
             },
             handleLogin: function() {
-                const pin = document.getElementById('pin-input').value;
-                if (this.pendingRole === 'staff' && pin === '123456') { this.currentRole = 'staff'; this.loadDashboard('STAFF'); } 
-                else if (this.pendingRole === 'admin' && pin === '1234') { this.currentRole = 'admin'; this.loadDashboard('ADMIN'); } 
-                else { alert('Invalid PIN. Please try again.'); }
+                // FIXED: .trim() to wipe out mobile keyboard autospacing
+                const pin = document.getElementById('pin-input').value.trim();
+                
+                // FIXED: Strict appContext binding
+                if (appContext.pendingRole === 'staff' && pin === '123456') { 
+                    appContext.currentRole = 'staff'; 
+                    appContext.loadDashboard('STAFF'); 
+                } 
+                else if (appContext.pendingRole === 'admin' && pin === '1234') { 
+                    appContext.currentRole = 'admin'; 
+                    appContext.loadDashboard('ADMIN'); 
+                } 
+                else { 
+                    alert('Invalid PIN. Please try again.'); 
+                }
             },
             loadDashboard: function(roleTitle) {
                 document.getElementById('dashboard-title').innerHTML = `${roleTitle} <span>PORTAL</span>`;
-                document.querySelectorAll('.admin-only').forEach(el => { el.style.display = this.currentRole === 'admin' ? 'flex' : 'none'; });
-                this.switchView('dashboard');
+                document.querySelectorAll('.admin-only').forEach(el => { el.style.display = appContext.currentRole === 'admin' ? 'flex' : 'none'; });
+                appContext.switchView('dashboard');
             },
-            logout: function() { this.currentRole = null; this.pendingRole = null; this.switchView('home'); },
+            logout: function() { appContext.currentRole = null; appContext.pendingRole = null; appContext.switchView('home'); },
             startAdmission: function() {
                 IS_EDIT_MODE = false;
                 document.getElementById('form-main-title').innerText = "Admission Registration";
@@ -934,11 +947,11 @@
                 document.getElementById('step-1').classList.add('active-step');
                 const today = new Date();
                 document.getElementById('dateOfAdmission').value = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
-                this.switchView('admission');
+                appContext.switchView('admission');
             },
             closeModal: function() {
                 document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
-                this.goHome();
+                appContext.goHome();
             }
         };
 
@@ -1003,7 +1016,7 @@
                 appContext.switchView('user-search');
             },
             fetchUserHub: function(e) {
-                if(e) e.preventDefault();
+                if(e && e.preventDefault) e.preventDefault();
                 const phone = document.getElementById('search-phone').value;
                 const fy = document.getElementById('search-fy').value;
                 
