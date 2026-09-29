@@ -24,13 +24,12 @@
             --error-red: #d32f2f;
         }
 
-        /* 14px Base Font for compact sizing */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
         html { font-size: 14px; background-color: var(--bg-main); }
         body { color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
         /* ==========================================================================
-           2. MAIN LAYOUT & NAVIGATION (FIXED HEADER & FOOTER)
+           2. MAIN LAYOUT & NAVIGATION
            ========================================================================== */
         #app-wrapper { display: flex; flex-direction: column; min-height: 100vh; padding-top: 60px; padding-bottom: 60px; }
 
@@ -158,21 +157,20 @@
         .profile-snippet-info h3 { margin: 0 0 5px 0; color: var(--accent-orange); }
         .profile-snippet-info p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
 
-        /* Quick Action Icon Buttons */
         .contact-action-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; background: var(--bg-panel); border: 1px solid var(--border-color); margin-left: 6px; cursor: pointer; text-decoration: none; transition: transform 0.2s; }
         .contact-action-btn:hover { transform: scale(1.1); }
         .contact-action-btn.call-icon { color: #007bff; }
         .contact-action-btn.wa-icon { color: var(--success-green); }
 
         /* Report Specifics */
-        .report-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-        .kpi-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; text-align: center; border-bottom: 3px solid var(--accent-orange); }
-        .kpi-card h4 { color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.5rem; }
-        .kpi-card .val { font-size: 2rem; font-weight: 900; color: var(--text-main); }
+        .report-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .kpi-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem 1rem; text-align: center; border-bottom: 3px solid var(--accent-orange); }
+        .kpi-card h4 { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.5rem; white-space: nowrap;}
+        .kpi-card .val { font-size: 1.8rem; font-weight: 900; color: var(--text-main); }
         .kpi-card .sub-val { font-size: 0.8rem; color: var(--success-green); font-weight: 600; margin-top: 5px; display: block; }
         
         .report-section { margin-bottom: 3rem; }
-        .report-section h3 { border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem; color: var(--accent-orange); text-transform: uppercase; font-size: 1.2rem; }
+        .report-section h3 { border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem; color: var(--accent-orange); text-transform: uppercase; font-size: 1.1rem; }
         .table-responsive { overflow-x: auto; background: var(--bg-panel); border-radius: 8px; border: 1px solid var(--border-color); }
         .data-table { width: 100%; border-collapse: collapse; min-width: 600px; font-size: 0.9rem; }
         .data-table th, .data-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
@@ -247,14 +245,12 @@
 <body>
 
     <div id="app-wrapper">
-        <!-- FIXED HEADER -->
         <header class="app-header">
             <div class="logo-container" onclick="appContext.goHome()">
                 <img src="logo.png" alt="REVIVE FITNESS STUDIO" onerror="this.src='https://via.placeholder.com/150x40/ffffff/ff6600?text=REVIVE+FITNESS'">
             </div>
         </header>
 
-        <!-- PORTAL ENTRY SCREEN -->
         <main id="view-home" class="view-section active-view">
             <div class="dashboard-header">
                 <h1>WELCOME TO <span>REVIVE</span></h1>
@@ -280,7 +276,6 @@
             </div>
         </main>
 
-        <!-- PIN LOGIN SCREEN -->
         <main id="view-login" class="view-section">
             <div class="form-layout" style="max-width: 400px;">
                 <div class="module-toolbar">
@@ -299,7 +294,6 @@
             </div>
         </main>
 
-        <!-- ROLE-BASED DASHBOARD -->
         <main id="view-dashboard" class="view-section">
             <div class="dashboard-header">
                 <h1 id="dashboard-title">STAFF <span>PORTAL</span></h1>
@@ -315,13 +309,12 @@
                     <h3>User Details</h3>
                 </div>
                 
-                <!-- Admin Only -->
                 <div class="module-card admin-only" onclick="appContext.switchView('reports')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
                     <h3>Reports</h3>
                 </div>
                 <div class="module-card admin-only" onclick="appContext.switchView('tariff-editor')">
-                    <svg class="module-icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <svg class="module-icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                     <h3>Tariff Editor</h3>
                 </div>
                 <div class="module-card admin-only" onclick="appContext.switchView('upi-editor')">
@@ -334,7 +327,6 @@
             </div>
         </main>
 
-        <!-- ATTENDANCE MODULE VIEW -->
         <main id="view-attendance" class="view-section">
             <div class="form-layout" style="max-width: 700px;">
                 <div class="module-toolbar">
@@ -379,7 +371,6 @@
             </div>
         </main>
 
-        <!-- USER SEARCH (Handles Details & Fee Selection) -->
         <main id="view-user-search" class="view-section">
             <div class="form-layout" style="max-width: 500px;">
                 <div class="module-toolbar">
@@ -403,11 +394,10 @@
             </div>
         </main>
 
-        <!-- USER HUB (Profile View & Calendar) -->
         <main id="view-user-hub" class="view-section">
             <div class="form-layout" style="max-width: 900px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="appContext.goHome()" type="button">
+                    <button class="back-btn" onclick="appContext.switchView('user-search')" type="button">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
@@ -421,7 +411,6 @@
                         <p>
                             <strong id="hub-id" style="color:var(--text-main);">REV-0000</strong> | 
                             <span id="hub-phone">9999999999</span>
-                            <!-- QUICK ACTION BUTTONS -->
                             <a id="hub-call-btn" href="#" class="contact-action-btn call-icon" title="Call Member">📞</a>
                             <a id="hub-wa-btn" href="#" target="_blank" class="contact-action-btn wa-icon" title="WhatsApp Member">💬</a>
                         </p>
@@ -441,7 +430,6 @@
             </div>
         </main>
 
-        <!-- REPORTS MODULE -->
         <main id="view-reports" class="view-section">
             <div class="form-layout" style="max-width: 1000px; padding: 1.5rem; background:transparent; border:none; box-shadow:none;">
                 <div class="module-toolbar">
@@ -464,32 +452,42 @@
                 </div>
 
                 <div id="report-content" style="display:none; margin-top:2rem;">
+                    
                     <div class="report-kpi-grid">
                         <div class="kpi-card">
-                            <h4>Total Revenue</h4>
-                            <div class="val">₹<span id="kpi-revenue">0</span></div>
-                            <span class="sub-val" id="kpi-split" style="color:var(--text-muted);">UPI: ₹0 | Cash: ₹0</span>
-                        </div>
-                        <div class="kpi-card" style="cursor:pointer;" onclick="moduleContext.filterReportByShortfall()" title="Click to view profiles with shortfall payments">
-                            <h4>Pending Dues (Shortfall & Unpaid) <span style="font-size:0.75rem; color:var(--accent-orange);">🔍 View</span></h4>
-                            <div class="val" style="color:var(--error-red);">₹<span id="kpi-pending">0</span></div>
-                            <span class="sub-val" style="color:var(--text-muted);">Click to inspect pendings</span>
+                            <h4>1. Total Revenue</h4>
+                            <div class="val">₹<span id="kpi-rev-total">0</span></div>
                         </div>
                         <div class="kpi-card">
-                            <h4>New Admissions</h4>
-                            <div class="val" id="kpi-admissions">0</div>
-                            <span class="sub-val" style="color:var(--text-muted);">In selected period</span>
+                            <h4>2. New Admissions</h4>
+                            <div class="val" id="kpi-adm-count">0</div>
+                            <span class="sub-val">₹<span id="kpi-adm-amt">0</span></span>
                         </div>
                         <div class="kpi-card">
-                            <h4>Fees Collected</h4>
-                            <div class="val" id="kpi-fees">0</div>
-                            <span class="sub-val" style="color:var(--text-muted);">Transactions processed</span>
+                            <h4>3. Fees Collected</h4>
+                            <div class="val" id="kpi-fee-count">0</div>
+                            <span class="sub-val">₹<span id="kpi-fee-amt">0</span></span>
+                        </div>
+                        <div class="kpi-card">
+                            <h4>4. Due (Shortfall)</h4>
+                            <div class="val" id="kpi-shortfall-count" style="color:var(--warning-yellow);">0</div>
+                            <span class="sub-val" style="color:var(--warning-yellow);">₹<span id="kpi-shortfall-amt">0</span></span>
+                        </div>
+                        <div class="kpi-card">
+                            <h4>5. Fee Unpaid</h4>
+                            <div class="val" id="kpi-unpaid-count" style="color:var(--error-red);">0</div>
+                            <span class="sub-val" style="color:var(--error-red);">₹<span id="kpi-unpaid-amt">0</span></span>
                         </div>
                     </div>
 
                     <div class="report-section">
+                        <h3 style="border:none; margin-bottom:10px;">Growth Analysis (MoM & YoY)</h3>
+                        <div class="analysis-box" id="yoy-analysis-content"></div>
+                    </div>
+
+                    <div class="report-section">
                         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
-                            <h3 style="margin:0; border:none;">1. New Admissions (Click row to inspect profile)</h3>
+                            <h3 style="margin:0; border:none;">New Admissions Register (Click to view profile)</h3>
                             <button class="btn secondary" onclick="moduleContext.exportTableToCSV('table-admissions', 'Admissions_Report.csv')" style="width:auto; padding:0.4rem 1rem; font-size:0.8rem;">Export CSV</button>
                         </div>
                         <div class="table-responsive">
@@ -502,26 +500,34 @@
 
                     <div class="report-section">
                         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
-                            <h3 style="margin:0; border:none;">2. Fee Collections (Click row to inspect profile)</h3>
+                            <h3 style="margin:0; border:none;">Fee Collections Register (Click to view profile)</h3>
                             <button class="btn secondary" onclick="moduleContext.exportTableToCSV('table-fees', 'Fee_Collections_Report.csv')" style="width:auto; padding:0.4rem 1rem; font-size:0.8rem;">Export CSV</button>
                         </div>
                         <div class="table-responsive">
                             <table class="data-table" id="table-fees">
-                                <thead><tr><th>Paid On</th><th>ID & Name</th><th>Month</th><th>Amount</th><th>Pending</th><th>Method</th></tr></thead>
+                                <thead><tr><th>Paid On</th><th>ID & Name</th><th>Month</th><th>Amount</th><th>Method</th></tr></thead>
                                 <tbody></tbody>
                             </table>
                         </div>
                     </div>
 
                     <div class="report-section">
-                        <h3 style="border:none; margin-bottom:10px;">3. Year-on-Year Analysis</h3>
-                        <div class="analysis-box" id="yoy-analysis-content"></div>
+                        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
+                            <h3 style="margin:0; border:none; color:var(--error-red);">Due / Shortfall Register (Click to view profile)</h3>
+                            <button class="btn secondary" onclick="moduleContext.exportTableToCSV('table-shortfalls', 'Shortfalls_Report.csv')" style="width:auto; padding:0.4rem 1rem; font-size:0.8rem; border-color:var(--error-red); color:var(--error-red);">Export CSV</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table" id="table-shortfalls">
+                                <thead><tr><th>Last Paid</th><th>ID & Name</th><th>Month</th><th>Pending Amt</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </main>
 
-        <!-- ADMIN EXTRAS -->
         <main id="view-upi-editor" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
@@ -803,15 +809,11 @@
             </div>
         </div>
 
-        <!-- FIXED FOOTER -->
         <footer class="app-footer">
             &copy; <span id="footer-year"></span> Revive Fitness Studio. All Rights Reserved.
         </footer>
-    </div> <!-- END APP WRAPPER -->
+    </div> 
 
-    <!-- =======================================================================
-         HIDDEN GENERATION TEMPLATES (PDF & RECEIPT)
-         ======================================================================= -->
     <div id="pdf-template-wrapper">
         <div id="pdf-template">
             <div class="pdf-flex-between pdf-border-bottom">
@@ -872,7 +874,6 @@
         </div>
     </div>
 
-    <!-- Receipt Generator -->
     <div id="receipt-render-zone">
         <div id="receipt-template">
             <div class="rcpt-header">
@@ -1195,31 +1196,58 @@
                 const photoEl = document.getElementById('hub-photo');
                 photoEl.src = user.photo || 'https://via.placeholder.com/70x70/141414/a0a0a0?text=N/A';
                 
+                const callBtn = document.getElementById('hub-call-btn');
+                const waBtn = document.getElementById('hub-wa-btn');
+                const pContact = document.getElementById('hub-phone');
+
                 if (appContext.currentRole === 'staff') {
                     photoEl.style.pointerEvents = 'none'; photoEl.style.userSelect = 'none'; photoEl.style.webkitUserDrag = 'none'; photoEl.oncontextmenu = (ev) => ev.preventDefault();
+                    
+                    pContact.innerText = `******${user.primaryContact.slice(-4)}`;
+                    if(callBtn) callBtn.style.display = 'none';
+                    if(waBtn) waBtn.style.display = 'none';
+                    document.getElementById('btn-whatsapp-welcome').style.display = 'none';
+                    document.getElementById('btn-whatsapp-pdf').style.display = 'none';
+                    document.getElementById('btn-share-adm-receipt').style.display = 'none';
+                    document.getElementById('btn-share-receipt').style.display = 'none';
+                    document.getElementById('btn-vr-share').style.display = 'none';
+
                 } else {
                     photoEl.style.pointerEvents = 'auto'; photoEl.style.userSelect = 'auto'; photoEl.style.webkitUserDrag = 'auto'; photoEl.oncontextmenu = null;
+                    
+                    pContact.innerText = user.primaryContact;
+                    if(callBtn) { callBtn.style.display = 'inline-flex'; callBtn.href = `tel:${user.primaryContact}`; }
+                    if(waBtn) { waBtn.style.display = 'inline-flex'; waBtn.href = `https://api.whatsapp.com/send?phone=91${user.primaryContact}&text=${encodeURIComponent(`Hello ${user.firstName}, regarding your membership at Revive Fitness Studio:`)}`; }
+                    
+                    document.getElementById('btn-whatsapp-welcome').style.display = 'inline-flex';
+                    document.getElementById('btn-whatsapp-pdf').style.display = 'inline-flex';
+                    document.getElementById('btn-share-adm-receipt').style.display = 'inline-flex';
+                    document.getElementById('btn-share-receipt').style.display = 'inline-flex';
+                    document.getElementById('btn-vr-share').style.display = 'inline-flex';
                 }
 
                 document.getElementById('hub-name').innerText = user.fullName;
                 document.getElementById('hub-id').innerText = user.id;
-                document.getElementById('hub-phone').innerText = user.primaryContact;
-
-                const callBtn = document.getElementById('hub-call-btn');
-                const waBtn = document.getElementById('hub-wa-btn');
-                if(callBtn) callBtn.href = `tel:${user.primaryContact}`;
-                if(waBtn) waBtn.href = `https://api.whatsapp.com/send?phone=91${user.primaryContact}&text=${encodeURIComponent(`Hello ${user.firstName}, regarding your membership at Revive Fitness Studio:`)}`;
 
                 document.getElementById('hub-details').innerText = `${user.admissionCategory} - ${user.trainingCategory}`;
                 document.getElementById('hub-doj').innerText = `Date of Joining: ${user.date}`;
                 document.getElementById('hub-fy-label').innerText = fy;
                 
                 document.getElementById('hub-actions').style.display = 'flex';
-                document.getElementById('hub-instruction').style.display = 'block';
-                document.getElementById('hub-instruction').innerText = "Click on a paid green month to view the receipt.";
-                document.getElementById('btn-hub-edit').style.display = 'flex'; 
-                document.getElementById('btn-hub-pdf').style.display = appContext.currentRole === 'admin' ? 'flex' : 'none';
-                document.getElementById('btn-hub-delete').style.display = appContext.currentRole === 'admin' ? 'flex' : 'none';
+                
+                if (currentHubMode === 'fee') {
+                    document.getElementById('hub-instruction').style.display = 'block';
+                    document.getElementById('hub-instruction').innerText = "Click on a yellow or red month to process payment. Click on green months to view receipt.";
+                    document.getElementById('btn-hub-edit').style.display = 'none'; 
+                    document.getElementById('btn-hub-pdf').style.display = 'none';
+                    document.getElementById('btn-hub-delete').style.display = 'none';
+                } else {
+                    document.getElementById('hub-instruction').style.display = 'block';
+                    document.getElementById('hub-instruction').innerText = "Click on a paid green month to view the receipt.";
+                    document.getElementById('btn-hub-edit').style.display = 'flex'; 
+                    document.getElementById('btn-hub-pdf').style.display = appContext.currentRole === 'admin' ? 'flex' : 'none';
+                    document.getElementById('btn-hub-delete').style.display = appContext.currentRole === 'admin' ? 'flex' : 'none';
+                }
                 
                 this.renderFeeCalendar(user.id, fy, user.trainingCategory, user.date);
                 appContext.switchView('user-hub');
@@ -1601,211 +1629,131 @@
                 
                 document.getElementById('report-content').style.display = 'none';
             },
-            
-            filterReportByShortfall: function() {
-                const fy = document.getElementById('report-fy').value;
-                const month = document.getElementById('report-month').value;
-                const users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                const payments = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
-                const tariffDb = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
-                const fyTariffs = tariffDb[fy] || {};
-                
-                const today = new Date();
-                const currentScore = today.getFullYear() * 100 + today.getMonth();
-                const fyStartYear = parseInt(fy.split('-')[0]);
 
-                let pendingItems = [];
-
-                users.forEach(u => {
-                    const adDateStr = u.date;
-                    if(!adDateStr) return;
-                    const p = adDateStr.split('-');
-                    const adScore = parseInt(p[2]) * 100 + (parseInt(p[1]) - 1);
-
-                    tariffMonthsOrder.forEach((mName, index) => {
-                        if(month !== 'All' && month !== mName) return;
-                        const monthIdx = tariffMonthIndices[index];
-                        const mYear = monthIdx >= 3 ? fyStartYear : fyStartYear + 1;
-                        const mScore = mYear * 100 + monthIdx;
-
-                        if (mScore > currentScore || mScore < adScore) return;
-
-                        const userFyData = (payments[u.id] && payments[u.id][fy]) ? payments[u.id][fy] : {};
-                        const record = userFyData[mName];
-                        const monthTariff = fyTariffs[mName] || { regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
-                        const dueAmt = parseInt(u.trainingCategory === 'Personal Training' ? monthTariff.ptFee : monthTariff.regFee);
-
-                        let shortfall = 0;
-                        if (!record) {
-                            shortfall = dueAmt;
-                        } else if (record.status === 'Partial') {
-                            shortfall = parseInt(record.totalDue) - parseInt(record.amountPaid);
-                        }
-
-                        if (shortfall > 0) {
-                            pendingItems.push({
-                                userId: u.id,
-                                fullName: u.fullName,
-                                month: mName,
-                                pendingAmt: shortfall,
-                                lastDate: record && record.lastDate ? record.lastDate : null
-                            });
-                        }
-                    });
-                });
-
-                const feeTbody = document.querySelector('#table-fees tbody');
-                feeTbody.innerHTML = '';
-                if(pendingItems.length === 0) {
-                    feeTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No pending dues or shortfalls found for this period! Excellent.</td></tr>';
-                    return;
-                }
-                pendingItems.forEach(p => {
-                    const dateStr = p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : 'Unpaid / Due';
-                    feeTbody.innerHTML += `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile">
-                        <td>${dateStr}</td>
-                        <td><strong>${p.userId}</strong> - ${p.fullName}</td>
-                        <td>${p.month}</td>
-                        <td style="color:var(--text-muted);">₹0 (Unpaid)</td>
-                        <td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td>
-                        <td>PENDING</td>
-                    </tr>`;
-                });
-                alert("Report filtered to show all pending dues and shortfalls. Click any row to view that member's profile.");
-            },
-
+            // CORE REPORTS ENGINE
             generateReport: function() {
                 const fy = document.getElementById('report-fy').value;
                 const month = document.getElementById('report-month').value;
-                
                 const users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
                 const payments = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
-                const tariffDb = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
-                const fyTariffs = tariffDb[fy] || {};
-                
-                let filteredAdmissions = users.filter(u => {
-                    if(u._fy !== fy) return false;
-                    if(month !== 'All' && u._month !== month) return false;
-                    return true;
-                });
+                const tariffs = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
 
-                let filteredPayments = [];
-                let totalRev = 0; let upiRev = 0; let cashRev = 0; 
-                
-                // Comprehensive total pending calculation (Shortfalls + completely unpaid active months)
-                let totalPending = 0;
-                const today = new Date();
-                const currentScore = today.getFullYear() * 100 + today.getMonth();
-                const fyStartYear = parseInt(fy.split('-')[0]);
+                function calcStats(targetFy, targetMonth) {
+                    let s = { rev: 0, admCount: 0, admAmt: 0, feeCount: 0, feeAmt: 0, shortCount: 0, shortAmt: 0, unpaidCount: 0, unpaidAmt: 0, admRows: [], feeRows: [], shortRows: [] };
+                    const fyStartYear = parseInt(targetFy.split('-')[0]);
+                    const today = new Date();
+                    const currentScore = today.getFullYear() * 100 + today.getMonth();
 
-                users.forEach(u => {
-                    if(!u.date) return;
-                    const p = u.date.split('-');
-                    const adScore = parseInt(p[2]) * 100 + (parseInt(p[1]) - 1);
-
-                    tariffMonthsOrder.forEach((mName, index) => {
-                        if(month !== 'All' && month !== mName) return;
-                        const monthIdx = tariffMonthIndices[index];
-                        const mYear = monthIdx >= 3 ? fyStartYear : fyStartYear + 1;
-                        const mScore = mYear * 100 + monthIdx;
-
-                        if (mScore > currentScore || mScore < adScore) return;
-
-                        const userFyData = (payments[u.id] && payments[u.id][fy]) ? payments[u.id][fy] : {};
-                        const record = userFyData[mName];
-                        const monthTariff = fyTariffs[mName] || { regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
-                        const dueAmt = parseInt(u.trainingCategory === 'Personal Training' ? monthTariff.ptFee : monthTariff.regFee);
-
-                        if (!record) {
-                            totalPending += dueAmt;
-                        } else if (record.status === 'Partial') {
-                            totalPending += (parseInt(record.totalDue) - parseInt(record.amountPaid));
+                    users.forEach(u => {
+                        if(!u.date) return;
+                        const p = u.date.split('-');
+                        const adScore = parseInt(p[2]) * 100 + (parseInt(p[1]) - 1);
+                        
+                        if (u._fy === targetFy && (targetMonth === 'All' || u._month === targetMonth)) {
+                            s.admCount++;
+                            const mTariff = (tariffs[targetFy] && tariffs[targetFy][u._month]) ? tariffs[targetFy][u._month] : { admFee: APP_CONFIG.baseAdmissionFee };
+                            s.admAmt += parseInt(mTariff.admFee);
+                            s.admRows.push(u);
                         }
-                    });
-                });
 
-                for (const userId in payments) {
-                    if (payments[userId][fy]) {
-                        if (month === 'All') {
-                            for (const m in payments[userId][fy]) {
-                                const p = payments[userId][fy][m];
-                                filteredPayments.push({ userId, month: m, ...p });
-                                const paid = parseInt(p.amountPaid || 0);
-                                totalRev += paid;
-                                if(p.method === 'UPI') upiRev += paid; else cashRev += paid;
+                        tariffMonthsOrder.forEach((mName, index) => {
+                            if (targetMonth !== 'All' && targetMonth !== mName) return;
+
+                            const monthIdx = tariffMonthIndices[index];
+                            const mYear = monthIdx >= 3 ? fyStartYear : fyStartYear + 1;
+                            const mScore = mYear * 100 + monthIdx;
+
+                            if (mScore > currentScore || mScore < adScore) return;
+
+                            const monthTariff = (tariffs[targetFy] && tariffs[targetFy][mName]) ? tariffs[targetFy][mName] : { regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
+                            const dueAmt = parseInt(u.trainingCategory === 'Personal Training' ? monthTariff.ptFee : monthTariff.regFee);
+
+                            const userFyData = (payments[u.id] && payments[u.id][targetFy]) ? payments[u.id][targetFy] : {};
+                            const record = userFyData[mName];
+
+                            if (!record) {
+                                s.unpaidCount++;
+                                s.unpaidAmt += dueAmt;
+                            } else {
+                                const paid = parseInt(record.amountPaid || 0);
+                                const totalDue = parseInt(record.totalDue || 0);
+                                if (paid > 0) {
+                                    s.feeCount++;
+                                    s.rev += paid;
+                                    s.feeRows.push({ ...record, userId: u.id, month: mName, fullName: u.fullName });
+                                }
+                                if (paid < totalDue) {
+                                    s.shortCount++;
+                                    s.shortAmt += (totalDue - paid);
+                                    s.shortRows.push({ ...record, userId: u.id, month: mName, pendingAmt: totalDue - paid, fullName: u.fullName });
+                                }
                             }
-                        } else if (payments[userId][fy][month]) {
-                            const p = payments[userId][fy][month];
-                            filteredPayments.push({ userId, month, ...p });
-                            const paid = parseInt(p.amountPaid || 0);
-                            totalRev += paid;
-                            if(p.method === 'UPI') upiRev += paid; else cashRev += paid;
-                        }
-                    }
+                        });
+                    });
+                    s.feeAmt = s.rev - s.admAmt;
+                    if(s.feeAmt < 0) s.feeAmt = 0; 
+                    return s;
                 }
 
-                document.getElementById('kpi-revenue').innerText = totalRev.toLocaleString();
-                document.getElementById('kpi-split').innerText = `UPI: ₹${upiRev.toLocaleString()} | Cash: ₹${cashRev.toLocaleString()}`;
-                document.getElementById('kpi-pending').innerText = totalPending.toLocaleString();
-                document.getElementById('kpi-admissions').innerText = filteredAdmissions.length;
-                document.getElementById('kpi-fees').innerText = filteredPayments.length;
+                const currStats = calcStats(fy, month);
+                
+                document.getElementById('kpi-rev-total').innerText = currStats.rev.toLocaleString();
+                document.getElementById('kpi-adm-count').innerText = currStats.admCount;
+                document.getElementById('kpi-adm-amt').innerText = currStats.admAmt.toLocaleString();
+                document.getElementById('kpi-fee-count').innerText = currStats.feeCount;
+                document.getElementById('kpi-fee-amt').innerText = currStats.feeAmt.toLocaleString();
+                document.getElementById('kpi-shortfall-count').innerText = currStats.shortCount;
+                document.getElementById('kpi-shortfall-amt').innerText = currStats.shortAmt.toLocaleString();
+                document.getElementById('kpi-unpaid-count').innerText = currStats.unpaidCount;
+                document.getElementById('kpi-unpaid-amt').innerText = currStats.unpaidAmt.toLocaleString();
 
                 const admTbody = document.querySelector('#table-admissions tbody');
-                admTbody.innerHTML = '';
-                if(filteredAdmissions.length === 0) admTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No admissions found for this period.</td></tr>';
-                filteredAdmissions.forEach(u => {
-                    admTbody.innerHTML += `<tr onclick="moduleContext.loadProfileByPhoneOrId('${u.id}')" title="Click to view member profile"><td>${u.date}</td><td><strong>${u.id}</strong></td><td>${u.fullName}</td><td>${u.primaryContact}</td><td>${u.admissionCategory}</td></tr>`;
-                });
+                admTbody.innerHTML = currStats.admRows.length ? currStats.admRows.map(u => 
+                    `<tr onclick="moduleContext.loadProfileByPhoneOrId('${u.id}')" title="Click to view member profile"><td>${u.date}</td><td><strong>${u.id}</strong></td><td>${u.fullName}</td><td>${appContext.currentRole === 'staff' ? '******' + u.primaryContact.slice(-4) : u.primaryContact}</td><td>${u.admissionCategory}</td></tr>`
+                ).join('') : '<tr><td colspan="5" style="text-align:center;">No admissions found for this period.</td></tr>';
 
                 const feeTbody = document.querySelector('#table-fees tbody');
-                feeTbody.innerHTML = '';
-                if(filteredPayments.length === 0) feeTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No fee collections found for this period.</td></tr>';
-                filteredPayments.forEach(p => {
-                    const dateStr = p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : 'N/A';
-                    const pending = parseInt(p.totalDue || 0) - parseInt(p.amountPaid || 0);
-                    
-                    // Lookup member full name for display
-                    const usersList = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                    const foundUsr = usersList.find(x => x.id === p.userId);
-                    const memberDisplayName = foundUsr ? foundUsr.fullName : 'Unknown Member';
+                feeTbody.innerHTML = currStats.feeRows.length ? currStats.feeRows.map(p => 
+                    `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:green; font-weight:bold;">₹${p.amountPaid}</td><td>${p.method || 'CASH'}</td></tr>`
+                ).join('') : '<tr><td colspan="5" style="text-align:center;">No fee collections found for this period.</td></tr>';
 
-                    feeTbody.innerHTML += `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile">
-                        <td>${dateStr}</td>
-                        <td><strong>${p.userId}</strong> - ${memberDisplayName}</td>
-                        <td>${p.month}</td>
-                        <td style="color:green; font-weight:bold;">₹${p.amountPaid}</td>
-                        <td style="color:${pending > 0 ? 'red' : 'green'};">₹${pending}</td>
-                        <td>${p.method || 'CASH'}</td>
-                    </tr>`;
-                });
+                const shortTbody = document.querySelector('#table-shortfalls tbody');
+                shortTbody.innerHTML = currStats.shortRows.length ? currStats.shortRows.map(p => 
+                    `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td></tr>`
+                ).join('') : '<tr><td colspan="4" style="text-align:center;">No shortfalls found.</td></tr>';
 
+                // MOM & YOY GROWTH
+                let yoyMsg = '', momMsg = '';
                 const prevFyStart = parseInt(fy.split('-')[0]) - 1;
                 const prevFy = `${prevFyStart}-${prevFyStart+1}`;
                 
-                let prevRev = 0;
-                for (const userId in payments) {
-                    if (payments[userId][prevFy]) {
-                        for (const m in payments[userId][prevFy]) {
-                            prevRev += parseInt(payments[userId][prevFy][m].amountPaid || 0);
-                        }
-                    }
+                const yoyStats = calcStats(prevFy, month);
+                const calcGrowth = (curr, prev) => prev === 0 ? (curr > 0 ? 100 : 0) : Math.round(((curr - prev) / prev) * 100);
+                
+                const yoyRevG = calcGrowth(currStats.rev, yoyStats.rev);
+                const yoyAdmG = calcGrowth(currStats.admCount, yoyStats.admCount);
+                
+                yoyMsg = `<strong>YoY Revenue:</strong> ${yoyRevG >= 0 ? '+' : ''}${yoyRevG}% (₹${yoyStats.rev.toLocaleString()}) <br> <strong>YoY Admissions:</strong> ${yoyAdmG >= 0 ? '+' : ''}${yoyAdmG}% (${yoyStats.admCount})`;
+
+                if (month !== 'All') {
+                    const mIdx = tariffMonthsOrder.indexOf(month);
+                    let prevM, prevMFy;
+                    if (mIdx === 0) { prevM = 'March'; prevMFy = prevFy; }
+                    else { prevM = tariffMonthsOrder[mIdx - 1]; prevMFy = fy; }
+                    
+                    const momStats = calcStats(prevMFy, prevM);
+                    const momRevG = calcGrowth(currStats.rev, momStats.rev);
+                    const momAdmG = calcGrowth(currStats.admCount, momStats.admCount);
+                    
+                    momMsg = `<br><br><strong>MoM Revenue:</strong> ${momRevG >= 0 ? '+' : ''}${momRevG}% (₹${momStats.rev.toLocaleString()}) <br> <strong>MoM Admissions:</strong> ${momAdmG >= 0 ? '+' : ''}${momAdmG}% (${momStats.admCount})`;
+                } else {
+                    momMsg = '<br><br><span style="color:var(--text-muted); font-size:0.85rem;">MoM Growth N/A for entire year view.</span>';
                 }
-                
-                let growth = 0;
-                if (prevRev === 0 && totalRev > 0) growth = 100;
-                else if (prevRev > 0) growth = Math.round(((totalRev - prevRev) / prevRev) * 100);
-                
-                const color = growth >= 0 ? 'green' : 'red';
-                const sign = growth > 0 ? '+' : '';
 
-                document.getElementById('yoy-analysis-content').innerHTML = `
-                    <strong>Selected Period (${fy}):</strong> ₹${totalRev.toLocaleString()}<br>
-                    <strong>Previous Year (${prevFy}):</strong> ₹${prevRev.toLocaleString()}<br>
-                    <strong style="color:${color}; font-size:1.1rem; display:block; margin-top:5px;">Growth: ${sign}${growth}%</strong>
-                `;
-
+                document.getElementById('yoy-analysis-content').innerHTML = yoyMsg + momMsg;
                 document.getElementById('report-content').style.display = 'block';
             },
+
             exportTableToCSV: function(tableId, filename) {
                 const table = document.getElementById(tableId);
                 let csv = [];
