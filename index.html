@@ -24,17 +24,18 @@
             --error-red: #d32f2f;
         }
 
+        /* 14px Base Font for compact sizing */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-        html { font-size: 16px; background-color: var(--bg-main); }
+        html { font-size: 14px; background-color: var(--bg-main); }
         body { color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
         /* ==========================================================================
-           2. MAIN LAYOUT & NAVIGATION
+           2. MAIN LAYOUT & NAVIGATION (FIXED HEADER & FOOTER)
            ========================================================================== */
-        #app-wrapper { display: flex; flex-direction: column; min-height: 100vh; padding-top: 75px; padding-bottom: 60px; }
+        #app-wrapper { display: flex; flex-direction: column; min-height: 100vh; padding-top: 60px; padding-bottom: 60px; }
 
         .app-header {
-            background-color: var(--bg-panel); padding: 1rem 1.5rem; display: flex; justify-content: center; align-items: center;
+            background-color: var(--bg-panel); height: 60px; padding: 0 1.5rem; display: flex; justify-content: center; align-items: center;
             border-bottom: 3px solid var(--accent-orange); position: fixed; top: 0; left: 0; width: 100%; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
         .app-footer {
@@ -42,11 +43,11 @@
             border-top: 1px solid var(--border-color); position: fixed; bottom: 0; left: 0; width: 100%; z-index: 100; box-shadow: 0 -4px 15px rgba(0,0,0,0.03);
         }
 
-        .logo-container { cursor: pointer; display: flex; align-items: center; transition: transform 0.2s; }
+        .logo-container { cursor: pointer; display: flex; align-items: center; transition: transform 0.2s; height: 100%; }
         .logo-container:active { transform: scale(0.95); }
-        .logo-container img { height: 45px; object-fit: contain; }
+        .logo-container img { height: 35px; object-fit: contain; }
 
-        .view-section { display: none; flex: 1; width: 100%; max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; animation: fadeIn 0.3s ease-in-out; }
+        .view-section { display: none; flex: 1; width: 100%; max-width: 1200px; margin: 0 auto; padding: 1.5rem; animation: fadeIn 0.3s ease-in-out; }
         .view-section.active-view { display: block; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -73,20 +74,20 @@
         .module-card h3 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0; color: var(--text-main); font-weight: 700; }
 
         /* ==========================================================================
-           4. FORM UI
+           4. FORM UI & PIN INPUT
            ========================================================================== */
-        .module-toolbar { display: flex; align-items: center; margin-bottom: 2rem; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); justify-content: space-between; }
+        .module-toolbar { display: flex; align-items: center; margin-bottom: 1.5rem; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); justify-content: space-between; }
         .back-btn { background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; margin-left: -0.5rem; transition: color 0.2s; font-weight: 600; }
         .back-btn:hover { color: var(--accent-orange); }
         .module-title { font-size: clamp(1.2rem, 4vw, 1.8rem); color: var(--accent-orange); text-transform: uppercase; font-weight: 800; text-align: right; }
         
         .form-layout { max-width: 800px; margin: 0 auto; background: var(--bg-panel); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border-color); }
-        .form-row { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .form-row { display: flex; gap: 1.5rem; margin-bottom: 1.2rem; }
         .form-group { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
         label { margin-bottom: 0.6rem; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
         .required { color: var(--accent-orange); font-size: 1.1rem; line-height: 0; vertical-align: middle; }
         
-        input, select, textarea { background-color: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-main); padding: 1rem; border-radius: 8px; outline: none; transition: all 0.3s; font-size: 1rem; width: 100%; font-weight: 500; }
+        input, select, textarea { background-color: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-main); padding: 0.9rem 1rem; border-radius: 8px; outline: none; transition: all 0.3s; font-size: 1rem; width: 100%; font-weight: 500; }
         input:focus, select:focus, textarea:focus { border-color: var(--accent-orange); background-color: var(--bg-panel); box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1); }
         input[readonly] { background-color: #e9ecef; color: var(--text-muted); cursor: not-allowed; border-style: dashed; }
         
@@ -120,11 +121,11 @@
         .signature-container { width: 100%; margin-top: 1rem; text-align: center; }
         .signature-pad { border: 2px solid var(--accent-orange); border-radius: 8px; background-color: #ffffff; cursor: crosshair; touch-action: none; width: 100%; max-width: 450px; height: 150px; display: block; margin: 0 auto 1rem auto; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05); }
 
-        /* Re-Admission Validation Input Layout Fix */
-        #reAdmissionSection { background: var(--bg-main); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px dashed var(--accent-orange); display: none; animation: fadeIn 0.3s ease; }
-        .val-group { display: flex; flex-wrap: nowrap; gap: 10px; align-items: stretch; margin-bottom: 1rem; width: 100%; }
-        .val-group input { flex: 1 1 0%; min-width: 0; width: 100%; margin-bottom: 0 !important; }
-        .val-group button { flex: 0 0 auto; margin-bottom: 0 !important; padding: 0 1.5rem; height: 100%; white-space: nowrap; display: flex; align-items: center; justify-content: center; }
+        /* Re-Admission Validation Input Layout Fix (Bulletproof Grid) */
+        #reAdmissionSection { background: var(--bg-main); padding: 1.2rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px dashed var(--accent-orange); display: none; animation: fadeIn 0.3s ease; }
+        .val-group { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: stretch; margin-bottom: 0.5rem; width: 100%; }
+        .val-group input, .val-group button { margin: 0 !important; box-sizing: border-box; }
+        .val-group button { padding: 0 1.5rem; white-space: nowrap; height: 100%; }
 
         /* ==========================================================================
            6. REPORTS, HUB & CALENDAR UI
@@ -227,7 +228,7 @@
         .pdf-footer { margin-top: auto; border-top: 1px solid var(--accent-orange); padding-top: 10px; text-align: center; font-size: 9px; color: #555; font-weight: 600; }
 
         @media(max-width: 768px) {
-            .view-section { padding: 6rem 1rem 3rem 1rem; }
+            .view-section { padding: 1.5rem; }
             .form-row { flex-direction: column; gap: 1rem; margin-bottom: 1rem; }
             .form-layout { padding: 1.5rem; border: none; box-shadow: none; background: transparent; }
             .btn { padding: 0.9rem 1.5rem; }
@@ -279,11 +280,12 @@
                     </button>
                     <h2 class="module-title" id="login-title">Login</h2>
                 </div>
+                <!-- Pure Javascript bind removes native form hijacking crashes -->
                 <form id="loginForm" onsubmit="event.preventDefault(); window.appContext.handleLogin();">
                     <div class="form-group">
                         <input type="password" id="pin-input" class="pin-input" inputmode="numeric" required autocomplete="off">
                     </div>
-                    <button type="submit" class="btn primary" style="margin-top:1rem;">Verify & Access</button>
+                    <button type="button" onclick="window.appContext.handleLogin()" class="btn primary" style="margin-top:1rem;">Verify & Access</button>
                 </form>
             </div>
         </main>
@@ -327,7 +329,7 @@
             </div>
         </main>
 
-        <!-- USER SEARCH -->
+        <!-- USER SEARCH (Handles Details & Fee Selection) -->
         <main id="view-user-search" class="view-section">
             <div class="form-layout" style="max-width: 500px;">
                 <div class="module-toolbar">
@@ -351,7 +353,7 @@
             </div>
         </main>
 
-        <!-- USER HUB -->
+        <!-- USER HUB (Profile View & Calendar) -->
         <main id="view-user-hub" class="view-section">
             <div class="form-layout" style="max-width: 900px;">
                 <div class="module-toolbar">
@@ -521,12 +523,12 @@
                             </div>
                         </div>
 
-                        <!-- Fixed Re-Admission Layout using Pure Flex -->
+                        <!-- Fixed Re-Admission Layout using CSS Grid -->
                         <div id="reAdmissionSection">
-                            <label style="color: var(--accent-orange); margin-bottom: 0.5rem; display: block; font-weight: 800;">Validate Previous Registration</label>
+                            <label style="color: var(--accent-orange); margin-bottom: 0.8rem; display: block; font-weight: 800;">Validate Previous Registration</label>
                             <div class="val-group">
                                 <input type="tel" id="prevPhoneInput" placeholder="10-digit number" pattern="\d{10}" maxlength="10">
-                                <button type="button" id="btn-validate-readmission" class="btn secondary">Validate</button>
+                                <button type="button" onclick="window.moduleContext.validateReadmission()" class="btn secondary">Validate</button>
                             </div>
                             <div id="validationResultBox" style="display:none; font-size: 0.9rem; line-height: 1.5; padding: 1rem; background: var(--bg-panel); border-radius: 6px; border: 1px solid var(--border-color);"></div>
                         </div>
@@ -772,7 +774,7 @@
                         <tr><th>TRAINING CATEGORY</th><td id="pdf-training-category"></td></tr>
                         <tr><th>PRIMARY CONTACT</th><td id="pdf-contact1"></td></tr>
                         <tr><th>ALTERNATE CONTACT</th><td id="pdf-contact2"></td></tr>
-                        <tr><th>DATE OF BIRTH</th><td id="pdf-dob-age"></td></tr>
+                        <tr><th>DATE OF BIRTH & AGE</th><td id="pdf-dob-age"></td></tr>
                         <tr><th>RESIDENTIAL ADDRESS</th><td id="pdf-address"></td></tr>
                     </table>
                 </div>
@@ -816,6 +818,7 @@
         </div>
     </div>
 
+    <!-- Receipt Generator -->
     <div id="receipt-render-zone">
         <div id="receipt-template">
             <div class="rcpt-header">
@@ -862,6 +865,18 @@
             if(!isoStr) return '';
             const d = new Date(isoStr);
             return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
+        }
+
+        function calculateAgeFromDate(dateStr) {
+            if(!dateStr || dateStr.length !== 10 || !dateStr.includes('-')) return '';
+            const p = dateStr.split('-');
+            const dob = new Date(p[2], p[1]-1, p[0]);
+            if (isNaN(dob.getTime())) return '';
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const m = today.getMonth() - dob.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) { age--; }
+            return age >= 0 ? age : '';
         }
 
         // Establish pure global context mathematically prior to DOM parsing
@@ -931,7 +946,7 @@
             initUpiEditor: function() { document.getElementById('admin-upi-id').value = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId; },
             saveUpi: function() {
                 const newUpi = document.getElementById('admin-upi-id').value.trim();
-                if(newUpi) { localStorage.setItem('revive_upi_id', newUpi); alert("UPI ID saved."); window.appContext.goHome(); } else alert("Invalid UPI ID.");
+                if(newUpi) { localStorage.setItem('revive_upi_id', newUpi); alert("UPI ID saved."); appContext.goHome(); } else alert("Invalid UPI ID.");
             },
             initTariffEditor: function() {
                 const fySelect = document.getElementById('fy-select'); const container = document.getElementById('tariff-months-container');
@@ -985,9 +1000,10 @@
                 }
                 document.getElementById('search-phone').value = '';
                 document.getElementById('search-title').innerText = mode === 'fee' ? "Search for Fee Collection" : "Search User Details";
-                window.appContext.switchView('user-search');
+                appContext.switchView('user-search');
             },
-            fetchUserHub: function() {
+            fetchUserHub: function(e) {
+                if(e) e.preventDefault();
                 const phone = document.getElementById('search-phone').value;
                 const fy = document.getElementById('search-fy').value;
                 
@@ -1000,7 +1016,7 @@
                 const photoEl = document.getElementById('hub-photo');
                 photoEl.src = user.photo || 'https://via.placeholder.com/70x70/141414/a0a0a0?text=N/A';
                 
-                if (window.appContext.currentRole === 'staff') {
+                if (appContext.currentRole === 'staff') {
                     photoEl.style.pointerEvents = 'none'; photoEl.style.userSelect = 'none'; photoEl.style.webkitUserDrag = 'none'; photoEl.oncontextmenu = (ev) => ev.preventDefault();
                 } else {
                     photoEl.style.pointerEvents = 'auto'; photoEl.style.userSelect = 'auto'; photoEl.style.webkitUserDrag = 'auto'; photoEl.oncontextmenu = null;
@@ -1021,12 +1037,12 @@
                     document.getElementById('hub-instruction').style.display = 'block';
                     document.getElementById('hub-instruction').innerText = "Click on a paid green month to view the receipt.";
                     document.getElementById('btn-hub-edit').style.display = 'flex'; 
-                    document.getElementById('btn-hub-pdf').style.display = window.appContext.currentRole === 'admin' ? 'flex' : 'none';
-                    document.getElementById('btn-hub-delete').style.display = window.appContext.currentRole === 'admin' ? 'flex' : 'none';
+                    document.getElementById('btn-hub-pdf').style.display = appContext.currentRole === 'admin' ? 'flex' : 'none';
+                    document.getElementById('btn-hub-delete').style.display = appContext.currentRole === 'admin' ? 'flex' : 'none';
                 }
                 
                 this.renderFeeCalendar(user.id, fy, user.trainingCategory, user.date);
-                window.appContext.switchView('user-hub');
+                appContext.switchView('user-hub');
             },
             renderFeeCalendar: function(userId, fy, trainCat, adDateStr) {
                 const grid = document.getElementById('fee-calendar'); grid.innerHTML = '';
@@ -1058,7 +1074,7 @@
                     let statusClass = 'status-unpaid'; let displayAmt = ''; let action = '';
 
                     if (currentHubMode === 'fee') {
-                        action = `onclick="window.moduleContext.initPayment('${month}', '${fy}')"`;
+                        action = `onclick="moduleContext.initPayment('${month}', '${fy}')"`;
                     }
 
                     if (record) {
@@ -1066,7 +1082,7 @@
                             statusClass = 'status-paid'; 
                             let payDateStr = record.lastDate ? `<br><span style="font-size:0.65rem; font-weight:normal;">Paid on: ${formatDateStr(record.lastDate)}</span>` : '';
                             displayAmt = `Paid: ₹${record.amountPaid}${payDateStr}`; 
-                            if (currentHubMode === 'details') { action = `onclick="window.moduleContext.viewReceipt('${month}', '${fy}')"`; }
+                            if (currentHubMode === 'details') { action = `onclick="moduleContext.viewReceipt('${month}', '${fy}')"`; }
                             else { action = ''; }
                         } 
                         else if (record.status === 'Partial') { 
@@ -1196,7 +1212,7 @@
                 document.getElementById('lastName').value = u.lastName;
                 document.getElementById('primaryContact').value = u.primaryContact;
                 document.getElementById('alternateContact').value = u.alternateContact;
-                document.getElementById('dob').value = u.dob || ''; 
+                document.getElementById('dob').value = u.dob || ''; document.getElementById('age').value = u.age || '';
                 document.getElementById('address').value = u.address;
                 
                 document.getElementById('selfie-data').value = u.photo;
@@ -1208,14 +1224,14 @@
                     document.getElementById('btn-switch-camera').style.display = 'none';
                     document.getElementById('btn-retake').style.display = 'inline-flex';
                 }
-                window.appContext.switchView('admission');
+                appContext.switchView('admission');
             },
             deleteUser: function() {
                 if(confirm(`Are you sure you want to completely remove ${currentActiveUser.fullName} (${currentActiveUser.id})? This cannot be undone.`)) {
                     let users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
                     users = users.filter(u => u.id !== currentActiveUser.id);
                     localStorage.setItem('revive_users_db', JSON.stringify(users));
-                    alert("User deleted."); window.appContext.goHome();
+                    alert("User deleted."); appContext.goHome();
                 }
             },
             regeneratePdf: function() {
@@ -1365,234 +1381,8 @@
                 const a = document.createElement("a");
                 a.download = filename; a.href = window.URL.createObjectURL(csvFile);
                 a.style.display = "none"; document.body.appendChild(a); a.click(); document.body.removeChild(a);
-            }
-        };
-
-        window.appContext = appContext;
-        window.moduleContext = moduleContext;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // Document Level Event Mapping
-            const mapClick = (id, fn) => { const el = document.getElementById(id); if(el) el.addEventListener('click', fn); };
-            const mapChange = (id, fn) => { const el = document.getElementById(id); if(el) el.addEventListener('change', fn); };
-            const mapInput = (id, fn) => { const el = document.getElementById(id); if(el) el.addEventListener('input', fn); };
-
-            mapClick('btn-next-step', () => {
-                let isValid = true; 
-                document.getElementById('step-1').querySelectorAll('input, select, textarea').forEach(input => { if (!input.checkValidity()) { input.reportValidity(); isValid = false; } });
-                if(isValid) { document.getElementById('step-1').classList.remove('active-step'); document.getElementById('step-2').classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' }); window.dispatchEvent(new Event('resize')); } 
-            });
-
-            mapClick('btn-prev-step', () => { document.getElementById('step-2').classList.remove('active-step'); document.getElementById('step-1').classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
-
-            mapClick('btn-next-step-2', () => {
-                const selfieData = document.getElementById('selfie-data');
-                const sigCanvas = document.getElementById('signature-pad');
-                let isSigEmpty = true;
-                if(sigCanvas) {
-                    const ctx = sigCanvas.getContext('2d');
-                    const canvasData = ctx.getImageData(0, 0, sigCanvas.width, sigCanvas.height).data;
-                    for (let i = 0; i < canvasData.length; i += 4) { if (canvasData[i+3] > 0) { isSigEmpty = false; break; } }
-                }
-
-                if (!selfieData.value) { alert("Portrait capture is mandatory."); return; }
-                if (isSigEmpty && !IS_EDIT_MODE) { alert("Digital signature is mandatory."); return; }
-
-                const fName = document.getElementById('firstName').value.trim(); const lName = document.getElementById('lastName').value.trim(); const fullName = lName ? `${fName} ${lName}` : fName;
-                let finalSig = !isSigEmpty ? sigCanvas.toDataURL('image/jpeg', 1.0) : (IS_EDIT_MODE ? currentActiveUser.signature : '');
-
-                if (IS_EDIT_MODE) {
-                    currentActiveUser.date = document.getElementById('dateOfAdmission').value;
-                    currentActiveUser.admissionType = document.getElementById('admissionTypeSelect').value;
-                    currentActiveUser.admissionCategory = document.getElementById('admissionCategory').value;
-                    currentActiveUser.trainingCategory = document.getElementById('trainingCategory').value;
-                    currentActiveUser.firstName = fName; currentActiveUser.lastName = lName; currentActiveUser.fullName = fullName;
-                    currentActiveUser.primaryContact = document.getElementById('primaryContact').value;
-                    currentActiveUser.alternateContact = document.getElementById('alternateContact').value;
-                    currentActiveUser.dob = document.getElementById('dob').value;
-                    currentActiveUser.address = document.getElementById('address').value.trim();
-                    currentActiveUser.photo = selfieData.value;
-                    currentActiveUser.signature = finalSig;
-
-                    let usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                    let idx = usersDb.findIndex(u => u.id === currentActiveUser.id);
-                    if(idx !== -1) { usersDb[idx] = currentActiveUser; localStorage.setItem('revive_users_db', JSON.stringify(usersDb)); }
-                    
-                    document.getElementById('sm-title').innerText = "Update Complete!";
-                    document.getElementById('generated-id').innerText = currentActiveUser.id;
-                    document.getElementById('sm-adm-actions').style.display = 'none';
-                    document.getElementById('sm-edit-actions').style.display = 'flex';
-                    document.getElementById('successModal').style.display = 'flex';
-                    return;
-                }
-
-                let currentCount = localStorage.getItem('revive_admission_count');
-                currentCount = !currentCount ? 1 : parseInt(currentCount) + 1;
-                preAdmissionId = `REV-${String(currentCount).padStart(4, '0')}`;
-                
-                const adDateVal = document.getElementById('dateOfAdmission').value;
-                const parts = adDateVal.split('-'); const adDateObj = new Date(parts[2], parts[1]-1, parts[0]);
-                const monthName = adDateObj.toLocaleString('default', { month: 'long' });
-                
-                const y = adDateObj.getFullYear(); const m = adDateObj.getMonth(); 
-                let fyStart = m >= 3 ? y : y - 1; let fyString = `${fyStart}-${fyStart + 1}`;
-
-                const allTariffs = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
-                const monthTariff = (allTariffs[fyString] && allTariffs[fyString][monthName]) ? allTariffs[fyString][monthName] : { admFee: APP_CONFIG.baseAdmissionFee, regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
-
-                const isPT = document.getElementById('trainingCategory').value === 'Personal Training';
-                const applicableMonthlyFee = parseInt(isPT ? monthTariff.ptFee : monthTariff.regFee);
-                const baseAdmFee = parseInt(monthTariff.admFee);
-
-                const daysInMonth = new Date(parts[2], parts[1], 0).getDate(); 
-                const remainingDays = daysInMonth - parseInt(parts[0]) + 1; 
-                
-                let monthlyFeeToPay = applicableMonthlyFee;
-                if (remainingDays < 15) { monthlyFeeToPay = Math.round((applicableMonthlyFee / 30) * remainingDays); }
-
-                calculatedTotalFee = baseAdmFee + monthlyFeeToPay;
-
-                document.getElementById('calc-admission-id').innerText = preAdmissionId; document.getElementById('calc-admin-fee').innerText = baseAdmFee;
-                document.getElementById('calc-monthly-fee').innerText = monthlyFeeToPay; document.getElementById('calc-total-fee').innerText = calculatedTotalFee;
-
-                currentMemberDetails = {
-                    id: preAdmissionId, date: adDateVal,
-                    admissionType: document.getElementById('admissionTypeSelect').value, admissionCategory: document.getElementById('admissionCategory').value, trainingCategory: document.getElementById('trainingCategory').value,
-                    firstName: fName, lastName: lName, fullName: fullName, 
-                    primaryContact: document.getElementById('primaryContact').value, alternateContact: document.getElementById('alternateContact').value,
-                    dob: document.getElementById('dob').value, address: document.getElementById('address').value.trim(),
-                    photo: selfieData.value, signature: finalSig,
-                    _fy: fyString, _month: monthName 
-                };
-
-                const method = document.getElementById('paymentMethod').value;
-                const upiSec = document.getElementById('upi-section');
-                if (method === 'UPI') {
-                    upiSec.style.display = 'block'; document.getElementById('btn-validate-payment').innerText = 'Validate Payment & Complete';
-                    document.getElementById('qr-amount-display').innerText = calculatedTotalFee;
-                    const activeUpiId = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId;
-                    const upiString = `upi://pay?pa=${activeUpiId}&pn=ReviveFitness&am=${calculatedTotalFee}&cu=INR`;
-                    document.getElementById('upi-qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
-                } else { upiSec.style.display = 'none'; document.getElementById('btn-validate-payment').innerText = 'Collect Cash & Complete'; }
-
-                document.getElementById('step-2').classList.remove('active-step'); document.getElementById('step-3').classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-
-            mapClick('btn-prev-step-2', () => { document.getElementById('step-3').classList.remove('active-step'); document.getElementById('step-2').classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
-
-            mapChange('paymentMethod', function(e) {
-                const upiSec = document.getElementById('upi-section');
-                if (e.target.value === 'UPI') {
-                    upiSec.style.display = 'block'; document.getElementById('btn-validate-payment').innerText = 'Validate Payment & Complete';
-                    document.getElementById('qr-amount-display').innerText = calculatedTotalFee;
-                    const activeUpiId = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId;
-                    const upiString = `upi://pay?pa=${activeUpiId}&pn=ReviveFitness&am=${calculatedTotalFee}&cu=INR`;
-                    document.getElementById('upi-qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
-                } else { upiSec.style.display = 'none'; document.getElementById('btn-validate-payment').innerText = 'Collect Cash & Complete'; }
-            });
-
-            mapClick('btn-validate-payment', () => {
-                if (navigator.geolocation) { navigator.geolocation.getCurrentPosition((pos) => { userLocationStr = `Lat: ${pos.coords.latitude.toFixed(5)}, Long: ${pos.coords.longitude.toFixed(5)}`; }, (err) => { userLocationStr = "Location permissions denied"; }); }
-                if (document.getElementById('paymentMethod').value === 'UPI') { document.getElementById('success-paid-id').innerText = preAdmissionId; document.getElementById('paymentSuccessModal').style.display = 'flex'; } 
-                else { finalizeRegistration(); }
-            });
-
-            mapClick('btn-proceed-to-admission', () => { document.getElementById('paymentSuccessModal').style.display = 'none'; finalizeRegistration(); });
-
-            function finalizeRegistration() {
-                let usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                usersDb.push(currentMemberDetails); localStorage.setItem('revive_users_db', JSON.stringify(usersDb));
-                
-                let payDb = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
-                if(!payDb[currentMemberDetails.id]) payDb[currentMemberDetails.id] = {};
-                if(!payDb[currentMemberDetails.id][currentMemberDetails._fy]) payDb[currentMemberDetails.id][currentMemberDetails._fy] = {};
-                
-                const method = document.getElementById('paymentMethod').value;
-                payDb[currentMemberDetails.id][currentMemberDetails._fy][currentMemberDetails._month] = { totalDue: calculatedTotalFee, amountPaid: calculatedTotalFee, status: 'Paid', method: method, lastDate: new Date().toISOString() };
-                localStorage.setItem('revive_payments_db', JSON.stringify(payDb));
-
-                const currentCount = parseInt(preAdmissionId.split('-')[1]);
-                localStorage.setItem('revive_admission_count', currentCount);
-                
-                document.getElementById('sm-title').innerText = "Registration Complete!";
-                document.getElementById('generated-id').innerText = currentMemberDetails.id;
-                document.getElementById('sm-edit-actions').style.display = 'none';
-                document.getElementById('sm-adm-actions').style.display = 'flex';
-                document.getElementById('successModal').style.display = 'flex';
-            }
-
-            // PDF Downloading
-            function getPdfBlob() {
-                return new Promise((resolve, reject) => {
-                    const now = new Date(); const timestampStr = now.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
-                    
-                    document.getElementById('pdf-id').innerText = currentMemberDetails.id; document.getElementById('pdf-date').innerText = currentMemberDetails.date;
-                    document.getElementById('pdf-photo').src = currentMemberDetails.photo; document.getElementById('pdf-name').innerText = currentMemberDetails.fullName;
-                    document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType || 'N/A'} - ${currentMemberDetails.admissionCategory}`;
-                    document.getElementById('pdf-training-category').innerText = currentMemberDetails.trainingCategory;
-                    document.getElementById('pdf-contact1').innerText = currentMemberDetails.primaryContact; document.getElementById('pdf-contact2').innerText = currentMemberDetails.alternateContact || 'N/A';
-                    document.getElementById('pdf-dob-age').innerText = `${currentMemberDetails.dob || 'N/A'}`; document.getElementById('pdf-address').innerText = currentMemberDetails.address;
-                    
-                    const sigImgEl = document.getElementById('pdf-member-sig'); sigImgEl.src = currentMemberDetails.signature; sigImgEl.style.display = 'inline-block';
-                    document.getElementById('member-verified').innerText = `+91 ${currentMemberDetails.primaryContact}`; document.getElementById('member-timestamp').innerText = timestampStr;
-                    document.getElementById('member-location').innerText = userLocationStr; document.getElementById('official-timestamp').innerText = timestampStr;
-
-                    const appWrapper = document.getElementById('app-wrapper'); const pdfWrapper = document.getElementById('pdf-template-wrapper'); const element = document.getElementById('pdf-template');
-                    window.scrollTo(0, 0); appWrapper.style.display = 'none'; pdfWrapper.style.display = 'flex';
-
-                    setTimeout(() => {
-                        html2pdf().set({
-                            margin: 0, filename: `${currentMemberDetails.id}.pdf`, image: { type: 'jpeg', quality: 1.0 },
-                            html2canvas: { scale: 2, useCORS: true, scrollY: 0 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                        }).from(element).output('blob').then((blob) => {
-                            pdfWrapper.style.display = 'none'; appWrapper.style.display = 'flex'; resolve(blob);
-                        }).catch(err => { pdfWrapper.style.display = 'none'; appWrapper.style.display = 'flex'; reject(err); });
-                    }, 350);
-                });
-            }
-
-            mapClick('btn-download-pdf', async function() {
-                const btn = document.getElementById('btn-download-pdf'); btn.innerText = "Generating..."; btn.disabled = true;
-                try {
-                    const blob = await getPdfBlob(); const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = `${currentMemberDetails.id}.pdf`; document.body.appendChild(a); a.click();
-                    setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(url); }, 100);
-                } catch (err) { alert("Error generating PDF."); console.error(err); } 
-                finally { btn.innerText = "1. Download PDF Record"; btn.disabled = false; }
-            });
-            
-            mapClick('btn-whatsapp-welcome', () => {
-                const phone = currentMemberDetails.primaryContact;
-                const welcomeMsg = `🎉 Revive Fitness Studio-ലേക്ക് ഹൃദയം നിറഞ്ഞ സ്വാഗതം! 🏋️‍♂️✨\n\nനിങ്ങളുടെ Fitness Journey-യുടെ പുതിയ തുടക്കത്തിന് ഞങ്ങളോടൊപ്പം ചേർന്നതിൽ സന്തോഷം! 💪\n\nആരോഗ്യവും ഫിറ്റ്നസും ജീവിതത്തിന്റെ ഭാഗമാക്കി, നിങ്ങളുടെ ലക്ഷ്യങ്ങളിലേക്ക് ഓരോ ദിവസവും ഒരു പടി കൂടി മുന്നോട്ട് പോകാൻ Revive Fitness Studio നിങ്ങളോടൊപ്പം ഉണ്ടാകും. ❤️\n\n🔥 Train Better • Stay Strong • Live Healthy\n\nWelcome to the Revive Family! 🤝💪\n— Revive Fitness Studio`;
-                window.open(`https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(welcomeMsg)}`, '_blank');
-            });
-
-            mapClick('btn-whatsapp-pdf', async function() {
-                const btn = document.getElementById('btn-whatsapp-pdf'); btn.innerText = "Preparing Share..."; btn.disabled = true;
-                const phone = currentMemberDetails.primaryContact;
-                const msg = `Dear ${currentMemberDetails.fullName},\n\nThank you for joining Revive Fitness Studio!\nYour registration is successful. Your Admission Number is *${currentMemberDetails.id}*.\n\n*Please find your Official Admission Record attached.*`;
-                try {
-                    const blob = await getPdfBlob(); const file = new File([blob], `${currentMemberDetails.id}.pdf`, { type: 'application/pdf' });
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ title: `Admission Record`, text: msg, files: [file] }); } 
-                    else { alert("Native file sharing is unsupported. Opening WhatsApp."); window.open(`https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(msg)}`, '_blank'); }
-                } catch (err) { if (err.name !== 'AbortError') { console.error(err); alert("Error sharing document."); } } 
-                finally { btn.innerText = "3. Share PDF Record"; btn.disabled = false; }
-            });
-
-            // RE-ADMISSION VALIDATION LOGIC
-            mapChange('admissionTypeSelect', function(e) {
-                if (e.target.value === 'Re-Admission') { document.getElementById('reAdmissionSection').style.display = 'block'; } 
-                else { 
-                    document.getElementById('reAdmissionSection').style.display = 'none'; 
-                    document.getElementById('validationResultBox').style.display = 'none'; 
-                    document.getElementById('prevPhoneInput').value = ''; 
-                    document.getElementById('firstName').value = ''; document.getElementById('lastName').value = ''; 
-                    document.getElementById('primaryContact').value = ''; document.getElementById('alternateContact').value = ''; 
-                    document.getElementById('dob').value = ''; document.getElementById('address').value = ''; document.getElementById('age').value = '';
-                }
-            });
-
-            mapClick('btn-validate-readmission', () => {
+            },
+            validateReadmission: function() {
                 const phone = document.getElementById('prevPhoneInput').value; 
                 const resBox = document.getElementById('validationResultBox'); 
                 const admissionTypeSelect = document.getElementById('admissionTypeSelect');
@@ -1639,28 +1429,241 @@
                     document.getElementById('alternateContact').value = ''; document.getElementById('dob').value = '';
                     document.getElementById('address').value = ''; document.getElementById('age').value = '';
                 }
-            });
-
-            // Date Formatting Hook
-            const dobInp = document.getElementById('dob'); const dtInp = document.getElementById('dateOfAdmission'); const ageInp = document.getElementById('age');
-            
-            function fmtDt() {
-                let v = this.value.replace(/\D/g, ''); if(v.length>8) v=v.slice(0,8);
-                if(v.length>=5) this.value=`${v.slice(0,2)}-${v.slice(2,4)}-${v.slice(4)}`; else if(v.length>=3) this.value=`${v.slice(0,2)}-${v.slice(2)}`;
             }
+        };
+
+        // Date Formatting Hook (Global accessible to listeners)
+        function fmtDt(e) {
+            let v = e.target.value.replace(/\D/g, ''); if(v.length>8) v=v.slice(0,8);
+            if(v.length>=5) e.target.value=`${v.slice(0,2)}-${v.slice(2,4)}-${v.slice(4)}`; else if(v.length>=3) e.target.value=`${v.slice(0,2)}-${v.slice(2)}`;
+        }
+
+        // BIND CORE DOM EVENTS
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // Date Events Setup
+            const dobInp = document.getElementById('dob'); 
+            const dtInp = document.getElementById('dateOfAdmission'); 
+            const ageInp = document.getElementById('age');
 
             if(dobInp) {
-                dobInp.addEventListener('input', fmtDt); 
-                dobInp.addEventListener('keyup', () => { ageInp.value = calculateAgeFromDate(dobInp.value); }); 
-                dobInp.addEventListener('blur', () => { ageInp.value = calculateAgeFromDate(dobInp.value); });
+                dobInp.addEventListener('input', (e) => {
+                    fmtDt(e);
+                    if(ageInp) ageInp.value = calculateAgeFromDate(e.target.value);
+                }); 
+                dobInp.addEventListener('blur', (e) => { 
+                    if(ageInp) ageInp.value = calculateAgeFromDate(e.target.value); 
+                });
             }
-            if(dtInp) dtInp.addEventListener('input', fmtDt);
+            if(dtInp) {
+                dtInp.addEventListener('input', fmtDt);
+                dtInp.addEventListener('blur', function() {
+                    const v = this.value; if(v.length===10) {
+                        const p = v.split('-'); const d = new Date(p[2], p[1]-1, p[0]);
+                        const t = new Date(); t.setHours(0,0,0,0);
+                        if(d > t) { alert("Future dates not allowed."); this.value=`${String(t.getDate()).padStart(2,'0')}-${String(t.getMonth()+1).padStart(2,'0')}-${t.getFullYear()}`; }
+                    }
+                });
+            }
+
+            // CAMERA LOGIC
+            const video = document.getElementById('camera-stream'); const canvas = document.getElementById('canvas-snapshot'); const preview = document.getElementById('selfie-preview');
+            const btnStart = document.getElementById('btn-start-camera'); const btnSwitch = document.getElementById('btn-switch-camera'); const btnCapture = document.getElementById('btn-capture');
+            const btnRetake = document.getElementById('btn-retake'); const selfieData = document.getElementById('selfie-data');
+            let stream = null; let currentFacingMode = 'user';
+
+            async function startCamera() {
+                if(stream) stream.getTracks().forEach(t => t.stop());
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: currentFacingMode } });
+                    video.srcObject = stream; video.style.display = 'block'; document.querySelector('.camera-placeholder').style.display = 'none'; preview.style.display = 'none';
+                    btnStart.style.display = 'none'; btnSwitch.style.display = 'inline-flex'; btnCapture.style.display = 'inline-flex'; btnCapture.disabled = false;
+                } catch (err) { alert("Camera access denied or unavailable."); }
+            }
+            if(btnStart) btnStart.addEventListener('click', startCamera);
+            if(btnSwitch) btnSwitch.addEventListener('click', () => { currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user'; startCamera(); });
+
+            if(btnCapture) btnCapture.addEventListener('click', () => {
+                canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                selfieData.value = canvas.toDataURL('image/jpeg', 0.9); preview.src = selfieData.value;
+                video.style.display = 'none'; preview.style.display = 'block'; btnCapture.style.display = 'none'; btnSwitch.style.display = 'none'; btnRetake.style.display = 'inline-flex';
+                if(stream) stream.getTracks().forEach(track => track.stop());
+            });
+            if(btnRetake) btnRetake.addEventListener('click', () => { selfieData.value = ''; btnRetake.style.display = 'none'; startCamera(); });
+
+            // SIGNATURE PAD LOGIC
+            const sigCanvas = document.getElementById('signature-pad'); 
+            if(sigCanvas) {
+                const sigCtx = sigCanvas.getContext('2d');
+                let isDrawing = false; let signatureHasData = false;
+
+                function resizeCanvas() { const ratio = Math.max(window.devicePixelRatio || 1, 1); sigCanvas.width = sigCanvas.offsetWidth * ratio; sigCanvas.height = sigCanvas.offsetHeight * ratio; sigCtx.scale(ratio, ratio); clearSignature(); }
+                window.addEventListener("resize", resizeCanvas);
+                function clearSignature() { sigCtx.fillStyle = "#ffffff"; sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height); signatureHasData = false; }
+                const btnClrSig = document.getElementById('btn-clear-sig'); if(btnClrSig) btnClrSig.addEventListener('click', clearSignature);
+                function getPointerPos(e) { const rect = sigCanvas.getBoundingClientRect(); const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY; return { x: clientX - rect.left, y: clientY - rect.top }; }
+                function startDraw(e) { isDrawing = true; signatureHasData = true; sigCtx.beginPath(); const pos = getPointerPos(e); sigCtx.moveTo(pos.x, pos.y); if(e.type.includes('touch')) e.preventDefault(); }
+                function draw(e) { if (!isDrawing) return; const pos = getPointerPos(e); sigCtx.lineWidth = 3; sigCtx.lineCap = 'round'; sigCtx.strokeStyle = '#000000'; sigCtx.lineTo(pos.x, pos.y); sigCtx.stroke(); if(e.type.includes('touch')) e.preventDefault(); }
+                function endDraw(e) { isDrawing = false; sigCtx.closePath(); }
+                sigCanvas.addEventListener('mousedown', startDraw); sigCanvas.addEventListener('mousemove', draw); sigCanvas.addEventListener('mouseup', endDraw); sigCanvas.addEventListener('mouseout', endDraw);
+                sigCanvas.addEventListener('touchstart', startDraw, {passive: false}); sigCanvas.addEventListener('touchmove', draw, {passive: false}); sigCanvas.addEventListener('touchend', endDraw);
+
+                // FORM MULTI-STEP LOGIC
+                const step1 = document.getElementById('step-1'); const step2 = document.getElementById('step-2'); const step3 = document.getElementById('step-3');
+                
+                const btnNext = document.getElementById('btn-next-step');
+                if(btnNext) btnNext.addEventListener('click', () => {
+                    let isValid = true; step1.querySelectorAll('input, select, textarea').forEach(input => { if (!input.checkValidity()) { input.reportValidity(); isValid = false; } });
+                    if(isValid) { step1.classList.remove('active-step'); step2.classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' }); resizeCanvas(); } 
+                });
+
+                const btnPrev = document.getElementById('btn-prev-step');
+                if(btnPrev) btnPrev.addEventListener('click', () => { step2.classList.remove('active-step'); step1.classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+                const btnNext2 = document.getElementById('btn-next-step-2');
+                if(btnNext2) btnNext2.addEventListener('click', () => {
+                    if (!selfieData.value) { alert("Portrait capture is mandatory."); return; }
+                    if (!signatureHasData && !IS_EDIT_MODE) { alert("Digital signature is mandatory."); return; }
+
+                    const fName = document.getElementById('firstName').value.trim(); const lName = document.getElementById('lastName').value.trim(); const fullName = lName ? `${fName} ${lName}` : fName;
+                    let finalSig = signatureHasData ? sigCanvas.toDataURL('image/jpeg', 1.0) : (IS_EDIT_MODE ? currentActiveUser.signature : '');
+
+                    if (IS_EDIT_MODE) {
+                        currentActiveUser.date = document.getElementById('dateOfAdmission').value;
+                        currentActiveUser.admissionType = document.getElementById('admissionTypeSelect').value;
+                        currentActiveUser.admissionCategory = document.getElementById('admissionCategory').value;
+                        currentActiveUser.trainingCategory = document.getElementById('trainingCategory').value;
+                        currentActiveUser.firstName = fName; currentActiveUser.lastName = lName; currentActiveUser.fullName = fullName;
+                        currentActiveUser.primaryContact = document.getElementById('primaryContact').value;
+                        currentActiveUser.alternateContact = document.getElementById('alternateContact').value;
+                        currentActiveUser.dob = document.getElementById('dob').value;
+                        currentActiveUser.address = document.getElementById('address').value.trim();
+                        currentActiveUser.photo = selfieData.value;
+                        currentActiveUser.signature = finalSig;
+
+                        let usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
+                        let idx = usersDb.findIndex(u => u.id === currentActiveUser.id);
+                        if(idx !== -1) { usersDb[idx] = currentActiveUser; localStorage.setItem('revive_users_db', JSON.stringify(usersDb)); }
+                        
+                        document.getElementById('sm-title').innerText = "Update Complete!";
+                        document.getElementById('generated-id').innerText = currentActiveUser.id;
+                        document.getElementById('sm-adm-actions').style.display = 'none';
+                        document.getElementById('sm-edit-actions').style.display = 'flex';
+                        document.getElementById('successModal').style.display = 'flex';
+                        return;
+                    }
+
+                    let currentCount = localStorage.getItem('revive_admission_count');
+                    currentCount = !currentCount ? 1 : parseInt(currentCount) + 1;
+                    preAdmissionId = `REV-${String(currentCount).padStart(4, '0')}`;
+                    
+                    const adDateVal = document.getElementById('dateOfAdmission').value;
+                    const parts = adDateVal.split('-'); const adDateObj = new Date(parts[2], parts[1]-1, parts[0]);
+                    const monthName = adDateObj.toLocaleString('default', { month: 'long' });
+                    
+                    const y = adDateObj.getFullYear(); const m = adDateObj.getMonth(); 
+                    let fyStart = m >= 3 ? y : y - 1; let fyString = `${fyStart}-${fyStart + 1}`;
+
+                    const allTariffs = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
+                    const monthTariff = (allTariffs[fyString] && allTariffs[fyString][monthName]) ? allTariffs[fyString][monthName] : { admFee: APP_CONFIG.baseAdmissionFee, regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
+
+                    const isPT = document.getElementById('trainingCategory').value === 'Personal Training';
+                    const applicableMonthlyFee = parseInt(isPT ? monthTariff.ptFee : monthTariff.regFee);
+                    const baseAdmFee = parseInt(monthTariff.admFee);
+
+                    const daysInMonth = new Date(parts[2], parts[1], 0).getDate(); 
+                    const remainingDays = daysInMonth - parseInt(parts[0]) + 1; 
+                    
+                    let monthlyFeeToPay = applicableMonthlyFee;
+                    if (remainingDays < 15) { monthlyFeeToPay = Math.round((applicableMonthlyFee / 30) * remainingDays); }
+
+                    calculatedTotalFee = baseAdmFee + monthlyFeeToPay;
+
+                    document.getElementById('calc-admission-id').innerText = preAdmissionId; document.getElementById('calc-admin-fee').innerText = baseAdmFee;
+                    document.getElementById('calc-monthly-fee').innerText = monthlyFeeToPay; document.getElementById('calc-total-fee').innerText = calculatedTotalFee;
+
+                    currentMemberDetails = {
+                        id: preAdmissionId, date: adDateVal,
+                        admissionType: document.getElementById('admissionTypeSelect').value, admissionCategory: document.getElementById('admissionCategory').value, trainingCategory: document.getElementById('trainingCategory').value,
+                        firstName: fName, lastName: lName, fullName: fullName, 
+                        primaryContact: document.getElementById('primaryContact').value, alternateContact: document.getElementById('alternateContact').value,
+                        dob: document.getElementById('dob').value, address: document.getElementById('address').value.trim(),
+                        photo: selfieData.value, signature: finalSig,
+                        _fy: fyString, _month: monthName 
+                    };
+
+                    const method = document.getElementById('paymentMethod').value;
+                    const upiSec = document.getElementById('upi-section');
+                    if (method === 'UPI') {
+                        upiSec.style.display = 'block'; document.getElementById('btn-validate-payment').innerText = 'Validate Payment & Complete';
+                        document.getElementById('qr-amount-display').innerText = calculatedTotalFee;
+                        const activeUpiId = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId;
+                        const upiString = `upi://pay?pa=${activeUpiId}&pn=ReviveFitness&am=${calculatedTotalFee}&cu=INR`;
+                        document.getElementById('upi-qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
+                    } else { upiSec.style.display = 'none'; document.getElementById('btn-validate-payment').innerText = 'Collect Cash & Complete'; }
+
+                    document.getElementById('step-2').classList.remove('active-step'); document.getElementById('step-3').classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+
+            const btnPrev2 = document.getElementById('btn-prev-step-2');
+            if(btnPrev2) btnPrev2.addEventListener('click', () => { document.getElementById('step-3').classList.remove('active-step'); document.getElementById('step-2').classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+            const pMethod = document.getElementById('paymentMethod');
+            if(pMethod) pMethod.addEventListener('change', function() {
+                const upiSec = document.getElementById('upi-section');
+                if (this.value === 'UPI') {
+                    upiSec.style.display = 'block'; document.getElementById('btn-validate-payment').innerText = 'Validate Payment & Complete';
+                    document.getElementById('qr-amount-display').innerText = calculatedTotalFee;
+                    const activeUpiId = localStorage.getItem('revive_upi_id') || APP_CONFIG.upiId;
+                    const upiString = `upi://pay?pa=${activeUpiId}&pn=ReviveFitness&am=${calculatedTotalFee}&cu=INR`;
+                    document.getElementById('upi-qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
+                } else { upiSec.style.display = 'none'; document.getElementById('btn-validate-payment').innerText = 'Collect Cash & Complete'; }
+            });
+
+            const btnValPay = document.getElementById('btn-validate-payment');
+            if(btnValPay) btnValPay.addEventListener('click', () => {
+                if (navigator.geolocation) { navigator.geolocation.getCurrentPosition((pos) => { userLocationStr = `Lat: ${pos.coords.latitude.toFixed(5)}, Long: ${pos.coords.longitude.toFixed(5)}`; }, (err) => { userLocationStr = "Location permissions denied"; }); }
+                if (document.getElementById('paymentMethod').value === 'UPI') { document.getElementById('success-paid-id').innerText = preAdmissionId; document.getElementById('paymentSuccessModal').style.display = 'flex'; } 
+                else { finalizeRegistration(); }
+            });
+
+            const btnProcAdm = document.getElementById('btn-proceed-to-admission');
+            if(btnProcAdm) btnProcAdm.addEventListener('click', () => { document.getElementById('paymentSuccessModal').style.display = 'none'; finalizeRegistration(); });
+
+            function finalizeRegistration() {
+                let usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
+                usersDb.push(currentMemberDetails); localStorage.setItem('revive_users_db', JSON.stringify(usersDb));
+                
+                let payDb = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
+                if(!payDb[currentMemberDetails.id]) payDb[currentMemberDetails.id] = {};
+                if(!payDb[currentMemberDetails.id][currentMemberDetails._fy]) payDb[currentMemberDetails.id][currentMemberDetails._fy] = {};
+                
+                const method = document.getElementById('paymentMethod').value;
+                payDb[currentMemberDetails.id][currentMemberDetails._fy][currentMemberDetails._month] = { totalDue: calculatedTotalFee, amountPaid: calculatedTotalFee, status: 'Paid', method: method, lastDate: new Date().toISOString() };
+                localStorage.setItem('revive_payments_db', JSON.stringify(payDb));
+
+                const currentCount = parseInt(preAdmissionId.split('-')[1]);
+                localStorage.setItem('revive_admission_count', currentCount);
+                
+                document.getElementById('sm-title').innerText = "Registration Complete!";
+                document.getElementById('generated-id').innerText = currentMemberDetails.id;
+                document.getElementById('sm-edit-actions').style.display = 'none';
+                document.getElementById('sm-adm-actions').style.display = 'flex';
+                document.getElementById('successModal').style.display = 'flex';
+            }
             
-            if(dtInp) dtInp.addEventListener('blur', function() {
-                const v = this.value; if(v.length===10) {
-                    const p = v.split('-'); const d = new Date(p[2], p[1]-1, p[0]);
-                    const t = new Date(); t.setHours(0,0,0,0);
-                    if(d > t) { alert("Future dates not allowed."); this.value=`${String(t.getDate()).padStart(2,'0')}-${String(t.getMonth()+1).padStart(2,'0')}-${t.getFullYear()}`; }
+            const admSelect = document.getElementById('admissionTypeSelect');
+            if(admSelect) admSelect.addEventListener('change', function(e) {
+                if (e.target.value === 'Re-Admission') { document.getElementById('reAdmissionSection').style.display = 'block'; } 
+                else { 
+                    document.getElementById('reAdmissionSection').style.display = 'none'; 
+                    document.getElementById('validationResultBox').style.display = 'none'; 
+                    document.getElementById('prevPhoneInput').value = ''; 
+                    document.getElementById('firstName').value = ''; document.getElementById('lastName').value = ''; 
+                    document.getElementById('primaryContact').value = ''; document.getElementById('alternateContact').value = ''; 
+                    document.getElementById('dob').value = ''; document.getElementById('address').value = ''; document.getElementById('age').value = '';
                 }
             });
         });
