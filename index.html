@@ -247,7 +247,7 @@
             </div>
         </header>
 
-        <!-- PORTAL ENTRY SCREEN -->
+        <!-- PORTAL ENTRY SCREEN (HOMEPAGE WITH ATTENDANCE MODULE) -->
         <main id="view-home" class="view-section active-view">
             <div class="dashboard-header">
                 <h1>WELCOME TO <span>REVIVE</span></h1>
@@ -257,6 +257,11 @@
                 <div class="module-card" onclick="appContext.startAdmission()">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                     <h3>Admission Registration</h3>
+                </div>
+                <!-- ATTENDANCE MODULE MOVED TO HOMEPAGE -->
+                <div class="module-card" onclick="appContext.switchView('attendance')">
+                    <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <h3>Daily Attendance</h3>
                 </div>
                 <div class="module-card" onclick="appContext.openLogin('staff')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
@@ -299,11 +304,6 @@
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
                     <h3>Fee Collection</h3>
                 </div>
-                <!-- ATTENDANCE MODULE LINK -->
-                <div class="module-card" onclick="appContext.switchView('attendance')">
-                    <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                    <h3>Attendance</h3>
-                </div>
                 <div class="module-card" onclick="moduleContext.openUserSearch('details')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                     <h3>User Details</h3>
@@ -339,7 +339,6 @@
                     <h2 class="module-title">Daily Attendance Marker</h2>
                 </div>
 
-                <!-- Mark Attendance Form -->
                 <form id="attendanceForm" onsubmit="moduleContext.markAttendance(event)">
                     <div class="form-row">
                         <div class="form-group">
@@ -355,7 +354,6 @@
 
                 <div id="att-result-box" style="display:none; margin-top: 1rem; padding: 1rem; background: var(--bg-main); border-radius: 8px; border: 1px solid var(--border-color);"></div>
 
-                <!-- Attendance Log Viewer Section -->
                 <div style="margin-top: 2.5rem; border-top: 2px solid var(--border-color); padding-top: 1.5rem;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3 style="color: var(--accent-orange); text-transform: uppercase; font-size: 1.1rem;">Attendance Logs</h3>
@@ -367,7 +365,6 @@
                                 <tr><th>Time</th><th>ID</th><th>Member Name</th><th>Contact</th></tr>
                             </thead>
                             <tbody>
-                                <!-- Dynamic logs inserted here -->
                             </tbody>
                         </table>
                     </div>
@@ -1037,9 +1034,6 @@
                 alert(`Tariffs for ${fy} saved.`);
             },
             
-            // =======================================================================
-            // ATTENDANCE ENGINE & LOGIC
-            // =======================================================================
             initAttendanceView: function() {
                 const todayIso = new Date().toISOString().split('T')[0];
                 const datePicker = document.getElementById('att-filter-date');
@@ -1060,7 +1054,6 @@
                 }
 
                 let users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                // Search by admission ID or primary phone number
                 let user = users.find(u => u.id.toLowerCase() === val.toLowerCase() || u.primaryContact === val);
 
                 if(!user) {
@@ -1069,14 +1062,13 @@
                 }
 
                 const now = new Date();
-                const dateKey = now.toISOString().split('T')[0]; // YYYY-MM-DD
+                const dateKey = now.toISOString().split('T')[0];
                 const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                const monthName = now.toLocaleString('default', { month: 'long' }); // e.g., September
+                const monthName = now.toLocaleString('default', { month: 'long' });
 
                 let attDb = JSON.parse(localStorage.getItem('revive_attendance_db')) || {};
                 if(!attDb[dateKey]) attDb[dateKey] = [];
 
-                // Prevent duplicate scanning on the exact same day
                 const alreadyMarked = attDb[dateKey].some(a => a.userId === user.id);
                 if(alreadyMarked) {
                     resBox.innerHTML = `<span style="color:var(--warning-yellow); font-weight:bold;">⚠️ Attendance already marked today for ${user.fullName} (${user.id})!</span>`;
@@ -1123,20 +1115,17 @@
                 });
             },
             
-            // Helper to get total attendance count for a specific user in a specific month/year
             getUserMonthAttendanceCount: function(userId, monthName, fy) {
                 let attDb = JSON.parse(localStorage.getItem('revive_attendance_db')) || {};
                 let count = 0;
                 const fyStartYear = parseInt(fy.split('-')[0]);
-                const fyEndYear = parseInt(fy.split('-')[1]);
 
                 for (const dateStr in attDb) {
                     const d = new Date(dateStr);
                     const mName = d.toLocaleString('default', { month: 'long' });
                     const y = d.getFullYear();
-                    const m = d.getMonth(); // 0-11
+                    const m = d.getMonth();
                     
-                    // Determine financial year association (April = index 3)
                     let recordFy = m >= 3 ? `${y}-${y+1}` : `${y-1}-${y}`;
 
                     if (recordFy === fy && mName === monthName) {
@@ -1230,7 +1219,6 @@
                         return;
                     }
 
-                    // Fetch exact captured attendance count for this member for this month
                     const attCount = moduleContext.getUserMonthAttendanceCount(userId, month, fy);
                     const attBadge = `<br><span style="font-size:0.7rem; background:rgba(0,0,0,0.2); padding:1px 5px; border-radius:4px;">Att: ${attCount} days</span>`;
 
