@@ -926,7 +926,7 @@
          JAVASCRIPT ENGINE & CLOUD SYNC
          ======================================================================= -->
     <script>
-        const CLOUD_SYNC_URL = "https://script.google.com/macros/s/AKfycbwB0KBdRUI0zE6IQ69DDrrmZPFlEC_5igBPunTnWce24CtzzAi7aQNZSFa6jwIMRGIu/exec"; 
+        const CLOUD_SYNC_URL = "https://script.google.com/macros/s/AKfycbzrMaM3oGkB3voPe0cFjDHX2Qck0DYvo2ox8Hu7tAm-7A6DNvA-YCsnHzDagpHAqcL6yQ/exec"; 
         
         const APP_CONFIG = { baseAdmissionFee: 850, baseMonthlyFee: 800, basePTFee: 1500 };
         const tariffMonthsOrder = ['April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March'];
@@ -2057,7 +2057,7 @@
             if(btnCapture) btnCapture.addEventListener('click', () => {
                 canvas.width = video.videoWidth; canvas.height = video.videoHeight;
                 canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-                selfieData.value = canvas.toDataURL('image/jpeg', 0.6); // Slightly compressed for sync speed
+                selfieData.value = canvas.toDataURL('image/jpeg', 0.6); 
                 preview.src = selfieData.value;
                 video.style.display = 'none'; preview.style.display = 'block'; btnCapture.style.display = 'none'; btnSwitch.style.display = 'none'; btnRetake.style.display = 'inline-flex';
                 if(stream) stream.getTracks().forEach(track => track.stop());
