@@ -115,6 +115,8 @@
         
         .action-row { display: flex; gap: 1rem; margin-top: 2rem; }
         .action-row .btn { flex: 1; }
+        
+        .promo-badge { background: var(--accent-orange); color: #fff; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; vertical-align: middle; margin-left: 5px; }
 
         /* ==========================================================================
            5. MULTI-STEP LOGIC & VERIFICATION UI
@@ -141,6 +143,10 @@
         .tariff-row { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .tariff-month-name { font-weight: 800; color: var(--accent-orange); margin-bottom: 1rem; font-size: 1.1rem; text-transform: uppercase; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
         .tariff-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+        
+        .promo-card { display:flex; justify-content:space-between; align-items:center; background:#fff5eb; border:1px solid #ffcc99; border-left:4px solid var(--accent-orange); padding:1rem; border-radius:6px; margin-bottom:10px; }
+        .promo-card h4 { margin:0 0 5px 0; color:var(--text-main); text-transform:uppercase; font-size:0.95rem; }
+        .promo-card p { margin:0; color:var(--text-muted); font-size:0.85rem; font-weight:600;}
 
         .fee-summary-box { background-color: var(--bg-main); border: 2px dashed var(--accent-orange); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; font-size: 1.1rem; }
         .fee-row { display: flex; justify-content: space-between; margin-bottom: 1rem; align-items: center;}
@@ -335,7 +341,6 @@
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                     <h3>Tariff Editor</h3>
                 </div>
-                <!-- Splitting UPI Account and PIN Settings Modules -->
                 <div class="module-card admin-only" onclick="appContext.switchView('upi-editor')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
                     <h3>UPI Account</h3>
@@ -564,7 +569,6 @@
             </div>
         </main>
 
-        <!-- NEW: PIN Editor view separated from UPI settings -->
         <main id="view-pin-editor" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
@@ -591,9 +595,35 @@
                     <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">Master Tariff Configurator</h2>
                 </div>
+
+                <!-- NEW: PROMO TARIFF SECTION -->
+                <div style="background:var(--bg-main); padding: 1.5rem; border-radius: 8px; border: 1px dashed var(--accent-orange); margin-bottom: 2.5rem;">
+                    <h3 style="color:var(--accent-orange); margin-bottom: 0.5rem; font-size: 1.1rem; text-transform: uppercase;">Special Date / Promo Tariffs</h3>
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;">Define custom rates for specific dates. The system will auto-apply these rates over standard monthly rates if an admission or payment happens within these dates.</p>
+                    
+                    <form id="promoTariffForm" onsubmit="moduleContext.addSpecialTariff(event)">
+                        <div class="form-row">
+                            <div class="form-group"><label>Promo Name <span class="required">*</span></label><input type="text" id="promo-name" placeholder="e.g. Diwali Offer" required></div>
+                            <div class="form-group"><label>Start Date <span class="required">*</span></label><input type="date" id="promo-start" required></div>
+                            <div class="form-group"><label>End Date <span class="required">*</span></label><input type="date" id="promo-end" required></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Adm. Fee <span class="required">*</span></label><input type="number" id="promo-adm" placeholder="850" required></div>
+                            <div class="form-group"><label>Monthly Fee <span class="required">*</span></label><input type="number" id="promo-reg" placeholder="800" required></div>
+                            <div class="form-group"><label>PT Fee <span class="required">*</span></label><input type="number" id="promo-pt" placeholder="1500" required></div>
+                        </div>
+                        <button type="submit" class="btn secondary" style="width:auto; padding:0.8rem 1.5rem; border-color:var(--accent-orange); color:var(--accent-orange);">+ Add Special Rate</button>
+                    </form>
+
+                    <div id="promo-list-container" style="margin-top: 1.5rem;"></div>
+                </div>
+
+                <hr style="border-top: 2px solid var(--border-color); border-bottom: none; border-left: none; border-right: none; margin-bottom: 2rem;">
+
+                <h3 style="color:var(--text-main); margin-bottom: 1rem; font-size: 1.1rem; text-transform: uppercase;">Standard Monthly Tariffs</h3>
                 <div class="form-row"><div class="form-group" style="max-width: 300px;"><label for="fy-select">Financial Year</label><select id="fy-select"></select></div></div>
                 <div id="tariff-months-container" style="margin-top: 1rem;"></div>
-                <div class="action-row"><button type="button" onclick="moduleContext.saveTariffs()" class="btn primary">Save All Tariffs</button></div>
+                <div class="action-row"><button type="button" onclick="moduleContext.saveTariffs()" class="btn primary">Save Monthly Tariffs</button></div>
             </div>
         </main>
 
@@ -742,7 +772,7 @@
                             <div class="fee-row"><span>Admission ID:</span> <strong id="calc-admission-id" style="color:var(--accent-orange);">REV-0000</strong></div>
                             <div class="fee-row"><span>Admission Fee:</span> <strong>₹<span id="calc-admin-fee">0</span></strong></div>
                             <div class="fee-row"><span>Training Fee:</span> <strong>₹<span id="calc-monthly-fee">0</span></strong></div>
-                            <div class="fee-row fee-total"><span>Total Amount:</span> <strong>₹<span id="calc-total-fee">0</span></strong></div>
+                            <div class="fee-row fee-total"><span>Total Amount <span id="calc-promo-badge"></span>:</span> <strong>₹<span id="calc-total-fee">0</span></strong></div>
                         </div>
 
                         <div class="form-group">
@@ -775,7 +805,7 @@
             <div class="modal-content" style="text-align: left;">
                 <h2 class="orange-text" style="text-align:center; font-size:1.4rem;">Process Payment</h2>
                 <div style="background: var(--bg-main); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid var(--border-color);">
-                    <p style="margin-bottom: 5px;"><strong>Month:</strong> <span id="pay-month"></span></p>
+                    <p style="margin-bottom: 5px;"><strong>Month:</strong> <span id="pay-month"></span> <span id="pay-promo-badge"></span></p>
                     <p style="margin-bottom: 5px;"><strong>Total Due:</strong> ₹<span id="pay-total-due"></span></p>
                     <p style="margin-bottom: 5px;"><strong>Already Paid:</strong> ₹<span id="pay-already-paid"></span></p>
                     <p style="color:var(--error-red); font-size:1.1rem; margin-top:10px;"><strong>Balance Left: ₹<span id="pay-balance"></span></strong></p>
@@ -972,6 +1002,7 @@
                     
                     if(data.settings) localStorage.setItem('revive_settings_db', JSON.stringify(data.settings));
                     if(data.tariffs) localStorage.setItem('revive_tariffs', JSON.stringify(data.tariffs));
+                    if(data.specialTariffs) localStorage.setItem('revive_special_tariffs', JSON.stringify(data.specialTariffs));
                     if(data.users) localStorage.setItem('revive_users_db', JSON.stringify(data.users));
                     
                     if(data.payments) {
@@ -1048,20 +1079,15 @@
             if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) { age--; } return age >= 0 ? age : '';
         }
         
-        // Helper function for locating a user via ID, Phone or Name
         function findUserForAttendance(val) {
             const cleanVal = val.trim().toLowerCase();
             let users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-            // Prioritize Exact matches first
             let user = users.find(u => 
                 u.id.toLowerCase() === cleanVal || 
                 u.primaryContact === cleanVal || 
                 (u.fullName && u.fullName.toLowerCase() === cleanVal)
             );
-            // Fallback to partial name matching if exact match is not found
-            if (!user) {
-                user = users.find(u => u.fullName && u.fullName.toLowerCase().includes(cleanVal));
-            }
+            if (!user) { user = users.find(u => u.fullName && u.fullName.toLowerCase().includes(cleanVal)); }
             return user;
         }
 
@@ -1137,6 +1163,8 @@
                 document.getElementById('step-1').classList.add('active-step');
                 const today = new Date();
                 document.getElementById('dateOfAdmission').value = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+                
+                document.getElementById('calc-promo-badge').innerHTML = ''; // reset promo UI
                 appContext.switchView('admission');
             },
             closeModal: function() {
@@ -1146,13 +1174,92 @@
         };
 
         var moduleContext = {
+            
+            // --- SPECIAL (PROMO) TARIFF ENGINE ---
+            getApplicableTariff: function(targetDateObj, monthName, fyString) {
+                const defaultTariff = { admFee: APP_CONFIG.baseAdmissionFee, regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
+                const targetTime = new Date(targetDateObj).setHours(0,0,0,0); // Normalize time
+                
+                // 1. Check if the date falls inside a Special Promo
+                const specialDb = JSON.parse(localStorage.getItem('revive_special_tariffs')) || [];
+                let applicableSpecial = null;
+                for (let promo of specialDb) {
+                    let start = new Date(promo.startDate).setHours(0,0,0,0);
+                    let end = new Date(promo.endDate).setHours(0,0,0,0);
+                    if (targetTime >= start && targetTime <= end) {
+                        applicableSpecial = { admFee: promo.admFee, regFee: promo.regFee, ptFee: promo.ptFee, promoName: promo.name };
+                        break;
+                    }
+                }
+                if (applicableSpecial) return applicableSpecial;
+
+                // 2. Fallback to Standard Monthly Tariffs
+                const monthlyDb = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
+                if (monthlyDb[fyString] && monthlyDb[fyString][monthName]) {
+                    return monthlyDb[fyString][monthName];
+                }
+                return defaultTariff;
+            },
+            addSpecialTariff: function(e) {
+                e.preventDefault();
+                const name = document.getElementById('promo-name').value;
+                const start = document.getElementById('promo-start').value;
+                const end = document.getElementById('promo-end').value;
+                const adm = document.getElementById('promo-adm').value;
+                const reg = document.getElementById('promo-reg').value;
+                const pt = document.getElementById('promo-pt').value;
+
+                if(new Date(start) > new Date(end)) { alert("Start date cannot be after end date."); return; }
+
+                const promo = { id: Date.now().toString(), name, startDate: start, endDate: end, admFee: adm, regFee: reg, ptFee: pt };
+                
+                let db = JSON.parse(localStorage.getItem('revive_special_tariffs')) || [];
+                db.push(promo);
+                localStorage.setItem('revive_special_tariffs', JSON.stringify(db));
+                cloudSync.push('pushSpecialTariff', promo);
+                
+                document.getElementById('promoTariffForm').reset();
+                this.renderSpecialTariffs();
+                alert("Special Date Rate added successfully!");
+            },
+            removeSpecialTariff: function(id) {
+                let db = JSON.parse(localStorage.getItem('revive_special_tariffs')) || [];
+                db = db.filter(p => p.id !== id);
+                localStorage.setItem('revive_special_tariffs', JSON.stringify(db));
+                cloudSync.push('deleteSpecialTariff', {id: id});
+                this.renderSpecialTariffs();
+            },
+            renderSpecialTariffs: function() {
+                const container = document.getElementById('promo-list-container');
+                const db = JSON.parse(localStorage.getItem('revive_special_tariffs')) || [];
+                container.innerHTML = '';
+                
+                if (db.length === 0) {
+                    container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">No active special rates.</p>';
+                    return;
+                }
+                db.forEach(p => {
+                    const sd = new Date(p.startDate).toLocaleDateString('en-IN');
+                    const ed = new Date(p.endDate).toLocaleDateString('en-IN');
+                    container.innerHTML += `
+                        <div class="promo-card">
+                            <div>
+                                <h4>${p.name}</h4>
+                                <p>${sd} to ${ed} | Adm: ₹${p.admFee}, Reg: ₹${p.regFee}, PT: ₹${p.ptFee}</p>
+                            </div>
+                            <button type="button" class="btn danger" style="padding:0.4rem; width:auto; border:none;" onclick="moduleContext.removeSpecialTariff('${p.id}')">Remove</button>
+                        </div>
+                    `;
+                });
+            },
+
+            // --- EXISTING EDITOR SYSTEMS ---
             initUpiEditor: function() { 
                 const s = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
                 document.getElementById('admin-upi-id').value = s.upiId || ''; 
             },
             saveUpi: function() {
                 const upi = document.getElementById('admin-upi-id').value.trim();
-                
                 if(!upi) { alert("Please fill the UPI ID field."); return; }
                 const s = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
                 s.upiId = upi;
@@ -1168,16 +1275,15 @@
             savePins: function() {
                 const sp = document.getElementById('admin-staff-pin').value.trim();
                 const ap = document.getElementById('admin-admin-pin').value.trim();
-                
                 if(!sp || !ap) { alert("Please fill both PIN fields."); return; }
                 const s = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
-                s.staffPin = sp;
-                s.adminPin = ap;
+                s.staffPin = sp; s.adminPin = ap;
                 localStorage.setItem('revive_settings_db', JSON.stringify(s));
                 cloudSync.push('pushSettings', s);
                 alert("PIN Settings Saved."); appContext.goHome();
             },
             initTariffEditor: function() {
+                this.renderSpecialTariffs(); // Init promos
                 const fySelect = document.getElementById('fy-select'); const container = document.getElementById('tariff-months-container');
                 const currYear = new Date().getFullYear(); fySelect.innerHTML = '';
                 for(let i = -1; i <= 2; i++) {
@@ -1217,7 +1323,7 @@
                 });
                 localStorage.setItem('revive_tariffs', JSON.stringify(db));
                 cloudSync.push('pushTariffs', db);
-                alert(`Tariffs for ${fy} saved.`);
+                alert(`Standard Monthly Tariffs for ${fy} saved.`);
             },
             
             initAttendanceView: function() {
@@ -1233,18 +1339,10 @@
             previewMemberName: function(val) {
                 const previewEl = document.getElementById('att-live-preview');
                 const cleanVal = val.trim();
-                if(!cleanVal) {
-                    previewEl.innerText = '';
-                    return;
-                }
-                
+                if(!cleanVal) { previewEl.innerText = ''; return; }
                 let user = findUserForAttendance(cleanVal);
-                
-                if(user) {
-                    previewEl.innerHTML = `👤 Match Found: <span style="color:var(--success-green);">${user.fullName} (${user.id})</span>`;
-                } else {
-                    previewEl.innerHTML = `<span style="color:var(--text-muted); font-size:0.85rem;">Searching member...</span>`;
-                }
+                if(user) { previewEl.innerHTML = `👤 Match Found: <span style="color:var(--success-green);">${user.fullName} (${user.id})</span>`; } 
+                else { previewEl.innerHTML = `<span style="color:var(--text-muted); font-size:0.85rem;">Searching member...</span>`; }
             },
 
             markAttendance: function(e) {
@@ -1253,17 +1351,9 @@
                 const resBox = document.getElementById('att-result-box');
                 resBox.style.display = 'block';
 
-                if(!val) {
-                    resBox.innerHTML = '<span style="color:var(--error-red); font-weight:bold;">Please enter a valid Phone Number, ID, or Name.</span>';
-                    return;
-                }
-
+                if(!val) { resBox.innerHTML = '<span style="color:var(--error-red); font-weight:bold;">Please enter a valid Phone Number, ID, or Name.</span>'; return; }
                 let user = findUserForAttendance(val);
-
-                if(!user) {
-                    resBox.innerHTML = `<span style="color:var(--error-red); font-weight:bold;">Member not found for: "${val}". Check entry or register member first.</span>`;
-                    return;
-                }
+                if(!user) { resBox.innerHTML = `<span style="color:var(--error-red); font-weight:bold;">Member not found for: "${val}". Check entry or register member first.</span>`; return; }
 
                 const now = new Date();
                 const dateKey = now.toISOString().split('T')[0];
@@ -1275,10 +1365,8 @@
 
                 const alreadyMarked = attDb[dateKey].some(a => a.userId === user.id);
                 if(alreadyMarked) {
-                    resBox.innerHTML = `<span style="color:var(--warning-yellow); font-weight:bold;">⚠️️ Attendance already marked today for ${user.fullName} (${user.id})!</span>`;
-                    document.getElementById('att-input').value = '';
-                    document.getElementById('att-live-preview').innerText = '';
-                    return;
+                    resBox.innerHTML = `<span style="color:var(--warning-yellow); font-weight:bold;">⚠ Attendance already marked today for ${user.fullName} (${user.id})!</span>`;
+                    document.getElementById('att-input').value = ''; document.getElementById('att-live-preview').innerText = ''; return;
                 }
 
                 const newAtt = { dateKey: dateKey, userId: user.id, fullName: user.fullName, timestamp: timeStr, month: monthName };
@@ -1288,55 +1376,27 @@
                 cloudSync.push('pushAttendance', newAtt);
 
                 resBox.innerHTML = `<span style="color:var(--success-green); font-weight:bold; font-size:1.1rem;">✔ Attendance Marked Successfully!</span><br><br><strong>Name:</strong> ${user.fullName} (${user.id})<br><strong>Time In:</strong> ${timeStr}`;
-                document.getElementById('att-input').value = '';
-                document.getElementById('att-live-preview').innerText = '';
+                document.getElementById('att-input').value = ''; document.getElementById('att-live-preview').innerText = '';
                 this.renderAttendanceLogs();
             },
 
             renderAttendanceLogs: function() {
                 const datePicker = document.getElementById('att-filter-date');
                 const selectedDate = datePicker ? datePicker.value : new Date().toISOString().split('T')[0];
-                
                 let attDb = JSON.parse(localStorage.getItem('revive_attendance_db')) || {};
                 let dayLogs = attDb[selectedDate] || [];
-
-                const tbody = document.querySelector('#table-attendance tbody');
-                tbody.innerHTML = '';
-
-                if(dayLogs.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-muted);">No attendance recorded for this date.</td></tr>';
-                    return;
-                }
-
-                [...dayLogs].reverse().forEach(log => {
-                    tbody.innerHTML += `<tr>
-                        <td>${log.timestamp}</td>
-                        <td><strong>${log.userId}</strong></td>
-                        <td>${log.fullName}</td>
-                    </tr>`;
-                });
+                const tbody = document.querySelector('#table-attendance tbody'); tbody.innerHTML = '';
+                if(dayLogs.length === 0) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-muted);">No attendance recorded for this date.</td></tr>'; return; }
+                [...dayLogs].reverse().forEach(log => { tbody.innerHTML += `<tr><td>${log.timestamp}</td><td><strong>${log.userId}</strong></td><td>${log.fullName}</td></tr>`; });
             },
             
             getUserMonthAttendanceCount: function(userId, monthName, fy) {
-                let attDb = JSON.parse(localStorage.getItem('revive_attendance_db')) || {};
-                let count = 0;
-                const fyStartYear = parseInt(fy.split('-')[0]);
-
+                let attDb = JSON.parse(localStorage.getItem('revive_attendance_db')) || {}; let count = 0; const fyStartYear = parseInt(fy.split('-')[0]);
                 for (const dateStr in attDb) {
-                    const d = new Date(dateStr);
-                    const mName = d.toLocaleString('default', { month: 'long' });
-                    const y = d.getFullYear();
-                    const m = d.getMonth();
-                    
-                    let recordFy = m >= 3 ? `${y}-${y+1}` : `${y-1}-${y}`;
-
-                    if (recordFy === fy && mName === monthName) {
-                        if (attDb[dateStr].some(a => a.userId === userId)) {
-                            count++;
-                        }
-                    }
-                }
-                return count;
+                    const d = new Date(dateStr); const mName = d.toLocaleString('default', { month: 'long' });
+                    const y = d.getFullYear(); const m = d.getMonth(); let recordFy = m >= 3 ? `${y}-${y+1}` : `${y-1}-${y}`;
+                    if (recordFy === fy && mName === monthName) { if (attDb[dateStr].some(a => a.userId === userId)) { count++; } }
+                } return count;
             },
 
             openUserSearch: function(mode) {
@@ -1365,43 +1425,29 @@
                 const photoEl = document.getElementById('hub-photo');
                 photoEl.src = user.photo || 'https://via.placeholder.com/70x70/141414/a0a0a0?text=N/A';
                 
-                const callBtn = document.getElementById('hub-call-btn');
-                const waBtn = document.getElementById('hub-wa-btn');
-                const pContact = document.getElementById('hub-phone');
+                const callBtn = document.getElementById('hub-call-btn'); const waBtn = document.getElementById('hub-wa-btn'); const pContact = document.getElementById('hub-phone');
 
                 if (appContext.currentRole === 'staff') {
                     photoEl.style.pointerEvents = 'none'; photoEl.style.userSelect = 'none'; photoEl.style.webkitUserDrag = 'none'; photoEl.oncontextmenu = (ev) => ev.preventDefault();
-                    
                     pContact.innerText = `******${user.primaryContact.slice(-4)}`;
-                    if(callBtn) callBtn.style.display = 'none';
-                    if(waBtn) waBtn.style.display = 'none';
-
+                    if(callBtn) callBtn.style.display = 'none'; if(waBtn) waBtn.style.display = 'none';
                 } else {
                     photoEl.style.pointerEvents = 'auto'; photoEl.style.userSelect = 'auto'; photoEl.style.webkitUserDrag = 'auto'; photoEl.oncontextmenu = null;
-                    
                     pContact.innerText = user.primaryContact;
                     if(callBtn) { callBtn.style.display = 'inline-flex'; callBtn.href = `tel:${user.primaryContact}`; }
                     if(waBtn) { waBtn.style.display = 'inline-flex'; waBtn.href = `https://api.whatsapp.com/send?phone=91${user.primaryContact}&text=${encodeURIComponent(`Hello ${user.firstName}, regarding your membership at Revive Fitness Studio:`)}`; }
                 }
 
-                document.getElementById('hub-name').innerText = user.fullName;
-                document.getElementById('hub-id').innerText = user.id;
-
+                document.getElementById('hub-name').innerText = user.fullName; document.getElementById('hub-id').innerText = user.id;
                 document.getElementById('hub-details').innerText = `${user.admissionCategory} - ${user.trainingCategory}`;
-                document.getElementById('hub-doj').innerText = `Date of Joining: ${user.date}`;
-                document.getElementById('hub-fy-label').innerText = fy;
-                
+                document.getElementById('hub-doj').innerText = `Date of Joining: ${user.date}`; document.getElementById('hub-fy-label').innerText = fy;
                 document.getElementById('hub-actions').style.display = 'flex';
                 
                 if (currentHubMode === 'fee') {
-                    document.getElementById('hub-instruction').style.display = 'block';
-                    document.getElementById('hub-instruction').innerText = "Click on a yellow or red month to process payment. Click on green months to view receipt.";
-                    document.getElementById('btn-hub-edit').style.display = 'none'; 
-                    document.getElementById('btn-hub-pdf').style.display = 'none';
-                    document.getElementById('btn-hub-delete').style.display = 'none';
+                    document.getElementById('hub-instruction').style.display = 'block'; document.getElementById('hub-instruction').innerText = "Click on a yellow or red month to process payment. Click on green months to view receipt.";
+                    document.getElementById('btn-hub-edit').style.display = 'none'; document.getElementById('btn-hub-pdf').style.display = 'none'; document.getElementById('btn-hub-delete').style.display = 'none';
                 } else {
-                    document.getElementById('hub-instruction').style.display = 'block';
-                    document.getElementById('hub-instruction').innerText = "Click on a paid green month to view the receipt.";
+                    document.getElementById('hub-instruction').style.display = 'block'; document.getElementById('hub-instruction').innerText = "Click on a paid green month to view the receipt.";
                     document.getElementById('btn-hub-edit').style.display = 'flex'; 
                     document.getElementById('btn-hub-pdf').style.display = appContext.currentRole === 'admin' ? 'flex' : 'none';
                     document.getElementById('btn-hub-delete').style.display = appContext.currentRole === 'admin' ? 'flex' : 'none';
@@ -1424,8 +1470,6 @@
                 const grid = document.getElementById('fee-calendar'); grid.innerHTML = '';
                 const paymentsDb = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
                 const userFyData = (paymentsDb[userId] && paymentsDb[userId][fy]) ? paymentsDb[userId][fy] : {};
-                const tariffDb = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
-                const fyTariffs = tariffDb[fy] || {};
 
                 const today = new Date();
                 const currentScore = today.getFullYear() * 100 + today.getMonth(); 
@@ -1440,11 +1484,7 @@
                     const mScore = mYear * 100 + monthIdx;
 
                     if (mScore > currentScore) return; 
-
-                    if (mScore < adScore) {
-                        grid.innerHTML += `<div class="cal-month status-na"><h4>${month}</h4><p>N/A</p></div>`;
-                        return;
-                    }
+                    if (mScore < adScore) { grid.innerHTML += `<div class="cal-month status-na"><h4>${month}</h4><p>N/A</p></div>`; return; }
 
                     const attCount = moduleContext.getUserMonthAttendanceCount(userId, month, fy);
                     const attBadge = `<br><span style="font-size:0.7rem; background:rgba(0,0,0,0.2); padding:1px 5px; border-radius:4px;">Att: ${attCount} days</span>`;
@@ -1463,7 +1503,8 @@
                         displayAmt = `Paid: ₹${record.amountPaid}<br>Bal: ₹${bal}${attBadge}`; 
                         if (currentHubMode === 'fee') { action = `onclick="moduleContext.initPayment('${month}', '${fy}')"`; }
                     } else {
-                        const monthTariff = fyTariffs[month] || { regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
+                        // Apply Special Tariff Logic using current date for fee predictions
+                        const monthTariff = this.getApplicableTariff(new Date(), month, fy);
                         const due = trainCat === 'Personal Training' ? monthTariff.ptFee : monthTariff.regFee;
                         displayAmt = `Due: ₹${due}${attBadge}`;
                         if (currentHubMode === 'fee') { action = `onclick="moduleContext.initPayment('${month}', '${fy}')"`; }
@@ -1477,10 +1518,16 @@
                 const record = (paymentsDb[currentActiveUser.id] && paymentsDb[currentActiveUser.id][fy] && paymentsDb[currentActiveUser.id][fy][month]) ? paymentsDb[currentActiveUser.id][fy][month] : null;
                 
                 let totalDue, alreadyPaid, balance;
-                if(record) { totalDue = parseInt(record.totalDue); alreadyPaid = parseInt(record.amountPaid); balance = totalDue - alreadyPaid; } 
-                else {
-                    const tariffDb = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
-                    const mTariff = (tariffDb[fy] && tariffDb[fy][month]) ? tariffDb[fy][month] : { regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
+                document.getElementById('pay-promo-badge').innerHTML = ''; // reset
+
+                if(record) { 
+                    totalDue = parseInt(record.totalDue); alreadyPaid = parseInt(record.amountPaid); balance = totalDue - alreadyPaid; 
+                } else {
+                    // NEW: Pass current date through Tariff Engine for payments happening today
+                    const mTariff = this.getApplicableTariff(new Date(), month, fy);
+                    if (mTariff.promoName) {
+                        document.getElementById('pay-promo-badge').innerHTML = `<span class="promo-badge">PROMO: ${mTariff.promoName} Applied</span>`;
+                    }
                     totalDue = parseInt(currentActiveUser.trainingCategory === 'Personal Training' ? mTariff.ptFee : mTariff.regFee);
                     alreadyPaid = 0; balance = totalDue;
                 }
@@ -1517,13 +1564,7 @@
                 if(!paymentsDb[currentActiveUser.id]) paymentsDb[currentActiveUser.id] = {};
                 if(!paymentsDb[currentActiveUser.id][activePaymentConfig.fy]) paymentsDb[currentActiveUser.id][activePaymentConfig.fy] = {};
                 
-                const pData = {
-                    userId: currentActiveUser.id,
-                    fy: activePaymentConfig.fy,
-                    month: activePaymentConfig.month,
-                    totalDue: activePaymentConfig.totalDue, amountPaid: newPaid, status: newStatus, method: method, lastDate: new Date().toISOString()
-                };
-                
+                const pData = { userId: currentActiveUser.id, fy: activePaymentConfig.fy, month: activePaymentConfig.month, totalDue: activePaymentConfig.totalDue, amountPaid: newPaid, status: newStatus, method: method, lastDate: new Date().toISOString() };
                 paymentsDb[currentActiveUser.id][activePaymentConfig.fy][activePaymentConfig.month] = pData;
                 localStorage.setItem('revive_payments_db', JSON.stringify(paymentsDb));
                 cloudSync.push('pushPayment', pData);
@@ -1580,8 +1621,7 @@
                     } 
                     else { 
                         const url = window.URL.createObjectURL(currentGeneratedReceiptBlob);
-                        const a = document.createElement("a");
-                        a.href = url; a.download = file.name;
+                        const a = document.createElement("a"); a.href = url; a.download = file.name;
                         document.body.appendChild(a); a.click(); document.body.removeChild(a); window.URL.revokeObjectURL(url);
                         
                         alert("Direct image sharing unsupported on this browser. The receipt has been safely downloaded. Opening WhatsApp now so you can attach it manually!"); 
@@ -1623,8 +1663,7 @@
                                 if (navigator.canShare && navigator.canShare({ files: [file] })) { 
                                     await navigator.share({ title: 'Admission Receipt', text: msg, files: [file] }); 
                                 } else { 
-                                    const url = window.URL.createObjectURL(blob);
-                                    const a = document.createElement("a");
+                                    const url = window.URL.createObjectURL(blob); const a = document.createElement("a");
                                     a.href = url; a.download = file.name;
                                     document.body.appendChild(a); a.click(); document.body.removeChild(a); window.URL.revokeObjectURL(url);
                                     
@@ -1640,7 +1679,6 @@
             editUser: function() {
                 IS_EDIT_MODE = true; const u = currentActiveUser;
                 document.getElementById('form-main-title').innerText = "Edit Member Details";
-                
                 document.getElementById('step-1-ind').innerText = "Step 1 of 2: Update Details";
                 document.getElementById('step-2-ind').innerText = "Step 2 of 2: Update Verification";
                 
@@ -1744,7 +1782,6 @@
                 const appWrapper = document.getElementById('app-wrapper'); 
                 const pdfWrapper = document.getElementById('pdf-template-wrapper'); 
                 const element = document.getElementById('pdf-template');
-                
                 window.scrollTo(0, 0); appWrapper.style.display = 'none'; pdfWrapper.style.display = 'flex';
 
                 setTimeout(() => {
@@ -1759,14 +1796,9 @@
 
                         const file = new File([pdfBlob], `${currentMemberDetails.id}_Record.pdf`, { type: 'application/pdf' });
                         if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                            navigator.share({
-                                title: 'Revive Fitness - Admission Record',
-                                text: msg,
-                                files: [file]
-                            }).catch(console.error);
+                            navigator.share({ title: 'Revive Fitness - Admission Record', text: msg, files: [file] }).catch(console.error);
                         } else {
-                            const url = window.URL.createObjectURL(pdfBlob);
-                            const a = document.createElement("a");
+                            const url = window.URL.createObjectURL(pdfBlob); const a = document.createElement("a");
                             a.href = url; a.download = file.name;
                             document.body.appendChild(a); a.click(); document.body.removeChild(a); window.URL.revokeObjectURL(url);
                             
@@ -1780,19 +1812,16 @@
             initReports: function() {
                 const fySelect = document.getElementById('report-fy'); 
                 const monthSelect = document.getElementById('report-month');
-                const currYear = new Date().getFullYear(); 
-                fySelect.innerHTML = '';
+                const currYear = new Date().getFullYear(); fySelect.innerHTML = '';
                 for(let i = -1; i <= 2; i++) {
                     const y = currYear + i; const opt = document.createElement('option'); opt.value = `${y}-${y+1}`; opt.innerText = `${y}-${y+1}`;
                     if(i === 0) opt.selected = true; fySelect.appendChild(opt);
                 }
-                
                 monthSelect.innerHTML = '<option value="All">Entire Year (All Months)</option>';
                 tariffMonthsOrder.forEach(month => {
                     const opt = document.createElement('option'); opt.value = month; opt.innerText = month;
                     monthSelect.appendChild(opt);
                 });
-                
                 document.getElementById('report-content').style.display = 'none';
             },
             
@@ -1826,43 +1855,29 @@
 
                         const userFyData = (payments[u.id] && payments[u.id][fy]) ? payments[u.id][fy] : {};
                         const record = userFyData[mName];
+                        
+                        // For historical reports, we use the standard monthly tariff to determine base shortfall unless they paid
                         const monthTariff = fyTariffs[mName] || { regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
                         const dueAmt = parseInt(u.trainingCategory === 'Personal Training' ? monthTariff.ptFee : monthTariff.regFee);
 
                         let shortfall = 0;
-                        if (!record) {
-                            shortfall = dueAmt;
-                        } else if (record.status === 'Partial') {
-                            shortfall = parseInt(record.totalDue) - parseInt(record.amountPaid);
-                        }
+                        if (!record) { shortfall = dueAmt; } 
+                        else if (record.status === 'Partial') { shortfall = parseInt(record.totalDue) - parseInt(record.amountPaid); }
 
                         if (shortfall > 0) {
-                            pendingItems.push({
-                                userId: u.id,
-                                fullName: u.fullName,
-                                month: mName,
-                                pendingAmt: shortfall,
-                                lastDate: record && record.lastDate ? record.lastDate : null
-                            });
+                            pendingItems.push({ userId: u.id, fullName: u.fullName, month: mName, pendingAmt: shortfall, lastDate: record && record.lastDate ? record.lastDate : null });
                         }
                     });
                 });
 
-                const feeTbody = document.querySelector('#table-fees tbody');
-                feeTbody.innerHTML = '';
+                const feeTbody = document.querySelector('#table-fees tbody'); feeTbody.innerHTML = '';
                 if(pendingItems.length === 0) {
-                    feeTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No pending dues or shortfalls found for this period! Excellent.</td></tr>';
-                    return;
+                    feeTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No pending dues or shortfalls found for this period! Excellent.</td></tr>'; return;
                 }
                 pendingItems.forEach(p => {
                     const dateStr = p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : 'Unpaid / Due';
                     feeTbody.innerHTML += `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile">
-                        <td>${dateStr}</td>
-                        <td><strong>${p.userId}</strong> - ${p.fullName}</td>
-                        <td>${p.month}</td>
-                        <td style="color:var(--text-muted);">₹0 (Unpaid)</td>
-                        <td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td>
-                        <td>PENDING</td>
+                        <td>${dateStr}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:var(--text-muted);">₹0 (Unpaid)</td><td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td><td>PENDING</td>
                     </tr>`;
                 });
                 alert("Report filtered to show all pending dues and shortfalls. Click any row to view that member's profile.");
@@ -1883,8 +1898,7 @@
 
                     users.forEach(u => {
                         if(!u.date) return;
-                        const p = u.date.split('-');
-                        const adScore = parseInt(p[2]) * 100 + (parseInt(p[1]) - 1);
+                        const p = u.date.split('-'); const adScore = parseInt(p[2]) * 100 + (parseInt(p[1]) - 1);
                         
                         if (u._fy === targetFy && (targetMonth === 'All' || u._month === targetMonth)) {
                             s.admCount++;
@@ -1895,7 +1909,6 @@
 
                         tariffMonthsOrder.forEach((mName, index) => {
                             if (targetMonth !== 'All' && targetMonth !== mName) return;
-
                             const monthIdx = tariffMonthIndices[index];
                             const mYear = monthIdx >= 3 ? fyStartYear : fyStartYear + 1;
                             const mScore = mYear * 100 + monthIdx;
@@ -1904,118 +1917,63 @@
 
                             const monthTariff = (tariffs[targetFy] && tariffs[targetFy][mName]) ? tariffs[targetFy][mName] : { regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
                             const dueAmt = parseInt(u.trainingCategory === 'Personal Training' ? monthTariff.ptFee : monthTariff.regFee);
-
                             const userFyData = (payments[u.id] && payments[u.id][targetFy]) ? payments[u.id][targetFy] : {};
                             const record = userFyData[mName];
 
-                            if (!record) {
-                                s.unpaidCount++;
-                                s.unpaidAmt += dueAmt;
-                            } else {
-                                const paid = parseInt(record.amountPaid || 0);
-                                const totalDue = parseInt(record.totalDue || 0);
-                                if (paid > 0) {
-                                    s.feeCount++;
-                                    s.rev += paid;
-                                    s.feeRows.push({ ...record, userId: u.id, month: mName, fullName: u.fullName });
-                                }
-                                if (paid < totalDue) {
-                                    s.shortCount++;
-                                    s.shortAmt += (totalDue - paid);
-                                    s.shortRows.push({ ...record, userId: u.id, month: mName, pendingAmt: totalDue - paid, fullName: u.fullName });
-                                }
+                            if (!record) { s.unpaidCount++; s.unpaidAmt += dueAmt; } 
+                            else {
+                                const paid = parseInt(record.amountPaid || 0); const totalDue = parseInt(record.totalDue || 0);
+                                if (paid > 0) { s.feeCount++; s.rev += paid; s.feeRows.push({ ...record, userId: u.id, month: mName, fullName: u.fullName }); }
+                                if (paid < totalDue) { s.shortCount++; s.shortAmt += (totalDue - paid); s.shortRows.push({ ...record, userId: u.id, month: mName, pendingAmt: totalDue - paid, fullName: u.fullName }); }
                             }
                         });
                     });
-                    s.feeAmt = s.rev - s.admAmt;
-                    if(s.feeAmt < 0) s.feeAmt = 0; 
+                    s.feeAmt = s.rev - s.admAmt; if(s.feeAmt < 0) s.feeAmt = 0; 
                     return s;
                 }
 
                 const currStats = calcStats(fy, month);
                 
-                document.getElementById('kpi-rev-total').innerText = currStats.rev.toLocaleString();
-                document.getElementById('kpi-adm-count').innerText = currStats.admCount;
-                document.getElementById('kpi-adm-amt').innerText = currStats.admAmt.toLocaleString();
-                document.getElementById('kpi-fee-count').innerText = currStats.feeCount;
-                document.getElementById('kpi-fee-amt').innerText = currStats.feeAmt.toLocaleString();
-                document.getElementById('kpi-shortfall-count').innerText = currStats.shortCount;
-                document.getElementById('kpi-shortfall-amt').innerText = currStats.shortAmt.toLocaleString();
-                document.getElementById('kpi-unpaid-count').innerText = currStats.unpaidCount;
+                document.getElementById('kpi-rev-total').innerText = currStats.rev.toLocaleString(); document.getElementById('kpi-adm-count').innerText = currStats.admCount;
+                document.getElementById('kpi-adm-amt').innerText = currStats.admAmt.toLocaleString(); document.getElementById('kpi-fee-count').innerText = currStats.feeCount;
+                document.getElementById('kpi-fee-amt').innerText = currStats.feeAmt.toLocaleString(); document.getElementById('kpi-shortfall-count').innerText = currStats.shortCount;
+                document.getElementById('kpi-shortfall-amt').innerText = currStats.shortAmt.toLocaleString(); document.getElementById('kpi-unpaid-count').innerText = currStats.unpaidCount;
                 document.getElementById('kpi-unpaid-amt').innerText = currStats.unpaidAmt.toLocaleString();
 
                 const admTbody = document.querySelector('#table-admissions tbody');
-                admTbody.innerHTML = currStats.admRows.length ? currStats.admRows.map(u => 
-                    `<tr onclick="moduleContext.loadProfileByPhoneOrId('${u.id}')" title="Click to view member profile"><td>${u.date}</td><td><strong>${u.id}</strong></td><td>${u.fullName}</td><td>${appContext.currentRole === 'staff' ? '******' + u.primaryContact.slice(-4) : u.primaryContact}</td><td>${u.admissionCategory}</td></tr>`
-                ).join('') : '<tr><td colspan="5" style="text-align:center;">No admissions found for this period.</td></tr>';
+                admTbody.innerHTML = currStats.admRows.length ? currStats.admRows.map(u => `<tr onclick="moduleContext.loadProfileByPhoneOrId('${u.id}')" title="Click to view member profile"><td>${u.date}</td><td><strong>${u.id}</strong></td><td>${u.fullName}</td><td>${appContext.currentRole === 'staff' ? '******' + u.primaryContact.slice(-4) : u.primaryContact}</td><td>${u.admissionCategory}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No admissions found for this period.</td></tr>';
 
                 const feeTbody = document.querySelector('#table-fees tbody');
-                feeTbody.innerHTML = currStats.feeRows.length ? currStats.feeRows.map(p => 
-                    `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:green; font-weight:bold;">₹${p.amountPaid}</td><td>${p.method || 'CASH'}</td></tr>`
-                ).join('') : '<tr><td colspan="5" style="text-align:center;">No fee collections found for this period.</td></tr>';
+                feeTbody.innerHTML = currStats.feeRows.length ? currStats.feeRows.map(p => `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:green; font-weight:bold;">₹${p.amountPaid}</td><td>${p.method || 'CASH'}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No fee collections found for this period.</td></tr>';
 
                 const shortTbody = document.querySelector('#table-shortfalls tbody');
-                shortTbody.innerHTML = currStats.shortRows.length ? currStats.shortRows.map(p => 
-                    `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td></tr>`
-                ).join('') : '<tr><td colspan="4" style="text-align:center;">No shortfalls found.</td></tr>';
+                shortTbody.innerHTML = currStats.shortRows.length ? currStats.shortRows.map(p => `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td></tr>`).join('') : '<tr><td colspan="4" style="text-align:center;">No shortfalls found.</td></tr>';
 
                 let yoyMsg = '', momMsg = '';
-                const prevFyStart = parseInt(fy.split('-')[0]) - 1;
-                const prevFy = `${prevFyStart}-${prevFyStart+1}`;
-                
+                const prevFyStart = parseInt(fy.split('-')[0]) - 1; const prevFy = `${prevFyStart}-${prevFyStart+1}`;
                 const yoyStats = calcStats(prevFy, month);
                 const calcGrowth = (curr, prev) => prev === 0 ? (curr > 0 ? 100 : 0) : Math.round(((curr - prev) / prev) * 100);
                 
-                const yoyRevG = calcGrowth(currStats.rev, yoyStats.rev);
-                const yoyAdmG = calcGrowth(currStats.admCount, yoyStats.admCount);
-                
+                const yoyRevG = calcGrowth(currStats.rev, yoyStats.rev); const yoyAdmG = calcGrowth(currStats.admCount, yoyStats.admCount);
                 yoyMsg = `<strong>YoY Revenue:</strong> ${yoyRevG >= 0 ? '+' : ''}${yoyRevG}% (₹${yoyStats.rev.toLocaleString()}) <br> <strong>YoY Admissions:</strong> ${yoyAdmG >= 0 ? '+' : ''}${yoyAdmG}% (${yoyStats.admCount})`;
 
                 if (month !== 'All') {
-                    const mIdx = tariffMonthsOrder.indexOf(month);
-                    let prevM, prevMFy;
-                    if (mIdx === 0) { prevM = 'March'; prevMFy = prevFy; }
-                    else { prevM = tariffMonthsOrder[mIdx - 1]; prevMFy = fy; }
-                    
+                    const mIdx = tariffMonthsOrder.indexOf(month); let prevM, prevMFy;
+                    if (mIdx === 0) { prevM = 'March'; prevMFy = prevFy; } else { prevM = tariffMonthsOrder[mIdx - 1]; prevMFy = fy; }
                     const momStats = calcStats(prevMFy, prevM);
-                    const momRevG = calcGrowth(currStats.rev, momStats.rev);
-                    const momAdmG = calcGrowth(currStats.admCount, momStats.admCount);
-                    
+                    const momRevG = calcGrowth(currStats.rev, momStats.rev); const momAdmG = calcGrowth(currStats.admCount, momStats.admCount);
                     momMsg = `<br><br><strong>MoM Revenue:</strong> ${momRevG >= 0 ? '+' : ''}${momRevG}% (₹${momStats.rev.toLocaleString()}) <br> <strong>MoM Admissions:</strong> ${momAdmG >= 0 ? '+' : ''}${momAdmG}% (${momStats.admCount})`;
-                } else {
-                    momMsg = '<br><br><span style="color:var(--text-muted); font-size:0.85rem;">MoM Growth N/A for entire year view.</span>';
-                }
+                } else { momMsg = '<br><br><span style="color:var(--text-muted); font-size:0.85rem;">MoM Growth N/A for entire year view.</span>'; }
 
                 document.getElementById('yoy-analysis-content').innerHTML = yoyMsg + momMsg;
                 document.getElementById('report-content').style.display = 'block';
             },
 
-            exportTableToCSV: function(tableId, filename) {
-                const table = document.getElementById(tableId);
-                let csv = [];
-                for (let i = 0; i < table.rows.length; i++) {
-                    let row = [], cols = table.rows[i].querySelectorAll("td, th");
-                    for (let j = 0; j < cols.length; j++) row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
-                    csv.push(row.join(","));
-                }
-                const csvFile = new Blob([csv.join("\n")], {type: "text/csv"});
-                const a = document.createElement("a");
-                a.download = filename; a.href = window.URL.createObjectURL(csvFile);
-                a.style.display = "none"; document.body.appendChild(a); a.click(); document.body.removeChild(a);
-            },
             validateReadmission: function() {
-                const phone = document.getElementById('prevPhoneInput').value; 
-                const resBox = document.getElementById('validationResultBox'); 
-                const admissionTypeSelect = document.getElementById('admissionTypeSelect');
+                const phone = document.getElementById('prevPhoneInput').value; const resBox = document.getElementById('validationResultBox'); const admissionTypeSelect = document.getElementById('admissionTypeSelect');
+                if(phone.length !== 10) { resBox.style.display = 'block'; resBox.innerHTML = '<span style="color:var(--error-red);">Please enter a valid 10-digit number.</span>'; return; }
                 
-                if(phone.length !== 10) { 
-                    resBox.style.display = 'block'; 
-                    resBox.innerHTML = '<span style="color:var(--error-red);">Please enter a valid 10-digit number.</span>'; 
-                    return; 
-                }
-                
-                let users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                let user = [...users].reverse().find(u => u.primaryContact === phone);
+                let users = JSON.parse(localStorage.getItem('revive_users_db')) || []; let user = [...users].reverse().find(u => u.primaryContact === phone);
                 resBox.style.display = 'block';
                 
                 if(user) {
@@ -2028,24 +1986,17 @@
                     if (currDate > expiryDate) {
                         statusHtml = '<span style="color:var(--error-red); font-weight:bold; font-size:1.1rem;">Status: NOT ELIGIBLE (> 6 Months)</span><br><span style="color:var(--text-muted); font-size:0.85rem;">Type changed to New Admission.</span>';
                         admissionTypeSelect.value = 'New Admission';
-                    } else { 
-                        statusHtml = '<span style="color:var(--success-green); font-weight:bold; font-size:1.1rem;">Status: ELIGIBLE</span>'; 
-                        admissionTypeSelect.value = 'Re-Admission';
-                    }
+                    } else { statusHtml = '<span style="color:var(--success-green); font-weight:bold; font-size:1.1rem;">Status: ELIGIBLE</span>'; admissionTypeSelect.value = 'Re-Admission'; }
                     
                     document.getElementById('firstName').value = user.firstName || ''; document.getElementById('lastName').value = user.lastName || '';
                     document.getElementById('primaryContact').value = user.primaryContact || phone; document.getElementById('alternateContact').value = user.alternateContact || '';
                     document.getElementById('dob').value = user.dob || ''; document.getElementById('address').value = user.address || '';
-                    
-                    if(user.dob) {
-                        document.getElementById('age').value = calculateAgeFromDate(user.dob);
-                    }
+                    if(user.dob) { document.getElementById('age').value = calculateAgeFromDate(user.dob); }
                     
                     resBox.innerHTML = `${statusHtml}<br><br><strong>Name:</strong> ${user.fullName}<br><strong>Contact:</strong> ${user.primaryContact}<br><strong>Prev. Registration Date:</strong> ${user.date}`;
                 } else {
                     resBox.innerHTML = '<span style="color:var(--error-red);">No previous registration found.</span><br><span style="color:var(--text-muted); font-size:0.85rem;">Type changed to New Admission.</span>';
-                    admissionTypeSelect.value = 'New Admission'; 
-                    document.getElementById('primaryContact').value = phone;
+                    admissionTypeSelect.value = 'New Admission'; document.getElementById('primaryContact').value = phone;
                     document.getElementById('firstName').value = ''; document.getElementById('lastName').value = '';
                     document.getElementById('alternateContact').value = ''; document.getElementById('dob').value = '';
                     document.getElementById('address').value = ''; document.getElementById('age').value = '';
@@ -2067,13 +2018,8 @@
             const ageInp = document.getElementById('age');
 
             if(dobInp) {
-                dobInp.addEventListener('input', (e) => {
-                    fmtDt(e);
-                    if(ageInp) ageInp.value = calculateAgeFromDate(e.target.value);
-                }); 
-                dobInp.addEventListener('blur', (e) => { 
-                    if(ageInp) ageInp.value = calculateAgeFromDate(e.target.value); 
-                });
+                dobInp.addEventListener('input', (e) => { fmtDt(e); if(ageInp) ageInp.value = calculateAgeFromDate(e.target.value); }); 
+                dobInp.addEventListener('blur', (e) => { if(ageInp) ageInp.value = calculateAgeFromDate(e.target.value); });
             }
             if(dtInp) {
                 dtInp.addEventListener('input', fmtDt);
@@ -2103,10 +2049,8 @@
             if(btnSwitch) btnSwitch.addEventListener('click', () => { currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user'; startCamera(); });
 
             if(btnCapture) btnCapture.addEventListener('click', () => {
-                canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-                selfieData.value = canvas.toDataURL('image/jpeg', 0.6); 
-                preview.src = selfieData.value;
+                canvas.width = video.videoWidth; canvas.height = video.videoHeight; canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                selfieData.value = canvas.toDataURL('image/jpeg', 0.6); preview.src = selfieData.value;
                 video.style.display = 'none'; preview.style.display = 'block'; btnCapture.style.display = 'none'; btnSwitch.style.display = 'none'; btnRetake.style.display = 'inline-flex';
                 if(stream) stream.getTracks().forEach(track => track.stop());
             });
@@ -2114,8 +2058,7 @@
 
             const sigCanvas = document.getElementById('signature-pad'); 
             if(sigCanvas) {
-                const sigCtx = sigCanvas.getContext('2d');
-                let isDrawing = false; let signatureHasData = false;
+                const sigCtx = sigCanvas.getContext('2d'); let isDrawing = false; let signatureHasData = false;
 
                 function resizeCanvas() { const ratio = Math.max(window.devicePixelRatio || 1, 1); sigCanvas.width = sigCanvas.offsetWidth * ratio; sigCanvas.height = sigCanvas.offsetHeight * ratio; sigCtx.scale(ratio, ratio); clearSignature(); }
                 window.addEventListener("resize", resizeCanvas);
@@ -2154,31 +2097,21 @@
                         const y = adDateObj.getFullYear(); const m = adDateObj.getMonth(); 
                         let fyStart = m >= 3 ? y : y - 1; let fyString = `${fyStart}-${fyStart + 1}`;
 
-                        currentActiveUser.date = adDateVal;
-                        currentActiveUser.admissionType = document.getElementById('admissionTypeSelect').value;
-                        currentActiveUser.admissionCategory = document.getElementById('admissionCategory').value;
-                        currentActiveUser.trainingCategory = document.getElementById('trainingCategory').value;
+                        currentActiveUser.date = adDateVal; currentActiveUser.admissionType = document.getElementById('admissionTypeSelect').value;
+                        currentActiveUser.admissionCategory = document.getElementById('admissionCategory').value; currentActiveUser.trainingCategory = document.getElementById('trainingCategory').value;
                         currentActiveUser.firstName = fName; currentActiveUser.lastName = lName; currentActiveUser.fullName = fullName;
-                        currentActiveUser.primaryContact = document.getElementById('primaryContact').value;
-                        currentActiveUser.alternateContact = document.getElementById('alternateContact').value;
-                        currentActiveUser.dob = document.getElementById('dob').value;
-                        currentActiveUser.address = document.getElementById('address').value.trim();
-                        currentActiveUser.photo = selfieData.value;
-                        currentActiveUser.signature = finalSig;
-                        currentActiveUser._fy = fyString;
-                        currentActiveUser._month = monthName;
+                        currentActiveUser.primaryContact = document.getElementById('primaryContact').value; currentActiveUser.alternateContact = document.getElementById('alternateContact').value;
+                        currentActiveUser.dob = document.getElementById('dob').value; currentActiveUser.address = document.getElementById('address').value.trim();
+                        currentActiveUser.photo = selfieData.value; currentActiveUser.signature = finalSig;
+                        currentActiveUser._fy = fyString; currentActiveUser._month = monthName;
 
                         let usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
                         let idx = usersDb.findIndex(u => u.id === currentActiveUser.id);
                         if(idx !== -1) { usersDb[idx] = currentActiveUser; localStorage.setItem('revive_users_db', JSON.stringify(usersDb)); }
                         
                         cloudSync.push('pushUser', currentActiveUser);
-                        
                         document.getElementById('search-phone').value = currentActiveUser.primaryContact;
-                        
-                        alert("User details updated successfully!");
-                        moduleContext.loadProfileByPhoneOrId(currentActiveUser.id);
-                        return;
+                        alert("User details updated successfully!"); moduleContext.loadProfileByPhoneOrId(currentActiveUser.id); return;
                     }
 
                     let currentCount = localStorage.getItem('revive_admission_count');
@@ -2192,8 +2125,13 @@
                     const y = adDateObj.getFullYear(); const m = adDateObj.getMonth(); 
                     let fyStart = m >= 3 ? y : y - 1; let fyString = `${fyStart}-${fyStart + 1}`;
 
-                    const allTariffs = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
-                    const monthTariff = (allTariffs[fyString] && allTariffs[fyString][monthName]) ? allTariffs[fyString][monthName] : { admFee: APP_CONFIG.baseAdmissionFee, regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
+                    // NEW: Pass Admission Date through Tariff Engine to check for Promos
+                    const monthTariff = moduleContext.getApplicableTariff(adDateObj, monthName, fyString);
+                    if (monthTariff.promoName) {
+                        document.getElementById('calc-promo-badge').innerHTML = `<span class="promo-badge">PROMO: ${monthTariff.promoName} Applied</span>`;
+                    } else {
+                        document.getElementById('calc-promo-badge').innerHTML = ``;
+                    }
 
                     const isPT = document.getElementById('trainingCategory').value === 'Personal Training';
                     const applicableMonthlyFee = parseInt(isPT ? monthTariff.ptFee : monthTariff.regFee);
@@ -2216,8 +2154,7 @@
                         firstName: fName, lastName: lName, fullName: fullName, 
                         primaryContact: document.getElementById('primaryContact').value, alternateContact: document.getElementById('alternateContact').value,
                         dob: document.getElementById('dob').value, address: document.getElementById('address').value.trim(),
-                        photo: selfieData.value, signature: finalSig,
-                        _fy: fyString, _month: monthName 
+                        photo: selfieData.value, signature: finalSig, _fy: fyString, _month: monthName 
                     };
 
                     const method = document.getElementById('paymentMethod').value;
@@ -2225,8 +2162,7 @@
                     if (method === 'UPI') {
                         upiSec.style.display = 'block'; document.getElementById('btn-validate-payment').innerText = 'Validate Payment & Complete';
                         document.getElementById('qr-amount-display').innerText = calculatedTotalFee;
-                        const s = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
-                        const activeUpiId = s.upiId || APP_CONFIG.upiId;
+                        const s = JSON.parse(localStorage.getItem('revive_settings_db')) || {}; const activeUpiId = s.upiId || APP_CONFIG.upiId;
                         const upiString = `upi://pay?pa=${activeUpiId}&pn=ReviveFitness&am=${calculatedTotalFee}&cu=INR`;
                         document.getElementById('upi-qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
                     } else { upiSec.style.display = 'none'; document.getElementById('btn-validate-payment').innerText = 'Collect Cash & Complete'; }
@@ -2244,8 +2180,7 @@
                 if (this.value === 'UPI') {
                     upiSec.style.display = 'block'; document.getElementById('btn-validate-payment').innerText = 'Validate Payment & Complete';
                     document.getElementById('qr-amount-display').innerText = calculatedTotalFee;
-                    const s = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
-                    const activeUpiId = s.upiId || APP_CONFIG.upiId;
+                    const s = JSON.parse(localStorage.getItem('revive_settings_db')) || {}; const activeUpiId = s.upiId || APP_CONFIG.upiId;
                     const upiString = `upi://pay?pa=${activeUpiId}&pn=ReviveFitness&am=${calculatedTotalFee}&cu=INR`;
                     document.getElementById('upi-qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
                 } else { upiSec.style.display = 'none'; document.getElementById('btn-validate-payment').innerText = 'Collect Cash & Complete'; }
@@ -2288,10 +2223,8 @@
             if(admSelect) admSelect.addEventListener('change', function(e) {
                 if (e.target.value === 'Re-Admission') { document.getElementById('reAdmissionSection').style.display = 'block'; } 
                 else { 
-                    document.getElementById('reAdmissionSection').style.display = 'none'; 
-                    document.getElementById('validationResultBox').style.display = 'none'; 
-                    document.getElementById('prevPhoneInput').value = ''; 
-                    document.getElementById('firstName').value = ''; document.getElementById('lastName').value = ''; 
+                    document.getElementById('reAdmissionSection').style.display = 'none'; document.getElementById('validationResultBox').style.display = 'none'; 
+                    document.getElementById('prevPhoneInput').value = ''; document.getElementById('firstName').value = ''; document.getElementById('lastName').value = ''; 
                     document.getElementById('primaryContact').value = ''; document.getElementById('alternateContact').value = ''; 
                     document.getElementById('dob').value = ''; document.getElementById('address').value = ''; document.getElementById('age').value = '';
                 }
