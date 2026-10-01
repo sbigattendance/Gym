@@ -972,7 +972,8 @@
          JAVASCRIPT ENGINE & CLOUD SYNC
          ======================================================================= -->
     <script>
-        const CLOUD_SYNC_URL = "https://script.google.com/macros/s/AKfycbzrMaM3oGkB3voPe0cFjDHX2Qck0DYvo2ox8Hu7tAm-7A6DNvA-YCsnHzDagpHAqcL6yQ/exec"; 
+        // NEW URL ACTIVATED HERE
+        const CLOUD_SYNC_URL = "https://script.google.com/macros/s/AKfycbwSS7gV4ksWSxpUQJvLn4EZn4r2Yx0zXdCtM_z8Nr9v5H9pjftGBX7ahN53IUf3cKvU/exec"; 
         
         const APP_CONFIG = { baseAdmissionFee: 850, baseMonthlyFee: 800, basePTFee: 1500 };
         const tariffMonthsOrder = ['April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March'];
@@ -1245,7 +1246,7 @@
                         <div class="promo-card">
                             <div>
                                 <h4>${p.name}</h4>
-                                <p>${sd} to ${ed} | Adm: ₹${p.admFee}, Reg: ₹${p.regFee}, PT: ₹${p.ptFee}</p>
+                                <p>${sd} to ${ed} \vert{} Adm: ₹${p.admFee}, Reg: ₹${p.regFee}, PT: ₹${p.ptFee}</p>
                             </div>
                             <button type="button" class="btn danger" style="padding:0.4rem; width:auto; border:none;" onclick="moduleContext.removeSpecialTariff('${p.id}')">Remove</button>
                         </div>
@@ -1375,7 +1376,7 @@
                 localStorage.setItem('revive_attendance_db', JSON.stringify(attDb));
                 cloudSync.push('pushAttendance', newAtt);
 
-                resBox.innerHTML = `<span style="color:var(--success-green); font-weight:bold; font-size:1.1rem;">✔ Attendance Marked Successfully!</span><br><br><strong>Name:</strong> ${user.fullName} (${user.id})<br><strong>Time In:</strong> ${timeStr}`;
+                resBox.innerHTML = `<span style="color:var(--success-green); font-weight:bold; font-size:1.1rem;">✔ Attendance Marked Successfully!</span><br><br><strong>Name:</strong> ${user.fullName} (${user.id})<br><strong>Time In:</strong>${timeStr}`;
                 document.getElementById('att-input').value = ''; document.getElementById('att-live-preview').innerText = '';
                 this.renderAttendanceLogs();
             },
@@ -1439,7 +1440,7 @@
                 }
 
                 document.getElementById('hub-name').innerText = user.fullName; document.getElementById('hub-id').innerText = user.id;
-                document.getElementById('hub-details').innerText = `${user.admissionCategory} - ${user.trainingCategory}`;
+                document.getElementById('hub-details').innerText = `${user.admissionCategory} -${user.trainingCategory}`;
                 document.getElementById('hub-doj').innerText = `Date of Joining: ${user.date}`; document.getElementById('hub-fy-label').innerText = fy;
                 document.getElementById('hub-actions').style.display = 'flex';
                 
@@ -1730,7 +1731,7 @@
                 document.getElementById('pdf-date').innerText = currentMemberDetails.date;
                 document.getElementById('pdf-photo').src = currentMemberDetails.photo; 
                 document.getElementById('pdf-name').innerText = currentMemberDetails.fullName;
-                document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType || 'N/A'} - ${currentMemberDetails.admissionCategory}`;
+                document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType \vert{}\vert{} 'N/A'} -${currentMemberDetails.admissionCategory}`;
                 document.getElementById('pdf-training-category').innerText = currentMemberDetails.trainingCategory;
                 document.getElementById('pdf-contact1').innerText = currentMemberDetails.primaryContact; 
                 document.getElementById('pdf-contact2').innerText = currentMemberDetails.alternateContact || 'N/A';
@@ -1767,7 +1768,7 @@
                 const phone = currentMemberDetails.primaryContact;
                 const name = currentMemberDetails.firstName;
                 const id = currentMemberDetails.id;
-                const msg = `Welcome to Revive Fitness Studio, ${name}!\n\nYour admission is confirmed.\nAdmission ID: ${id}\n\nWe are excited to help you achieve your fitness goals. Let's get started!`;
+                const msg = `Welcome to Revive Fitness Studio, ${name}!\n\nYour admission is confirmed.\nAdmission ID:${id}\n\nWe are excited to help you achieve your fitness goals. Let's get started!`;
                 window.open(`https://api.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(msg)}`, '_blank');
             },
 
@@ -1955,14 +1956,14 @@
                 const calcGrowth = (curr, prev) => prev === 0 ? (curr > 0 ? 100 : 0) : Math.round(((curr - prev) / prev) * 100);
                 
                 const yoyRevG = calcGrowth(currStats.rev, yoyStats.rev); const yoyAdmG = calcGrowth(currStats.admCount, yoyStats.admCount);
-                yoyMsg = `<strong>YoY Revenue:</strong> ${yoyRevG >= 0 ? '+' : ''}${yoyRevG}% (₹${yoyStats.rev.toLocaleString()}) <br> <strong>YoY Admissions:</strong> ${yoyAdmG >= 0 ? '+' : ''}${yoyAdmG}% (${yoyStats.admCount})`;
+                yoyMsg = `<strong>YoY Revenue:</strong> ${yoyRevG >= 0 ? '+' : ''}${yoyRevG}% (₹${yoyStats.rev.toLocaleString()}) <br> <strong>YoY Admissions:</strong>${yoyAdmG >= 0 ? '+' : ''}${yoyAdmG}\% (${yoyStats.admCount})`;
 
                 if (month !== 'All') {
                     const mIdx = tariffMonthsOrder.indexOf(month); let prevM, prevMFy;
                     if (mIdx === 0) { prevM = 'March'; prevMFy = prevFy; } else { prevM = tariffMonthsOrder[mIdx - 1]; prevMFy = fy; }
                     const momStats = calcStats(prevMFy, prevM);
                     const momRevG = calcGrowth(currStats.rev, momStats.rev); const momAdmG = calcGrowth(currStats.admCount, momStats.admCount);
-                    momMsg = `<br><br><strong>MoM Revenue:</strong> ${momRevG >= 0 ? '+' : ''}${momRevG}% (₹${momStats.rev.toLocaleString()}) <br> <strong>MoM Admissions:</strong> ${momAdmG >= 0 ? '+' : ''}${momAdmG}% (${momStats.admCount})`;
+                    momMsg = `<br><br><strong>MoM Revenue:</strong> ${momRevG >= 0 ? '+' : ''}${momRevG}% (₹${momStats.rev.toLocaleString()}) <br> <strong>MoM Admissions:</strong>${momAdmG >= 0 ? '+' : ''}${momAdmG}\% (${momStats.admCount})`;
                 } else { momMsg = '<br><br><span style="color:var(--text-muted); font-size:0.85rem;">MoM Growth N/A for entire year view.</span>'; }
 
                 document.getElementById('yoy-analysis-content').innerHTML = yoyMsg + momMsg;
@@ -1993,7 +1994,7 @@
                     document.getElementById('dob').value = user.dob || ''; document.getElementById('address').value = user.address || '';
                     if(user.dob) { document.getElementById('age').value = calculateAgeFromDate(user.dob); }
                     
-                    resBox.innerHTML = `${statusHtml}<br><br><strong>Name:</strong> ${user.fullName}<br><strong>Contact:</strong> ${user.primaryContact}<br><strong>Prev. Registration Date:</strong> ${user.date}`;
+                    resBox.innerHTML = `${statusHtml}<br><br><strong>Name:</strong> ${user.fullName}<br><strong>Contact:</strong>${user.primaryContact}<br><strong>Prev. Registration Date:</strong> ${user.date}`;
                 } else {
                     resBox.innerHTML = '<span style="color:var(--error-red);">No previous registration found.</span><br><span style="color:var(--text-muted); font-size:0.85rem;">Type changed to New Admission.</span>';
                     admissionTypeSelect.value = 'New Admission'; document.getElementById('primaryContact').value = phone;
@@ -2087,7 +2088,7 @@
                     if (!selfieData.value) { alert("Portrait capture is mandatory."); return; }
                     if (!signatureHasData && !IS_EDIT_MODE) { alert("Digital signature is mandatory."); return; }
 
-                    const fName = document.getElementById('firstName').value.trim(); const lName = document.getElementById('lastName').value.trim(); const fullName = lName ? `${fName} ${lName}` : fName;
+                    const fName = document.getElementById('firstName').value.trim(); const lName = document.getElementById('lastName').value.trim(); const fullName = lName ? `${fName}${lName}` : fName;
                     let finalSig = signatureHasData ? sigCanvas.toDataURL('image/jpeg', 0.8) : (IS_EDIT_MODE ? currentActiveUser.signature : '');
 
                     if (IS_EDIT_MODE) {
@@ -2125,7 +2126,7 @@
                     const y = adDateObj.getFullYear(); const m = adDateObj.getMonth(); 
                     let fyStart = m >= 3 ? y : y - 1; let fyString = `${fyStart}-${fyStart + 1}`;
 
-                    // NEW: Pass Admission Date through Tariff Engine to check for Promos
+                    // Check Promo Tariff via Date
                     const monthTariff = moduleContext.getApplicableTariff(adDateObj, monthName, fyString);
                     if (monthTariff.promoName) {
                         document.getElementById('calc-promo-badge').innerHTML = `<span class="promo-badge">PROMO: ${monthTariff.promoName} Applied</span>`;
