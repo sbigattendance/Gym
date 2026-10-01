@@ -335,9 +335,14 @@
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                     <h3>Tariff Editor</h3>
                 </div>
+                <!-- Splitting UPI Account and PIN Settings Modules -->
                 <div class="module-card admin-only" onclick="appContext.switchView('upi-editor')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
                     <h3>UPI Account</h3>
+                </div>
+                <div class="module-card admin-only" onclick="appContext.switchView('pin-editor')">
+                    <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <h3>PIN Settings</h3>
                 </div>
             </div>
             <div style="text-align: center; margin-top: 3rem;">
@@ -358,8 +363,8 @@
                 <form id="attendanceForm" onsubmit="moduleContext.markAttendance(event)">
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Enter Phone Number or Admission ID <span class="required">*</span></label>
-                            <input type="text" id="att-input" placeholder="e.g. 9999999999 or REV-0001" oninput="moduleContext.previewMemberName(this.value)" required autocomplete="off">
+                            <label>Enter Phone Number, Admission ID, or Name <span class="required">*</span></label>
+                            <input type="text" id="att-input" placeholder="e.g. 9999999999, REV-0001, or John" oninput="moduleContext.previewMemberName(this.value)" required autocomplete="off">
                             <div id="att-live-preview" style="margin-top: 6px; font-weight: 700; color: var(--accent-orange); font-size: 0.95rem;"></div>
                         </div>
                         <div class="form-group" style="max-width: 150px; justify-content: flex-end;">
@@ -547,13 +552,24 @@
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
                     <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
-                    <h2 class="module-title">System Settings</h2>
+                    <h2 class="module-title">UPI Settings</h2>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label>Linked UPI ID <span class="required">*</span></label>
                         <input type="text" id="admin-upi-id" placeholder="e.g. revivefitness@upi" required>
                     </div>
+                </div>
+                <div class="action-row"><button type="button" onclick="moduleContext.saveUpi()" class="btn primary">Save UPI Settings</button></div>
+            </div>
+        </main>
+
+        <!-- NEW: PIN Editor view separated from UPI settings -->
+        <main id="view-pin-editor" class="view-section">
+            <div class="form-layout" style="max-width: 600px;">
+                <div class="module-toolbar">
+                    <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <h2 class="module-title">PIN Settings</h2>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -565,7 +581,7 @@
                         <input type="password" id="admin-admin-pin" placeholder="4-digit PIN" maxlength="4" required>
                     </div>
                 </div>
-                <div class="action-row"><button type="button" onclick="moduleContext.saveSettings()" class="btn primary">Save Settings</button></div>
+                <div class="action-row"><button type="button" onclick="moduleContext.savePins()" class="btn primary">Save PIN Settings</button></div>
             </div>
         </main>
 
@@ -1031,6 +1047,23 @@
             const m = today.getMonth() - dob.getMonth();
             if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) { age--; } return age >= 0 ? age : '';
         }
+        
+        // Helper function for locating a user via ID, Phone or Name
+        function findUserForAttendance(val) {
+            const cleanVal = val.trim().toLowerCase();
+            let users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
+            // Prioritize Exact matches first
+            let user = users.find(u => 
+                u.id.toLowerCase() === cleanVal || 
+                u.primaryContact === cleanVal || 
+                (u.fullName && u.fullName.toLowerCase() === cleanVal)
+            );
+            // Fallback to partial name matching if exact match is not found
+            if (!user) {
+                user = users.find(u => u.fullName && u.fullName.toLowerCase().includes(cleanVal));
+            }
+            return user;
+        }
 
         var appContext = {
             currentRole: null, pendingRole: null, 
@@ -1040,6 +1073,7 @@
                 if(target) { target.classList.add('active-view'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
                 if(viewName === 'tariff-editor') moduleContext.initTariffEditor();
                 if(viewName === 'upi-editor') moduleContext.initUpiEditor();
+                if(viewName === 'pin-editor') moduleContext.initPinEditor();
                 if(viewName === 'reports') moduleContext.initReports();
                 if(viewName === 'attendance') moduleContext.initAttendanceView();
                 if(viewName !== 'admission') { IS_EDIT_MODE = false; }
@@ -1115,19 +1149,33 @@
             initUpiEditor: function() { 
                 const s = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
                 document.getElementById('admin-upi-id').value = s.upiId || ''; 
+            },
+            saveUpi: function() {
+                const upi = document.getElementById('admin-upi-id').value.trim();
+                
+                if(!upi) { alert("Please fill the UPI ID field."); return; }
+                const s = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
+                s.upiId = upi;
+                localStorage.setItem('revive_settings_db', JSON.stringify(s));
+                cloudSync.push('pushSettings', s);
+                alert("UPI Settings Saved."); appContext.goHome();
+            },
+            initPinEditor: function() { 
+                const s = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
                 document.getElementById('admin-staff-pin').value = s.staffPin || '';
                 document.getElementById('admin-admin-pin').value = s.adminPin || '';
             },
-            saveSettings: function() {
-                const upi = document.getElementById('admin-upi-id').value.trim();
+            savePins: function() {
                 const sp = document.getElementById('admin-staff-pin').value.trim();
                 const ap = document.getElementById('admin-admin-pin').value.trim();
                 
-                if(!upi || !sp || !ap) { alert("Fill all fields"); return; }
-                const s = { upiId: upi, staffPin: sp, adminPin: ap };
+                if(!sp || !ap) { alert("Please fill both PIN fields."); return; }
+                const s = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
+                s.staffPin = sp;
+                s.adminPin = ap;
                 localStorage.setItem('revive_settings_db', JSON.stringify(s));
                 cloudSync.push('pushSettings', s);
-                alert("System Settings Saved."); appContext.goHome();
+                alert("PIN Settings Saved."); appContext.goHome();
             },
             initTariffEditor: function() {
                 const fySelect = document.getElementById('fy-select'); const container = document.getElementById('tariff-months-container');
@@ -1189,8 +1237,9 @@
                     previewEl.innerText = '';
                     return;
                 }
-                let users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                let user = users.find(u => u.id.toLowerCase() === cleanVal.toLowerCase() || u.primaryContact === cleanVal);
+                
+                let user = findUserForAttendance(cleanVal);
+                
                 if(user) {
                     previewEl.innerHTML = `👤 Match Found: <span style="color:var(--success-green);">${user.fullName} (${user.id})</span>`;
                 } else {
@@ -1205,12 +1254,11 @@
                 resBox.style.display = 'block';
 
                 if(!val) {
-                    resBox.innerHTML = '<span style="color:var(--error-red); font-weight:bold;">Please enter a valid Phone Number or Admission ID.</span>';
+                    resBox.innerHTML = '<span style="color:var(--error-red); font-weight:bold;">Please enter a valid Phone Number, ID, or Name.</span>';
                     return;
                 }
 
-                let users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                let user = users.find(u => u.id.toLowerCase() === val.toLowerCase() || u.primaryContact === val);
+                let user = findUserForAttendance(val);
 
                 if(!user) {
                     resBox.innerHTML = `<span style="color:var(--error-red); font-weight:bold;">Member not found for: "${val}". Check entry or register member first.</span>`;
@@ -1227,7 +1275,7 @@
 
                 const alreadyMarked = attDb[dateKey].some(a => a.userId === user.id);
                 if(alreadyMarked) {
-                    resBox.innerHTML = `<span style="color:var(--warning-yellow); font-weight:bold;">⚠️ Attendance already marked today for ${user.fullName} (${user.id})!</span>`;
+                    resBox.innerHTML = `<span style="color:var(--warning-yellow); font-weight:bold;">⚠️️ Attendance already marked today for ${user.fullName} (${user.id})!</span>`;
                     document.getElementById('att-input').value = '';
                     document.getElementById('att-live-preview').innerText = '';
                     return;
