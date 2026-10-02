@@ -311,7 +311,7 @@
                 </div>
                 <form id="loginForm" onsubmit="appContext.handleLogin(); return false;">
                     <div class="form-group">
-                        <input type="password" id="pin-input" class="pin-input" inputmode="numeric" required autocomplete="off">
+                        <input type="password" id="pin-input" class="pin-input" inputmode="numeric" required autocomplete="off" placeholder="Enter PIN">
                     </div>
                     <button type="button" onclick="appContext.handleLogin()" class="btn primary" style="margin-top:1rem;">Verify & Access</button>
                 </form>
@@ -998,17 +998,34 @@
             
             pullInitial: async function() {
                 if(!CLOUD_SYNC_URL || CLOUD_SYNC_URL === "YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE") return;
-                document.getElementById('cloud-sync-overlay').style.display = 'flex';
+                const overlay = document.getElementById('cloud-sync-overlay');
+                if(overlay) overlay.style.display = 'flex';
+                
                 try {
-                    const res = await fetch(CLOUD_SYNC_URL + '?action=pull');
-                    const data = await res.json();
+                    // Added { redirect: 'follow' } and robust text-parsing to prevent silent crashes
+                    const res = await fetch(CLOUD_SYNC_URL + '?action=pull', { redirect: 'follow' });
+                    const rawText = await res.text();
                     
-                    if(data.settings) localStorage.setItem('revive_settings_db', JSON.stringify(data.settings));
+                    let data;
+                    try { 
+                        data = JSON.parse(rawText); 
+                    } catch(e) { 
+                        console.error("Backend Error. The Google Script did not return JSON. It returned:", rawText); 
+                        alert("Warning: Could not read data from Google Sheet. Check your Apps Script setup.");
+                        return;
+                    }
+                    
+                    if(typeof data === 'string') data = JSON.parse(data);
+
+                    if(data.settings && Object.keys(data.settings).length > 0) localStorage.setItem('revive_settings_db', JSON.stringify(data.settings));
                     if(data.tariffs) localStorage.setItem('revive_tariffs', JSON.stringify(data.tariffs));
                     if(data.specialTariffs) localStorage.setItem('revive_special_tariffs', JSON.stringify(data.specialTariffs));
-                    if(data.users) localStorage.setItem('revive_users_db', JSON.stringify(data.users));
                     
-                    if(data.payments) {
+                    if(data.users && data.users.length > 0) {
+                        localStorage.setItem('revive_users_db', JSON.stringify(data.users));
+                    }
+                    
+                    if(data.payments && data.payments.length > 0) {
                         const pObj = {};
                         data.payments.forEach(p => {
                             if(!pObj[p.userId]) pObj[p.userId] = {};
@@ -1018,7 +1035,7 @@
                         localStorage.setItem('revive_payments_db', JSON.stringify(pObj));
                     }
                     
-                    if(data.attendance) {
+                    if(data.attendance && data.attendance.length > 0) {
                         const aObj = {};
                         data.attendance.forEach(a => {
                             if(!aObj[a.dateKey]) aObj[a.dateKey] = [];
@@ -1026,8 +1043,11 @@
                         });
                         localStorage.setItem('revive_attendance_db', JSON.stringify(aObj));
                     }
-                } catch(e) { console.error("Cloud Pull Error:", e); }
-                document.getElementById('cloud-sync-overlay').style.display = 'none';
+                } catch(e) { 
+                    console.error("Network or Fetch Error:", e); 
+                } finally {
+                    if(overlay) overlay.style.display = 'none';
+                }
             },
 
             push: function(action, payload) {
@@ -1124,7 +1144,8 @@
                 if(pinInput) { 
                     pinInput.value = ''; 
                     pinInput.setAttribute('maxlength', role === 'staff' ? staffPinLen : adminPinLen); 
-                    pinInput.placeholder = role === 'staff' ? 'Enter PIN' : 'Enter PIN'; 
+                    // Explicit hint showing default fallback so users don't get locked out
+                    pinInput.placeholder = role === 'staff' ? 'Default: 123456' : 'Default: 1234'; 
                 }
                 appContext.switchView('login');
             },
@@ -1136,7 +1157,7 @@
 
                 if (appContext.pendingRole === 'staff' && pin === staffPin) { appContext.currentRole = 'staff'; appContext.loadDashboard('STAFF'); } 
                 else if (appContext.pendingRole === 'admin' && pin === adminPin) { appContext.currentRole = 'admin'; appContext.loadDashboard('ADMIN'); } 
-                else { alert('Invalid PIN. Please try again.'); }
+                else { alert('Incorrect PIN. Please try again.'); }
             },
             loadDashboard: function(roleTitle) {
                 document.getElementById('dashboard-title').innerHTML = `${roleTitle} <span>PORTAL</span>`;
@@ -1248,7 +1269,7 @@
                         <div class="promo-card">
                             <div>
                                 <h4>${p.name}</h4>
-                                <p>${sd} to ${ed} | Adm: ₹${p.admFee}, Reg: ₹${p.regFee}, PT: ₹${p.ptFee}</p>
+                                <p>${sd} to ${ed} \vert{} Adm: ₹${p.admFee}, Reg: ₹${p.regFee}, PT: ₹${p.ptFee}</p>
                             </div>
                             <button type="button" class="btn danger" style="padding:0.4rem; width:auto; border:none;" onclick="moduleContext.removeSpecialTariff('${p.id}')">Remove</button>
                         </div>
@@ -1736,7 +1757,7 @@
                 document.getElementById('pdf-date').innerText = currentMemberDetails.date;
                 document.getElementById('pdf-photo').src = currentMemberDetails.photo; 
                 document.getElementById('pdf-name').innerText = currentMemberDetails.fullName;
-                document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType || 'N/A'} -${currentMemberDetails.admissionCategory}`;
+                document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType \vert{}\vert{} 'N/A'} -${currentMemberDetails.admissionCategory}`;
                 document.getElementById('pdf-training-category').innerText = currentMemberDetails.trainingCategory;
                 document.getElementById('pdf-contact1').innerText = currentMemberDetails.primaryContact; 
                 document.getElementById('pdf-contact2').innerText = currentMemberDetails.alternateContact || 'N/A';
@@ -1964,14 +1985,14 @@
                 const calcGrowth = (curr, prev) => prev === 0 ? (curr > 0 ? 100 : 0) : Math.round(((curr - prev) / prev) * 100);
                 
                 const yoyRevG = calcGrowth(currStats.rev, yoyStats.rev); const yoyAdmG = calcGrowth(currStats.admCount, yoyStats.admCount);
-                yoyMsg = `<strong>YoY Revenue:</strong> ${yoyRevG >= 0 ? '+' : ''}${yoyRevG}% (₹${yoyStats.rev.toLocaleString()}) <br> <strong>YoY Admissions:</strong>${yoyAdmG >= 0 ? '+' : ''}${yoyAdmG}% (${yoyStats.admCount})`;
+                yoyMsg = `<strong>YoY Revenue:</strong> ${yoyRevG >= 0 ? '+' : ''}${yoyRevG}% (₹${yoyStats.rev.toLocaleString()}) <br> <strong>YoY Admissions:</strong>${yoyAdmG >= 0 ? '+' : ''}${yoyAdmG}\% (${yoyStats.admCount})`;
 
                 if (month !== 'All') {
                     const mIdx = tariffMonthsOrder.indexOf(month); let prevM, prevMFy;
                     if (mIdx === 0) { prevM = 'March'; prevMFy = prevFy; } else { prevM = tariffMonthsOrder[mIdx - 1]; prevMFy = fy; }
                     const momStats = calcStats(prevMFy, prevM);
                     const momRevG = calcGrowth(currStats.rev, momStats.rev); const momAdmG = calcGrowth(currStats.admCount, momStats.admCount);
-                    momMsg = `<br><br><strong>MoM Revenue:</strong> ${momRevG >= 0 ? '+' : ''}${momRevG}% (₹${momStats.rev.toLocaleString()}) <br> <strong>MoM Admissions:</strong>${momAdmG >= 0 ? '+' : ''}${momAdmG}% (${momStats.admCount})`;
+                    momMsg = `<br><br><strong>MoM Revenue:</strong> ${momRevG >= 0 ? '+' : ''}${momRevG}% (₹${momStats.rev.toLocaleString()}) <br> <strong>MoM Admissions:</strong>${momAdmG >= 0 ? '+' : ''}${momAdmG}\% (${momStats.admCount})`;
                 } else { momMsg = '<br><br><span style="color:var(--text-muted); font-size:0.85rem;">MoM Growth N/A for entire year view.</span>'; }
 
                 document.getElementById('yoy-analysis-content').innerHTML = yoyMsg + momMsg;
@@ -2227,6 +2248,9 @@
                 localStorage.setItem('revive_payments_db', JSON.stringify(payDb));
                 cloudSync.push('pushPayment', pData);
 
+                const currentCount = parseInt(preAdmissionId.split('-')[1]);
+                localStorage.setItem('revive_admission_count', currentCount);
+                
                 document.getElementById('sm-title').innerText = "Registration Complete!";
                 document.getElementById('generated-id').innerText = currentMemberDetails.id;
                 document.getElementById('successModal').style.display = 'flex';
