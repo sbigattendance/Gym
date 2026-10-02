@@ -138,7 +138,7 @@
         .val-group button { padding: 0 1.5rem; white-space: nowrap; height: 100%; }
 
         /* ==========================================================================
-           6. REPORTS, HUB & CALENDAR UI
+           6. REPORTS, EXPENSES, HUB & CALENDAR UI
            ========================================================================== */
         .tariff-row { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .tariff-month-name { font-weight: 800; color: var(--accent-orange); margin-bottom: 1rem; font-size: 1.1rem; text-transform: uppercase; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
@@ -275,6 +275,7 @@
             </div>
         </header>
 
+        <!-- HOMEPAGE -->
         <main id="view-home" class="view-section active-view">
             <div class="dashboard-header">
                 <h1>WELCOME TO <span>REVIVE</span></h1>
@@ -300,6 +301,7 @@
             </div>
         </main>
 
+        <!-- LOGIN -->
         <main id="view-login" class="view-section">
             <div class="form-layout" style="max-width: 400px;">
                 <div class="module-toolbar">
@@ -311,13 +313,14 @@
                 </div>
                 <form id="loginForm" onsubmit="appContext.handleLogin(); return false;">
                     <div class="form-group">
-                        <input type="password" id="pin-input" class="pin-input" inputmode="numeric" required autocomplete="off" placeholder="Enter PIN">
+                        <input type="password" id="pin-input" class="pin-input" inputmode="numeric" required autocomplete="off">
                     </div>
                     <button type="button" onclick="appContext.handleLogin()" class="btn primary" style="margin-top:1rem;">Verify & Access</button>
                 </form>
             </div>
         </main>
 
+        <!-- DASHBOARD -->
         <main id="view-dashboard" class="view-section">
             <div class="dashboard-header">
                 <h1 id="dashboard-title">STAFF <span>PORTAL</span></h1>
@@ -333,9 +336,14 @@
                     <h3>User Details</h3>
                 </div>
                 
+                <div class="module-card admin-only" onclick="appContext.switchView('expenses')">
+                    <svg class="module-icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    <h3>Expense Tracker</h3>
+                </div>
+
                 <div class="module-card admin-only" onclick="appContext.switchView('reports')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                    <h3>Reports</h3>
+                    <h3>P&L Reports</h3>
                 </div>
                 <div class="module-card admin-only" onclick="appContext.switchView('tariff-editor')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -352,11 +360,12 @@
             </div>
             
             <div style="text-align: center; margin-top: 3rem; display: flex; justify-content: center; gap: 1rem;">
-                <button class="btn secondary" onclick="cloudSync.pullInitial()" style="font-size: 0.85rem; padding: 0.8rem 2rem; border-color: var(--success-green); color: var(--success-green);">🔄 Sync Latest Data</button>
+                <button class="btn secondary" onclick="cloudSync.pullInitial(true)" style="font-size: 0.85rem; padding: 0.8rem 2rem; border-color: var(--success-green); color: var(--success-green);">🔄 Sync Latest Data</button>
                 <button class="btn secondary" onclick="appContext.logout()" style="font-size: 0.85rem; padding: 0.8rem 2rem;">Log Out Securely</button>
             </div>
         </main>
 
+        <!-- ATTENDANCE -->
         <main id="view-attendance" class="view-section">
             <div class="form-layout" style="max-width: 700px;">
                 <div class="module-toolbar">
@@ -401,6 +410,7 @@
             </div>
         </main>
 
+        <!-- USER SEARCH -->
         <main id="view-user-search" class="view-section">
             <div class="form-layout" style="max-width: 500px;">
                 <div class="module-toolbar">
@@ -424,6 +434,7 @@
             </div>
         </main>
 
+        <!-- USER HUB -->
         <main id="view-user-hub" class="view-section">
             <div class="form-layout" style="max-width: 900px;">
                 <div class="module-toolbar">
@@ -460,11 +471,69 @@
             </div>
         </main>
 
+        <!-- EXPENSE TRACKER (NEW) -->
+        <main id="view-expenses" class="view-section">
+            <div class="form-layout" style="max-width: 800px;">
+                <div class="module-toolbar">
+                    <button class="back-btn" onclick="appContext.goHome()" type="button">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                        Back
+                    </button>
+                    <h2 class="module-title">Expense Tracker</h2>
+                </div>
+
+                <form id="expenseForm" onsubmit="moduleContext.saveExpense(event)">
+                    <div class="form-row">
+                        <div class="form-group"><label>Date <span class="required">*</span></label><input type="date" id="exp-date" required></div>
+                        <div class="form-group"><label>Amount (₹) <span class="required">*</span></label><input type="number" id="exp-amount" placeholder="0.00" min="1" required></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Category <span class="required">*</span></label>
+                            <select id="exp-category" required>
+                                <option value="Rent">Rent</option>
+                                <option value="Electricity">Electricity</option>
+                                <option value="Maintenance">Maintenance & Repairs</option>
+                                <option value="Equipment">Equipment Purchase</option>
+                                <option value="Salary">Staff Salary</option>
+                                <option value="Marketing">Marketing / Ads</option>
+                                <option value="Miscellaneous">Miscellaneous / Others</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Method <span class="required">*</span></label>
+                            <select id="exp-method" required>
+                                <option value="Cash">Cash</option>
+                                <option value="UPI">UPI / Bank Transfer</option>
+                                <option value="Card">Credit/Debit Card</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description / Notes <span class="required">*</span></label>
+                        <textarea id="exp-desc" rows="2" placeholder="Brief details about the expense" required></textarea>
+                    </div>
+                    <button type="submit" class="btn primary" style="margin-top: 1rem;">Log Expense</button>
+                </form>
+
+                <div style="margin-top: 3rem; border-top: 2px solid var(--border-color); padding-top: 1.5rem;">
+                    <h3 style="color: var(--accent-orange); text-transform: uppercase; font-size: 1.1rem; margin-bottom: 1rem;">Recent Expenses</h3>
+                    <div class="table-responsive">
+                        <table class="data-table" id="table-recent-expenses">
+                            <thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- REPORTS P&L (UPDATED) -->
         <main id="view-reports" class="view-section">
             <div class="form-layout" style="max-width: 1000px; padding: 1.5rem; background:transparent; border:none; box-shadow:none;">
                 <div class="module-toolbar">
                     <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
-                    <h2 class="module-title">Financial Reports</h2>
+                    <h2 class="module-title">P&L Financial Reports</h2>
                 </div>
                 
                 <div class="form-row" style="background:var(--bg-panel); padding:1rem; border-radius:8px; border:1px solid var(--border-color); align-items:flex-end;">
@@ -484,27 +553,38 @@
                 <div id="report-content" style="display:none; margin-top:2rem;">
                     
                     <div class="report-kpi-grid">
-                        <div class="kpi-card">
-                            <h4>1. Total Revenue</h4>
-                            <div class="val">₹<span id="kpi-rev-total">0</span></div>
+                        <div class="kpi-card" style="border-bottom-color: var(--success-green);">
+                            <h4>Total Income</h4>
+                            <div class="val" style="color: var(--success-green);">₹<span id="kpi-rev-total">0</span></div>
                         </div>
+                        <div class="kpi-card" style="border-bottom-color: var(--error-red);">
+                            <h4>Total Expenses</h4>
+                            <div class="val" style="color: var(--error-red);">₹<span id="kpi-expense-total">0</span></div>
+                        </div>
+                        <div class="kpi-card" style="border-bottom-color: #007bff; grid-column: span 2;">
+                            <h4 style="color:#007bff;">Net Profit / Loss</h4>
+                            <div class="val" id="kpi-net-profit" style="font-size: 2.2rem;">₹0</div>
+                        </div>
+                    </div>
+
+                    <div class="report-kpi-grid">
                         <div class="kpi-card">
-                            <h4>2. New Admissions</h4>
+                            <h4>Admissions</h4>
                             <div class="val" id="kpi-adm-count">0</div>
                             <span class="sub-val">₹<span id="kpi-adm-amt">0</span></span>
                         </div>
                         <div class="kpi-card">
-                            <h4>3. Fees Collected</h4>
+                            <h4>Fees Collected</h4>
                             <div class="val" id="kpi-fee-count">0</div>
                             <span class="sub-val">₹<span id="kpi-fee-amt">0</span></span>
                         </div>
                         <div class="kpi-card" style="cursor:pointer;" onclick="moduleContext.filterReportByShortfall()" title="Click to view profiles with shortfall payments">
-                            <h4>4. Due (Shortfall) <span style="font-size:0.75rem; color:var(--accent-orange);">🔍 View</span></h4>
+                            <h4>Due (Shortfall) <span style="font-size:0.75rem; color:var(--accent-orange);">🔍 View</span></h4>
                             <div class="val" id="kpi-shortfall-count" style="color:var(--warning-yellow);">0</div>
                             <span class="sub-val" style="color:var(--warning-yellow);">₹<span id="kpi-shortfall-amt">0</span></span>
                         </div>
                         <div class="kpi-card">
-                            <h4>5. Fee Unpaid</h4>
+                            <h4>Fee Unpaid</h4>
                             <div class="val" id="kpi-unpaid-count" style="color:var(--error-red);">0</div>
                             <span class="sub-val" style="color:var(--error-red);">₹<span id="kpi-unpaid-amt">0</span></span>
                         </div>
@@ -517,11 +597,11 @@
 
                     <div class="report-section">
                         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
-                            <h3 style="margin:0; border:none;">New Admissions Register</h3>
+                            <h3 style="margin:0; border:none; color:var(--error-red);">Expense Register</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="data-table" id="table-admissions">
-                                <thead><tr><th>Date</th><th>ID</th><th>Name</th><th>Contact</th><th>Category</th></tr></thead>
+                            <table class="data-table" id="table-report-expenses">
+                                <thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th><th>Method</th></tr></thead>
                                 <tbody></tbody>
                             </table>
                         </div>
@@ -529,11 +609,11 @@
 
                     <div class="report-section">
                         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
-                            <h3 style="margin:0; border:none;">Fee Collections Register</h3>
+                            <h3 style="margin:0; border:none;">Income Register (Fees & Admissions)</h3>
                         </div>
                         <div class="table-responsive">
                             <table class="data-table" id="table-fees">
-                                <thead><tr><th>Paid On</th><th>ID & Name</th><th>Month</th><th>Amount</th><th>Method</th></tr></thead>
+                                <thead><tr><th>Type</th><th>ID & Name</th><th>Month</th><th>Amount</th><th>Method</th></tr></thead>
                                 <tbody></tbody>
                             </table>
                         </div>
@@ -541,7 +621,7 @@
 
                     <div class="report-section">
                         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
-                            <h3 style="margin:0; border:none; color:var(--error-red);">Due / Shortfall Register</h3>
+                            <h3 style="margin:0; border:none; color:var(--warning-yellow);">Due / Shortfall Register</h3>
                         </div>
                         <div class="table-responsive">
                             <table class="data-table" id="table-shortfalls">
@@ -555,6 +635,7 @@
             </div>
         </main>
 
+        <!-- UPI EDITOR -->
         <main id="view-upi-editor" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
@@ -571,6 +652,7 @@
             </div>
         </main>
 
+        <!-- PIN EDITOR -->
         <main id="view-pin-editor" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
@@ -591,6 +673,7 @@
             </div>
         </main>
 
+        <!-- TARIFF EDITOR -->
         <main id="view-tariff-editor" class="view-section">
             <div class="form-layout" style="max-width: 900px;">
                 <div class="module-toolbar">
@@ -598,7 +681,6 @@
                     <h2 class="module-title">Master Tariff Configurator</h2>
                 </div>
 
-                <!-- NEW: PROMO TARIFF SECTION -->
                 <div style="background:var(--bg-main); padding: 1.5rem; border-radius: 8px; border: 1px dashed var(--accent-orange); margin-bottom: 2.5rem;">
                     <h3 style="color:var(--accent-orange); margin-bottom: 0.5rem; font-size: 1.1rem; text-transform: uppercase;">Special Date / Promo Tariffs</h3>
                     <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;">Define custom rates for specific dates. The system will auto-apply these rates over standard monthly rates if an admission or payment happens within these dates.</p>
@@ -642,6 +724,7 @@
                 
                 <form id="admissionForm">
                     
+                    <!-- STEP 1 -->
                     <div id="step-1" class="step-container active-step">
                         <div class="step-indicator" id="step-1-ind">Step 1 of 3: Member Details</div>
                         
@@ -728,6 +811,7 @@
                         </div>
                     </div>
 
+                    <!-- STEP 2 -->
                     <div id="step-2" class="step-container">
                         <div class="step-indicator" id="step-2-ind">Step 2 of 3: Digital Verification</div>
                         
@@ -766,6 +850,7 @@
                         </div>
                     </div>
 
+                    <!-- STEP 3 -->
                     <div id="step-3" class="step-container">
                         <div class="step-indicator" id="step-3-ind">Step 3 of 3: Initial Payment Validation</div>
                         
@@ -844,7 +929,7 @@
 
         <div id="successModal" class="modal">
             <div class="modal-content">
-                <img src="logo.png" alt="REVIVE FITNESS STUDIO" style="height: 45px; margin-bottom: 1.5rem;" onerror="this.style.display='none'">
+                <img src="logo.png" alt="REVIVE FITNESS" style="height: 45px; margin-bottom: 1.5rem;" onerror="this.style.display='none'">
                 <h2 class="orange-text" id="sm-title">Registration Complete!</h2>
                 <div class="admission-badge" id="generated-id">REV-0000</div>
                 <div class="modal-actions" id="sm-adm-actions">
@@ -974,10 +1059,12 @@
          JAVASCRIPT ENGINE & CLOUD SYNC
          ======================================================================= -->
     <script>
-        // NEW URL ACTIVATED HERE
-        const CLOUD_SYNC_URL = "https://script.google.com/macros/s/AKfycbwSS7gV4ksWSxpUQJvLn4EZn4r2Yx0zXdCtM_z8Nr9v5H9pjftGBX7ahN53IUf3cKvU/exec"; 
+        // =========================================================================
+        // INSERT YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
+        // =========================================================================
+        const CLOUD_SYNC_URL = "https://script.google.com/macros/s/AKfycbyq8X2y8bT_-Bv_72fVjY_jG6y5wZ68gY3v6-pP8W2q8X2y8bT/exec"; 
         
-        const APP_CONFIG = { baseAdmissionFee: 850, baseMonthlyFee: 800, basePTFee: 1500 };
+        const APP_CONFIG = { baseAdmissionFee: 850, baseMonthlyFee: 800, basePTFee: 1500, upiId: "revive@upi" };
         const tariffMonthsOrder = ['April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March'];
         const tariffMonthIndices = [3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2]; 
         
@@ -996,36 +1083,29 @@
             queue: [],
             isSyncing: false,
             
-            pullInitial: async function() {
-                if(!CLOUD_SYNC_URL || CLOUD_SYNC_URL === "YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE") return;
+            pullInitial: async function(showUI = false) {
+                if(!CLOUD_SYNC_URL || CLOUD_SYNC_URL.includes("YOUR_NEW_WEB_APP_URL")) return;
+                
                 const overlay = document.getElementById('cloud-sync-overlay');
-                if(overlay) overlay.style.display = 'flex';
+                if(overlay && showUI) overlay.style.display = 'flex';
                 
                 try {
-                    // Added { redirect: 'follow' } and robust text-parsing to prevent silent crashes
                     const res = await fetch(CLOUD_SYNC_URL + '?action=pull', { redirect: 'follow' });
                     const rawText = await res.text();
                     
                     let data;
-                    try { 
-                        data = JSON.parse(rawText); 
-                    } catch(e) { 
-                        console.error("Backend Error. The Google Script did not return JSON. It returned:", rawText); 
-                        alert("Warning: Could not read data from Google Sheet. Check your Apps Script setup.");
-                        return;
-                    }
+                    try { data = JSON.parse(rawText); } 
+                    catch(e) { console.error("Script Error:", rawText); return; }
                     
                     if(typeof data === 'string') data = JSON.parse(data);
 
-                    if(data.settings && Object.keys(data.settings).length > 0) localStorage.setItem('revive_settings_db', JSON.stringify(data.settings));
+                    if(data.settings) localStorage.setItem('revive_settings_db', JSON.stringify(data.settings));
                     if(data.tariffs) localStorage.setItem('revive_tariffs', JSON.stringify(data.tariffs));
                     if(data.specialTariffs) localStorage.setItem('revive_special_tariffs', JSON.stringify(data.specialTariffs));
+                    if(data.users) localStorage.setItem('revive_users_db', JSON.stringify(data.users));
+                    if(data.expenses) localStorage.setItem('revive_expenses_db', JSON.stringify(data.expenses));
                     
-                    if(data.users && data.users.length > 0) {
-                        localStorage.setItem('revive_users_db', JSON.stringify(data.users));
-                    }
-                    
-                    if(data.payments && data.payments.length > 0) {
+                    if(data.payments) {
                         const pObj = {};
                         data.payments.forEach(p => {
                             if(!pObj[p.userId]) pObj[p.userId] = {};
@@ -1035,7 +1115,7 @@
                         localStorage.setItem('revive_payments_db', JSON.stringify(pObj));
                     }
                     
-                    if(data.attendance && data.attendance.length > 0) {
+                    if(data.attendance) {
                         const aObj = {};
                         data.attendance.forEach(a => {
                             if(!aObj[a.dateKey]) aObj[a.dateKey] = [];
@@ -1043,16 +1123,15 @@
                         });
                         localStorage.setItem('revive_attendance_db', JSON.stringify(aObj));
                     }
-                } catch(e) { 
-                    console.error("Network or Fetch Error:", e); 
-                } finally {
-                    if(overlay) overlay.style.display = 'none';
-                }
+                    
+                    if(showUI) alert("Database Synced Successfully!");
+                } catch(e) { console.error("Fetch Error:", e); } 
+                finally { if(overlay) overlay.style.display = 'none'; }
             },
 
             push: function(action, payload) {
-                if(!CLOUD_SYNC_URL || CLOUD_SYNC_URL === "YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE") return;
-                this.queue.push({ action, payload });
+                if(!CLOUD_SYNC_URL || CLOUD_SYNC_URL.includes("YOUR_NEW_WEB_APP_URL")) return;
+                this.queue.push({ action: action, payload: payload });
                 this.processQueue();
             },
 
@@ -1092,6 +1171,7 @@
             const d = new Date(isoStr);
             return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
         }
+
         function calculateAgeFromDate(dateStr) {
             if(!dateStr || dateStr.length !== 10 || !dateStr.includes('-')) return '';
             const p = dateStr.split('-');
@@ -1114,6 +1194,7 @@
             return user;
         }
 
+        // --- GLOBAL APP LOGIC ---
         var appContext = {
             currentRole: null, pendingRole: null, 
             switchView: function(viewName) {
@@ -1125,6 +1206,7 @@
                 if(viewName === 'pin-editor') moduleContext.initPinEditor();
                 if(viewName === 'reports') moduleContext.initReports();
                 if(viewName === 'attendance') moduleContext.initAttendanceView();
+                if(viewName === 'expenses') moduleContext.initExpenseTracker();
                 if(viewName !== 'admission') { IS_EDIT_MODE = false; }
             },
             goHome: function() {
@@ -1144,7 +1226,6 @@
                 if(pinInput) { 
                     pinInput.value = ''; 
                     pinInput.setAttribute('maxlength', role === 'staff' ? staffPinLen : adminPinLen); 
-                    // Explicit hint showing default fallback so users don't get locked out
                     pinInput.placeholder = role === 'staff' ? 'Default: 123456' : 'Default: 1234'; 
                 }
                 appContext.switchView('login');
@@ -1188,7 +1269,7 @@
                 const today = new Date();
                 document.getElementById('dateOfAdmission').value = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
                 
-                document.getElementById('calc-promo-badge').innerHTML = ''; // reset promo UI
+                document.getElementById('calc-promo-badge').innerHTML = '';
                 appContext.switchView('admission');
             },
             closeModal: function() {
@@ -1197,14 +1278,73 @@
             }
         };
 
+        // --- MODULE LOGIC (Expenses, Reports, Search, Settings) ---
         var moduleContext = {
             
+            // Financial Helper
+            getFyAndMonth: function(dateStr) {
+                const d = new Date(dateStr);
+                const m = d.getMonth(); const y = d.getFullYear();
+                const monthName = d.toLocaleString('default', { month: 'long' });
+                const fyStart = m >= 3 ? y : y - 1;
+                return { fy: `${fyStart}-${fyStart+1}`, month: monthName };
+            },
+
+            // Expense Tracker
+            initExpenseTracker: function() {
+                document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
+                document.getElementById('expenseForm').reset();
+                document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
+                this.renderRecentExpenses();
+            },
+            saveExpense: function(e) {
+                e.preventDefault();
+                const date = document.getElementById('exp-date').value;
+                const amt = parseInt(document.getElementById('exp-amount').value);
+                const cat = document.getElementById('exp-category').value;
+                const method = document.getElementById('exp-method').value;
+                const desc = document.getElementById('exp-desc').value;
+                
+                const timeMeta = this.getFyAndMonth(date);
+                const exp = {
+                    id: 'EXP-' + Date.now(),
+                    date: date,
+                    fy: timeMeta.fy,
+                    month: timeMeta.month,
+                    category: cat,
+                    amount: amt,
+                    method: method,
+                    description: desc
+                };
+
+                let db = JSON.parse(localStorage.getItem('revive_expenses_db')) || [];
+                db.push(exp);
+                localStorage.setItem('revive_expenses_db', JSON.stringify(db));
+                cloudSync.push('pushExpense', exp);
+                
+                alert("Expense logged successfully!");
+                this.initExpenseTracker();
+            },
+            renderRecentExpenses: function() {
+                const db = JSON.parse(localStorage.getItem('revive_expenses_db')) || [];
+                const tbody = document.querySelector('#table-recent-expenses tbody');
+                tbody.innerHTML = '';
+                
+                const recent = [...db].reverse().slice(0, 10);
+                if(recent.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No expenses recorded yet.</td></tr>'; return;
+                }
+                recent.forEach(exp => {
+                    const dStr = new Date(exp.date).toLocaleDateString('en-IN');
+                    tbody.innerHTML += `<tr><td>${dStr}</td><td>${exp.category}</td><td>${exp.description}</td><td style="color:var(--error-red); font-weight:bold;">₹${exp.amount}</td></tr>`;
+                });
+            },
+
             // --- SPECIAL (PROMO) TARIFF ENGINE ---
             getApplicableTariff: function(targetDateObj, monthName, fyString) {
                 const defaultTariff = { admFee: APP_CONFIG.baseAdmissionFee, regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
-                const targetTime = new Date(targetDateObj).setHours(0,0,0,0); // Normalize time
+                const targetTime = new Date(targetDateObj).setHours(0,0,0,0);
                 
-                // 1. Check if the date falls inside a Special Promo
                 const specialDb = JSON.parse(localStorage.getItem('revive_special_tariffs')) || [];
                 let applicableSpecial = null;
                 for (let promo of specialDb) {
@@ -1217,7 +1357,6 @@
                 }
                 if (applicableSpecial) return applicableSpecial;
 
-                // 2. Fallback to Standard Monthly Tariffs
                 const monthlyDb = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
                 if (monthlyDb[fyString] && monthlyDb[fyString][monthName]) {
                     return monthlyDb[fyString][monthName];
@@ -1307,7 +1446,7 @@
                 alert("PIN Settings Saved."); appContext.goHome();
             },
             initTariffEditor: function() {
-                this.renderSpecialTariffs(); // Init promos
+                this.renderSpecialTariffs();
                 const fySelect = document.getElementById('fy-select'); const container = document.getElementById('tariff-months-container');
                 const currYear = new Date().getFullYear(); fySelect.innerHTML = '';
                 for(let i = -1; i <= 2; i++) {
@@ -1424,9 +1563,7 @@
             },
 
             openUserSearch: async function(mode) {
-                // Force sync before searching to ensure we have the latest users from other devices
                 await cloudSync.pullInitial(); 
-                
                 currentHubMode = mode;
                 const fySelect = document.getElementById('search-fy');
                 const currYear = new Date().getFullYear(); fySelect.innerHTML = '';
@@ -1530,7 +1667,6 @@
                         displayAmt = `Paid: ₹${record.amountPaid}<br>Bal: ₹${bal}${attBadge}`; 
                         if (currentHubMode === 'fee') { action = `onclick="moduleContext.initPayment('${month}', '${fy}')"`; }
                     } else {
-                        // Apply Special Tariff Logic using current date for fee predictions
                         const monthTariff = this.getApplicableTariff(new Date(), month, fy);
                         const due = trainCat === 'Personal Training' ? monthTariff.ptFee : monthTariff.regFee;
                         displayAmt = `Due: ₹${due}${attBadge}`;
@@ -1545,12 +1681,11 @@
                 const record = (paymentsDb[currentActiveUser.id] && paymentsDb[currentActiveUser.id][fy] && paymentsDb[currentActiveUser.id][fy][month]) ? paymentsDb[currentActiveUser.id][fy][month] : null;
                 
                 let totalDue, alreadyPaid, balance;
-                document.getElementById('pay-promo-badge').innerHTML = ''; // reset
+                document.getElementById('pay-promo-badge').innerHTML = ''; 
 
                 if(record) { 
                     totalDue = parseInt(record.totalDue); alreadyPaid = parseInt(record.amountPaid); balance = totalDue - alreadyPaid; 
                 } else {
-                    // NEW: Pass current date through Tariff Engine for payments happening today
                     const mTariff = this.getApplicableTariff(new Date(), month, fy);
                     if (mTariff.promoName) {
                         document.getElementById('pay-promo-badge').innerHTML = `<span class="promo-badge">PROMO: ${mTariff.promoName} Applied</span>`;
@@ -1836,25 +1971,6 @@
                 }, 350);
             },
 
-            initReports: async function() {
-                // Force sync before generating reports so revenue matches reality
-                await cloudSync.pullInitial();
-                
-                const fySelect = document.getElementById('report-fy'); 
-                const monthSelect = document.getElementById('report-month');
-                const currYear = new Date().getFullYear(); fySelect.innerHTML = '';
-                for(let i = -1; i <= 2; i++) {
-                    const y = currYear + i; const opt = document.createElement('option'); opt.value = `${y}-${y+1}`; opt.innerText = `${y}-${y+1}`;
-                    if(i === 0) opt.selected = true; fySelect.appendChild(opt);
-                }
-                monthSelect.innerHTML = '<option value="All">Entire Year (All Months)</option>';
-                tariffMonthsOrder.forEach(month => {
-                    const opt = document.createElement('option'); opt.value = month; opt.innerText = month;
-                    monthSelect.appendChild(opt);
-                });
-                document.getElementById('report-content').style.display = 'none';
-            },
-            
             filterReportByShortfall: function() {
                 const fy = document.getElementById('report-fy').value;
                 const month = document.getElementById('report-month').value;
@@ -1886,7 +2002,6 @@
                         const userFyData = (payments[u.id] && payments[u.id][fy]) ? payments[u.id][fy] : {};
                         const record = userFyData[mName];
                         
-                        // For historical reports, we use the standard monthly tariff to determine base shortfall unless they paid
                         const monthTariff = fyTariffs[mName] || { regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
                         const dueAmt = parseInt(u.trainingCategory === 'Personal Training' ? monthTariff.ptFee : monthTariff.regFee);
 
@@ -1900,32 +2015,40 @@
                     });
                 });
 
-                const feeTbody = document.querySelector('#table-fees tbody'); feeTbody.innerHTML = '';
+                const feeTbody = document.querySelector('#table-shortfalls tbody'); feeTbody.innerHTML = '';
                 if(pendingItems.length === 0) {
-                    feeTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No pending dues or shortfalls found for this period! Excellent.</td></tr>'; return;
+                    feeTbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No pending dues or shortfalls found for this period! Excellent.</td></tr>'; return;
                 }
                 pendingItems.forEach(p => {
                     const dateStr = p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : 'Unpaid / Due';
                     feeTbody.innerHTML += `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile">
-                        <td>${dateStr}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:var(--text-muted);">₹0 (Unpaid)</td><td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td><td>PENDING</td>
+                        <td>${dateStr}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td>
                     </tr>`;
                 });
-                alert("Report filtered to show all pending dues and shortfalls. Click any row to view that member's profile.");
+                alert("Report filtered to show all pending dues and shortfalls. Scroll down to Due Register.");
             },
 
             generateReport: function() {
                 const fy = document.getElementById('report-fy').value;
                 const month = document.getElementById('report-month').value;
+                
                 const users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
                 const payments = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
                 const tariffs = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
+                const expenses = JSON.parse(localStorage.getItem('revive_expenses_db')) || [];
 
                 function calcStats(targetFy, targetMonth) {
-                    let s = { rev: 0, admCount: 0, admAmt: 0, feeCount: 0, feeAmt: 0, shortCount: 0, shortAmt: 0, unpaidCount: 0, unpaidAmt: 0, admRows: [], feeRows: [], shortRows: [] };
+                    let s = { 
+                        rev: 0, admCount: 0, admAmt: 0, feeCount: 0, feeAmt: 0, 
+                        shortCount: 0, shortAmt: 0, unpaidCount: 0, unpaidAmt: 0, 
+                        expAmt: 0, feeRows: [], expRows: [] 
+                    };
+
                     const fyStartYear = parseInt(targetFy.split('-')[0]);
                     const today = new Date();
                     const currentScore = today.getFullYear() * 100 + today.getMonth();
 
+                    // Calculate Incomes
                     users.forEach(u => {
                         if(!u.date) return;
                         const p = u.date.split('-'); const adScore = parseInt(p[2]) * 100 + (parseInt(p[1]) - 1);
@@ -1934,7 +2057,7 @@
                             s.admCount++;
                             const mTariff = (tariffs[targetFy] && tariffs[targetFy][u._month]) ? tariffs[targetFy][u._month] : { admFee: APP_CONFIG.baseAdmissionFee };
                             s.admAmt += parseInt(mTariff.admFee);
-                            s.admRows.push(u);
+                            s.feeRows.push({ type: 'Admission', userId: u.id, fullName: u.fullName, month: u._month, amount: mTariff.admFee, method: 'Mixed' });
                         }
 
                         tariffMonthsOrder.forEach((mName, index) => {
@@ -1953,49 +2076,75 @@
                             if (!record) { s.unpaidCount++; s.unpaidAmt += dueAmt; } 
                             else {
                                 const paid = parseInt(record.amountPaid || 0); const totalDue = parseInt(record.totalDue || 0);
-                                if (paid > 0) { s.feeCount++; s.rev += paid; s.feeRows.push({ ...record, userId: u.id, month: mName, fullName: u.fullName }); }
-                                if (paid < totalDue) { s.shortCount++; s.shortAmt += (totalDue - paid); s.shortRows.push({ ...record, userId: u.id, month: mName, pendingAmt: totalDue - paid, fullName: u.fullName }); }
+                                if (paid > 0) { 
+                                    s.feeCount++; s.rev += paid; 
+                                    s.feeRows.push({ type: 'Monthly Fee', userId: u.id, month: mName, fullName: u.fullName, amount: paid, method: record.method }); 
+                                }
+                                if (paid < totalDue) { s.shortCount++; s.shortAmt += (totalDue - paid); }
                             }
                         });
                     });
+                    s.rev += s.admAmt;
                     s.feeAmt = s.rev - s.admAmt; if(s.feeAmt < 0) s.feeAmt = 0; 
+
+                    // Calculate Expenses
+                    expenses.forEach(exp => {
+                        if (exp.fy === targetFy && (targetMonth === 'All' || exp.month === targetMonth)) {
+                            s.expAmt += parseInt(exp.amount);
+                            s.expRows.push(exp);
+                        }
+                    });
+
                     return s;
                 }
 
-                const currStats = calcStats(fy, month);
+                const s = calcStats(fy, month);
+
+                // Update UI DOM
+                const netProfit = s.rev - s.expAmt;
+                document.getElementById('kpi-rev-total').innerText = s.rev.toLocaleString(); 
+                document.getElementById('kpi-expense-total').innerText = s.expAmt.toLocaleString();
                 
-                document.getElementById('kpi-rev-total').innerText = currStats.rev.toLocaleString(); document.getElementById('kpi-adm-count').innerText = currStats.admCount;
-                document.getElementById('kpi-adm-amt').innerText = currStats.admAmt.toLocaleString(); document.getElementById('kpi-fee-count').innerText = currStats.feeCount;
-                document.getElementById('kpi-fee-amt').innerText = currStats.feeAmt.toLocaleString(); document.getElementById('kpi-shortfall-count').innerText = currStats.shortCount;
-                document.getElementById('kpi-shortfall-amt').innerText = currStats.shortAmt.toLocaleString(); document.getElementById('kpi-unpaid-count').innerText = currStats.unpaidCount;
-                document.getElementById('kpi-unpaid-amt').innerText = currStats.unpaidAmt.toLocaleString();
+                const npEl = document.getElementById('kpi-net-profit');
+                npEl.innerText = (netProfit >= 0 ? '+' : '') + netProfit.toLocaleString();
+                npEl.style.color = netProfit >= 0 ? 'var(--success-green)' : 'var(--error-red)';
 
-                const admTbody = document.querySelector('#table-admissions tbody');
-                admTbody.innerHTML = currStats.admRows.length ? currStats.admRows.map(u => `<tr onclick="moduleContext.loadProfileByPhoneOrId('${u.id}')" title="Click to view member profile"><td>${u.date}</td><td><strong>${u.id}</strong></td><td>${u.fullName}</td><td>${appContext.currentRole === 'staff' ? '******' + u.primaryContact.slice(-4) : u.primaryContact}</td><td>${u.admissionCategory}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No admissions found for this period.</td></tr>';
+                document.getElementById('kpi-adm-count').innerText = s.admCount;
+                document.getElementById('kpi-adm-amt').innerText = s.admAmt.toLocaleString(); 
+                document.getElementById('kpi-fee-count').innerText = s.feeCount;
+                document.getElementById('kpi-fee-amt').innerText = s.feeAmt.toLocaleString(); 
+                document.getElementById('kpi-shortfall-count').innerText = s.shortCount;
+                document.getElementById('kpi-shortfall-amt').innerText = s.shortAmt.toLocaleString(); 
+                document.getElementById('kpi-unpaid-count').innerText = s.unpaidCount;
+                document.getElementById('kpi-unpaid-amt').innerText = s.unpaidAmt.toLocaleString();
 
+                // Tables
                 const feeTbody = document.querySelector('#table-fees tbody');
-                feeTbody.innerHTML = currStats.feeRows.length ? currStats.feeRows.map(p => `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:green; font-weight:bold;">₹${p.amountPaid}</td><td>${p.method || 'CASH'}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No fee collections found for this period.</td></tr>';
+                feeTbody.innerHTML = s.feeRows.length ? s.feeRows.map(p => `<tr><td><strong>${p.type}</strong></td><td>${p.userId} - ${p.fullName}</td><td>${p.month}</td><td style="color:var(--success-green); font-weight:bold;">₹${p.amount}</td><td>${p.method || 'CASH'}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No income found.</td></tr>';
 
-                const shortTbody = document.querySelector('#table-shortfalls tbody');
-                shortTbody.innerHTML = currStats.shortRows.length ? currStats.shortRows.map(p => `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td></tr>`).join('') : '<tr><td colspan="4" style="text-align:center;">No shortfalls found.</td></tr>';
+                const expTbody = document.querySelector('#table-report-expenses tbody');
+                expTbody.innerHTML = s.expRows.length ? s.expRows.map(e => `<tr><td>${new Date(e.date).toLocaleDateString('en-IN')}</td><td>${e.category}</td><td>${e.description}</td><td style="color:var(--error-red); font-weight:bold;">₹${e.amount}</td><td>${e.method}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No expenses found.</td></tr>';
 
+                // Growth Logic
                 let yoyMsg = '', momMsg = '';
                 const prevFyStart = parseInt(fy.split('-')[0]) - 1; const prevFy = `${prevFyStart}-${prevFyStart+1}`;
                 const yoyStats = calcStats(prevFy, month);
                 const calcGrowth = (curr, prev) => prev === 0 ? (curr > 0 ? 100 : 0) : Math.round(((curr - prev) / prev) * 100);
                 
-                const yoyRevG = calcGrowth(currStats.rev, yoyStats.rev); const yoyAdmG = calcGrowth(currStats.admCount, yoyStats.admCount);
+                const yoyRevG = calcGrowth(s.rev, yoyStats.rev); const yoyAdmG = calcGrowth(s.admCount, yoyStats.admCount);
                 yoyMsg = `<strong>YoY Revenue:</strong> ${yoyRevG >= 0 ? '+' : ''}${yoyRevG}% (₹${yoyStats.rev.toLocaleString()}) <br> <strong>YoY Admissions:</strong>${yoyAdmG >= 0 ? '+' : ''}${yoyAdmG}\% (${yoyStats.admCount})`;
 
                 if (month !== 'All') {
                     const mIdx = tariffMonthsOrder.indexOf(month); let prevM, prevMFy;
                     if (mIdx === 0) { prevM = 'March'; prevMFy = prevFy; } else { prevM = tariffMonthsOrder[mIdx - 1]; prevMFy = fy; }
                     const momStats = calcStats(prevMFy, prevM);
-                    const momRevG = calcGrowth(currStats.rev, momStats.rev); const momAdmG = calcGrowth(currStats.admCount, momStats.admCount);
+                    const momRevG = calcGrowth(s.rev, momStats.rev); const momAdmG = calcGrowth(s.admCount, momStats.admCount);
                     momMsg = `<br><br><strong>MoM Revenue:</strong> ${momRevG >= 0 ? '+' : ''}${momRevG}% (₹${momStats.rev.toLocaleString()}) <br> <strong>MoM Admissions:</strong>${momAdmG >= 0 ? '+' : ''}${momAdmG}\% (${momStats.admCount})`;
                 } else { momMsg = '<br><br><span style="color:var(--text-muted); font-size:0.85rem;">MoM Growth N/A for entire year view.</span>'; }
 
                 document.getElementById('yoy-analysis-content').innerHTML = yoyMsg + momMsg;
+                
+                moduleContext.filterReportByShortfall();
                 document.getElementById('report-content').style.display = 'block';
             },
 
@@ -2039,9 +2188,10 @@
             if(v.length>=5) e.target.value=`${v.slice(0,2)}-${v.slice(2,4)}-${v.slice(4)}`; else if(v.length>=3) e.target.value=`${v.slice(0,2)}-${v.slice(2)}`;
         }
 
+        // --- DOM CONTENT LOADED EVENT HANDLERS ---
         document.addEventListener('DOMContentLoaded', () => {
 
-            cloudSync.pullInitial();
+            try { cloudSync.pullInitial(); } catch(err) { console.warn("Initial sync failed"); }
 
             const dobInp = document.getElementById('dob'); 
             const dtInp = document.getElementById('dateOfAdmission'); 
@@ -2144,6 +2294,7 @@
                         alert("User details updated successfully!"); moduleContext.loadProfileByPhoneOrId(currentActiveUser.id); return;
                     }
 
+                    // --- DYNAMIC CLOUD ID GENERATOR ---
                     let usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
                     let maxIdNum = 0;
                     usersDb.forEach(u => {
@@ -2154,6 +2305,7 @@
                     });
                     let nextIdNum = maxIdNum + 1;
                     preAdmissionId = `REV-${String(nextIdNum).padStart(4, '0')}`;
+                    // ------------------------------------
                     
                     const adDateVal = document.getElementById('dateOfAdmission').value;
                     const parts = adDateVal.split('-'); const adDateObj = new Date(parts[2], parts[1]-1, parts[0]);
@@ -2247,9 +2399,6 @@
                 payDb[currentMemberDetails.id][currentMemberDetails._fy][currentMemberDetails._month] = pData;
                 localStorage.setItem('revive_payments_db', JSON.stringify(payDb));
                 cloudSync.push('pushPayment', pData);
-
-                const currentCount = parseInt(preAdmissionId.split('-')[1]);
-                localStorage.setItem('revive_admission_count', currentCount);
                 
                 document.getElementById('sm-title').innerText = "Registration Complete!";
                 document.getElementById('generated-id').innerText = currentMemberDetails.id;
