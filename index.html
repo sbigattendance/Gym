@@ -332,7 +332,11 @@
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                     <h3>User Details</h3>
                 </div>
-                
+                <!-- NEW MODULE: EXPENSE ENTRY -->
+                <div class="module-card admin-only" onclick="appContext.switchView('expense')">
+                    <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    <h3>Expense Entry</h3>
+                </div>
                 <div class="module-card admin-only" onclick="appContext.switchView('reports')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
                     <h3>Reports</h3>
@@ -352,6 +356,67 @@
             </div>
             <div style="text-align: center; margin-top: 3rem;">
                 <button class="btn secondary" onclick="appContext.logout()" style="font-size: 0.85rem; padding: 0.8rem 2rem;">Log Out Securely</button>
+            </div>
+        </main>
+
+        <!-- NEW: EXPENSE ENTRY MAIN -->
+        <main id="view-expense" class="view-section">
+            <div class="form-layout" style="max-width: 600px;">
+                <div class="module-toolbar">
+                    <button class="back-btn" onclick="appContext.goHome()" type="button">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                        Back
+                    </button>
+                    <h2 class="module-title">Expense Entry</h2>
+                </div>
+                <form id="expenseForm" onsubmit="moduleContext.saveExpense(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Date <span class="required">*</span></label>
+                            <input type="date" id="exp-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Amount (₹) <span class="required">*</span></label>
+                            <input type="number" id="exp-amount" min="1" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Category <span class="required">*</span></label>
+                            <select id="exp-category" required>
+                                <option value="Rent">Rent</option>
+                                <option value="Electricity">Electricity</option>
+                                <option value="Maintenance">Maintenance</option>
+                                <option value="Salary">Salary</option>
+                                <option value="Equipment">Equipment</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Mode <span class="required">*</span></label>
+                            <select id="exp-mode" required>
+                                <option value="CASH">Cash</option>
+                                <option value="UPI">UPI / Bank</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" id="exp-desc" placeholder="Brief details about the expense">
+                    </div>
+                    <div class="action-row">
+                        <button type="submit" class="btn primary">Record Expense</button>
+                    </div>
+                </form>
+                <div style="margin-top: 2rem; padding-top:1.5rem; border-top:1px solid var(--border-color);">
+                    <h3 style="color:var(--accent-orange); margin-bottom:1rem; font-size:1.1rem; text-transform:uppercase;">Recent Expenses</h3>
+                    <div class="table-responsive">
+                        <table class="data-table" id="table-recent-expenses">
+                            <thead><tr><th>Date</th><th>Category</th><th>Desc</th><th>Mode</th><th>Amount</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </main>
 
@@ -462,7 +527,7 @@
             <div class="form-layout" style="max-width: 1000px; padding: 1.5rem; background:transparent; border:none; box-shadow:none;">
                 <div class="module-toolbar">
                     <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
-                    <h2 class="module-title">Financial Reports</h2>
+                    <h2 class="module-title">Financial Reports & P&L</h2>
                 </div>
                 
                 <div class="form-row" style="background:var(--bg-panel); padding:1rem; border-radius:8px; border:1px solid var(--border-color); align-items:flex-end;">
@@ -483,26 +548,36 @@
                     
                     <div class="report-kpi-grid">
                         <div class="kpi-card">
-                            <h4>1. Total Revenue</h4>
-                            <div class="val">₹<span id="kpi-rev-total">0</span></div>
+                            <h4>Total Revenue (Credit)</h4>
+                            <div class="val" style="color:var(--success-green);">₹<span id="kpi-rev-total">0</span></div>
+                        </div>
+                        <!-- NEW P&L KPI CARDS -->
+                        <div class="kpi-card">
+                            <h4>Total Expenses (Debit)</h4>
+                            <div class="val" style="color:var(--error-red);">₹<span id="kpi-exp-total">0</span></div>
                         </div>
                         <div class="kpi-card">
-                            <h4>2. New Admissions</h4>
+                            <h4>Net Profit (P&L)</h4>
+                            <div class="val" id="kpi-pnl-total">₹0</div>
+                        </div>
+
+                        <div class="kpi-card">
+                            <h4>New Admissions</h4>
                             <div class="val" id="kpi-adm-count">0</div>
                             <span class="sub-val">₹<span id="kpi-adm-amt">0</span></span>
                         </div>
                         <div class="kpi-card">
-                            <h4>3. Fees Collected</h4>
+                            <h4>Fees Collected</h4>
                             <div class="val" id="kpi-fee-count">0</div>
                             <span class="sub-val">₹<span id="kpi-fee-amt">0</span></span>
                         </div>
                         <div class="kpi-card" style="cursor:pointer;" onclick="moduleContext.filterReportByShortfall()" title="Click to view profiles with shortfall payments">
-                            <h4>4. Due (Shortfall) <span style="font-size:0.75rem; color:var(--accent-orange);">🔍 View</span></h4>
+                            <h4>Due (Shortfall) 🔍</h4>
                             <div class="val" id="kpi-shortfall-count" style="color:var(--warning-yellow);">0</div>
                             <span class="sub-val" style="color:var(--warning-yellow);">₹<span id="kpi-shortfall-amt">0</span></span>
                         </div>
                         <div class="kpi-card">
-                            <h4>5. Fee Unpaid</h4>
+                            <h4>Fee Unpaid</h4>
                             <div class="val" id="kpi-unpaid-count" style="color:var(--error-red);">0</div>
                             <span class="sub-val" style="color:var(--error-red);">₹<span id="kpi-unpaid-amt">0</span></span>
                         </div>
@@ -527,7 +602,7 @@
 
                     <div class="report-section">
                         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
-                            <h3 style="margin:0; border:none;">Fee Collections Register</h3>
+                            <h3 style="margin:0; border:none; color:var(--success-green);">Fee Collections Register (Credit)</h3>
                         </div>
                         <div class="table-responsive">
                             <table class="data-table" id="table-fees">
@@ -537,9 +612,22 @@
                         </div>
                     </div>
 
+                    <!-- NEW EXPENSE TABLE IN REPORTS -->
                     <div class="report-section">
                         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
-                            <h3 style="margin:0; border:none; color:var(--error-red);">Due / Shortfall Register</h3>
+                            <h3 style="margin:0; border:none; color:var(--error-red);">Expense Register (Debit)</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table" id="table-expenses-report">
+                                <thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Mode</th><th>Amount</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="report-section">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
+                            <h3 style="margin:0; border:none; color:var(--warning-yellow);">Due / Shortfall Register</h3>
                         </div>
                         <div class="table-responsive">
                             <table class="data-table" id="table-shortfalls">
@@ -1005,6 +1093,7 @@
                     if(data.tariffs) localStorage.setItem('revive_tariffs', JSON.stringify(data.tariffs));
                     if(data.specialTariffs) localStorage.setItem('revive_special_tariffs', JSON.stringify(data.specialTariffs));
                     if(data.users) localStorage.setItem('revive_users_db', JSON.stringify(data.users));
+                    if(data.expenses) localStorage.setItem('revive_expenses_db', JSON.stringify(data.expenses));
                     
                     if(data.payments) {
                         const pObj = {};
@@ -1103,6 +1192,7 @@
                 if(viewName === 'pin-editor') moduleContext.initPinEditor();
                 if(viewName === 'reports') moduleContext.initReports();
                 if(viewName === 'attendance') moduleContext.initAttendanceView();
+                if(viewName === 'expense') moduleContext.initExpenseView();
                 if(viewName !== 'admission') { IS_EDIT_MODE = false; }
             },
             goHome: function() {
@@ -1116,12 +1206,14 @@
                 const pinInput = document.getElementById('pin-input');
                 
                 const settings = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
-                const staffPinLen = settings.staffPin ? settings.staffPin.length : 6;
-                const adminPinLen = settings.adminPin ? settings.adminPin.length : 4;
+                
+                // FIXED: Ensure pins are treated strictly as strings to prevent undefined length properties
+                const staffPin = settings.staffPin != null ? String(settings.staffPin) : '123456';
+                const adminPin = settings.adminPin != null ? String(settings.adminPin) : '1234';
 
                 if(pinInput) { 
                     pinInput.value = ''; 
-                    pinInput.setAttribute('maxlength', role === 'staff' ? staffPinLen : adminPinLen); 
+                    pinInput.setAttribute('maxlength', role === 'staff' ? staffPin.length : adminPin.length); 
                     pinInput.placeholder = role === 'staff' ? 'Enter PIN' : 'Enter PIN'; 
                 }
                 appContext.switchView('login');
@@ -1129,8 +1221,10 @@
             handleLogin: function() {
                 const pin = document.getElementById('pin-input').value.trim();
                 const settings = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
-                const staffPin = settings.staffPin || '123456';
-                const adminPin = settings.adminPin || '1234';
+                
+                // FIXED: Ensure settings values are Strings for loose/strict equality
+                const staffPin = settings.staffPin != null ? String(settings.staffPin) : '123456';
+                const adminPin = settings.adminPin != null ? String(settings.adminPin) : '1234';
 
                 if (appContext.pendingRole === 'staff' && pin === staffPin) { appContext.currentRole = 'staff'; appContext.loadDashboard('STAFF'); } 
                 else if (appContext.pendingRole === 'admin' && pin === adminPin) { appContext.currentRole = 'admin'; appContext.loadDashboard('ADMIN'); } 
@@ -1246,11 +1340,60 @@
                         <div class="promo-card">
                             <div>
                                 <h4>${p.name}</h4>
-                                <p>${sd} to ${ed} | Adm: ₹${p.admFee}, Reg: ₹${p.regFee}, PT: ₹${p.ptFee}</p>
+                                <p>${sd} to ${ed} \vert{} Adm: ₹${p.admFee}, Reg: ₹${p.regFee}, PT: ₹${p.ptFee}</p>
                             </div>
                             <button type="button" class="btn danger" style="padding:0.4rem; width:auto; border:none;" onclick="moduleContext.removeSpecialTariff('${p.id}')">Remove</button>
                         </div>
                     `;
+                });
+            },
+
+            // --- EXPENSE ENTRY ENGINE ---
+            initExpenseView: function() {
+                document.getElementById('expenseForm').reset();
+                document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
+                this.renderRecentExpenses();
+            },
+            saveExpense: function(e) {
+                e.preventDefault();
+                const dateVal = document.getElementById('exp-date').value;
+                const amt = parseInt(document.getElementById('exp-amount').value);
+                const cat = document.getElementById('exp-category').value;
+                const mode = document.getElementById('exp-mode').value;
+                const desc = document.getElementById('exp-desc').value.trim();
+                
+                const dObj = new Date(dateVal);
+                const monthName = dObj.toLocaleString('default', { month: 'long' });
+                const y = dObj.getFullYear();
+                const m = dObj.getMonth();
+                const fyStart = m >= 3 ? y : y - 1;
+                const fyString = `${fyStart}-${fyStart + 1}`;
+                
+                const exp = {
+                    id: 'EXP-' + Date.now(), date: dateVal, amount: amt, category: cat,
+                    mode: mode, desc: desc, month: monthName, fy: fyString, timestamp: new Date().toISOString()
+                };
+                
+                let db = JSON.parse(localStorage.getItem('revive_expenses_db')) || [];
+                db.push(exp);
+                localStorage.setItem('revive_expenses_db', JSON.stringify(db));
+                cloudSync.push('pushExpense', exp);
+                
+                alert("Expense recorded successfully!");
+                this.initExpenseView();
+            },
+            renderRecentExpenses: function() {
+                let db = JSON.parse(localStorage.getItem('revive_expenses_db')) || [];
+                db.sort((a,b) => new Date(b.date) - new Date(a.date));
+                const tbody = document.querySelector('#table-recent-expenses tbody');
+                tbody.innerHTML = '';
+                const recent = db.slice(0, 10);
+                if(recent.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No recent expenses.</td></tr>';
+                    return;
+                }
+                recent.forEach(ex => {
+                    tbody.innerHTML += `<tr><td>${formatDateStr(ex.date)}</td><td>${ex.category}</td><td>${ex.desc \vert{}\vert{} '-'}</td><td>${ex.mode}</td><td style="color:var(--error-red); font-weight:bold;">₹${ex.amount}</td></tr>`;
                 });
             },
 
@@ -1731,7 +1874,7 @@
                 document.getElementById('pdf-date').innerText = currentMemberDetails.date;
                 document.getElementById('pdf-photo').src = currentMemberDetails.photo; 
                 document.getElementById('pdf-name').innerText = currentMemberDetails.fullName;
-                document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType || 'N/A'} -${currentMemberDetails.admissionCategory}`;
+                document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType \vert{}\vert{} 'N/A'} -${currentMemberDetails.admissionCategory}`;
                 document.getElementById('pdf-training-category').innerText = currentMemberDetails.trainingCategory;
                 document.getElementById('pdf-contact1').innerText = currentMemberDetails.primaryContact; 
                 document.getElementById('pdf-contact2').innerText = currentMemberDetails.alternateContact || 'N/A';
@@ -1890,9 +2033,10 @@
                 const users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
                 const payments = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
                 const tariffs = JSON.parse(localStorage.getItem('revive_tariffs')) || {};
+                const expenses = JSON.parse(localStorage.getItem('revive_expenses_db')) || [];
 
                 function calcStats(targetFy, targetMonth) {
-                    let s = { rev: 0, admCount: 0, admAmt: 0, feeCount: 0, feeAmt: 0, shortCount: 0, shortAmt: 0, unpaidCount: 0, unpaidAmt: 0, admRows: [], feeRows: [], shortRows: [] };
+                    let s = { rev: 0, exp: 0, pnl: 0, admCount: 0, admAmt: 0, feeCount: 0, feeAmt: 0, shortCount: 0, shortAmt: 0, unpaidCount: 0, unpaidAmt: 0, admRows: [], feeRows: [], shortRows: [], expRows: [] };
                     const fyStartYear = parseInt(targetFy.split('-')[0]);
                     const today = new Date();
                     const currentScore = today.getFullYear() * 100 + today.getMonth();
@@ -1929,13 +2073,30 @@
                             }
                         });
                     });
+
+                    // Add Expenses logic
+                    expenses.forEach(ex => {
+                        if (ex.fy === targetFy && (targetMonth === 'All' || ex.month === targetMonth)) {
+                            s.exp += parseInt(ex.amount);
+                            s.expRows.push(ex);
+                        }
+                    });
+
                     s.feeAmt = s.rev - s.admAmt; if(s.feeAmt < 0) s.feeAmt = 0; 
+                    s.pnl = s.rev - s.exp;
                     return s;
                 }
 
                 const currStats = calcStats(fy, month);
                 
-                document.getElementById('kpi-rev-total').innerText = currStats.rev.toLocaleString(); document.getElementById('kpi-adm-count').innerText = currStats.admCount;
+                document.getElementById('kpi-rev-total').innerText = currStats.rev.toLocaleString(); 
+                document.getElementById('kpi-exp-total').innerText = currStats.exp.toLocaleString(); 
+                
+                const pnlEl = document.getElementById('kpi-pnl-total');
+                pnlEl.innerText = '₹' + currStats.pnl.toLocaleString();
+                pnlEl.style.color = currStats.pnl >= 0 ? 'var(--success-green)' : 'var(--error-red)';
+                
+                document.getElementById('kpi-adm-count').innerText = currStats.admCount;
                 document.getElementById('kpi-adm-amt').innerText = currStats.admAmt.toLocaleString(); document.getElementById('kpi-fee-count').innerText = currStats.feeCount;
                 document.getElementById('kpi-fee-amt').innerText = currStats.feeAmt.toLocaleString(); document.getElementById('kpi-shortfall-count').innerText = currStats.shortCount;
                 document.getElementById('kpi-shortfall-amt').innerText = currStats.shortAmt.toLocaleString(); document.getElementById('kpi-unpaid-count').innerText = currStats.unpaidCount;
@@ -1947,6 +2108,9 @@
                 const feeTbody = document.querySelector('#table-fees tbody');
                 feeTbody.innerHTML = currStats.feeRows.length ? currStats.feeRows.map(p => `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:green; font-weight:bold;">₹${p.amountPaid}</td><td>${p.method || 'CASH'}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No fee collections found for this period.</td></tr>';
 
+                const expTbody = document.querySelector('#table-expenses-report tbody');
+                expTbody.innerHTML = currStats.expRows.length ? currStats.expRows.map(ex => `<tr><td>${formatDateStr(ex.date)}</td><td>${ex.category}</td><td>${ex.desc \vert{}\vert{} '-'}</td><td>${ex.mode}</td><td style="color:var(--error-red); font-weight:bold;">₹${ex.amount}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No expenses recorded for this period.</td></tr>';
+
                 const shortTbody = document.querySelector('#table-shortfalls tbody');
                 shortTbody.innerHTML = currStats.shortRows.length ? currStats.shortRows.map(p => `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td></tr>`).join('') : '<tr><td colspan="4" style="text-align:center;">No shortfalls found.</td></tr>';
 
@@ -1956,14 +2120,14 @@
                 const calcGrowth = (curr, prev) => prev === 0 ? (curr > 0 ? 100 : 0) : Math.round(((curr - prev) / prev) * 100);
                 
                 const yoyRevG = calcGrowth(currStats.rev, yoyStats.rev); const yoyAdmG = calcGrowth(currStats.admCount, yoyStats.admCount);
-                yoyMsg = `<strong>YoY Revenue:</strong> ${yoyRevG >= 0 ? '+' : ''}${yoyRevG}% (₹${yoyStats.rev.toLocaleString()}) <br> <strong>YoY Admissions:</strong>${yoyAdmG >= 0 ? '+' : ''}${yoyAdmG}% (${yoyStats.admCount})`;
+                yoyMsg = `<strong>YoY Revenue:</strong> ${yoyRevG >= 0 ? '+' : ''}${yoyRevG}% (₹${yoyStats.rev.toLocaleString()}) <br> <strong>YoY Admissions:</strong>${yoyAdmG >= 0 ? '+' : ''}${yoyAdmG}\% (${yoyStats.admCount})`;
 
                 if (month !== 'All') {
                     const mIdx = tariffMonthsOrder.indexOf(month); let prevM, prevMFy;
                     if (mIdx === 0) { prevM = 'March'; prevMFy = prevFy; } else { prevM = tariffMonthsOrder[mIdx - 1]; prevMFy = fy; }
                     const momStats = calcStats(prevMFy, prevM);
                     const momRevG = calcGrowth(currStats.rev, momStats.rev); const momAdmG = calcGrowth(currStats.admCount, momStats.admCount);
-                    momMsg = `<br><br><strong>MoM Revenue:</strong> ${momRevG >= 0 ? '+' : ''}${momRevG}% (₹${momStats.rev.toLocaleString()}) <br> <strong>MoM Admissions:</strong>${momAdmG >= 0 ? '+' : ''}${momAdmG}% (${momStats.admCount})`;
+                    momMsg = `<br><br><strong>MoM Revenue:</strong> ${momRevG >= 0 ? '+' : ''}${momRevG}% (₹${momStats.rev.toLocaleString()}) <br> <strong>MoM Admissions:</strong>${momAdmG >= 0 ? '+' : ''}${momAdmG}\% (${momStats.admCount})`;
                 } else { momMsg = '<br><br><span style="color:var(--text-muted); font-size:0.85rem;">MoM Growth N/A for entire year view.</span>'; }
 
                 document.getElementById('yoy-analysis-content').innerHTML = yoyMsg + momMsg;
@@ -2065,7 +2229,7 @@
                 window.addEventListener("resize", resizeCanvas);
                 function clearSignature() { sigCtx.fillStyle = "#ffffff"; sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height); signatureHasData = false; }
                 const btnClrSig = document.getElementById('btn-clear-sig'); if(btnClrSig) btnClrSig.addEventListener('click', clearSignature);
-                function getPointerPos(e) { const rect = sigCanvas.getBoundingClientRect(); const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY; return { x: clientX - rect.left, y: clientY - rect.top }; }
+                function getPointerPos(e) { const rect = sigCanvas.getBoundingClientRect(); const clientX = e.touches ? e.touches[0].clientX : e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY; return { x: clientX - rect.left, y: clientY - rect.top }; }
                 function startDraw(e) { isDrawing = true; signatureHasData = true; sigCtx.beginPath(); const pos = getPointerPos(e); sigCtx.moveTo(pos.x, pos.y); if(e.type.includes('touch')) e.preventDefault(); }
                 function draw(e) { if (!isDrawing) return; const pos = getPointerPos(e); sigCtx.lineWidth = 3; sigCtx.lineCap = 'round'; sigCtx.strokeStyle = '#000000'; sigCtx.lineTo(pos.x, pos.y); sigCtx.stroke(); if(e.type.includes('touch')) e.preventDefault(); }
                 function endDraw(e) { isDrawing = false; sigCtx.closePath(); }
