@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Revive Fitness Studio | Portal</title>
     
+    <!-- SYSTEM DIAGNOSTICS: Catches hidden errors on older tablets/devices -->
+    <script>
+        window.onerror = function(msg, url, line, col, error) {
+            var errBox = document.createElement('div');
+            errBox.style.cssText = "position:fixed; top:0; left:0; width:100%; background:#d32f2f; color:#fff; z-index:999999; padding:15px; font-weight:bold; font-family:sans-serif; text-align:center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);";
+            errBox.innerHTML = "🚨 SYSTEM ERROR: " + msg + "<br><span style='font-size:0.85rem; font-weight:normal;'>Line: " + line + " | Please clear cache and reload.</span>";
+            document.body.appendChild(errBox);
+            return false;
+        };
+    </script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
@@ -12,18 +23,7 @@
         /* ==========================================================================
            1. CSS RESET & THEME VARIABLES
            ========================================================================== */
-        :root {
-            --bg-main: #f9f9f9;
-            --bg-panel: #ffffff;
-            --text-main: #222222;
-            --text-muted: #666666;
-            --accent-orange: #ff6600;
-            --border-color: #e0e0e0;
-            --success-green: #25D366;
-            --warning-yellow: #f39c12;
-            --error-red: #d32f2f;
-        }
-
+        :root { --bg-main: #f9f9f9; --bg-panel: #ffffff; --text-main: #222222; --text-muted: #666666; --accent-orange: #ff6600; --border-color: #e0e0e0; --success-green: #25D366; --warning-yellow: #f39c12; --error-red: #d32f2f; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
         html { font-size: 14px; background-color: var(--bg-main); }
         body { color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
@@ -32,10 +32,7 @@
            2. LAYOUT & NAVIGATION
            ========================================================================== */
         #app-wrapper { display: flex; flex-direction: column; min-height: 100vh; padding-top: 60px; padding-bottom: 60px; }
-        .app-header {
-            background-color: var(--bg-panel); height: 60px; padding: 0 1.5rem; display: flex; justify-content: center; align-items: center;
-            border-bottom: 3px solid var(--accent-orange); position: fixed; top: 0; left: 0; width: 100%; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
+        .app-header { background-color: var(--bg-panel); height: 60px; padding: 0 1.5rem; display: flex; justify-content: center; align-items: center; border-bottom: 3px solid var(--accent-orange); position: fixed; top: 0; left: 0; width: 100%; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .logo-container { cursor: pointer; display: flex; align-items: center; transition: transform 0.2s; height: 100%; }
         .logo-container:active { transform: scale(0.95); }
         .logo-container img { height: 35px; object-fit: contain; }
@@ -59,11 +56,7 @@
         .dashboard-header span { color: var(--accent-orange); }
         .compact-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; max-width: 420px; margin: 0 auto; }
         
-        .module-card {
-            background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem 1rem;
-            text-align: center; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-        }
+        .module-card { background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem 1rem; text-align: center; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
         .module-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background-color: var(--accent-orange); transform: scaleX(0); transition: transform 0.3s ease; transform-origin: left; }
         .module-card:hover { transform: translateY(-3px); border-color: var(--accent-orange); box-shadow: 0 8px 25px rgba(255, 102, 0, 0.1); }
         .module-card:hover::before { transform: scaleX(1); }
@@ -178,7 +171,7 @@
         .data-table th, .data-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
         .data-table th { background-color: var(--bg-main); color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
         .data-table tr:hover { background-color: #f1f3f5; cursor: pointer; }
-        .analysis-box { background: var(--bg-panel); border-left: 4px solid var(--accent-orange); padding: 1.5rem; border-radius: 4px; font-size: 0.95rem; line-height: 1.6; border: 1px solid var(--border-color); border-left: 4px solid var(--accent-orange); }
+        .analysis-box { background: var(--bg-panel); border-left: 4px solid var(--accent-orange); padding: 1.5rem; border-radius: 4px; font-size: 0.95rem; line-height: 1.6; border: 1px solid var(--border-color); }
 
         /* ==========================================================================
            7. MODALS & RECEIPTS
@@ -189,26 +182,18 @@
         .checkmark-icon svg { width: 40px; height: 40px; stroke: var(--success-green); fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
         .orange-text { color: var(--accent-orange); margin: 1rem 0; font-size: 1.5rem; text-transform: uppercase; font-weight: 900; }
         .admission-badge { background-color: var(--bg-main); padding: 1.2rem; font-size: 2.2rem; font-weight: 900; letter-spacing: 2px; color: var(--text-main); border: 2px dashed var(--accent-orange); border-radius: 8px; margin: 1.5rem 0; display: inline-block; width: 100%; }
-        .modal-actions { display: flex; flex-direction: column; width: 100%; gap: 10px; align-items: stretch; margin-top: 1rem; }
-
-        /* Receipt Canvas Wrapper */
+        
         #receipt-render-zone { position: absolute; left: -9999px; top: 0; opacity: 0; pointer-events: none; z-index: -100; }
         #receipt-template { width: 400px; padding: 25px; background: #ffffff; border: 3px solid var(--accent-orange); font-family: 'Segoe UI', Arial, sans-serif; color: #111; box-sizing: border-box; }
         .rcpt-header { text-align: center; border-bottom: 2px dashed #ccc; padding-bottom: 15px; margin-bottom: 15px; }
-        .rcpt-header img { height: 45px; margin-bottom: 5px; }
-        .rcpt-address { font-size: 11px; color: #666; line-height: 1.4; }
         .rcpt-title { margin: 15px 0 0 0; color: var(--accent-orange); font-size: 18px; letter-spacing: 2px; font-weight: 900; text-transform: uppercase;}
         .rcpt-table { width: 100%; font-size: 13px; line-height: 2; border-collapse: collapse; }
-        .rcpt-table td { padding: 4px 0; }
         .rcpt-amount-box { margin-top: 20px; padding: 15px; background: #fdfdfd; border-radius: 8px; border: 1px solid #eee; }
-        .rcpt-footer { text-align: center; font-size: 11px; color: #888; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; }
 
-        /* PDF Temp Wrapper */
         #pdf-template-wrapper { display: none; background: #e0e0e0; min-height: 100vh; width: 100vw; padding: 20px; justify-content: center; }
         #pdf-template { background: #ffffff; color: #111111; width: 210mm; height: 296mm; padding: 12mm 15mm; box-sizing: border-box; font-family: 'Helvetica', 'Arial', sans-serif; position: relative; overflow: hidden; display: flex; flex-direction: column; }
         .pdf-flex-between { display: flex; justify-content: space-between; align-items: flex-end; }
         .pdf-border-bottom { border-bottom: 3px solid var(--accent-orange); padding-bottom: 10px; margin-bottom: 15px; }
-        .pdf-logo { height: 45px; object-fit: contain; }
         .pdf-meta-box { display: flex; justify-content: space-between; background: #fff5eb; padding: 10px 15px; border-left: 5px solid var(--accent-orange); font-weight: bold; font-size: 11px; margin-bottom: 15px; border-radius: 4px; }
         .pdf-data-row { display: flex; gap: 20px; margin-bottom: 15px; align-items: center; }
         .pdf-photo { width: 120px; height: 120px; object-fit: cover; border: 3px solid var(--accent-orange); border-radius: 6px; }
@@ -219,20 +204,10 @@
         .pdf-declaration p { font-size: 10px; line-height: 1.4; margin: 0 0 15px 0; text-align: justify; color: #333; }
         .pdf-sigs-container { display: flex; justify-content: space-between; margin-bottom: 15px; }
         .pdf-sig-block { width: 45%; display: flex; flex-direction: column; align-items: center; }
-        .pdf-sig-image-box { height: 45px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 5px; }
-        .pdf-sig-image-box img { max-height: 40px; max-width: 100%; object-fit: contain; }
-        .pdf-sig-line { border-top: 1px solid #000; width: 100%; text-align: center; padding-top: 5px; font-weight: 800; font-size: 11px; }
-        .pdf-sig-meta { width: 100%; font-size: 9px; color: #555; margin-top: 5px; line-height: 1.3; }
         .pdf-rules-container { border-top: 2px solid var(--accent-orange); padding-top: 10px; flex-grow: 1; }
-        .pdf-rules-container h3 { color: var(--accent-orange); font-size: 12px; margin: 0 0 10px 0; text-transform: uppercase; }
         .pdf-rules-list { column-count: 2; column-gap: 25px; font-size: 9px; line-height: 1.35; padding-left: 15px; margin: 0; color: #111; }
-        .pdf-rules-list li { margin-bottom: 8px; break-inside: avoid; }
-        .pdf-rules-list strong { display: block; font-size: 9.5px; color: #000; }
-        .pdf-rules-list em { display: block; font-style: normal; color: #444; font-size: 9.5px; }
-        .pdf-footer { margin-top: auto; border-top: 1px solid var(--accent-orange); padding-top: 10px; text-align: center; font-size: 9px; color: #555; font-weight: 600; }
 
         @media(max-width: 768px) {
-            .view-section { padding: 1.5rem; }
             .form-row { flex-direction: column; gap: 1rem; margin-bottom: 1rem; }
             .form-layout { padding: 1.5rem; border: none; box-shadow: none; background: transparent; }
         }
@@ -315,10 +290,12 @@
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
                     <h3>User Details</h3>
                 </div>
+                <!-- Expense Tracker available to both Staff and Admin -->
                 <div class="module-card" onclick="window.appContext.switchView('expenses')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
                     <h3>Expense Tracker</h3>
                 </div>
+                
                 <div class="module-card admin-only" onclick="window.appContext.switchView('reports')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
                     <h3>P&L Reports</h3>
@@ -1022,7 +999,7 @@
         // =========================================================================
         // INSERT YOUR GOOGLE APPS SCRIPT WEB APP URL HERE:
         // =========================================================================
-        const CLOUD_SYNC_URL = "https://script.google.com/macros/s/AKfycbwSS7gV4ksWSxpUQJvLn4EZn4r2Yx0zXdCtM_z8Nr9v5H9pjftGBX7ahN53IUf3cKvU/exec"; 
+        const CLOUD_SYNC_URL = "YOUR_NEW_WEB_APP_URL_HERE"; 
         
         const APP_CONFIG = { baseAdmissionFee: 850, baseMonthlyFee: 800, basePTFee: 1500, upiId: "revivefitness@upi" };
         const tariffMonthsOrder = ['April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March'];
@@ -1148,12 +1125,12 @@
             var cleanVal = val.trim().toLowerCase();
             var users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
             var user = users.find(function(u) {
-                return (u.id && u.id.toLowerCase() === cleanVal) || 
-                       (u.primaryContact && u.primaryContact === cleanVal) || 
-                       (u.fullName && u.fullName.toLowerCase() === cleanVal);
+                return (u.id && String(u.id).toLowerCase() === cleanVal) || 
+                       (u.primaryContact && String(u.primaryContact) === cleanVal) || 
+                       (u.fullName && String(u.fullName).toLowerCase() === cleanVal);
             });
             if (!user) {
-                user = users.find(function(u) { return u.fullName && u.fullName.toLowerCase().indexOf(cleanVal) !== -1; });
+                user = users.find(function(u) { return u.fullName && String(u.fullName).toLowerCase().indexOf(cleanVal) !== -1; });
             }
             return user;
         }
@@ -1186,8 +1163,8 @@
                 document.getElementById('login-title').innerText = role === 'staff' ? 'Staff Login' : 'Admin Login';
                 var pinInput = document.getElementById('pin-input');
                 var settings = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
-                var staffPinLen = settings.staffPin ? settings.staffPin.length : 6;
-                var adminPinLen = settings.adminPin ? settings.adminPin.length : 4;
+                var staffPinLen = settings.staffPin ? String(settings.staffPin).length : 6;
+                var adminPinLen = settings.adminPin ? String(settings.adminPin).length : 4;
 
                 if(pinInput) { 
                     pinInput.value = ''; 
@@ -1197,10 +1174,10 @@
                 window.appContext.switchView('login');
             },
             handleLogin: function() {
-                var pin = document.getElementById('pin-input').value.trim();
+                var pin = String(document.getElementById('pin-input').value).trim();
                 var settings = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
-                var staffPin = settings.staffPin || '123456';
-                var adminPin = settings.adminPin || '1234';
+                var staffPin = String(settings.staffPin || '123456');
+                var adminPin = String(settings.adminPin || '1234');
 
                 if (window.appContext.pendingRole === 'staff' && pin === staffPin) { 
                     window.appContext.currentRole = 'staff'; 
@@ -1225,8 +1202,8 @@
                 window.appContext.pendingRole = null; 
                 window.appContext.switchView('home'); 
             },
-            startAdmission: async function() {
-                await window.cloudSync.pullInitial();
+            startAdmission: function() {
+                window.cloudSync.pullInitial(); // fire and forget to grab latest ID
                 IS_EDIT_MODE = false;
                 document.getElementById('form-main-title').innerText = "Admission Registration";
                 document.getElementById('step-1-ind').innerText = "Step 1 of 3: Member Details";
@@ -1503,7 +1480,7 @@
                 var attDb = JSON.parse(localStorage.getItem('revive_attendance_db')) || {};
                 if(!attDb[dateKey]) attDb[dateKey] = [];
 
-                var alreadyMarked = attDb[dateKey].some(function(a) { return a.userId === user.id; });
+                var alreadyMarked = attDb[dateKey].some(function(a) { return String(a.userId) === String(user.id); });
                 if(alreadyMarked) {
                     resBox.innerHTML = '<span style="color:var(--warning-yellow); font-weight:bold;">⚠ Attendance already marked today for ' + user.fullName + ' (' + user.id + ')!</span>';
                     document.getElementById('att-input').value = ''; document.getElementById('att-live-preview').innerText = ''; return;
@@ -1538,15 +1515,15 @@
                     var y = d.getFullYear(); var m = d.getMonth();
                     var recordFy = m >= 3 ? y + '-' + (y+1) : (y-1) + '-' + y;
                     if (recordFy === fy && mName === monthName) { 
-                        if (attDb[dateStr].some(function(a) { return a.userId === userId; })) { count++; } 
+                        if (attDb[dateStr].some(function(a) { return String(a.userId) === String(userId); })) { count++; } 
                     }
                 }
                 return count;
             },
 
             // SEARCH & HUB
-            openUserSearch: async function(mode) {
-                await window.cloudSync.pullInitial(); 
+            openUserSearch: function(mode) {
+                window.cloudSync.pullInitial(); 
                 currentHubMode = mode;
                 var fySelect = document.getElementById('search-fy');
                 var currYear = new Date().getFullYear(); fySelect.innerHTML = '';
@@ -1560,7 +1537,7 @@
             },
             loadProfileByPhoneOrId: function(identifier) {
                 var users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                var user = users.find(function(u) { return u.primaryContact === identifier || u.id === identifier; });
+                var user = users.find(function(u) { return String(u.primaryContact) === String(identifier) || String(u.id) === String(identifier); });
                 if(!user) { alert("User profile not found."); return; }
 
                 var fySelect = document.getElementById('search-fy');
@@ -1576,7 +1553,7 @@
 
                 if (window.appContext.currentRole === 'staff') {
                     photoEl.style.pointerEvents = 'none'; photoEl.oncontextmenu = function(ev) { ev.preventDefault(); };
-                    pContact.innerText = '******' + user.primaryContact.slice(-4);
+                    pContact.innerText = '******' + String(user.primaryContact).slice(-4);
                     if(callBtn) callBtn.style.display = 'none'; 
                     if(waBtn) waBtn.style.display = 'none';
                 } else {
@@ -1612,10 +1589,10 @@
             },
             fetchUserHub: function(e) {
                 if(e && e.preventDefault) e.preventDefault();
-                var phone = document.getElementById('search-phone').value;
+                var phone = String(document.getElementById('search-phone').value).trim();
                 var users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                var user = users.slice().reverse().find(function(u) { return u.primaryContact === phone; });
-                if(!user) { alert("User not found."); return; }
+                var user = users.slice().reverse().find(function(u) { return String(u.primaryContact) === phone; });
+                if(!user) { alert("User not found for this number."); return; }
                 this.loadProfileByPhoneOrId(user.primaryContact);
             },
             renderFeeCalendar: function(userId, fy, trainCat, adDateStr) {
@@ -1860,7 +1837,7 @@
             deleteUser: function() {
                 if(confirm("Are you sure you want to completely remove " + currentActiveUser.fullName + " (" + currentActiveUser.id + ")? This cannot be undone.")) {
                     var users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                    users = users.filter(function(u) { return u.id !== currentActiveUser.id; });
+                    users = users.filter(function(u) { return String(u.id) !== String(currentActiveUser.id); });
                     localStorage.setItem('revive_users_db', JSON.stringify(users));
                     window.cloudSync.push('deleteUser', {id: currentActiveUser.id});
                     alert("User deleted."); window.appContext.goHome();
@@ -1949,8 +1926,8 @@
             },
 
             // REPORTS & P&L
-            initReports: async function() {
-                await window.cloudSync.pullInitial();
+            initReports: function() {
+                window.cloudSync.pullInitial();
                 var fySelect = document.getElementById('report-fy'); 
                 var monthSelect = document.getElementById('report-month');
                 var currYear = new Date().getFullYear(); fySelect.innerHTML = '';
@@ -2128,13 +2105,13 @@
 
             // READMISSION CHECK
             validateReadmission: function() {
-                var phone = document.getElementById('prevPhoneInput').value; 
+                var phone = String(document.getElementById('prevPhoneInput').value).trim(); 
                 var resBox = document.getElementById('validationResultBox'); 
                 var admissionTypeSelect = document.getElementById('admissionTypeSelect');
                 if(phone.length !== 10) { resBox.style.display = 'block'; resBox.innerHTML = '<span style="color:var(--error-red);">Please enter a valid 10-digit number.</span>'; return; }
                 
                 var users = JSON.parse(localStorage.getItem('revive_users_db')) || []; 
-                var user = users.slice().reverse().find(function(u) { return u.primaryContact === phone; });
+                var user = users.slice().reverse().find(function(u) { return String(u.primaryContact) === phone; });
                 resBox.style.display = 'block';
                 
                 if(user) {
@@ -2170,368 +2147,6 @@
             }
         };
 
-        function fmtDt(e) {
-            var v = e.target.value.replace(/\D/g, ''); 
-            if(v.length > 8) v = v.slice(0, 8);
-            if(v.length >= 5) e.target.value = v.slice(0, 2) + '-' + v.slice(2, 4) + '-' + v.slice(4); 
-            else if(v.length >= 3) e.target.value = v.slice(0, 2) + '-' + v.slice(2);
-        }
-
-        // =========================================================================
-        // DOM INITIALIZATION & EVENT LISTENERS
-        // =========================================================================
-        document.addEventListener('DOMContentLoaded', function() {
-            try { window.cloudSync.pullInitial(); } catch(err) { console.warn("Initial sync bypassed"); }
-
-            var dobInp = document.getElementById('dob'); 
-            var dtInp = document.getElementById('dateOfAdmission'); 
-            var ageInp = document.getElementById('age');
-
-            if(dobInp) {
-                dobInp.addEventListener('input', function(e) { fmtDt(e); if(ageInp) ageInp.value = calculateAgeFromDate(e.target.value); }); 
-                dobInp.addEventListener('blur', function(e) { if(ageInp) ageInp.value = calculateAgeFromDate(e.target.value); });
-            }
-            if(dtInp) {
-                dtInp.addEventListener('input', fmtDt);
-                dtInp.addEventListener('blur', function() {
-                    var v = this.value; 
-                    if(v.length === 10) {
-                        var p = v.split('-'); var d = new Date(p[2], p[1]-1, p[0]);
-                        var t = new Date(); t.setHours(0,0,0,0);
-                        if(d > t) { alert("Future dates not allowed."); this.value = String(t.getDate()).padStart(2,'0') + '-' + String(t.getMonth()+1).padStart(2,'0') + '-' + t.getFullYear(); }
-                    }
-                });
-            }
-
-            // Camera Setup
-            var video = document.getElementById('camera-stream'); 
-            var canvas = document.getElementById('canvas-snapshot'); 
-            var preview = document.getElementById('selfie-preview');
-            var btnStart = document.getElementById('btn-start-camera'); 
-            var btnSwitch = document.getElementById('btn-switch-camera'); 
-            var btnCapture = document.getElementById('btn-capture');
-            var btnRetake = document.getElementById('btn-retake'); 
-            var selfieData = document.getElementById('selfie-data');
-            var stream = null; 
-            var currentFacingMode = 'user';
-
-            async function startCamera() {
-                if(stream) stream.getTracks().forEach(function(t) { t.stop(); });
-                try {
-                    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: currentFacingMode } });
-                    video.srcObject = stream; video.style.display = 'block'; 
-                    document.querySelector('.camera-placeholder').style.display = 'none'; 
-                    preview.style.display = 'none';
-                    btnStart.style.display = 'none'; 
-                    btnSwitch.style.display = 'inline-flex'; 
-                    btnCapture.style.display = 'inline-flex'; 
-                    btnCapture.disabled = false;
-                } catch (err) { alert("Camera access denied or requires HTTPS connection."); }
-            }
-            if(btnStart) btnStart.addEventListener('click', startCamera);
-            if(btnSwitch) btnSwitch.addEventListener('click', function() { 
-                currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user'; 
-                startCamera(); 
-            });
-
-            if(btnCapture) btnCapture.addEventListener('click', function() {
-                canvas.width = video.videoWidth; canvas.height = video.videoHeight; 
-                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-                selfieData.value = canvas.toDataURL('image/jpeg', 0.6); 
-                preview.src = selfieData.value;
-                video.style.display = 'none'; preview.style.display = 'block'; 
-                btnCapture.style.display = 'none'; btnSwitch.style.display = 'none'; 
-                btnRetake.style.display = 'inline-flex';
-                if(stream) stream.getTracks().forEach(function(track) { track.stop(); });
-            });
-            if(btnRetake) btnRetake.addEventListener('click', function() { 
-                selfieData.value = ''; btnRetake.style.display = 'none'; startCamera(); 
-            });
-
-            // Signature Pad Setup
-            var sigCanvas = document.getElementById('signature-pad'); 
-            if(sigCanvas) {
-                var sigCtx = sigCanvas.getContext('2d'); 
-                var isDrawing = false; 
-                var signatureHasData = false;
-
-                function resizeCanvas() { 
-                    var ratio = Math.max(window.devicePixelRatio || 1, 1); 
-                    sigCanvas.width = sigCanvas.offsetWidth * ratio; 
-                    sigCanvas.height = sigCanvas.offsetHeight * ratio; 
-                    sigCtx.scale(ratio, ratio); 
-                    clearSignature(); 
-                }
-                window.addEventListener("resize", resizeCanvas);
-                function clearSignature() { 
-                    sigCtx.fillStyle = "#ffffff"; 
-                    sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height); 
-                    signatureHasData = false; 
-                }
-                var btnClrSig = document.getElementById('btn-clear-sig'); 
-                if(btnClrSig) btnClrSig.addEventListener('click', clearSignature);
-
-                function getPointerPos(e) { 
-                    var rect = sigCanvas.getBoundingClientRect(); 
-                    var clientX = e.touches ? e.touches[0].clientX : e.clientX; 
-                    var clientY = e.touches ? e.touches[0].clientY : e.clientY; 
-                    return { x: clientX - rect.left, y: clientY - rect.top }; 
-                }
-                function startDraw(e) { 
-                    isDrawing = true; signatureHasData = true; sigCtx.beginPath(); 
-                    var pos = getPointerPos(e); sigCtx.moveTo(pos.x, pos.y); 
-                    if(e.type.indexOf('touch') !== -1) e.preventDefault(); 
-                }
-                function draw(e) { 
-                    if (!isDrawing) return; 
-                    var pos = getPointerPos(e); 
-                    sigCtx.lineWidth = 3; sigCtx.lineCap = 'round'; sigCtx.strokeStyle = '#000000'; 
-                    sigCtx.lineTo(pos.x, pos.y); sigCtx.stroke(); 
-                    if(e.type.indexOf('touch') !== -1) e.preventDefault(); 
-                }
-                function endDraw() { isDrawing = false; sigCtx.closePath(); }
-                
-                sigCanvas.addEventListener('mousedown', startDraw); 
-                sigCanvas.addEventListener('mousemove', draw); 
-                sigCanvas.addEventListener('mouseup', endDraw); 
-                sigCanvas.addEventListener('mouseout', endDraw);
-                sigCanvas.addEventListener('touchstart', startDraw, {passive: false}); 
-                sigCanvas.addEventListener('touchmove', draw, {passive: false}); 
-                sigCanvas.addEventListener('touchend', endDraw);
-
-                var step1 = document.getElementById('step-1'); 
-                var step2 = document.getElementById('step-2'); 
-                var step3 = document.getElementById('step-3');
-                
-                var btnNext = document.getElementById('btn-next-step');
-                if(btnNext) btnNext.addEventListener('click', function() {
-                    var isValid = true; 
-                    var inputs = step1.querySelectorAll('input, select, textarea');
-                    for(var i=0; i<inputs.length; i++) {
-                        if (!inputs[i].checkValidity()) { inputs[i].reportValidity(); isValid = false; break; }
-                    }
-                    if(isValid) { 
-                        step1.classList.remove('active-step'); 
-                        step2.classList.add('active-step'); 
-                        window.scrollTo({ top: 0, behavior: 'smooth' }); 
-                        resizeCanvas(); 
-                    } 
-                });
-
-                var btnPrev = document.getElementById('btn-prev-step');
-                if(btnPrev) btnPrev.addEventListener('click', function() { 
-                    step2.classList.remove('active-step'); 
-                    step1.classList.add('active-step'); 
-                    window.scrollTo({ top: 0, behavior: 'smooth' }); 
-                });
-
-                var btnNext2 = document.getElementById('btn-next-step-2');
-                if(btnNext2) btnNext2.addEventListener('click', function() {
-                    if (!selfieData.value) { alert("Portrait capture is mandatory."); return; }
-                    if (!signatureHasData && !IS_EDIT_MODE) { alert("Digital signature is mandatory."); return; }
-
-                    var fName = document.getElementById('firstName').value.trim(); 
-                    var lName = document.getElementById('lastName').value.trim(); 
-                    var fullName = lName ? (fName + ' ' + lName) : fName;
-                    var finalSig = signatureHasData ? sigCanvas.toDataURL('image/jpeg', 0.8) : (IS_EDIT_MODE ? currentActiveUser.signature : '');
-
-                    if (IS_EDIT_MODE) {
-                        var adDateVal = document.getElementById('dateOfAdmission').value;
-                        var parts = adDateVal.split('-'); 
-                        var adDateObj = new Date(parts[2], parts[1]-1, parts[0]);
-                        var monthName = adDateObj.toLocaleString('default', { month: 'long' });
-                        var y = adDateObj.getFullYear(); var m = adDateObj.getMonth(); 
-                        var fyStart = m >= 3 ? y : y - 1; var fyString = fyStart + '-' + (fyStart + 1);
-
-                        currentActiveUser.date = adDateVal; 
-                        currentActiveUser.admissionType = document.getElementById('admissionTypeSelect').value;
-                        currentActiveUser.admissionCategory = document.getElementById('admissionCategory').value; 
-                        currentActiveUser.trainingCategory = document.getElementById('trainingCategory').value;
-                        currentActiveUser.firstName = fName; currentActiveUser.lastName = lName; currentActiveUser.fullName = fullName;
-                        currentActiveUser.primaryContact = document.getElementById('primaryContact').value; 
-                        currentActiveUser.alternateContact = document.getElementById('alternateContact').value;
-                        currentActiveUser.dob = document.getElementById('dob').value; 
-                        currentActiveUser.address = document.getElementById('address').value.trim();
-                        currentActiveUser.photo = selfieData.value; currentActiveUser.signature = finalSig;
-                        currentActiveUser._fy = fyString; currentActiveUser._month = monthName;
-
-                        var usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                        var idx = usersDb.findIndex(function(u) { return u.id === currentActiveUser.id; });
-                        if(idx !== -1) { usersDb[idx] = currentActiveUser; localStorage.setItem('revive_users_db', JSON.stringify(usersDb)); }
-                        
-                        window.cloudSync.push('pushUser', currentActiveUser);
-                        document.getElementById('search-phone').value = currentActiveUser.primaryContact;
-                        alert("User details updated successfully!"); 
-                        window.moduleContext.loadProfileByPhoneOrId(currentActiveUser.id); 
-                        return;
-                    }
-
-                    // DYNAMIC CLOUD ID GENERATOR
-                    var usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                    var maxIdNum = 0;
-                    usersDb.forEach(function(u) {
-                        if (u.id && u.id.indexOf('REV-') === 0) {
-                            var num = parseInt(u.id.split('-')[1]);
-                            if (!isNaN(num) && num > maxIdNum) { maxIdNum = num; }
-                        }
-                    });
-                    var nextIdNum = maxIdNum + 1;
-                    preAdmissionId = 'REV-' + String(nextIdNum).padStart(4, '0');
-                    
-                    var adDateVal = document.getElementById('dateOfAdmission').value;
-                    var parts = adDateVal.split('-'); var adDateObj = new Date(parts[2], parts[1]-1, parts[0]);
-                    var monthName = adDateObj.toLocaleString('default', { month: 'long' });
-                    var y = adDateObj.getFullYear(); var m = adDateObj.getMonth(); 
-                    var fyStart = m >= 3 ? y : y - 1; var fyString = fyStart + '-' + (fyStart + 1);
-
-                    var monthTariff = window.moduleContext.getApplicableTariff(adDateObj, monthName, fyString);
-                    if (monthTariff.promoName) {
-                        document.getElementById('calc-promo-badge').innerHTML = '<span class="promo-badge">PROMO: ' + monthTariff.promoName + ' Applied</span>';
-                    } else {
-                        document.getElementById('calc-promo-badge').innerHTML = '';
-                    }
-
-                    var isPT = document.getElementById('trainingCategory').value === 'Personal Training';
-                    var applicableMonthlyFee = parseInt(isPT ? monthTariff.ptFee : monthTariff.regFee);
-                    var baseAdmFee = parseInt(monthTariff.admFee);
-
-                    var daysInMonth = new Date(parts[2], parts[1], 0).getDate(); 
-                    var remainingDays = daysInMonth - parseInt(parts[0]) + 1; 
-                    var monthlyFeeToPay = applicableMonthlyFee;
-                    if (remainingDays < 15) { monthlyFeeToPay = Math.round((applicableMonthlyFee / 30) * remainingDays); }
-
-                    calculatedTotalFee = baseAdmFee + monthlyFeeToPay;
-                    document.getElementById('calc-admission-id').innerText = preAdmissionId; 
-                    document.getElementById('calc-admin-fee').innerText = baseAdmFee;
-                    document.getElementById('calc-monthly-fee').innerText = monthlyFeeToPay; 
-                    document.getElementById('calc-total-fee').innerText = calculatedTotalFee;
-
-                    currentMemberDetails = {
-                        id: preAdmissionId, date: adDateVal,
-                        admissionType: document.getElementById('admissionTypeSelect').value, 
-                        admissionCategory: document.getElementById('admissionCategory').value, 
-                        trainingCategory: document.getElementById('trainingCategory').value,
-                        firstName: fName, lastName: lName, fullName: fullName, 
-                        primaryContact: document.getElementById('primaryContact').value, 
-                        alternateContact: document.getElementById('alternateContact').value,
-                        dob: document.getElementById('dob').value, address: document.getElementById('address').value.trim(),
-                        photo: selfieData.value, signature: finalSig, _fy: fyString, _month: monthName 
-                    };
-
-                    var method = document.getElementById('paymentMethod').value;
-                    var upiSec = document.getElementById('upi-section');
-                    if (method === 'UPI') {
-                        upiSec.style.display = 'block'; 
-                        document.getElementById('btn-validate-payment').innerText = 'Validate Payment & Complete';
-                        document.getElementById('qr-amount-display').innerText = calculatedTotalFee;
-                        var s = JSON.parse(localStorage.getItem('revive_settings_db')) || {}; 
-                        var activeUpiId = s.upiId || APP_CONFIG.upiId;
-                        var upiString = 'upi://pay?pa=' + activeUpiId + '&pn=ReviveFitness&am=' + calculatedTotalFee + '&cu=INR';
-                        document.getElementById('upi-qr-code').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(upiString);
-                    } else { 
-                        upiSec.style.display = 'none'; 
-                        document.getElementById('btn-validate-payment').innerText = 'Collect Cash & Complete'; 
-                    }
-
-                    document.getElementById('step-2').classList.remove('active-step'); 
-                    document.getElementById('step-3').classList.add('active-step'); 
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                });
-            }
-
-            var btnPrev2 = document.getElementById('btn-prev-step-2');
-            if(btnPrev2) btnPrev2.addEventListener('click', function() { 
-                document.getElementById('step-3').classList.remove('active-step'); 
-                document.getElementById('step-2').classList.add('active-step'); 
-                window.scrollTo({ top: 0, behavior: 'smooth' }); 
-            });
-
-            var pMethod = document.getElementById('paymentMethod');
-            if(pMethod) pMethod.addEventListener('change', function() {
-                var upiSec = document.getElementById('upi-section');
-                if (this.value === 'UPI') {
-                    upiSec.style.display = 'block'; 
-                    document.getElementById('btn-validate-payment').innerText = 'Validate Payment & Complete';
-                    document.getElementById('qr-amount-display').innerText = calculatedTotalFee;
-                    var s = JSON.parse(localStorage.getItem('revive_settings_db')) || {}; 
-                    var activeUpiId = s.upiId || APP_CONFIG.upiId;
-                    var upiString = 'upi://pay?pa=' + activeUpiId + '&pn=ReviveFitness&am=' + calculatedTotalFee + '&cu=INR';
-                    document.getElementById('upi-qr-code').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(upiString);
-                } else { 
-                    upiSec.style.display = 'none'; 
-                    document.getElementById('btn-validate-payment').innerText = 'Collect Cash & Complete'; 
-                }
-            });
-
-            var btnValPay = document.getElementById('btn-validate-payment');
-            if(btnValPay) btnValPay.addEventListener('click', function() {
-                if (navigator.geolocation) { 
-                    navigator.geolocation.getCurrentPosition(function(pos) { 
-                        userLocationStr = 'Lat: ' + pos.coords.latitude.toFixed(5) + ', Long: ' + pos.coords.longitude.toFixed(5); 
-                    }, function() { userLocationStr = "Location permissions denied"; }); 
-                }
-                if (document.getElementById('paymentMethod').value === 'UPI') { 
-                    document.getElementById('success-paid-id').innerText = preAdmissionId; 
-                    document.getElementById('paymentSuccessModal').style.display = 'flex'; 
-                } else { 
-                    finalizeRegistration(); 
-                }
-            });
-
-            var btnProcAdm = document.getElementById('btn-proceed-to-admission');
-            if(btnProcAdm) btnProcAdm.addEventListener('click', function() { 
-                document.getElementById('paymentSuccessModal').style.display = 'none'; 
-                finalizeRegistration(); 
-            });
-
-            function finalizeRegistration() {
-                var usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                usersDb.push(currentMemberDetails); 
-                localStorage.setItem('revive_users_db', JSON.stringify(usersDb));
-                window.cloudSync.push('pushUser', currentMemberDetails);
-                
-                var payDb = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
-                if(!payDb[currentMemberDetails.id]) payDb[currentMemberDetails.id] = {};
-                if(!payDb[currentMemberDetails.id][currentMemberDetails._fy]) payDb[currentMemberDetails.id][currentMemberDetails._fy] = {};
-                
-                var method = document.getElementById('paymentMethod').value;
-                var pData = { 
-                    userId: currentMemberDetails.id, 
-                    fy: currentMemberDetails._fy, 
-                    month: currentMemberDetails._month, 
-                    totalDue: calculatedTotalFee, 
-                    amountPaid: calculatedTotalFee, 
-                    status: 'Paid', 
-                    method: method, 
-                    lastDate: new Date().toISOString() 
-                };
-                payDb[currentMemberDetails.id][currentMemberDetails._fy][currentMemberDetails._month] = pData;
-                localStorage.setItem('revive_payments_db', JSON.stringify(payDb));
-                window.cloudSync.push('pushPayment', pData);
-
-                document.getElementById('sm-title').innerText = "Registration Complete!";
-                document.getElementById('generated-id').innerText = currentMemberDetails.id;
-                document.getElementById('successModal').style.display = 'flex';
-            }
-            
-            var admSelect = document.getElementById('admissionTypeSelect');
-            if(admSelect) admSelect.addEventListener('change', function(e) {
-                if (e.target.value === 'Re-Admission') { 
-                    document.getElementById('reAdmissionSection').style.display = 'block'; 
-                } else { 
-                    document.getElementById('reAdmissionSection').style.display = 'none'; 
-                    document.getElementById('validationResultBox').style.display = 'none'; 
-                    document.getElementById('prevPhoneInput').value = ''; 
-                    document.getElementById('firstName').value = ''; 
-                    document.getElementById('lastName').value = ''; 
-                    document.getElementById('primaryContact').value = ''; 
-                    document.getElementById('alternateContact').value = ''; 
-                    document.getElementById('dob').value = ''; 
-                    document.getElementById('address').value = ''; 
-                    document.getElementById('age').value = '';
-                }
-            });
-        });
     </script>
 </body>
 </html>
