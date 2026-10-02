@@ -350,7 +350,9 @@
                     <h3>PIN Settings</h3>
                 </div>
             </div>
-            <div style="text-align: center; margin-top: 3rem;">
+            
+            <div style="text-align: center; margin-top: 3rem; display: flex; justify-content: center; gap: 1rem;">
+                <button class="btn secondary" onclick="cloudSync.pullInitial()" style="font-size: 0.85rem; padding: 0.8rem 2rem; border-color: var(--success-green); color: var(--success-green);">🔄 Sync Latest Data</button>
                 <button class="btn secondary" onclick="appContext.logout()" style="font-size: 0.85rem; padding: 0.8rem 2rem;">Log Out Securely</button>
             </div>
         </main>
@@ -1400,7 +1402,10 @@
                 } return count;
             },
 
-            openUserSearch: function(mode) {
+            openUserSearch: async function(mode) {
+                // Force sync before searching to ensure we have the latest users from other devices
+                await cloudSync.pullInitial(); 
+                
                 currentHubMode = mode;
                 const fySelect = document.getElementById('search-fy');
                 const currYear = new Date().getFullYear(); fySelect.innerHTML = '';
@@ -1810,7 +1815,10 @@
                 }, 350);
             },
 
-            initReports: function() {
+            initReports: async function() {
+                // Force sync before generating reports so revenue matches reality
+                await cloudSync.pullInitial();
+                
                 const fySelect = document.getElementById('report-fy'); 
                 const monthSelect = document.getElementById('report-month');
                 const currYear = new Date().getFullYear(); fySelect.innerHTML = '';
@@ -2115,9 +2123,16 @@
                         alert("User details updated successfully!"); moduleContext.loadProfileByPhoneOrId(currentActiveUser.id); return;
                     }
 
-                    let currentCount = localStorage.getItem('revive_admission_count');
-                    currentCount = !currentCount ? 1 : parseInt(currentCount) + 1;
-                    preAdmissionId = `REV-${String(currentCount).padStart(4, '0')}`;
+                    let usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
+                    let maxIdNum = 0;
+                    usersDb.forEach(u => {
+                        if (u.id && u.id.startsWith('REV-')) {
+                            let num = parseInt(u.id.split('-')[1]);
+                            if (!isNaN(num) && num > maxIdNum) { maxIdNum = num; }
+                        }
+                    });
+                    let nextIdNum = maxIdNum + 1;
+                    preAdmissionId = `REV-${String(nextIdNum).padStart(4, '0')}`;
                     
                     const adDateVal = document.getElementById('dateOfAdmission').value;
                     const parts = adDateVal.split('-'); const adDateObj = new Date(parts[2], parts[1]-1, parts[0]);
@@ -2212,9 +2227,6 @@
                 localStorage.setItem('revive_payments_db', JSON.stringify(payDb));
                 cloudSync.push('pushPayment', pData);
 
-                const currentCount = parseInt(preAdmissionId.split('-')[1]);
-                localStorage.setItem('revive_admission_count', currentCount);
-                
                 document.getElementById('sm-title').innerText = "Registration Complete!";
                 document.getElementById('generated-id').innerText = currentMemberDetails.id;
                 document.getElementById('successModal').style.display = 'flex';
