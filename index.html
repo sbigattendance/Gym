@@ -749,7 +749,7 @@
                             <label style="color: var(--accent-orange); margin-bottom: 0.8rem; display: block; font-weight: 800;">Validate Previous Registration</label>
                             <div class="val-group">
                                 <input type="tel" id="prevPhoneInput" placeholder="10-digit number" pattern="\d{10}" maxlength="10">
-                                <button type="button" onclick="window.moduleContext.validateReadmission()" class="btn secondary">Validate</button>
+                                <button type="button" onclick="moduleContext.validateReadmission()" class="btn secondary">Validate</button>
                             </div>
                             <div id="validationResultBox" style="display:none; font-size: 0.9rem; line-height: 1.5; padding: 1rem; background: var(--bg-panel); border-radius: 6px; border: 1px solid var(--border-color);"></div>
                         </div>
@@ -1077,6 +1077,16 @@
         let IS_EDIT_MODE = false;
         let currentHubMode = 'details'; 
 
+        // [FIX] Utility to handle LocalStorage Quota Exceeded silently and gracefully
+        function safeSetStorage(key, dataString) {
+            try {
+                localStorage.setItem(key, dataString);
+            } catch (e) {
+                console.error("Storage Error:", e);
+                alert("Device storage is almost full! Some large data (like photos) might not be saved correctly. Please sync your data to the cloud soon.");
+            }
+        }
+
         // --- OPTIMISTIC CLOUD SYNC ENGINE ---
         const cloudSync = {
             queue: [],
@@ -1089,11 +1099,11 @@
                     const res = await fetch(CLOUD_SYNC_URL + '?action=pull');
                     const data = await res.json();
                     
-                    if(data.settings) localStorage.setItem('revive_settings_db', JSON.stringify(data.settings));
-                    if(data.tariffs) localStorage.setItem('revive_tariffs', JSON.stringify(data.tariffs));
-                    if(data.specialTariffs) localStorage.setItem('revive_special_tariffs', JSON.stringify(data.specialTariffs));
-                    if(data.users) localStorage.setItem('revive_users_db', JSON.stringify(data.users));
-                    if(data.expenses) localStorage.setItem('revive_expenses_db', JSON.stringify(data.expenses));
+                    if(data.settings) safeSetStorage('revive_settings_db', JSON.stringify(data.settings));
+                    if(data.tariffs) safeSetStorage('revive_tariffs', JSON.stringify(data.tariffs));
+                    if(data.specialTariffs) safeSetStorage('revive_special_tariffs', JSON.stringify(data.specialTariffs));
+                    if(data.users) safeSetStorage('revive_users_db', JSON.stringify(data.users));
+                    if(data.expenses) safeSetStorage('revive_expenses_db', JSON.stringify(data.expenses));
                     
                     if(data.payments) {
                         const pObj = {};
@@ -1102,7 +1112,7 @@
                             if(!pObj[p.userId][p.fy]) pObj[p.userId][p.fy] = {};
                             pObj[p.userId][p.fy][p.month] = p;
                         });
-                        localStorage.setItem('revive_payments_db', JSON.stringify(pObj));
+                        safeSetStorage('revive_payments_db', JSON.stringify(pObj));
                     }
                     
                     if(data.attendance) {
@@ -1111,7 +1121,7 @@
                             if(!aObj[a.dateKey]) aObj[a.dateKey] = [];
                             aObj[a.dateKey].push(a);
                         });
-                        localStorage.setItem('revive_attendance_db', JSON.stringify(aObj));
+                        safeSetStorage('revive_attendance_db', JSON.stringify(aObj));
                     }
                 } catch(e) { console.error("Cloud Pull Error:", e); }
                 document.getElementById('cloud-sync-overlay').style.display = 'none';
@@ -1181,9 +1191,22 @@
             return user;
         }
 
+        // [FIX] Utility to stop Camera Streams correctly to prevent memory leaks and webcam lights staying on
+        function stopCameraStream() {
+            if (window.stream) {
+                window.stream.getTracks().forEach(track => track.stop());
+                window.stream = null;
+            }
+        }
+
         var appContext = {
             currentRole: null, pendingRole: null, 
             switchView: function(viewName) {
+                // [FIX] Turn off the camera if navigating away from the admission module
+                if (viewName !== 'admission') {
+                    stopCameraStream();
+                }
+
                 document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
                 const target = document.getElementById(`view-${viewName}`);
                 if(target) { target.classList.add('active-view'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
@@ -1206,8 +1229,6 @@
                 const pinInput = document.getElementById('pin-input');
                 
                 const settings = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
-                
-                // FIXED: Ensure pins are treated strictly as strings to prevent undefined length properties
                 const staffPin = settings.staffPin != null ? String(settings.staffPin) : '123456';
                 const adminPin = settings.adminPin != null ? String(settings.adminPin) : '1234';
 
@@ -1222,7 +1243,6 @@
                 const pin = document.getElementById('pin-input').value.trim();
                 const settings = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
                 
-                // FIXED: Ensure settings values are Strings for loose/strict equality
                 const staffPin = settings.staffPin != null ? String(settings.staffPin) : '123456';
                 const adminPin = settings.adminPin != null ? String(settings.adminPin) : '1234';
 
@@ -1310,7 +1330,7 @@
                 
                 let db = JSON.parse(localStorage.getItem('revive_special_tariffs')) || [];
                 db.push(promo);
-                localStorage.setItem('revive_special_tariffs', JSON.stringify(db));
+                safeSetStorage('revive_special_tariffs', JSON.stringify(db));
                 cloudSync.push('pushSpecialTariff', promo);
                 
                 document.getElementById('promoTariffForm').reset();
@@ -1320,7 +1340,7 @@
             removeSpecialTariff: function(id) {
                 let db = JSON.parse(localStorage.getItem('revive_special_tariffs')) || [];
                 db = db.filter(p => p.id !== id);
-                localStorage.setItem('revive_special_tariffs', JSON.stringify(db));
+                safeSetStorage('revive_special_tariffs', JSON.stringify(db));
                 cloudSync.push('deleteSpecialTariff', {id: id});
                 this.renderSpecialTariffs();
             },
@@ -1340,7 +1360,7 @@
                         <div class="promo-card">
                             <div>
                                 <h4>${p.name}</h4>
-                                <p>${sd} to ${ed} | Adm: ₹${p.admFee}, Reg: ₹${p.regFee}, PT: ₹${p.ptFee}</p>
+                                <p>${sd} to ${ed} \vert{} Adm: ₹${p.admFee}, Reg: ₹${p.regFee}, PT: ₹${p.ptFee}</p>
                             </div>
                             <button type="button" class="btn danger" style="padding:0.4rem; width:auto; border:none;" onclick="moduleContext.removeSpecialTariff('${p.id}')">Remove</button>
                         </div>
@@ -1376,7 +1396,7 @@
                 
                 let db = JSON.parse(localStorage.getItem('revive_expenses_db')) || [];
                 db.push(exp);
-                localStorage.setItem('revive_expenses_db', JSON.stringify(db));
+                safeSetStorage('revive_expenses_db', JSON.stringify(db));
                 cloudSync.push('pushExpense', exp);
                 
                 alert("Expense recorded successfully!");
@@ -1393,7 +1413,7 @@
                     return;
                 }
                 recent.forEach(ex => {
-                    tbody.innerHTML += `<tr><td>${formatDateStr(ex.date)}</td><td>${ex.category}</td><td>${ex.desc || '-'}</td><td>${ex.mode}</td><td style="color:var(--error-red); font-weight:bold;">₹${ex.amount}</td></tr>`;
+                    tbody.innerHTML += `<tr><td>${formatDateStr(ex.date)}</td><td>${ex.category}</td><td>${ex.desc \vert{}\vert{} '-'}</td><td>${ex.mode}</td><td style="color:var(--error-red); font-weight:bold;">₹${ex.amount}</td></tr>`;
                 });
             },
 
@@ -1407,7 +1427,7 @@
                 if(!upi) { alert("Please fill the UPI ID field."); return; }
                 const s = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
                 s.upiId = upi;
-                localStorage.setItem('revive_settings_db', JSON.stringify(s));
+                safeSetStorage('revive_settings_db', JSON.stringify(s));
                 cloudSync.push('pushSettings', s);
                 alert("UPI Settings Saved."); appContext.goHome();
             },
@@ -1422,7 +1442,7 @@
                 if(!sp || !ap) { alert("Please fill both PIN fields."); return; }
                 const s = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
                 s.staffPin = sp; s.adminPin = ap;
-                localStorage.setItem('revive_settings_db', JSON.stringify(s));
+                safeSetStorage('revive_settings_db', JSON.stringify(s));
                 cloudSync.push('pushSettings', s);
                 alert("PIN Settings Saved."); appContext.goHome();
             },
@@ -1465,7 +1485,7 @@
                 tariffMonthsOrder.forEach(month => {
                     db[fy][month] = { admFee: document.getElementById(`tariff-${month}-adm`).value, regFee: document.getElementById(`tariff-${month}-reg`).value, ptFee: document.getElementById(`tariff-${month}-pt`).value };
                 });
-                localStorage.setItem('revive_tariffs', JSON.stringify(db));
+                safeSetStorage('revive_tariffs', JSON.stringify(db));
                 cloudSync.push('pushTariffs', db);
                 alert(`Standard Monthly Tariffs for ${fy} saved.`);
             },
@@ -1516,7 +1536,7 @@
                 const newAtt = { dateKey: dateKey, userId: user.id, fullName: user.fullName, timestamp: timeStr, month: monthName };
                 attDb[dateKey].push(newAtt);
 
-                localStorage.setItem('revive_attendance_db', JSON.stringify(attDb));
+                safeSetStorage('revive_attendance_db', JSON.stringify(attDb));
                 cloudSync.push('pushAttendance', newAtt);
 
                 resBox.innerHTML = `<span style="color:var(--success-green); font-weight:bold; font-size:1.1rem;">✔ Attendance Marked Successfully!</span><br><br><strong>Name:</strong> ${user.fullName} (${user.id})<br><strong>Time In:</strong>${timeStr}`;
@@ -1710,7 +1730,7 @@
                 
                 const pData = { userId: currentActiveUser.id, fy: activePaymentConfig.fy, month: activePaymentConfig.month, totalDue: activePaymentConfig.totalDue, amountPaid: newPaid, status: newStatus, method: method, lastDate: new Date().toISOString() };
                 paymentsDb[currentActiveUser.id][activePaymentConfig.fy][activePaymentConfig.month] = pData;
-                localStorage.setItem('revive_payments_db', JSON.stringify(paymentsDb));
+                safeSetStorage('revive_payments_db', JSON.stringify(paymentsDb));
                 cloudSync.push('pushPayment', pData);
 
                 document.getElementById('paymentProcessModal').style.display = 'none';
@@ -1859,7 +1879,7 @@
                 if(confirm(`Are you sure you want to completely remove ${currentActiveUser.fullName} (${currentActiveUser.id})? This cannot be undone.`)) {
                     let users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
                     users = users.filter(u => u.id !== currentActiveUser.id);
-                    localStorage.setItem('revive_users_db', JSON.stringify(users));
+                    safeSetStorage('revive_users_db', JSON.stringify(users));
                     cloudSync.push('deleteUser', {id: currentActiveUser.id});
                     alert("User deleted."); appContext.goHome();
                 }
@@ -1874,7 +1894,7 @@
                 document.getElementById('pdf-date').innerText = currentMemberDetails.date;
                 document.getElementById('pdf-photo').src = currentMemberDetails.photo; 
                 document.getElementById('pdf-name').innerText = currentMemberDetails.fullName;
-                document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType || 'N/A'} -${currentMemberDetails.admissionCategory}`;
+                document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType \vert{}\vert{} 'N/A'} -${currentMemberDetails.admissionCategory}`;
                 document.getElementById('pdf-training-category').innerText = currentMemberDetails.trainingCategory;
                 document.getElementById('pdf-contact1').innerText = currentMemberDetails.primaryContact; 
                 document.getElementById('pdf-contact2').innerText = currentMemberDetails.alternateContact || 'N/A';
@@ -2109,7 +2129,7 @@
                 feeTbody.innerHTML = currStats.feeRows.length ? currStats.feeRows.map(p => `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:green; font-weight:bold;">₹${p.amountPaid}</td><td>${p.method || 'CASH'}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No fee collections found for this period.</td></tr>';
 
                 const expTbody = document.querySelector('#table-expenses-report tbody');
-                expTbody.innerHTML = currStats.expRows.length ? currStats.expRows.map(ex => `<tr><td>${formatDateStr(ex.date)}</td><td>${ex.category}</td><td>${ex.desc || '-'}</td><td>${ex.mode}</td><td style="color:var(--error-red); font-weight:bold;">₹${ex.amount}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No expenses recorded for this period.</td></tr>';
+                expTbody.innerHTML = currStats.expRows.length ? currStats.expRows.map(ex => `<tr><td>${formatDateStr(ex.date)}</td><td>${ex.category}</td><td>${ex.desc \vert{}\vert{} '-'}</td><td>${ex.mode}</td><td style="color:var(--error-red); font-weight:bold;">₹${ex.amount}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No expenses recorded for this period.</td></tr>';
 
                 const shortTbody = document.querySelector('#table-shortfalls tbody');
                 shortTbody.innerHTML = currStats.shortRows.length ? currStats.shortRows.map(p => `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td></tr>`).join('') : '<tr><td colspan="4" style="text-align:center;">No shortfalls found.</td></tr>';
@@ -2120,14 +2140,14 @@
                 const calcGrowth = (curr, prev) => prev === 0 ? (curr > 0 ? 100 : 0) : Math.round(((curr - prev) / prev) * 100);
                 
                 const yoyRevG = calcGrowth(currStats.rev, yoyStats.rev); const yoyAdmG = calcGrowth(currStats.admCount, yoyStats.admCount);
-                yoyMsg = `<strong>YoY Revenue:</strong> ${yoyRevG >= 0 ? '+' : ''}${yoyRevG}% (₹${yoyStats.rev.toLocaleString()}) <br> <strong>YoY Admissions:</strong>${yoyAdmG >= 0 ? '+' : ''}${yoyAdmG}% (${yoyStats.admCount})`;
+                yoyMsg = `<strong>YoY Revenue:</strong> ${yoyRevG >= 0 ? '+' : ''}${yoyRevG}% (₹${yoyStats.rev.toLocaleString()}) <br> <strong>YoY Admissions:</strong>${yoyAdmG >= 0 ? '+' : ''}${yoyAdmG}\% (${yoyStats.admCount})`;
 
                 if (month !== 'All') {
                     const mIdx = tariffMonthsOrder.indexOf(month); let prevM, prevMFy;
                     if (mIdx === 0) { prevM = 'March'; prevMFy = prevFy; } else { prevM = tariffMonthsOrder[mIdx - 1]; prevMFy = fy; }
                     const momStats = calcStats(prevMFy, prevM);
                     const momRevG = calcGrowth(currStats.rev, momStats.rev); const momAdmG = calcGrowth(currStats.admCount, momStats.admCount);
-                    momMsg = `<br><br><strong>MoM Revenue:</strong> ${momRevG >= 0 ? '+' : ''}${momRevG}% (₹${momStats.rev.toLocaleString()}) <br> <strong>MoM Admissions:</strong>${momAdmG >= 0 ? '+' : ''}${momAdmG}% (${momStats.admCount})`;
+                    momMsg = `<br><br><strong>MoM Revenue:</strong> ${momRevG >= 0 ? '+' : ''}${momRevG}% (₹${momStats.rev.toLocaleString()}) <br> <strong>MoM Admissions:</strong>${momAdmG >= 0 ? '+' : ''}${momAdmG}\% (${momStats.admCount})`;
                 } else { momMsg = '<br><br><span style="color:var(--text-muted); font-size:0.85rem;">MoM Growth N/A for entire year view.</span>'; }
 
                 document.getElementById('yoy-analysis-content').innerHTML = yoyMsg + momMsg;
@@ -2141,7 +2161,7 @@
                 let users = JSON.parse(localStorage.getItem('revive_users_db')) || []; let user = [...users].reverse().find(u => u.primaryContact === phone);
                 resBox.style.display = 'block';
                 
-                if(user) {
+                if(user && user.date) {
                     const parts = user.date.split('-'); const prevDate = new Date(parts[2], parts[1]-1, parts[0]);
                     const currParts = document.getElementById('dateOfAdmission').value.split('-'); const currDate = new Date(currParts[2], currParts[1]-1, currParts[0]);
                     
@@ -2160,7 +2180,7 @@
                     
                     resBox.innerHTML = `${statusHtml}<br><br><strong>Name:</strong> ${user.fullName}<br><strong>Contact:</strong>${user.primaryContact}<br><strong>Prev. Registration Date:</strong> ${user.date}`;
                 } else {
-                    resBox.innerHTML = '<span style="color:var(--error-red);">No previous registration found.</span><br><span style="color:var(--text-muted); font-size:0.85rem;">Type changed to New Admission.</span>';
+                    resBox.innerHTML = '<span style="color:var(--error-red);">No previous registration found or missing dates.</span><br><span style="color:var(--text-muted); font-size:0.85rem;">Type changed to New Admission.</span>';
                     admissionTypeSelect.value = 'New Admission'; document.getElementById('primaryContact').value = phone;
                     document.getElementById('firstName').value = ''; document.getElementById('lastName').value = '';
                     document.getElementById('alternateContact').value = ''; document.getElementById('dob').value = '';
@@ -2169,9 +2189,18 @@
             }
         };
 
+        // [FIX] Ensure `window.moduleContext` connects reliably to our updated object for inline HTML event listeners
+        window.moduleContext = moduleContext;
+
+        // [FIX] Improved formatting logic that checks for input type (like 'Backspace')
         function fmtDt(e) {
-            let v = e.target.value.replace(/\D/g, ''); if(v.length>8) v=v.slice(0,8);
-            if(v.length>=5) e.target.value=`${v.slice(0,2)}-${v.slice(2,4)}-${v.slice(4)}`; else if(v.length>=3) e.target.value=`${v.slice(0,2)}-${v.slice(2)}`;
+            // Prevent dashes from immediately reappearing if a user hits backspace
+            if (e.inputType === 'deleteContentBackward') return;
+            
+            let v = e.target.value.replace(/\D/g, ''); 
+            if(v.length>8) v=v.slice(0,8);
+            if(v.length>=5) e.target.value=`${v.slice(0,2)}-${v.slice(2,4)}-${v.slice(4)}`; 
+            else if(v.length>=3) e.target.value=`${v.slice(0,2)}-${v.slice(2)}`;
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -2200,13 +2229,14 @@
             const video = document.getElementById('camera-stream'); const canvas = document.getElementById('canvas-snapshot'); const preview = document.getElementById('selfie-preview');
             const btnStart = document.getElementById('btn-start-camera'); const btnSwitch = document.getElementById('btn-switch-camera'); const btnCapture = document.getElementById('btn-capture');
             const btnRetake = document.getElementById('btn-retake'); const selfieData = document.getElementById('selfie-data');
-            let stream = null; let currentFacingMode = 'user';
+            let currentFacingMode = 'user';
 
             async function startCamera() {
-                if(stream) stream.getTracks().forEach(t => t.stop());
+                // Ensure the previous stream is completely dropped
+                stopCameraStream();
                 try {
-                    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: currentFacingMode } });
-                    video.srcObject = stream; video.style.display = 'block'; document.querySelector('.camera-placeholder').style.display = 'none'; preview.style.display = 'none';
+                    window.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: currentFacingMode } });
+                    video.srcObject = window.stream; video.style.display = 'block'; document.querySelector('.camera-placeholder').style.display = 'none'; preview.style.display = 'none';
                     btnStart.style.display = 'none'; btnSwitch.style.display = 'inline-flex'; btnCapture.style.display = 'inline-flex'; btnCapture.disabled = false;
                 } catch (err) { alert("Camera access denied or unavailable."); }
             }
@@ -2217,7 +2247,9 @@
                 canvas.width = video.videoWidth; canvas.height = video.videoHeight; canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
                 selfieData.value = canvas.toDataURL('image/jpeg', 0.6); preview.src = selfieData.value;
                 video.style.display = 'none'; preview.style.display = 'block'; btnCapture.style.display = 'none'; btnSwitch.style.display = 'none'; btnRetake.style.display = 'inline-flex';
-                if(stream) stream.getTracks().forEach(track => track.stop());
+                
+                // Immediately shut off light instead of lingering in the background
+                stopCameraStream();
             });
             if(btnRetake) btnRetake.addEventListener('click', () => { selfieData.value = ''; btnRetake.style.display = 'none'; startCamera(); });
 
@@ -2272,7 +2304,7 @@
 
                         let usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
                         let idx = usersDb.findIndex(u => u.id === currentActiveUser.id);
-                        if(idx !== -1) { usersDb[idx] = currentActiveUser; localStorage.setItem('revive_users_db', JSON.stringify(usersDb)); }
+                        if(idx !== -1) { usersDb[idx] = currentActiveUser; safeSetStorage('revive_users_db', JSON.stringify(usersDb)); }
                         
                         cloudSync.push('pushUser', currentActiveUser);
                         document.getElementById('search-phone').value = currentActiveUser.primaryContact;
@@ -2363,7 +2395,7 @@
 
             function finalizeRegistration() {
                 let usersDb = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                usersDb.push(currentMemberDetails); localStorage.setItem('revive_users_db', JSON.stringify(usersDb));
+                usersDb.push(currentMemberDetails); safeSetStorage('revive_users_db', JSON.stringify(usersDb));
                 cloudSync.push('pushUser', currentMemberDetails);
                 
                 let payDb = JSON.parse(localStorage.getItem('revive_payments_db')) || {};
@@ -2373,11 +2405,11 @@
                 const method = document.getElementById('paymentMethod').value;
                 const pData = { userId: currentMemberDetails.id, fy: currentMemberDetails._fy, month: currentMemberDetails._month, totalDue: calculatedTotalFee, amountPaid: calculatedTotalFee, status: 'Paid', method: method, lastDate: new Date().toISOString() };
                 payDb[currentMemberDetails.id][currentMemberDetails._fy][currentMemberDetails._month] = pData;
-                localStorage.setItem('revive_payments_db', JSON.stringify(payDb));
+                safeSetStorage('revive_payments_db', JSON.stringify(payDb));
                 cloudSync.push('pushPayment', pData);
 
                 const currentCount = parseInt(preAdmissionId.split('-')[1]);
-                localStorage.setItem('revive_admission_count', currentCount);
+                safeSetStorage('revive_admission_count', currentCount);
                 
                 document.getElementById('sm-title').innerText = "Registration Complete!";
                 document.getElementById('generated-id').innerText = currentMemberDetails.id;
