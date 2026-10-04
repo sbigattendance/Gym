@@ -256,7 +256,7 @@
 
     <div id="app-wrapper">
         <header class="app-header">
-            <div class="logo-container" onclick="window.appContext.goHome()">
+            <div class="logo-container" onclick="appContext.goHome()">
                 <img src="logo.png" alt="REVIVE FITNESS STUDIO" onerror="this.src='https://via.placeholder.com/150x40/ffffff/ff6600?text=REVIVE+FITNESS'">
             </div>
         </header>
@@ -289,13 +289,13 @@
         <main id="view-login" class="view-section">
             <div class="form-layout" style="max-width: 400px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="window.appContext.goHome()" type="button">
+                    <button class="back-btn" onclick="appContext.goHome()" type="button">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
                     <h2 class="module-title" id="login-title">Login</h2>
                 </div>
-                <form id="loginForm" onsubmit="window.appContext.handleLogin(); return false;">
+                <form id="loginForm" onsubmit="appContext.handleLogin(); return false;">
                     <div class="form-group">
                         <input type="password" id="pin-input" class="pin-input" inputmode="numeric" required autocomplete="off">
                     </div>
@@ -344,20 +344,20 @@
                 </div>
             </div>
             <div style="text-align: center; margin-top: 3rem;">
-                <button class="btn secondary" onclick="window.appContext.logout()" style="font-size: 0.85rem; padding: 0.8rem 2rem;">Log Out Securely</button>
+                <button class="btn secondary" onclick="appContext.logout()" style="font-size: 0.85rem; padding: 0.8rem 2rem;">Log Out Securely</button>
             </div>
         </main>
 
         <main id="view-expense" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="window.appContext.goHome()" type="button">
+                    <button class="back-btn" onclick="appContext.goHome()" type="button">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
                     <h2 class="module-title">Expense Entry</h2>
                 </div>
-                <form id="expenseForm" onsubmit="window.moduleContext.saveExpense(event); return false;">
+                <form id="expenseForm" onsubmit="moduleContext.saveExpense(event); return false;">
                     <div class="form-row">
                         <div class="form-group">
                             <label>Date <span class="required">*</span></label>
@@ -411,18 +411,18 @@
         <main id="view-attendance" class="view-section">
             <div class="form-layout" style="max-width: 700px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="window.appContext.goHome()" type="button">
+                    <button class="back-btn" onclick="appContext.goHome()" type="button">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
                     <h2 class="module-title">Daily Attendance Marker</h2>
                 </div>
 
-                <form id="attendanceForm" onsubmit="window.moduleContext.markAttendance(event); return false;">
+                <form id="attendanceForm" onsubmit="moduleContext.markAttendance(event); return false;">
                     <div class="form-row">
                         <div class="form-group">
                             <label>Enter Phone Number, Admission ID, or Name <span class="required">*</span></label>
-                            <input type="text" id="att-input" placeholder="e.g. 9999999999, REV-0001, or John" oninput="window.moduleContext.previewMemberName(this.value)" required autocomplete="off">
+                            <input type="text" id="att-input" placeholder="e.g. 9999999999, REV-0001, or John" oninput="moduleContext.previewMemberName(this.value)" required autocomplete="off">
                             <div id="att-live-preview" style="margin-top: 6px;"></div>
                         </div>
                         <div class="form-group" style="max-width: 150px; justify-content: flex-end;">
@@ -437,7 +437,7 @@
                 <div style="margin-top: 2.5rem; border-top: 2px solid var(--border-color); padding-top: 1.5rem;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3 style="color: var(--accent-orange); text-transform: uppercase; font-size: 1.1rem;">Attendance Logs</h3>
-                        <input type="date" id="att-filter-date" style="max-width: 180px; padding: 0.5rem;" onchange="window.moduleContext.renderAttendanceLogs()">
+                        <input type="date" id="att-filter-date" style="max-width: 180px; padding: 0.5rem;" onchange="moduleContext.renderAttendanceLogs()">
                     </div>
                     <div class="table-responsive">
                         <table class="data-table" id="table-attendance">
@@ -455,13 +455,13 @@
         <main id="view-user-search" class="view-section">
             <div class="form-layout" style="max-width: 500px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="window.appContext.goHome()" type="button">
+                    <button class="back-btn" onclick="appContext.goHome()" type="button">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
                     <h2 class="module-title" id="search-title">Search User</h2>
                 </div>
-                <form id="userSearchForm" onsubmit="window.moduleContext.fetchUserHub(event); return false;">
+                <form id="userSearchForm" onsubmit="moduleContext.fetchUserHub(event); return false;">
                     <div class="form-group">
                         <label>Member Phone Number <span class="required">*</span></label>
                         <input type="tel" id="search-phone" pattern="\d{10}" maxlength="10" required>
@@ -478,7 +478,7 @@
         <main id="view-user-hub" class="view-section">
             <div class="form-layout" style="max-width: 900px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="window.appContext.switchView('user-search')" type="button">
+                    <button class="back-btn" onclick="appContext.switchView('user-search')" type="button">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
@@ -499,9 +499,9 @@
                         <p id="hub-doj" style="margin-top:5px; font-weight:700; color:var(--success-green); font-size: 0.85rem;"></p>
                     </div>
                     <div id="hub-actions" style="display:flex; flex-direction:column; gap:0.5rem; width:100%; max-width:200px;">
-                        <button id="btn-hub-edit" class="btn secondary" onclick="window.moduleContext.editUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Edit Profile</button>
-                        <button id="btn-hub-pdf" class="btn secondary" onclick="window.moduleContext.regeneratePdf()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Re-Download PDF</button>
-                        <button id="btn-hub-delete" class="btn danger admin-only" onclick="window.moduleContext.deleteUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Delete User</button>
+                        <button id="btn-hub-edit" class="btn secondary" onclick="moduleContext.editUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Edit Profile</button>
+                        <button id="btn-hub-pdf" class="btn secondary" onclick="moduleContext.regeneratePdf()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Re-Download PDF</button>
+                        <button id="btn-hub-delete" class="btn danger admin-only" onclick="moduleContext.deleteUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Delete User</button>
                     </div>
                 </div>
 
@@ -514,7 +514,7 @@
         <main id="view-reports" class="view-section">
             <div class="form-layout" style="max-width: 1000px; padding: 1.5rem; background:transparent; border:none; box-shadow:none;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="window.appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">Financial Reports & P&L</h2>
                 </div>
                 
@@ -529,7 +529,7 @@
                             <option value="All">Entire Year (All Months)</option>
                         </select>
                     </div>
-                    <button class="btn primary" onclick="window.moduleContext.generateReport()" style="max-width:150px; padding: 1rem;">Generate</button>
+                    <button class="btn primary" onclick="moduleContext.generateReport()" style="max-width:150px; padding: 1rem;">Generate</button>
                 </div>
 
                 <div id="report-content" style="display:none; margin-top:2rem;">
@@ -558,7 +558,7 @@
                             <div class="val" id="kpi-fee-count">0</div>
                             <span class="sub-val">₹<span id="kpi-fee-amt">0</span></span>
                         </div>
-                        <div class="kpi-card" style="cursor:pointer;" onclick="window.moduleContext.filterReportByShortfall()" title="Click to view profiles with shortfall payments">
+                        <div class="kpi-card" style="cursor:pointer;" onclick="moduleContext.filterReportByShortfall()" title="Click to view profiles with shortfall payments">
                             <h4>Due (Shortfall) 🔍</h4>
                             <div class="val" id="kpi-shortfall-count" style="color:var(--warning-yellow);">0</div>
                             <span class="sub-val" style="color:var(--warning-yellow);">₹<span id="kpi-shortfall-amt">0</span></span>
@@ -630,7 +630,7 @@
         <main id="view-upi-editor" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="window.appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">UPI Settings</h2>
                 </div>
                 <div class="form-row">
@@ -639,14 +639,14 @@
                         <input type="text" id="admin-upi-id" placeholder="e.g. revivefitness@upi" required>
                     </div>
                 </div>
-                <div class="action-row"><button type="button" onclick="window.moduleContext.saveUpi()" class="btn primary">Save UPI Settings</button></div>
+                <div class="action-row"><button type="button" onclick="moduleContext.saveUpi()" class="btn primary">Save UPI Settings</button></div>
             </div>
         </main>
 
         <main id="view-pin-editor" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="window.appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">PIN Settings</h2>
                 </div>
                 <div class="form-row">
@@ -655,17 +655,17 @@
                         <input type="password" id="admin-admin-pin" placeholder="4-digit PIN" maxlength="4" required>
                     </div>
                 </div>
-                <div class="action-row"><button type="button" onclick="window.moduleContext.savePins()" class="btn primary">Save Admin PIN</button></div>
+                <div class="action-row"><button type="button" onclick="moduleContext.savePins()" class="btn primary">Save Admin PIN</button></div>
             </div>
         </main>
 
         <main id="view-staff-editor" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="window.appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">Staff Access Management</h2>
                 </div>
-                <form id="staffForm" onsubmit="window.moduleContext.saveStaff(event); return false;">
+                <form id="staffForm" onsubmit="moduleContext.saveStaff(event); return false;">
                     <div class="form-row">
                         <div class="form-group">
                             <label>Staff Name <span class="required">*</span></label>
@@ -694,7 +694,7 @@
         <main id="view-tariff-editor" class="view-section">
             <div class="form-layout" style="max-width: 900px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="window.appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">Master Tariff Configurator</h2>
                 </div>
 
@@ -702,7 +702,7 @@
                     <h3 style="color:var(--accent-orange); margin-bottom: 0.5rem; font-size: 1.1rem; text-transform: uppercase;">Special Date / Promo Tariffs</h3>
                     <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;">Define custom rates for specific dates. The system will auto-apply these rates over standard monthly rates if an admission or payment happens within these dates.</p>
                     
-                    <form id="promoTariffForm" onsubmit="window.moduleContext.addSpecialTariff(event); return false;">
+                    <form id="promoTariffForm" onsubmit="moduleContext.addSpecialTariff(event); return false;">
                         <div class="form-row">
                             <div class="form-group"><label>Promo Name <span class="required">*</span></label><input type="text" id="promo-name" placeholder="e.g. Diwali Offer" required></div>
                             <div class="form-group"><label>Start Date <span class="required">*</span></label><input type="date" id="promo-start" required></div>
@@ -724,14 +724,14 @@
                 <h3 style="color:var(--text-main); margin-bottom: 1rem; font-size: 1.1rem; text-transform: uppercase;">Standard Monthly Tariffs</h3>
                 <div class="form-row"><div class="form-group" style="max-width: 300px;"><label for="fy-select">Financial Year</label><select id="fy-select"></select></div></div>
                 <div id="tariff-months-container" style="margin-top: 1rem;"></div>
-                <div class="action-row"><button type="button" onclick="window.moduleContext.saveTariffs()" class="btn primary">Save Monthly Tariffs</button></div>
+                <div class="action-row"><button type="button" onclick="moduleContext.saveTariffs()" class="btn primary">Save Monthly Tariffs</button></div>
             </div>
         </main>
 
         <main id="view-admission" class="view-section">
             <div class="form-layout">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="window.appContext.goHome()" type="button" id="form-back-btn">
+                    <button class="back-btn" onclick="appContext.goHome()" type="button" id="form-back-btn">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
@@ -1200,11 +1200,11 @@
             },
             goHome: function() {
                 if (document.getElementById('successModal').style.display === 'flex' || document.getElementById('receiptSuccessModal').style.display === 'flex' || document.getElementById('viewReceiptModal').style.display === 'flex') return;
-                if (window.appContext.currentRole) window.appContext.switchView('dashboard');
-                else { window.appContext.pendingRole = null; window.appContext.switchView('home'); }
+                if (appContext.currentRole) window.appContext.switchView('dashboard');
+                else { appContext.pendingRole = null; window.appContext.switchView('home'); }
             },
             openLogin: function(role) {
-                window.appContext.pendingRole = role;
+                appContext.pendingRole = role;
                 document.getElementById('login-title').innerText = role === 'staff' ? 'Staff Login' : 'Admin Login';
                 const pinInput = document.getElementById('pin-input');
                 const settings = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
@@ -1222,29 +1222,29 @@
                 const settings = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
                 const adminPin = settings.adminPin != null ? String(settings.adminPin) : '1234';
 
-                if (window.appContext.pendingRole === 'staff') {
+                if (appContext.pendingRole === 'staff') {
                     const staffDb = JSON.parse(localStorage.getItem('revive_staff_db')) || [];
                     const matchingStaff = staffDb.find(s => String(s.pin) === pin);
                     
                     if (matchingStaff) {
-                        window.appContext.currentRole = 'staff'; 
+                        appContext.currentRole = 'staff'; 
                         window.appContext.loadDashboard(`STAFF (${matchingStaff.name.toUpperCase()})`); 
                     } else {
                         alert('Invalid Staff PIN. Please try again.');
                     }
                 } 
-                else if (window.appContext.pendingRole === 'admin' && pin === adminPin) { 
-                    window.appContext.currentRole = 'admin'; 
+                else if (appContext.pendingRole === 'admin' && pin === adminPin) { 
+                    appContext.currentRole = 'admin'; 
                     window.appContext.loadDashboard('ADMIN'); 
                 } 
                 else { alert('Invalid PIN. Please try again.'); }
             },
             loadDashboard: function(roleTitle) {
                 document.getElementById('dashboard-title').innerHTML = `${roleTitle} <span>PORTAL</span>`;
-                document.querySelectorAll('.admin-only').forEach(el => { el.style.display = window.appContext.currentRole === 'admin' ? 'flex' : 'none'; });
+                document.querySelectorAll('.admin-only').forEach(el => { el.style.display = appContext.currentRole === 'admin' ? 'flex' : 'none'; });
                 window.appContext.switchView('dashboard');
             },
-            logout: function() { window.appContext.currentRole = null; window.appContext.pendingRole = null; window.appContext.switchView('home'); },
+            logout: function() { appContext.currentRole = null; appContext.pendingRole = null; window.appContext.switchView('home'); },
             startAdmission: function() {
                 IS_EDIT_MODE = false;
                 document.getElementById('form-main-title').innerText = "Admission Registration";
@@ -1326,7 +1326,7 @@
             },
             removeSpecialTariff: function(id) {
                 let db = JSON.parse(localStorage.getItem('revive_special_tariffs')) || [];
-                db = db.filter(p => String(p.id) !== String(id));
+                db = db.filter(p => p.id !== id);
                 localStorage.setItem('revive_special_tariffs', JSON.stringify(db));
                 cloudSync.push('deleteSpecialTariff', {id: id});
                 window.moduleContext.renderSpecialTariffs();
@@ -1347,7 +1347,7 @@
                         <div class="promo-card">
                             <div>
                                 <h4>${p.name}</h4>
-                                <p>${sd} to ${ed} \vert{} Adm: ₹${p.admFee}, Reg: ₹${p.regFee}, PT: ₹${p.ptFee}</p>
+                                <p>${sd} to ${ed} | Adm: ₹${p.admFee}, Reg: ₹${p.regFee}, PT: ₹${p.ptFee}</p>
                             </div>
                             <button type="button" class="btn danger" style="padding:0.4rem; width:auto; border:none;" onclick="window.moduleContext.removeSpecialTariff('${p.id}')">Remove</button>
                         </div>
@@ -1399,7 +1399,7 @@
                     return;
                 }
                 recent.forEach(ex => {
-                    tbody.innerHTML += `<tr><td>${formatDateStr(ex.date)}</td><td>${ex.category}</td><td>${ex.desc \vert{}\vert{} '-'}</td><td>${ex.mode}</td><td style="color:var(--error-red); font-weight:bold;">₹${ex.amount}</td></tr>`;
+                    tbody.innerHTML += `<tr><td>${formatDateStr(ex.date)}</td><td>${ex.category}</td><td>${ex.desc || '-'}</td><td>${ex.mode}</td><td style="color:var(--error-red); font-weight:bold;">₹${ex.amount}</td></tr>`;
                 });
             },
 
@@ -1441,7 +1441,7 @@
                 
                 let db = JSON.parse(localStorage.getItem('revive_staff_db')) || [];
                 
-                if (db.some(s => String(s.pin) === String(pin))) {
+                if (db.some(s => String(s.pin) === pin)) {
                     alert("This PIN is already in use by another staff member. Choose a unique PIN.");
                     return;
                 }
@@ -1458,7 +1458,7 @@
             deleteStaff: function(id) {
                 if(confirm("Revoke access for this staff member? They will be immediately locked out.")) {
                     let db = JSON.parse(localStorage.getItem('revive_staff_db')) || [];
-                    db = db.filter(s => String(s.id) !== String(id));
+                    db = db.filter(s => s.id !== id);
                     localStorage.setItem('revive_staff_db', JSON.stringify(db));
                     
                     cloudSync.push('deleteStaff', { id: id });
@@ -1556,7 +1556,7 @@
                             <img src="${photoUrl}" alt="${user.fullName}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-orange);">
                             <div style="flex:1;">
                                 <div style="color:var(--text-main); font-weight:800; font-size:1rem;">${user.fullName}</div>
-                                <div style="font-size:0.8rem; color:var(--text-muted);">ID: ${user.id} \vert{} Ph:${user.primaryContact}</div>
+                                <div style="font-size:0.8rem; color:var(--text-muted);">ID: ${user.id} | Ph: ${user.primaryContact}</div>
                             </div>
                         </div>`;
                     });
@@ -1608,7 +1608,7 @@
                 localStorage.setItem('revive_attendance_db', JSON.stringify(attDb));
                 cloudSync.push('pushAttendance', newAtt);
 
-                resBox.innerHTML = `<span style="color:var(--success-green); font-weight:bold; font-size:1.1rem;">✔ Attendance Marked Successfully!</span><br><br><strong>Name:</strong> ${user.fullName} (${user.id})<br><strong>Time In:</strong>${timeStr}`;
+                resBox.innerHTML = `<span style="color:var(--success-green); font-weight:bold; font-size:1.1rem;">✔ Attendance Marked Successfully!</span><br><br><strong>Name:</strong> ${user.fullName} (${user.id})<br><strong>Time In:</strong> ${timeStr}`;
                 document.getElementById('att-input').value = ''; document.getElementById('att-live-preview').innerHTML = '';
                 window.moduleContext.renderAttendanceLogs();
             },
@@ -1647,27 +1647,8 @@
 
             loadProfileByPhoneOrId: function(identifier) {
                 const users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                const matchingUsers = users.filter(u => String(u.primaryContact) === String(identifier) || String(u.id) === String(identifier));
-                
-                if(matchingUsers.length === 0) { alert("User profile not found."); return; }
-
-                let user;
-                if (matchingUsers.length > 1) {
-                    let promptText = "Multiple family members found for this number. Enter the number corresponding to the member you wish to view:\n";
-                    matchingUsers.forEach((u, idx) => {
-                        promptText += `${idx + 1}: ${u.fullName} (${u.id})\n`;
-                    });
-                    const selection = prompt(promptText);
-                    const selectedIdx = parseInt(selection) - 1;
-                    if (isNaN(selectedIdx) || selectedIdx < 0 || selectedIdx >= matchingUsers.length) {
-                        alert("Invalid selection. Loading the first matched profile.");
-                        user = matchingUsers[0];
-                    } else {
-                        user = matchingUsers[selectedIdx];
-                    }
-                } else {
-                    user = matchingUsers[0];
-                }
+                const user = users.find(u => String(u.primaryContact) === String(identifier) || String(u.id) === String(identifier));
+                if(!user) { alert("User profile not found."); return; }
 
                 const fySelect = document.getElementById('search-fy');
                 const fy = fySelect ? fySelect.value : `${new Date().getFullYear()}-${new Date().getFullYear()+1}`;
@@ -1679,7 +1660,7 @@
                 
                 const callBtn = document.getElementById('hub-call-btn'); const waBtn = document.getElementById('hub-wa-btn'); const pContact = document.getElementById('hub-phone');
 
-                if (window.appContext.currentRole === 'staff') {
+                if (appContext.currentRole === 'staff') {
                     photoEl.style.pointerEvents = 'none'; photoEl.style.userSelect = 'none'; photoEl.style.webkitUserDrag = 'none'; photoEl.oncontextmenu = (ev) => ev.preventDefault();
                     pContact.innerText = `******${String(user.primaryContact).slice(-4)}`;
                     if(callBtn) callBtn.style.display = 'none'; if(waBtn) waBtn.style.display = 'none';
@@ -1691,7 +1672,7 @@
                 }
 
                 document.getElementById('hub-name').innerText = user.fullName; document.getElementById('hub-id').innerText = user.id;
-                document.getElementById('hub-details').innerText = `${user.admissionCategory} -${user.trainingCategory}`;
+                document.getElementById('hub-details').innerText = `${user.admissionCategory} - ${user.trainingCategory}`;
                 document.getElementById('hub-doj').innerText = `Date of Joining: ${user.date}`; document.getElementById('hub-fy-label').innerText = fy;
                 document.getElementById('hub-actions').style.display = 'flex';
                 
@@ -1701,8 +1682,8 @@
                 } else {
                     document.getElementById('hub-instruction').style.display = 'block'; document.getElementById('hub-instruction').innerText = "Click on a paid green month to view the receipt.";
                     document.getElementById('btn-hub-edit').style.display = 'flex'; 
-                    document.getElementById('btn-hub-pdf').style.display = window.appContext.currentRole === 'admin' ? 'flex' : 'none';
-                    document.getElementById('btn-hub-delete').style.display = window.appContext.currentRole === 'admin' ? 'flex' : 'none';
+                    document.getElementById('btn-hub-pdf').style.display = appContext.currentRole === 'admin' ? 'flex' : 'none';
+                    document.getElementById('btn-hub-delete').style.display = appContext.currentRole === 'admin' ? 'flex' : 'none';
                 }
                 
                 window.moduleContext.renderFeeCalendar(user.id, fy, user.trainingCategory, user.date);
@@ -1713,9 +1694,9 @@
                 if(e && e.preventDefault) e.preventDefault();
                 const phone = document.getElementById('search-phone').value.trim();
                 const users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                const userExists = users.some(u => String(u.primaryContact) === String(phone));
-                if(!userExists) { alert("User not found. Please register the user first."); return; }
-                window.moduleContext.loadProfileByPhoneOrId(phone);
+                const user = [...users].reverse().find(u => String(u.primaryContact) === String(phone));
+                if(!user) { alert("User not found. Please register the user first."); return; }
+                window.moduleContext.loadProfileByPhoneOrId(user.primaryContact);
             },
 
             renderFeeCalendar: function(userId, fy, trainCat, adDateStr) {
@@ -1980,7 +1961,7 @@
                 document.getElementById('pdf-date').innerText = currentMemberDetails.date;
                 document.getElementById('pdf-photo').src = currentMemberDetails.photo; 
                 document.getElementById('pdf-name').innerText = currentMemberDetails.fullName;
-                document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType \vert{}\vert{} 'N/A'} -${currentMemberDetails.admissionCategory}`;
+                document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType || 'N/A'} -${currentMemberDetails.admissionCategory}`;
                 document.getElementById('pdf-training-category').innerText = currentMemberDetails.trainingCategory;
                 document.getElementById('pdf-contact1').innerText = currentMemberDetails.primaryContact; 
                 document.getElementById('pdf-contact2').innerText = currentMemberDetails.alternateContact || 'N/A';
@@ -2207,13 +2188,13 @@
                 document.getElementById('kpi-unpaid-amt').innerText = currStats.unpaidAmt.toLocaleString();
 
                 const admTbody = document.querySelector('#table-admissions tbody');
-                admTbody.innerHTML = currStats.admRows.length ? currStats.admRows.map(u => `<tr onclick="window.moduleContext.loadProfileByPhoneOrId('${u.id}')" title="Click to view member profile"><td>${u.date}</td><td><strong>${u.id}</strong></td><td>${u.fullName}</td><td>${window.appContext.currentRole === 'staff' ? '******' + String(u.primaryContact).slice(-4) : u.primaryContact}</td><td>${u.admissionCategory}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No admissions found for this period.</td></tr>';
+                admTbody.innerHTML = currStats.admRows.length ? currStats.admRows.map(u => `<tr onclick="window.moduleContext.loadProfileByPhoneOrId('${u.id}')" title="Click to view member profile"><td>${u.date}</td><td><strong>${u.id}</strong></td><td>${u.fullName}</td><td>${appContext.currentRole === 'staff' ? '******' + String(u.primaryContact).slice(-4) : u.primaryContact}</td><td>${u.admissionCategory}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No admissions found for this period.</td></tr>';
 
                 const feeTbody = document.querySelector('#table-fees tbody');
                 feeTbody.innerHTML = currStats.feeRows.length ? currStats.feeRows.map(p => `<tr onclick="window.moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:green; font-weight:bold;">₹${p.amountPaid}</td><td>${p.method || 'CASH'}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No fee collections found for this period.</td></tr>';
 
                 const expTbody = document.querySelector('#table-expenses-report tbody');
-                expTbody.innerHTML = currStats.expRows.length ? currStats.expRows.map(ex => `<tr><td>${formatDateStr(ex.date)}</td><td>${ex.category}</td><td>${ex.desc \vert{}\vert{} '-'}</td><td>${ex.mode}</td><td style="color:var(--error-red); font-weight:bold;">₹${ex.amount}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No expenses recorded for this period.</td></tr>';
+                expTbody.innerHTML = currStats.expRows.length ? currStats.expRows.map(ex => `<tr><td>${formatDateStr(ex.date)}</td><td>${ex.category}</td><td>${ex.desc || '-'}</td><td>${ex.mode}</td><td style="color:var(--error-red); font-weight:bold;">₹${ex.amount}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No expenses recorded for this period.</td></tr>';
 
                 const shortTbody = document.querySelector('#table-shortfalls tbody');
                 shortTbody.innerHTML = currStats.shortRows.length ? currStats.shortRows.map(p => `<tr onclick="window.moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td></tr>`).join('') : '<tr><td colspan="4" style="text-align:center;">No shortfalls found.</td></tr>';
@@ -2224,14 +2205,14 @@
                 const calcGrowth = (curr, prev) => prev === 0 ? (curr > 0 ? 100 : 0) : Math.round(((curr - prev) / prev) * 100);
                 
                 const yoyRevG = calcGrowth(currStats.rev, yoyStats.rev); const yoyAdmG = calcGrowth(currStats.admCount, yoyStats.admCount);
-                yoyMsg = `<strong>YoY Revenue:</strong> ${yoyRevG >= 0 ? '+' : ''}${yoyRevG}% (₹${yoyStats.rev.toLocaleString()}) <br> <strong>YoY Admissions:</strong>${yoyAdmG >= 0 ? '+' : ''}${yoyAdmG}\% (${yoyStats.admCount})`;
+                yoyMsg = `<strong>YoY Revenue:</strong> ${yoyRevG >= 0 ? '+' : ''}${yoyRevG}% (₹${yoyStats.rev.toLocaleString()}) <br> <strong>YoY Admissions:</strong>${yoyAdmG >= 0 ? '+' : ''}${yoyAdmG}% (${yoyStats.admCount})`;
 
                 if (month !== 'All') {
                     const mIdx = tariffMonthsOrder.indexOf(month); let prevM, prevMFy;
                     if (mIdx === 0) { prevM = 'March'; prevMFy = prevFy; } else { prevM = tariffMonthsOrder[mIdx - 1]; prevMFy = fy; }
                     const momStats = calcStats(prevMFy, prevM);
                     const momRevG = calcGrowth(currStats.rev, momStats.rev); const momAdmG = calcGrowth(currStats.admCount, momStats.admCount);
-                    momMsg = `<br><br><strong>MoM Revenue:</strong> ${momRevG >= 0 ? '+' : ''}${momRevG}% (₹${momStats.rev.toLocaleString()}) <br> <strong>MoM Admissions:</strong>${momAdmG >= 0 ? '+' : ''}${momAdmG}\% (${momStats.admCount})`;
+                    momMsg = `<br><br><strong>MoM Revenue:</strong> ${momRevG >= 0 ? '+' : ''}${momRevG}% (₹${momStats.rev.toLocaleString()}) <br> <strong>MoM Admissions:</strong>${momAdmG >= 0 ? '+' : ''}${momAdmG}% (${momStats.admCount})`;
                 } else { momMsg = '<br><br><span style="color:var(--text-muted); font-size:0.85rem;">MoM Growth N/A for entire year view.</span>'; }
 
                 document.getElementById('yoy-analysis-content').innerHTML = yoyMsg + momMsg;
@@ -2345,38 +2326,8 @@
                 
                 const btnNext = document.getElementById('btn-next-step');
                 if(btnNext) btnNext.addEventListener('click', () => {
-                    let isValid = true; 
-                    step1.querySelectorAll('input, select, textarea').forEach(input => { 
-                        if (!input.checkValidity()) { input.reportValidity(); isValid = false; } 
-                    });
-                    
-                    if(isValid) { 
-                        // --- DUPLICATE PHONE VALIDATION ---
-                        const primaryPhone = document.getElementById('primaryContact').value.trim();
-                        const admissionCat = document.getElementById('admissionCategory').value;
-                        const isReadmission = document.getElementById('admissionTypeSelect').value === 'Re-Admission';
-                        
-                        if (!IS_EDIT_MODE && !isReadmission) {
-                            const users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                            const duplicateExists = users.some(u => String(u.primaryContact) === String(primaryPhone));
-                            
-                            if (duplicateExists) {
-                                if (admissionCat === 'Individual') {
-                                    alert(`The phone number ${primaryPhone} is already registered to a member. For Individual admissions, phone numbers must be unique.`);
-                                    return; // Stop the wizard
-                                } else if (admissionCat === 'Family') {
-                                    const confirmFamily = confirm(`The phone number ${primaryPhone} is already in the system. Proceeding will group this new member under the existing Family number. Continue?`);
-                                    if (!confirmFamily) return; // Stop the wizard if they cancel
-                                }
-                            }
-                        }
-                        // ---------------------------------------
-
-                        step1.classList.remove('active-step'); 
-                        step2.classList.add('active-step'); 
-                        window.scrollTo({ top: 0, behavior: 'smooth' }); 
-                        resizeCanvas(); 
-                    } 
+                    let isValid = true; step1.querySelectorAll('input, select, textarea').forEach(input => { if (!input.checkValidity()) { input.reportValidity(); isValid = false; } });
+                    if(isValid) { step1.classList.remove('active-step'); step2.classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' }); resizeCanvas(); } 
                 });
 
                 const btnPrev = document.getElementById('btn-prev-step');
@@ -2529,7 +2480,7 @@
                 }
             });
 
-            // Fallback mapper for any inline commands lacking the window scope
+            // Ensure window objects are mapped correctly for any direct inline calls left over
             document.querySelectorAll('.module-card').forEach(card => {
                 if (card.hasAttribute('onclick')) {
                     let val = card.getAttribute('onclick');
