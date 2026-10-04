@@ -1055,7 +1055,7 @@
     </div>
 
     <script>
-        const CLOUD_SYNC_URL = "https://script.google.com/macros/s/AKfycbwSS7gV4ksWSxpUQJvLn4EZn4r2Yx0zXdCtM_z8Nr9v5H9pjftGBX7ahN53IUf3cKvU/exec"; 
+        const CLOUD_SYNC_URL = "https://script.google.com/macros/s/AKfycbxv-ri1TP3f7SzugYNLcz9DuFASuhssX6dZnqA_Me7WyOaM2rcH5WL7q6XdbW2WCstM/exec"; 
         
         const APP_CONFIG = { baseAdmissionFee: 850, baseMonthlyFee: 800, basePTFee: 1500 };
         const tariffMonthsOrder = ['April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March'];
@@ -1335,7 +1335,7 @@
                         <div class="promo-card">
                             <div>
                                 <h4>${p.name}</h4>
-                                <p>${sd} to ${ed} | Adm: ₹${p.admFee}, Reg: ₹${p.regFee}, PT: ₹${p.ptFee}</p>
+                                <p>${sd} to ${ed} \vert{} Adm: ₹${p.admFee}, Reg: ₹${p.regFee}, PT: ₹${p.ptFee}</p>
                             </div>
                             <button type="button" class="btn danger" style="padding:0.4rem; width:auto; border:none;" onclick="moduleContext.removeSpecialTariff('${p.id}')">Remove</button>
                         </div>
@@ -1387,7 +1387,7 @@
                     return;
                 }
                 recent.forEach(ex => {
-                    tbody.innerHTML += `<tr><td>${formatDateStr(ex.date)}</td><td>${ex.category}</td><td>${ex.desc || '-'}</td><td>${ex.mode}</td><td style="color:var(--error-red); font-weight:bold;">₹${ex.amount}</td></tr>`;
+                    tbody.innerHTML += `<tr><td>${formatDateStr(ex.date)}</td><td>${ex.category}</td><td>${ex.desc \vert{}\vert{} '-'}</td><td>${ex.mode}</td><td style="color:var(--error-red); font-weight:bold;">₹${ex.amount}</td></tr>`;
                 });
             },
 
@@ -1544,7 +1544,7 @@
                             <img src="${photoUrl}" alt="${user.fullName}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-orange);">
                             <div style="flex:1;">
                                 <div style="color:var(--text-main); font-weight:800; font-size:1rem;">${user.fullName}</div>
-                                <div style="font-size:0.8rem; color:var(--text-muted);">ID: ${user.id} | Ph: ${user.primaryContact}</div>
+                                <div style="font-size:0.8rem; color:var(--text-muted);">ID: ${user.id} \vert{} Ph:${user.primaryContact}</div>
                             </div>
                         </div>`;
                     });
@@ -1596,7 +1596,7 @@
                 localStorage.setItem('revive_attendance_db', JSON.stringify(attDb));
                 cloudSync.push('pushAttendance', newAtt);
 
-                resBox.innerHTML = `<span style="color:var(--success-green); font-weight:bold; font-size:1.1rem;">✔ Attendance Marked Successfully!</span><br><br><strong>Name:</strong> ${user.fullName} (${user.id})<br><strong>Time In:</strong> ${timeStr}`;
+                resBox.innerHTML = `<span style="color:var(--success-green); font-weight:bold; font-size:1.1rem;">✔ Attendance Marked Successfully!</span><br><br><strong>Name:</strong> ${user.fullName} (${user.id})<br><strong>Time In:</strong>${timeStr}`;
                 document.getElementById('att-input').value = ''; document.getElementById('att-live-preview').innerHTML = '';
                 this.renderAttendanceLogs();
             },
@@ -1949,7 +1949,7 @@
                 document.getElementById('pdf-date').innerText = currentMemberDetails.date;
                 document.getElementById('pdf-photo').src = currentMemberDetails.photo; 
                 document.getElementById('pdf-name').innerText = currentMemberDetails.fullName;
-                document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType || 'N/A'} -${currentMemberDetails.admissionCategory}`;
+                document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType \vert{}\vert{} 'N/A'} -${currentMemberDetails.admissionCategory}`;
                 document.getElementById('pdf-training-category').innerText = currentMemberDetails.trainingCategory;
                 document.getElementById('pdf-contact1').innerText = currentMemberDetails.primaryContact; 
                 document.getElementById('pdf-contact2').innerText = currentMemberDetails.alternateContact || 'N/A';
@@ -2182,7 +2182,7 @@
                 feeTbody.innerHTML = currStats.feeRows.length ? currStats.feeRows.map(p => `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:green; font-weight:bold;">₹${p.amountPaid}</td><td>${p.method || 'CASH'}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No fee collections found for this period.</td></tr>';
 
                 const expTbody = document.querySelector('#table-expenses-report tbody');
-                expTbody.innerHTML = currStats.expRows.length ? currStats.expRows.map(ex => `<tr><td>${formatDateStr(ex.date)}</td><td>${ex.category}</td><td>${ex.desc || '-'}</td><td>${ex.mode}</td><td style="color:var(--error-red); font-weight:bold;">₹${ex.amount}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No expenses recorded for this period.</td></tr>';
+                expTbody.innerHTML = currStats.expRows.length ? currStats.expRows.map(ex => `<tr><td>${formatDateStr(ex.date)}</td><td>${ex.category}</td><td>${ex.desc \vert{}\vert{} '-'}</td><td>${ex.mode}</td><td style="color:var(--error-red); font-weight:bold;">₹${ex.amount}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No expenses recorded for this period.</td></tr>';
 
                 const shortTbody = document.querySelector('#table-shortfalls tbody');
                 shortTbody.innerHTML = currStats.shortRows.length ? currStats.shortRows.map(p => `<tr onclick="moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td></tr>`).join('') : '<tr><td colspan="4" style="text-align:center;">No shortfalls found.</td></tr>';
@@ -2193,14 +2193,14 @@
                 const calcGrowth = (curr, prev) => prev === 0 ? (curr > 0 ? 100 : 0) : Math.round(((curr - prev) / prev) * 100);
                 
                 const yoyRevG = calcGrowth(currStats.rev, yoyStats.rev); const yoyAdmG = calcGrowth(currStats.admCount, yoyStats.admCount);
-                yoyMsg = `<strong>YoY Revenue:</strong> ${yoyRevG >= 0 ? '+' : ''}${yoyRevG}% (₹${yoyStats.rev.toLocaleString()}) <br> <strong>YoY Admissions:</strong>${yoyAdmG >= 0 ? '+' : ''}${yoyAdmG}% (${yoyStats.admCount})`;
+                yoyMsg = `<strong>YoY Revenue:</strong> ${yoyRevG >= 0 ? '+' : ''}${yoyRevG}% (₹${yoyStats.rev.toLocaleString()}) <br> <strong>YoY Admissions:</strong>${yoyAdmG >= 0 ? '+' : ''}${yoyAdmG}\% (${yoyStats.admCount})`;
 
                 if (month !== 'All') {
                     const mIdx = tariffMonthsOrder.indexOf(month); let prevM, prevMFy;
                     if (mIdx === 0) { prevM = 'March'; prevMFy = prevFy; } else { prevM = tariffMonthsOrder[mIdx - 1]; prevMFy = fy; }
                     const momStats = calcStats(prevMFy, prevM);
                     const momRevG = calcGrowth(currStats.rev, momStats.rev); const momAdmG = calcGrowth(currStats.admCount, momStats.admCount);
-                    momMsg = `<br><br><strong>MoM Revenue:</strong> ${momRevG >= 0 ? '+' : ''}${momRevG}% (₹${momStats.rev.toLocaleString()}) <br> <strong>MoM Admissions:</strong>${momAdmG >= 0 ? '+' : ''}${momAdmG}% (${momStats.admCount})`;
+                    momMsg = `<br><br><strong>MoM Revenue:</strong> ${momRevG >= 0 ? '+' : ''}${momRevG}% (₹${momStats.rev.toLocaleString()}) <br> <strong>MoM Admissions:</strong>${momAdmG >= 0 ? '+' : ''}${momAdmG}\% (${momStats.admCount})`;
                 } else { momMsg = '<br><br><span style="color:var(--text-muted); font-size:0.85rem;">MoM Growth N/A for entire year view.</span>'; }
 
                 document.getElementById('yoy-analysis-content').innerHTML = yoyMsg + momMsg;
