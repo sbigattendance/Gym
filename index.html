@@ -289,7 +289,7 @@
                     <div class="form-group">
                         <input type="password" id="pin-input" class="pin-input" inputmode="numeric" required autocomplete="off">
                     </div>
-                    <button type="button" onclick="appContext.handleLogin()" class="btn primary" style="margin-top:1rem;">Verify & Access</button>
+                    <button type="submit" class="btn primary" style="margin-top:1rem;">Verify & Access</button>
                 </form>
             </div>
         </main>
@@ -327,6 +327,10 @@
                 <div class="module-card admin-only" onclick="appContext.switchView('pin-editor')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                     <h3>PIN Settings</h3>
+                </div>
+                <div class="module-card admin-only" onclick="appContext.switchView('staff-editor')">
+                    <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    <h3>Staff Access</h3>
                 </div>
             </div>
             <div style="text-align: center; margin-top: 3rem;">
@@ -637,15 +641,43 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Staff PIN <span class="required">*</span></label>
-                        <input type="password" id="admin-staff-pin" placeholder="6-digit PIN" maxlength="6" required>
-                    </div>
-                    <div class="form-group">
                         <label>Admin PIN <span class="required">*</span></label>
                         <input type="password" id="admin-admin-pin" placeholder="4-digit PIN" maxlength="4" required>
                     </div>
                 </div>
-                <div class="action-row"><button type="button" onclick="moduleContext.savePins()" class="btn primary">Save PIN Settings</button></div>
+                <div class="action-row"><button type="button" onclick="moduleContext.savePins()" class="btn primary">Save Admin PIN</button></div>
+            </div>
+        </main>
+
+        <main id="view-staff-editor" class="view-section">
+            <div class="form-layout" style="max-width: 600px;">
+                <div class="module-toolbar">
+                    <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <h2 class="module-title">Staff Access Management</h2>
+                </div>
+                <form id="staffForm" onsubmit="moduleContext.saveStaff(event); return false;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Staff Name <span class="required">*</span></label>
+                            <input type="text" id="staff-name" placeholder="e.g. Rahul" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Login PIN <span class="required">*</span></label>
+                            <input type="password" id="staff-pin" placeholder="Create PIN (4-6 digits)" maxlength="6" pattern="\d{4,6}" required>
+                        </div>
+                    </div>
+                    <div class="action-row"><button type="submit" class="btn primary">+ Add Staff Member</button></div>
+                </form>
+
+                <div style="margin-top: 2rem; padding-top:1.5rem; border-top:1px solid var(--border-color);">
+                    <h3 style="color:var(--accent-orange); margin-bottom:1rem; font-size:1.1rem; text-transform:uppercase;">Active Staff Accounts</h3>
+                    <div class="table-responsive">
+                        <table class="data-table" id="table-staff-list">
+                            <thead><tr><th>Staff Name</th><th>Login PIN</th><th>Action</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </main>
 
@@ -1051,6 +1083,7 @@
                     const data = await res.json();
                     
                     if(data.settings) localStorage.setItem('revive_settings_db', JSON.stringify(data.settings));
+                    if(data.staff) localStorage.setItem('revive_staff_db', JSON.stringify(data.staff));
                     if(data.tariffs) localStorage.setItem('revive_tariffs', JSON.stringify(data.tariffs));
                     if(data.specialTariffs) localStorage.setItem('revive_special_tariffs', JSON.stringify(data.specialTariffs));
                     if(data.users) localStorage.setItem('revive_users_db', JSON.stringify(data.users));
@@ -1149,6 +1182,7 @@
                 if(viewName === 'tariff-editor') moduleContext.initTariffEditor();
                 if(viewName === 'upi-editor') moduleContext.initUpiEditor();
                 if(viewName === 'pin-editor') moduleContext.initPinEditor();
+                if(viewName === 'staff-editor') moduleContext.initStaffEditor();
                 if(viewName === 'reports') moduleContext.initReports();
                 if(viewName === 'attendance') moduleContext.initAttendanceView();
                 if(viewName === 'expense') moduleContext.initExpenseView();
@@ -1163,28 +1197,36 @@
                 appContext.pendingRole = role;
                 document.getElementById('login-title').innerText = role === 'staff' ? 'Staff Login' : 'Admin Login';
                 const pinInput = document.getElementById('pin-input');
-                
                 const settings = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
-                
-                const staffPin = settings.staffPin != null ? String(settings.staffPin) : '123456';
                 const adminPin = settings.adminPin != null ? String(settings.adminPin) : '1234';
 
                 if(pinInput) { 
                     pinInput.value = ''; 
-                    pinInput.setAttribute('maxlength', role === 'staff' ? staffPin.length : adminPin.length); 
-                    pinInput.placeholder = role === 'staff' ? 'Enter PIN' : 'Enter PIN'; 
+                    pinInput.setAttribute('maxlength', role === 'staff' ? 6 : adminPin.length); 
+                    pinInput.placeholder = 'Enter PIN'; 
                 }
                 appContext.switchView('login');
             },
             handleLogin: function() {
                 const pin = document.getElementById('pin-input').value.trim();
                 const settings = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
-                
-                const staffPin = settings.staffPin != null ? String(settings.staffPin) : '123456';
                 const adminPin = settings.adminPin != null ? String(settings.adminPin) : '1234';
 
-                if (appContext.pendingRole === 'staff' && pin === staffPin) { appContext.currentRole = 'staff'; appContext.loadDashboard('STAFF'); } 
-                else if (appContext.pendingRole === 'admin' && pin === adminPin) { appContext.currentRole = 'admin'; appContext.loadDashboard('ADMIN'); } 
+                if (appContext.pendingRole === 'staff') {
+                    const staffDb = JSON.parse(localStorage.getItem('revive_staff_db')) || [];
+                    const matchingStaff = staffDb.find(s => String(s.pin) === pin);
+                    
+                    if (matchingStaff) {
+                        appContext.currentRole = 'staff'; 
+                        appContext.loadDashboard(`STAFF (${matchingStaff.name.toUpperCase()})`); 
+                    } else {
+                        alert('Invalid Staff PIN. Please try again.');
+                    }
+                } 
+                else if (appContext.pendingRole === 'admin' && pin === adminPin) { 
+                    appContext.currentRole = 'admin'; 
+                    appContext.loadDashboard('ADMIN'); 
+                } 
                 else { alert('Invalid PIN. Please try again.'); }
             },
             loadDashboard: function(roleTitle) {
@@ -1364,19 +1406,73 @@
             },
             initPinEditor: function() { 
                 const s = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
-                document.getElementById('admin-staff-pin').value = s.staffPin || '';
                 document.getElementById('admin-admin-pin').value = s.adminPin || '';
             },
             savePins: function() {
-                const sp = document.getElementById('admin-staff-pin').value.trim();
                 const ap = document.getElementById('admin-admin-pin').value.trim();
-                if(!sp || !ap) { alert("Please fill both PIN fields."); return; }
+                if(!ap) { alert("Please fill the Admin PIN field."); return; }
                 const s = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
-                s.staffPin = sp; s.adminPin = ap;
+                s.adminPin = ap;
                 localStorage.setItem('revive_settings_db', JSON.stringify(s));
                 cloudSync.push('pushSettings', s);
-                alert("PIN Settings Saved."); appContext.goHome();
+                alert("Admin PIN Settings Saved."); appContext.goHome();
             },
+
+            initStaffEditor: function() {
+                document.getElementById('staffForm').reset();
+                this.renderStaffList();
+            },
+            saveStaff: function(e) {
+                e.preventDefault();
+                const name = document.getElementById('staff-name').value.trim();
+                const pin = document.getElementById('staff-pin').value.trim();
+                
+                let db = JSON.parse(localStorage.getItem('revive_staff_db')) || [];
+                
+                if (db.some(s => String(s.pin) === pin)) {
+                    alert("This PIN is already in use by another staff member. Choose a unique PIN.");
+                    return;
+                }
+
+                const staffMember = { id: 'STF-' + Date.now(), name: name, pin: pin };
+                db.push(staffMember);
+                localStorage.setItem('revive_staff_db', JSON.stringify(db));
+                
+                cloudSync.push('pushStaff', staffMember);
+                
+                alert("Staff member added securely.");
+                this.initStaffEditor();
+            },
+            deleteStaff: function(id) {
+                if(confirm("Revoke access for this staff member? They will be immediately locked out.")) {
+                    let db = JSON.parse(localStorage.getItem('revive_staff_db')) || [];
+                    db = db.filter(s => s.id !== id);
+                    localStorage.setItem('revive_staff_db', JSON.stringify(db));
+                    
+                    cloudSync.push('deleteStaff', { id: id });
+                    this.renderStaffList();
+                }
+            },
+            renderStaffList: function() {
+                let db = JSON.parse(localStorage.getItem('revive_staff_db')) || [];
+                const tbody = document.querySelector('#table-staff-list tbody');
+                tbody.innerHTML = '';
+                
+                if(db.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No staff accounts configured.</td></tr>';
+                    return;
+                }
+                
+                db.forEach(staff => {
+                    tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${staff.name}</strong></td>
+                        <td style="letter-spacing: 2px;">••••${String(staff.pin).slice(-2)}</td>
+                        <td><button type="button" class="btn danger" style="padding:0.4rem 1rem; width:auto; border:none;" onclick="moduleContext.deleteStaff('${staff.id}')">Remove</button></td>
+                    </tr>`;
+                });
+            },
+
             initTariffEditor: function() {
                 this.renderSpecialTariffs(); 
                 const fySelect = document.getElementById('fy-select'); const container = document.getElementById('tariff-months-container');
