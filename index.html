@@ -75,7 +75,6 @@
             background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem 1rem;
             text-align: center; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden;
             display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-            /* ENFORCED CLICKABILITY */
             -webkit-tap-highlight-color: transparent;
             user-select: none;
         }
@@ -86,7 +85,6 @@
         .module-icon-svg { width: 42px; height: 42px; stroke: var(--accent-orange); fill: none; stroke-width: 1.5; margin-bottom: 0.8rem; stroke-linecap: round; stroke-linejoin: round; }
         .module-card h3 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0; color: var(--text-main); font-weight: 700; }
 
-        /* PREVENT INTERIOR ELEMENTS FROM STEALING CLICKS */
         .module-card * {
             pointer-events: none;
         }
@@ -293,13 +291,13 @@
         <main id="view-login" class="view-section">
             <div class="form-layout" style="max-width: 400px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" onclick="window.appContext.goHome()">
+                    <button class="back-btn" type="button" id="btn-login-back">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
                     <h2 class="module-title" id="login-title">Login</h2>
                 </div>
-                <form id="loginForm" onsubmit="window.appContext.handleLogin(); return false;">
+                <form id="loginForm">
                     <div class="form-group">
                         <input type="password" id="pin-input" class="pin-input" inputmode="numeric" required autocomplete="off">
                     </div>
@@ -356,13 +354,13 @@
         <main id="view-expense" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" onclick="window.appContext.goHome()">
+                    <button class="back-btn" type="button" id="btn-exp-back">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
                     <h2 class="module-title">Expense Entry</h2>
                 </div>
-                <form id="expenseForm" onsubmit="window.moduleContext.saveExpense(event); return false;">
+                <form id="expenseForm">
                     <div class="form-row">
                         <div class="form-group">
                             <label>Date <span class="required">*</span></label>
@@ -416,18 +414,18 @@
         <main id="view-attendance" class="view-section">
             <div class="form-layout" style="max-width: 700px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" onclick="window.appContext.goHome()">
+                    <button class="back-btn" type="button" id="btn-att-back">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
                     <h2 class="module-title">Daily Attendance Marker</h2>
                 </div>
 
-                <form id="attendanceForm" onsubmit="window.moduleContext.markAttendance(event); return false;">
+                <form id="attendanceForm">
                     <div class="form-row">
                         <div class="form-group">
                             <label>Enter Phone Number, Admission ID, or Name <span class="required">*</span></label>
-                            <input type="text" id="att-input" placeholder="e.g. 9999999999, REV-0001, or John" oninput="window.moduleContext.previewMemberName(this.value)" required autocomplete="off">
+                            <input type="text" id="att-input" placeholder="e.g. 9999999999, REV-0001, or John" required autocomplete="off">
                             <div id="att-live-preview" style="margin-top: 6px;"></div>
                         </div>
                         <div class="form-group" style="max-width: 150px; justify-content: flex-end;">
@@ -442,7 +440,7 @@
                 <div style="margin-top: 2.5rem; border-top: 2px solid var(--border-color); padding-top: 1.5rem;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3 style="color: var(--accent-orange); text-transform: uppercase; font-size: 1.1rem;">Attendance Logs</h3>
-                        <input type="date" id="att-filter-date" style="max-width: 180px; padding: 0.5rem;" onchange="window.moduleContext.renderAttendanceLogs()">
+                        <input type="date" id="att-filter-date" style="max-width: 180px; padding: 0.5rem;">
                     </div>
                     <div class="table-responsive">
                         <table class="data-table" id="table-attendance">
@@ -460,13 +458,13 @@
         <main id="view-user-search" class="view-section">
             <div class="form-layout" style="max-width: 500px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" onclick="window.appContext.goHome()">
+                    <button class="back-btn" type="button" id="btn-search-back">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
                     <h2 class="module-title" id="search-title">Search User</h2>
                 </div>
-                <form id="userSearchForm" onsubmit="window.moduleContext.fetchUserHub(event); return false;">
+                <form id="userSearchForm">
                     <div class="form-group">
                         <label>Member Phone Number <span class="required">*</span></label>
                         <input type="tel" id="search-phone" pattern="\d{10}" maxlength="10" required>
@@ -483,7 +481,7 @@
         <main id="view-user-hub" class="view-section">
             <div class="form-layout" style="max-width: 900px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" onclick="window.appContext.switchView('user-search')">
+                    <button class="back-btn" type="button" id="btn-hub-back">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
@@ -504,9 +502,9 @@
                         <p id="hub-doj" style="margin-top:5px; font-weight:700; color:var(--success-green); font-size: 0.85rem;"></p>
                     </div>
                     <div id="hub-actions" style="display:flex; flex-direction:column; gap:0.5rem; width:100%; max-width:200px;">
-                        <button id="btn-hub-edit" class="btn secondary" onclick="window.moduleContext.editUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Edit Profile</button>
-                        <button id="btn-hub-pdf" class="btn secondary" onclick="window.moduleContext.regeneratePdf()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Re-Download PDF</button>
-                        <button id="btn-hub-delete" class="btn danger admin-only" onclick="window.moduleContext.deleteUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Delete User</button>
+                        <button id="btn-hub-edit" class="btn secondary" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Edit Profile</button>
+                        <button id="btn-hub-pdf" class="btn secondary" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Re-Download PDF</button>
+                        <button id="btn-hub-delete" class="btn danger admin-only" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Delete User</button>
                     </div>
                 </div>
 
@@ -519,7 +517,7 @@
         <main id="view-reports" class="view-section">
             <div class="form-layout" style="max-width: 1000px; padding: 1.5rem; background:transparent; border:none; box-shadow:none;">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" onclick="window.appContext.goHome()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" type="button" id="btn-rep-back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">Financial Reports & P&L</h2>
                 </div>
                 
@@ -534,7 +532,7 @@
                             <option value="All">Entire Year (All Months)</option>
                         </select>
                     </div>
-                    <button class="btn primary" onclick="window.moduleContext.generateReport()" style="max-width:150px; padding: 1rem;">Generate</button>
+                    <button class="btn primary" id="btn-rep-gen" style="max-width:150px; padding: 1rem;">Generate</button>
                 </div>
 
                 <div id="report-content" style="display:none; margin-top:2rem;">
@@ -563,7 +561,7 @@
                             <div class="val" id="kpi-fee-count">0</div>
                             <span class="sub-val">₹<span id="kpi-fee-amt">0</span></span>
                         </div>
-                        <div class="kpi-card" style="cursor:pointer;" onclick="window.moduleContext.filterReportByShortfall()" title="Click to view profiles with shortfall payments">
+                        <div class="kpi-card" style="cursor:pointer;" id="kpi-shortfall-trigger" title="Click to view profiles with shortfall payments">
                             <h4>Due (Shortfall) 🔍</h4>
                             <div class="val" id="kpi-shortfall-count" style="color:var(--warning-yellow);">0</div>
                             <span class="sub-val" style="color:var(--warning-yellow);">₹<span id="kpi-shortfall-amt">0</span></span>
@@ -635,7 +633,7 @@
         <main id="view-upi-editor" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" onclick="window.appContext.goHome()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" type="button" id="btn-upi-back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">UPI Settings</h2>
                 </div>
                 <div class="form-row">
@@ -644,14 +642,14 @@
                         <input type="text" id="admin-upi-id" placeholder="e.g. revivefitness@upi" required>
                     </div>
                 </div>
-                <div class="action-row"><button type="button" onclick="window.moduleContext.saveUpi()" class="btn primary">Save UPI Settings</button></div>
+                <div class="action-row"><button type="button" id="btn-upi-save" class="btn primary">Save UPI Settings</button></div>
             </div>
         </main>
 
         <main id="view-pin-editor" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" onclick="window.appContext.goHome()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" type="button" id="btn-pin-back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">PIN Settings</h2>
                 </div>
                 <div class="form-row">
@@ -660,17 +658,17 @@
                         <input type="password" id="admin-admin-pin" placeholder="4-digit PIN" maxlength="4" required>
                     </div>
                 </div>
-                <div class="action-row"><button type="button" onclick="window.moduleContext.savePins()" class="btn primary">Save Admin PIN</button></div>
+                <div class="action-row"><button type="button" id="btn-pin-save" class="btn primary">Save Admin PIN</button></div>
             </div>
         </main>
 
         <main id="view-staff-editor" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" onclick="window.appContext.goHome()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" type="button" id="btn-staff-back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">Staff Access Management</h2>
                 </div>
-                <form id="staffForm" onsubmit="window.moduleContext.saveStaff(event); return false;">
+                <form id="staffForm">
                     <div class="form-row">
                         <div class="form-group">
                             <label>Staff Name <span class="required">*</span></label>
@@ -699,7 +697,7 @@
         <main id="view-tariff-editor" class="view-section">
             <div class="form-layout" style="max-width: 900px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" onclick="window.appContext.goHome()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" type="button" id="btn-tar-back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">Master Tariff Configurator</h2>
                 </div>
 
@@ -707,7 +705,7 @@
                     <h3 style="color:var(--accent-orange); margin-bottom: 0.5rem; font-size: 1.1rem; text-transform: uppercase;">Special Date / Promo Tariffs</h3>
                     <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;">Define custom rates for specific dates. The system will auto-apply these rates over standard monthly rates if an admission or payment happens within these dates.</p>
                     
-                    <form id="promoTariffForm" onsubmit="window.moduleContext.addSpecialTariff(event); return false;">
+                    <form id="promoTariffForm">
                         <div class="form-row">
                             <div class="form-group"><label>Promo Name <span class="required">*</span></label><input type="text" id="promo-name" placeholder="e.g. Diwali Offer" required></div>
                             <div class="form-group"><label>Start Date <span class="required">*</span></label><input type="date" id="promo-start" required></div>
@@ -729,14 +727,14 @@
                 <h3 style="color:var(--text-main); margin-bottom: 1rem; font-size: 1.1rem; text-transform: uppercase;">Standard Monthly Tariffs</h3>
                 <div class="form-row"><div class="form-group" style="max-width: 300px;"><label for="fy-select">Financial Year</label><select id="fy-select"></select></div></div>
                 <div id="tariff-months-container" style="margin-top: 1rem;"></div>
-                <div class="action-row"><button type="button" onclick="window.moduleContext.saveTariffs()" class="btn primary">Save Monthly Tariffs</button></div>
+                <div class="action-row"><button type="button" id="btn-tar-save" class="btn primary">Save Monthly Tariffs</button></div>
             </div>
         </main>
 
         <main id="view-admission" class="view-section">
             <div class="form-layout">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" id="form-back-btn" onclick="window.appContext.goHome()">
+                    <button class="back-btn" type="button" id="form-back-btn">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
@@ -766,7 +764,7 @@
                             <label style="color: var(--accent-orange); margin-bottom: 0.8rem; display: block; font-weight: 800;">Validate Previous Registration</label>
                             <div class="val-group">
                                 <input type="tel" id="prevPhoneInput" placeholder="10-digit number" pattern="\d{10}" maxlength="10">
-                                <button type="button" onclick="window.moduleContext.validateReadmission()" class="btn secondary">Validate</button>
+                                <button type="button" id="btn-validate-readm" class="btn secondary">Validate</button>
                             </div>
                             <div id="validationResultBox" style="display:none; font-size: 0.9rem; line-height: 1.5; padding: 1rem; background: var(--bg-panel); border-radius: 6px; border: 1px solid var(--border-color);"></div>
                         </div>
@@ -929,8 +927,8 @@
                     <div class="qr-wrapper"><img id="pay-upi-qr" src="" style="width:150px; height:150px;"></div>
                 </div>
                 <div class="action-row">
-                    <button type="button" onclick="document.getElementById('paymentProcessModal').style.display='none'" class="btn secondary">Cancel</button>
-                    <button type="button" onclick="window.moduleContext.confirmPayment()" class="btn primary">Confirm</button>
+                    <button type="button" id="btn-pay-cancel" class="btn secondary">Cancel</button>
+                    <button type="button" id="btn-pay-confirm" class="btn primary">Confirm</button>
                 </div>
             </div>
         </div>
@@ -950,13 +948,13 @@
                 <h2 class="orange-text" id="sm-title">Registration Complete!</h2>
                 <div class="admission-badge" id="generated-id">REV-0000</div>
                 <div class="modal-actions" id="sm-adm-actions">
-                    <button id="btn-download-pdf" class="btn primary" onclick="window.moduleContext.regeneratePdf()">1. Download PDF Record</button>
-                    <button id="btn-whatsapp-welcome" class="btn whatsapp" onclick="window.moduleContext.sendWelcomeMessage()">2. Send Welcome Message</button>
-                    <button id="btn-whatsapp-pdf" class="btn whatsapp" onclick="window.moduleContext.sharePdfRecord()">3. Share PDF Record</button>
-                    <button id="btn-share-adm-receipt" class="btn whatsapp" onclick="window.moduleContext.shareAdmissionReceipt()">4. Share Payment Receipt</button>
+                    <button id="btn-download-pdf" class="btn primary">1. Download PDF Record</button>
+                    <button id="btn-whatsapp-welcome" class="btn whatsapp">2. Send Welcome Message</button>
+                    <button id="btn-whatsapp-pdf" class="btn whatsapp">3. Share PDF Record</button>
+                    <button id="btn-share-adm-receipt" class="btn whatsapp">4. Share Payment Receipt</button>
                 </div>
                 <div class="modal-actions">
-                    <button class="btn secondary" onclick="window.appContext.closeModal()">Close Window</button>
+                    <button class="btn secondary" id="btn-close-success">Close Window</button>
                 </div>
             </div>
         </div>
@@ -967,8 +965,8 @@
                 <h2 class="orange-text">Payment Recorded!</h2>
                 <p style="margin-bottom: 1.5rem;">Receipt has been successfully generated.</p>
                 <div class="modal-actions">
-                    <button id="btn-share-receipt" onclick="window.moduleContext.shareReceipt('success')" class="btn whatsapp">Share Receipt Image</button>
-                    <button class="btn secondary" onclick="window.appContext.switchView('user-hub')">Return to Profile</button>
+                    <button id="btn-share-receipt" class="btn whatsapp">Share Receipt Image</button>
+                    <button class="btn secondary" id="btn-return-profile">Return to Profile</button>
                 </div>
             </div>
         </div>
@@ -978,8 +976,8 @@
                 <h2 class="orange-text">Payment Receipt</h2>
                 <p style="margin-bottom: 1.5rem;">Receipt for <span id="vr-month-label" style="font-weight:bold;"></span></p>
                 <div class="modal-actions">
-                    <button id="btn-vr-share" onclick="window.moduleContext.shareReceipt('vr')" class="btn whatsapp">Share Receipt via WhatsApp</button>
-                    <button class="btn secondary" onclick="document.getElementById('viewReceiptModal').style.display='none'">Close</button>
+                    <button id="btn-vr-share" class="btn whatsapp">Share Receipt via WhatsApp</button>
+                    <button class="btn secondary" id="btn-close-vr">Close</button>
                 </div>
             </div>
         </div>
@@ -2130,10 +2128,18 @@
                 }
                 pendingItems.forEach(p => {
                     const dateStr = p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : 'Unpaid / Due';
-                    feeTbody.innerHTML += `<tr onclick="window.moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile">
+                    feeTbody.innerHTML += `<tr class="clickable-row" data-id="${p.userId}" title="Click to view member profile">
                         <td>${dateStr}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:var(--text-muted);">₹0 (Unpaid)</td><td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td><td>PENDING</td>
                     </tr>`;
                 });
+                
+                // Bind new dynamic rows safely
+                document.querySelectorAll('.clickable-row').forEach(row => {
+                   row.addEventListener('click', function() {
+                      window.moduleContext.loadProfileByPhoneOrId(this.getAttribute('data-id'));
+                   });
+                });
+                
                 alert("Report filtered to show all pending dues and shortfalls. Click any row to view that member's profile.");
             },
 
@@ -2212,16 +2218,23 @@
                 document.getElementById('kpi-unpaid-amt').innerText = currStats.unpaidAmt.toLocaleString();
 
                 const admTbody = document.querySelector('#table-admissions tbody');
-                admTbody.innerHTML = currStats.admRows.length ? currStats.admRows.map(u => `<tr onclick="window.moduleContext.loadProfileByPhoneOrId('${u.id}')" title="Click to view member profile"><td>${u.date}</td><td><strong>${u.id}</strong></td><td>${u.fullName}</td><td>${window.appContext.currentRole === 'staff' ? '******' + String(u.primaryContact).slice(-4) : u.primaryContact}</td><td>${u.admissionCategory}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No admissions found for this period.</td></tr>';
+                admTbody.innerHTML = currStats.admRows.length ? currStats.admRows.map(u => `<tr class="clickable-row" data-id="${u.id}" title="Click to view member profile"><td>${u.date}</td><td><strong>${u.id}</strong></td><td>${u.fullName}</td><td>${window.appContext.currentRole === 'staff' ? '******' + String(u.primaryContact).slice(-4) : u.primaryContact}</td><td>${u.admissionCategory}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No admissions found for this period.</td></tr>';
 
                 const feeTbody = document.querySelector('#table-fees tbody');
-                feeTbody.innerHTML = currStats.feeRows.length ? currStats.feeRows.map(p => `<tr onclick="window.moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:green; font-weight:bold;">₹${p.amountPaid}</td><td>${p.method || 'CASH'}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No fee collections found for this period.</td></tr>';
+                feeTbody.innerHTML = currStats.feeRows.length ? currStats.feeRows.map(p => `<tr class="clickable-row" data-id="${p.userId}" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:green; font-weight:bold;">₹${p.amountPaid}</td><td>${p.method || 'CASH'}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No fee collections found for this period.</td></tr>';
 
                 const expTbody = document.querySelector('#table-expenses-report tbody');
                 expTbody.innerHTML = currStats.expRows.length ? currStats.expRows.map(ex => `<tr><td>${formatDateStr(ex.date)}</td><td>${ex.category}</td><td>${ex.desc \vert{}\vert{} '-'}</td><td>${ex.mode}</td><td style="color:var(--error-red); font-weight:bold;">₹${ex.amount}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No expenses recorded for this period.</td></tr>';
 
                 const shortTbody = document.querySelector('#table-shortfalls tbody');
-                shortTbody.innerHTML = currStats.shortRows.length ? currStats.shortRows.map(p => `<tr onclick="window.moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td></tr>`).join('') : '<tr><td colspan="4" style="text-align:center;">No shortfalls found.</td></tr>';
+                shortTbody.innerHTML = currStats.shortRows.length ? currStats.shortRows.map(p => `<tr class="clickable-row" data-id="${p.userId}" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td></tr>`).join('') : '<tr><td colspan="4" style="text-align:center;">No shortfalls found.</td></tr>';
+                
+                // Rebind clicks safely for dynamically created rows
+                document.querySelectorAll('.clickable-row').forEach(row => {
+                   row.addEventListener('click', function() {
+                      window.moduleContext.loadProfileByPhoneOrId(this.getAttribute('data-id'));
+                   });
+                });
 
                 let yoyMsg = '', momMsg = '';
                 const prevFyStart = parseInt(fy.split('-')[0]) - 1; const prevFy = `${prevFyStart}-${prevFyStart+1}`;
@@ -2297,7 +2310,7 @@
 
             cloudSync.pullInitial();
 
-            // --- BIND ALL MODULE CLICKS ---
+            // --- BIND ALL MODULE CLICKS AND BUTTONS ---
             bindEvent('app-logo', 'click', () => window.appContext.goHome());
             
             // Homepage Modules
@@ -2316,6 +2329,33 @@
             bindEvent('mod-pin', 'click', () => window.appContext.switchView('pin-editor'));
             bindEvent('mod-staff', 'click', () => window.appContext.switchView('staff-editor'));
             bindEvent('btn-logout', 'click', () => window.appContext.logout());
+            
+            // Sub-Module Back Buttons
+            bindEvent('btn-login-back', 'click', () => window.appContext.goHome());
+            bindEvent('btn-exp-back', 'click', () => window.appContext.goHome());
+            bindEvent('btn-att-back', 'click', () => window.appContext.goHome());
+            bindEvent('btn-search-back', 'click', () => window.appContext.goHome());
+            bindEvent('btn-hub-back', 'click', () => window.appContext.switchView('user-search'));
+            bindEvent('btn-rep-back', 'click', () => window.appContext.goHome());
+            bindEvent('btn-upi-back', 'click', () => window.appContext.goHome());
+            bindEvent('btn-pin-back', 'click', () => window.appContext.goHome());
+            bindEvent('btn-staff-back', 'click', () => window.appContext.goHome());
+            bindEvent('btn-tar-back', 'click', () => window.appContext.goHome());
+            
+            // Actions
+            bindEvent('btn-rep-gen', 'click', () => window.moduleContext.generateReport());
+            bindEvent('kpi-shortfall-trigger', 'click', () => window.moduleContext.filterReportByShortfall());
+            bindEvent('btn-upi-save', 'click', () => window.moduleContext.saveUpi());
+            bindEvent('btn-pin-save', 'click', () => window.moduleContext.savePins());
+            bindEvent('btn-tar-save', 'click', () => window.moduleContext.saveTariffs());
+            bindEvent('btn-validate-readm', 'click', () => window.moduleContext.validateReadmission());
+            
+            // Modal Buttons
+            bindEvent('btn-pay-cancel', 'click', () => document.getElementById('paymentProcessModal').style.display='none');
+            bindEvent('btn-pay-confirm', 'click', () => window.moduleContext.confirmPayment());
+            bindEvent('btn-close-success', 'click', () => window.appContext.closeModal());
+            bindEvent('btn-return-profile', 'click', () => window.appContext.switchView('user-hub'));
+            bindEvent('btn-close-vr', 'click', () => document.getElementById('viewReceiptModal').style.display='none');
             // ------------------------------
 
             const dobInp = document.getElementById('dob'); 
