@@ -75,8 +75,6 @@
             background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem 1rem;
             text-align: center; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden;
             display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
         }
         .module-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background-color: var(--accent-orange); transform: scaleX(0); transition: transform 0.3s ease; transform-origin: left; }
         .module-card:hover { transform: translateY(-3px); border-color: var(--accent-orange); box-shadow: 0 8px 25px rgba(255, 102, 0, 0.1); }
@@ -85,11 +83,12 @@
         .module-icon-svg { width: 42px; height: 42px; stroke: var(--accent-orange); fill: none; stroke-width: 1.5; margin-bottom: 0.8rem; stroke-linecap: round; stroke-linejoin: round; }
         .module-card h3 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0; color: var(--text-main); font-weight: 700; }
 
+        /* CRITICAL MODULE CLICK FIXES */
         .module-card * {
             pointer-events: none;
         }
 
-        .btn {
+        .module-card, .btn {
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
         }
@@ -257,31 +256,30 @@
 
     <div id="app-wrapper">
         <header class="app-header">
-            <div class="logo-container" id="app-logo">
+            <div class="logo-container" onclick="appContext.goHome()">
                 <img src="logo.png" alt="REVIVE FITNESS STUDIO" onerror="this.src='https://via.placeholder.com/150x40/ffffff/ff6600?text=REVIVE+FITNESS'">
             </div>
         </header>
 
-        <!-- HOMEPAGE MODULES -->
         <main id="view-home" class="view-section active-view">
             <div class="dashboard-header">
                 <h1>WELCOME TO <span>REVIVE</span></h1>
                 <p style="color: var(--text-muted); font-size: 1rem;">Portal Access Selection</p>
             </div>
             <div class="compact-grid">
-                <div class="module-card" id="mod-admission">
+                <div class="module-card" onclick="window.appContext.startAdmission()">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                     <h3>Admission Registration</h3>
                 </div>
-                <div class="module-card" id="mod-attendance">
+                <div class="module-card" onclick="window.appContext.switchView('attendance')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                     <h3>Daily Attendance</h3>
                 </div>
-                <div class="module-card" id="mod-staff-login">
+                <div class="module-card" onclick="window.appContext.openLogin('staff')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     <h3>Staff Login</h3>
                 </div>
-                <div class="module-card" id="mod-admin-login">
+                <div class="module-card" onclick="window.appContext.openLogin('admin')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                     <h3>Admin Login</h3>
                 </div>
@@ -291,13 +289,13 @@
         <main id="view-login" class="view-section">
             <div class="form-layout" style="max-width: 400px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" id="btn-login-back">
+                    <button class="back-btn" onclick="appContext.goHome()" type="button">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
                     <h2 class="module-title" id="login-title">Login</h2>
                 </div>
-                <form id="loginForm">
+                <form id="loginForm" onsubmit="appContext.handleLogin(); return false;">
                     <div class="form-group">
                         <input type="password" id="pin-input" class="pin-input" inputmode="numeric" required autocomplete="off">
                     </div>
@@ -306,61 +304,60 @@
             </div>
         </main>
 
-        <!-- DASHBOARD MODULES -->
         <main id="view-dashboard" class="view-section">
             <div class="dashboard-header">
                 <h1 id="dashboard-title">STAFF <span>PORTAL</span></h1>
                 <p style="color: var(--text-muted); font-size: 1rem;">Select a module to continue</p>
             </div>
             <div class="compact-grid">
-                <div class="module-card" id="mod-fee-collection">
+                <div class="module-card" onclick="window.moduleContext.openUserSearch('fee')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
                     <h3>Fee Collection</h3>
                 </div>
-                <div class="module-card" id="mod-user-details">
+                <div class="module-card" onclick="window.moduleContext.openUserSearch('details')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                     <h3>User Details</h3>
                 </div>
-                <div class="module-card admin-only" id="mod-expense">
+                <div class="module-card admin-only" onclick="window.appContext.switchView('expense')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                     <h3>Expense Entry</h3>
                 </div>
-                <div class="module-card admin-only" id="mod-reports">
+                <div class="module-card admin-only" onclick="window.appContext.switchView('reports')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
                     <h3>Reports</h3>
                 </div>
-                <div class="module-card admin-only" id="mod-tariff">
+                <div class="module-card admin-only" onclick="window.appContext.switchView('tariff-editor')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                     <h3>Tariff Editor</h3>
                 </div>
-                <div class="module-card admin-only" id="mod-upi">
+                <div class="module-card admin-only" onclick="window.appContext.switchView('upi-editor')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
                     <h3>UPI Account</h3>
                 </div>
-                <div class="module-card admin-only" id="mod-pin">
+                <div class="module-card admin-only" onclick="window.appContext.switchView('pin-editor')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                     <h3>PIN Settings</h3>
                 </div>
-                <div class="module-card admin-only" id="mod-staff">
+                <div class="module-card admin-only" onclick="window.appContext.switchView('staff-editor')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                     <h3>Staff Access</h3>
                 </div>
             </div>
             <div style="text-align: center; margin-top: 3rem;">
-                <button class="btn secondary" id="btn-logout" style="font-size: 0.85rem; padding: 0.8rem 2rem;">Log Out Securely</button>
+                <button class="btn secondary" onclick="appContext.logout()" style="font-size: 0.85rem; padding: 0.8rem 2rem;">Log Out Securely</button>
             </div>
         </main>
 
         <main id="view-expense" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" id="btn-exp-back">
+                    <button class="back-btn" onclick="appContext.goHome()" type="button">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
                     <h2 class="module-title">Expense Entry</h2>
                 </div>
-                <form id="expenseForm">
+                <form id="expenseForm" onsubmit="moduleContext.saveExpense(event); return false;">
                     <div class="form-row">
                         <div class="form-group">
                             <label>Date <span class="required">*</span></label>
@@ -414,18 +411,18 @@
         <main id="view-attendance" class="view-section">
             <div class="form-layout" style="max-width: 700px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" id="btn-att-back">
+                    <button class="back-btn" onclick="appContext.goHome()" type="button">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
                     <h2 class="module-title">Daily Attendance Marker</h2>
                 </div>
 
-                <form id="attendanceForm">
+                <form id="attendanceForm" onsubmit="moduleContext.markAttendance(event); return false;">
                     <div class="form-row">
                         <div class="form-group">
                             <label>Enter Phone Number, Admission ID, or Name <span class="required">*</span></label>
-                            <input type="text" id="att-input" placeholder="e.g. 9999999999, REV-0001, or John" required autocomplete="off">
+                            <input type="text" id="att-input" placeholder="e.g. 9999999999, REV-0001, or John" oninput="moduleContext.previewMemberName(this.value)" required autocomplete="off">
                             <div id="att-live-preview" style="margin-top: 6px;"></div>
                         </div>
                         <div class="form-group" style="max-width: 150px; justify-content: flex-end;">
@@ -440,7 +437,7 @@
                 <div style="margin-top: 2.5rem; border-top: 2px solid var(--border-color); padding-top: 1.5rem;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3 style="color: var(--accent-orange); text-transform: uppercase; font-size: 1.1rem;">Attendance Logs</h3>
-                        <input type="date" id="att-filter-date" style="max-width: 180px; padding: 0.5rem;">
+                        <input type="date" id="att-filter-date" style="max-width: 180px; padding: 0.5rem;" onchange="moduleContext.renderAttendanceLogs()">
                     </div>
                     <div class="table-responsive">
                         <table class="data-table" id="table-attendance">
@@ -458,13 +455,13 @@
         <main id="view-user-search" class="view-section">
             <div class="form-layout" style="max-width: 500px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" id="btn-search-back">
+                    <button class="back-btn" onclick="appContext.goHome()" type="button">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
                     <h2 class="module-title" id="search-title">Search User</h2>
                 </div>
-                <form id="userSearchForm">
+                <form id="userSearchForm" onsubmit="moduleContext.fetchUserHub(event); return false;">
                     <div class="form-group">
                         <label>Member Phone Number <span class="required">*</span></label>
                         <input type="tel" id="search-phone" pattern="\d{10}" maxlength="10" required>
@@ -481,7 +478,7 @@
         <main id="view-user-hub" class="view-section">
             <div class="form-layout" style="max-width: 900px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" id="btn-hub-back">
+                    <button class="back-btn" onclick="appContext.switchView('user-search')" type="button">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
@@ -502,9 +499,9 @@
                         <p id="hub-doj" style="margin-top:5px; font-weight:700; color:var(--success-green); font-size: 0.85rem;"></p>
                     </div>
                     <div id="hub-actions" style="display:flex; flex-direction:column; gap:0.5rem; width:100%; max-width:200px;">
-                        <button id="btn-hub-edit" class="btn secondary" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Edit Profile</button>
-                        <button id="btn-hub-pdf" class="btn secondary" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Re-Download PDF</button>
-                        <button id="btn-hub-delete" class="btn danger admin-only" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Delete User</button>
+                        <button id="btn-hub-edit" class="btn secondary" onclick="moduleContext.editUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Edit Profile</button>
+                        <button id="btn-hub-pdf" class="btn secondary" onclick="moduleContext.regeneratePdf()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Re-Download PDF</button>
+                        <button id="btn-hub-delete" class="btn danger admin-only" onclick="moduleContext.deleteUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Delete User</button>
                     </div>
                 </div>
 
@@ -517,7 +514,7 @@
         <main id="view-reports" class="view-section">
             <div class="form-layout" style="max-width: 1000px; padding: 1.5rem; background:transparent; border:none; box-shadow:none;">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" id="btn-rep-back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">Financial Reports & P&L</h2>
                 </div>
                 
@@ -532,7 +529,7 @@
                             <option value="All">Entire Year (All Months)</option>
                         </select>
                     </div>
-                    <button class="btn primary" id="btn-rep-gen" style="max-width:150px; padding: 1rem;">Generate</button>
+                    <button class="btn primary" onclick="moduleContext.generateReport()" style="max-width:150px; padding: 1rem;">Generate</button>
                 </div>
 
                 <div id="report-content" style="display:none; margin-top:2rem;">
@@ -561,7 +558,7 @@
                             <div class="val" id="kpi-fee-count">0</div>
                             <span class="sub-val">₹<span id="kpi-fee-amt">0</span></span>
                         </div>
-                        <div class="kpi-card" style="cursor:pointer;" id="kpi-shortfall-trigger" title="Click to view profiles with shortfall payments">
+                        <div class="kpi-card" style="cursor:pointer;" onclick="moduleContext.filterReportByShortfall()" title="Click to view profiles with shortfall payments">
                             <h4>Due (Shortfall) 🔍</h4>
                             <div class="val" id="kpi-shortfall-count" style="color:var(--warning-yellow);">0</div>
                             <span class="sub-val" style="color:var(--warning-yellow);">₹<span id="kpi-shortfall-amt">0</span></span>
@@ -633,7 +630,7 @@
         <main id="view-upi-editor" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" id="btn-upi-back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">UPI Settings</h2>
                 </div>
                 <div class="form-row">
@@ -642,14 +639,14 @@
                         <input type="text" id="admin-upi-id" placeholder="e.g. revivefitness@upi" required>
                     </div>
                 </div>
-                <div class="action-row"><button type="button" id="btn-upi-save" class="btn primary">Save UPI Settings</button></div>
+                <div class="action-row"><button type="button" onclick="moduleContext.saveUpi()" class="btn primary">Save UPI Settings</button></div>
             </div>
         </main>
 
         <main id="view-pin-editor" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" id="btn-pin-back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">PIN Settings</h2>
                 </div>
                 <div class="form-row">
@@ -658,17 +655,17 @@
                         <input type="password" id="admin-admin-pin" placeholder="4-digit PIN" maxlength="4" required>
                     </div>
                 </div>
-                <div class="action-row"><button type="button" id="btn-pin-save" class="btn primary">Save Admin PIN</button></div>
+                <div class="action-row"><button type="button" onclick="moduleContext.savePins()" class="btn primary">Save Admin PIN</button></div>
             </div>
         </main>
 
         <main id="view-staff-editor" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" id="btn-staff-back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">Staff Access Management</h2>
                 </div>
-                <form id="staffForm">
+                <form id="staffForm" onsubmit="moduleContext.saveStaff(event); return false;">
                     <div class="form-row">
                         <div class="form-group">
                             <label>Staff Name <span class="required">*</span></label>
@@ -697,7 +694,7 @@
         <main id="view-tariff-editor" class="view-section">
             <div class="form-layout" style="max-width: 900px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" id="btn-tar-back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">Master Tariff Configurator</h2>
                 </div>
 
@@ -705,7 +702,7 @@
                     <h3 style="color:var(--accent-orange); margin-bottom: 0.5rem; font-size: 1.1rem; text-transform: uppercase;">Special Date / Promo Tariffs</h3>
                     <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;">Define custom rates for specific dates. The system will auto-apply these rates over standard monthly rates if an admission or payment happens within these dates.</p>
                     
-                    <form id="promoTariffForm">
+                    <form id="promoTariffForm" onsubmit="moduleContext.addSpecialTariff(event); return false;">
                         <div class="form-row">
                             <div class="form-group"><label>Promo Name <span class="required">*</span></label><input type="text" id="promo-name" placeholder="e.g. Diwali Offer" required></div>
                             <div class="form-group"><label>Start Date <span class="required">*</span></label><input type="date" id="promo-start" required></div>
@@ -727,14 +724,14 @@
                 <h3 style="color:var(--text-main); margin-bottom: 1rem; font-size: 1.1rem; text-transform: uppercase;">Standard Monthly Tariffs</h3>
                 <div class="form-row"><div class="form-group" style="max-width: 300px;"><label for="fy-select">Financial Year</label><select id="fy-select"></select></div></div>
                 <div id="tariff-months-container" style="margin-top: 1rem;"></div>
-                <div class="action-row"><button type="button" id="btn-tar-save" class="btn primary">Save Monthly Tariffs</button></div>
+                <div class="action-row"><button type="button" onclick="moduleContext.saveTariffs()" class="btn primary">Save Monthly Tariffs</button></div>
             </div>
         </main>
 
         <main id="view-admission" class="view-section">
             <div class="form-layout">
                 <div class="module-toolbar">
-                    <button class="back-btn" type="button" id="form-back-btn">
+                    <button class="back-btn" onclick="appContext.goHome()" type="button" id="form-back-btn">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
@@ -764,7 +761,7 @@
                             <label style="color: var(--accent-orange); margin-bottom: 0.8rem; display: block; font-weight: 800;">Validate Previous Registration</label>
                             <div class="val-group">
                                 <input type="tel" id="prevPhoneInput" placeholder="10-digit number" pattern="\d{10}" maxlength="10">
-                                <button type="button" id="btn-validate-readm" class="btn secondary">Validate</button>
+                                <button type="button" onclick="window.moduleContext.validateReadmission()" class="btn secondary">Validate</button>
                             </div>
                             <div id="validationResultBox" style="display:none; font-size: 0.9rem; line-height: 1.5; padding: 1rem; background: var(--bg-panel); border-radius: 6px; border: 1px solid var(--border-color);"></div>
                         </div>
@@ -927,8 +924,8 @@
                     <div class="qr-wrapper"><img id="pay-upi-qr" src="" style="width:150px; height:150px;"></div>
                 </div>
                 <div class="action-row">
-                    <button type="button" id="btn-pay-cancel" class="btn secondary">Cancel</button>
-                    <button type="button" id="btn-pay-confirm" class="btn primary">Confirm</button>
+                    <button type="button" onclick="document.getElementById('paymentProcessModal').style.display='none'" class="btn secondary">Cancel</button>
+                    <button type="button" onclick="window.moduleContext.confirmPayment()" class="btn primary">Confirm</button>
                 </div>
             </div>
         </div>
@@ -948,13 +945,13 @@
                 <h2 class="orange-text" id="sm-title">Registration Complete!</h2>
                 <div class="admission-badge" id="generated-id">REV-0000</div>
                 <div class="modal-actions" id="sm-adm-actions">
-                    <button id="btn-download-pdf" class="btn primary">1. Download PDF Record</button>
-                    <button id="btn-whatsapp-welcome" class="btn whatsapp">2. Send Welcome Message</button>
-                    <button id="btn-whatsapp-pdf" class="btn whatsapp">3. Share PDF Record</button>
-                    <button id="btn-share-adm-receipt" class="btn whatsapp">4. Share Payment Receipt</button>
+                    <button id="btn-download-pdf" class="btn primary" onclick="window.moduleContext.regeneratePdf()">1. Download PDF Record</button>
+                    <button id="btn-whatsapp-welcome" class="btn whatsapp" onclick="window.moduleContext.sendWelcomeMessage()">2. Send Welcome Message</button>
+                    <button id="btn-whatsapp-pdf" class="btn whatsapp" onclick="window.moduleContext.sharePdfRecord()">3. Share PDF Record</button>
+                    <button id="btn-share-adm-receipt" class="btn whatsapp" onclick="window.moduleContext.shareAdmissionReceipt()">4. Share Payment Receipt</button>
                 </div>
                 <div class="modal-actions">
-                    <button class="btn secondary" id="btn-close-success">Close Window</button>
+                    <button class="btn secondary" onclick="window.appContext.closeModal()">Close Window</button>
                 </div>
             </div>
         </div>
@@ -965,8 +962,8 @@
                 <h2 class="orange-text">Payment Recorded!</h2>
                 <p style="margin-bottom: 1.5rem;">Receipt has been successfully generated.</p>
                 <div class="modal-actions">
-                    <button id="btn-share-receipt" class="btn whatsapp">Share Receipt Image</button>
-                    <button class="btn secondary" id="btn-return-profile">Return to Profile</button>
+                    <button id="btn-share-receipt" onclick="window.moduleContext.shareReceipt('success')" class="btn whatsapp">Share Receipt Image</button>
+                    <button class="btn secondary" onclick="window.appContext.switchView('user-hub')">Return to Profile</button>
                 </div>
             </div>
         </div>
@@ -976,8 +973,8 @@
                 <h2 class="orange-text">Payment Receipt</h2>
                 <p style="margin-bottom: 1.5rem;">Receipt for <span id="vr-month-label" style="font-weight:bold;"></span></p>
                 <div class="modal-actions">
-                    <button id="btn-vr-share" class="btn whatsapp">Share Receipt via WhatsApp</button>
-                    <button class="btn secondary" id="btn-close-vr">Close</button>
+                    <button id="btn-vr-share" onclick="window.moduleContext.shareReceipt('vr')" class="btn whatsapp">Share Receipt via WhatsApp</button>
+                    <button class="btn secondary" onclick="document.getElementById('viewReceiptModal').style.display='none'">Close</button>
                 </div>
             </div>
         </div>
@@ -1203,11 +1200,11 @@
             },
             goHome: function() {
                 if (document.getElementById('successModal').style.display === 'flex' || document.getElementById('receiptSuccessModal').style.display === 'flex' || document.getElementById('viewReceiptModal').style.display === 'flex') return;
-                if (window.appContext.currentRole) window.appContext.switchView('dashboard');
-                else { window.appContext.pendingRole = null; window.appContext.switchView('home'); }
+                if (appContext.currentRole) window.appContext.switchView('dashboard');
+                else { appContext.pendingRole = null; window.appContext.switchView('home'); }
             },
             openLogin: function(role) {
-                window.appContext.pendingRole = role;
+                appContext.pendingRole = role;
                 document.getElementById('login-title').innerText = role === 'staff' ? 'Staff Login' : 'Admin Login';
                 const pinInput = document.getElementById('pin-input');
                 const settings = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
@@ -1225,29 +1222,29 @@
                 const settings = JSON.parse(localStorage.getItem('revive_settings_db')) || {};
                 const adminPin = settings.adminPin != null ? String(settings.adminPin) : '1234';
 
-                if (window.appContext.pendingRole === 'staff') {
+                if (appContext.pendingRole === 'staff') {
                     const staffDb = JSON.parse(localStorage.getItem('revive_staff_db')) || [];
                     const matchingStaff = staffDb.find(s => String(s.pin) === pin);
                     
                     if (matchingStaff) {
-                        window.appContext.currentRole = 'staff'; 
+                        appContext.currentRole = 'staff'; 
                         window.appContext.loadDashboard(`STAFF (${matchingStaff.name.toUpperCase()})`); 
                     } else {
                         alert('Invalid Staff PIN. Please try again.');
                     }
                 } 
-                else if (window.appContext.pendingRole === 'admin' && pin === adminPin) { 
-                    window.appContext.currentRole = 'admin'; 
+                else if (appContext.pendingRole === 'admin' && pin === adminPin) { 
+                    appContext.currentRole = 'admin'; 
                     window.appContext.loadDashboard('ADMIN'); 
                 } 
                 else { alert('Invalid PIN. Please try again.'); }
             },
             loadDashboard: function(roleTitle) {
                 document.getElementById('dashboard-title').innerHTML = `${roleTitle} <span>PORTAL</span>`;
-                document.querySelectorAll('.admin-only').forEach(el => { el.style.display = window.appContext.currentRole === 'admin' ? 'flex' : 'none'; });
+                document.querySelectorAll('.admin-only').forEach(el => { el.style.display = appContext.currentRole === 'admin' ? 'flex' : 'none'; });
                 window.appContext.switchView('dashboard');
             },
-            logout: function() { window.appContext.currentRole = null; window.appContext.pendingRole = null; window.appContext.switchView('home'); },
+            logout: function() { appContext.currentRole = null; appContext.pendingRole = null; window.appContext.switchView('home'); },
             startAdmission: function() {
                 IS_EDIT_MODE = false;
                 document.getElementById('form-main-title').innerText = "Admission Registration";
@@ -1329,7 +1326,7 @@
             },
             removeSpecialTariff: function(id) {
                 let db = JSON.parse(localStorage.getItem('revive_special_tariffs')) || [];
-                db = db.filter(p => String(p.id) !== String(id));
+                db = db.filter(p => p.id !== id);
                 localStorage.setItem('revive_special_tariffs', JSON.stringify(db));
                 cloudSync.push('deleteSpecialTariff', {id: id});
                 window.moduleContext.renderSpecialTariffs();
@@ -1350,7 +1347,7 @@
                         <div class="promo-card">
                             <div>
                                 <h4>${p.name}</h4>
-                                <p>${sd} to ${ed} \vert{} Adm: ₹${p.admFee}, Reg: ₹${p.regFee}, PT: ₹${p.ptFee}</p>
+                                <p>${sd} to ${ed} | Adm: ₹${p.admFee}, Reg: ₹${p.regFee}, PT: ₹${p.ptFee}</p>
                             </div>
                             <button type="button" class="btn danger" style="padding:0.4rem; width:auto; border:none;" onclick="window.moduleContext.removeSpecialTariff('${p.id}')">Remove</button>
                         </div>
@@ -1402,7 +1399,7 @@
                     return;
                 }
                 recent.forEach(ex => {
-                    tbody.innerHTML += `<tr><td>${formatDateStr(ex.date)}</td><td>${ex.category}</td><td>${ex.desc \vert{}\vert{} '-'}</td><td>${ex.mode}</td><td style="color:var(--error-red); font-weight:bold;">₹${ex.amount}</td></tr>`;
+                    tbody.innerHTML += `<tr><td>${formatDateStr(ex.date)}</td><td>${ex.category}</td><td>${ex.desc || '-'}</td><td>${ex.mode}</td><td style="color:var(--error-red); font-weight:bold;">₹${ex.amount}</td></tr>`;
                 });
             },
 
@@ -1444,7 +1441,7 @@
                 
                 let db = JSON.parse(localStorage.getItem('revive_staff_db')) || [];
                 
-                if (db.some(s => String(s.pin) === String(pin))) {
+                if (db.some(s => String(s.pin) === pin)) {
                     alert("This PIN is already in use by another staff member. Choose a unique PIN.");
                     return;
                 }
@@ -1461,7 +1458,7 @@
             deleteStaff: function(id) {
                 if(confirm("Revoke access for this staff member? They will be immediately locked out.")) {
                     let db = JSON.parse(localStorage.getItem('revive_staff_db')) || [];
-                    db = db.filter(s => String(s.id) !== String(id));
+                    db = db.filter(s => s.id !== id);
                     localStorage.setItem('revive_staff_db', JSON.stringify(db));
                     
                     cloudSync.push('deleteStaff', { id: id });
@@ -1559,7 +1556,7 @@
                             <img src="${photoUrl}" alt="${user.fullName}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-orange);">
                             <div style="flex:1;">
                                 <div style="color:var(--text-main); font-weight:800; font-size:1rem;">${user.fullName}</div>
-                                <div style="font-size:0.8rem; color:var(--text-muted);">ID: ${user.id} \vert{} Ph:${user.primaryContact}</div>
+                                <div style="font-size:0.8rem; color:var(--text-muted);">ID: ${user.id} | Ph: ${user.primaryContact}</div>
                             </div>
                         </div>`;
                     });
@@ -1611,7 +1608,7 @@
                 localStorage.setItem('revive_attendance_db', JSON.stringify(attDb));
                 cloudSync.push('pushAttendance', newAtt);
 
-                resBox.innerHTML = `<span style="color:var(--success-green); font-weight:bold; font-size:1.1rem;">✔ Attendance Marked Successfully!</span><br><br><strong>Name:</strong> ${user.fullName} (${user.id})<br><strong>Time In:</strong>${timeStr}`;
+                resBox.innerHTML = `<span style="color:var(--success-green); font-weight:bold; font-size:1.1rem;">✔ Attendance Marked Successfully!</span><br><br><strong>Name:</strong> ${user.fullName} (${user.id})<br><strong>Time In:</strong> ${timeStr}`;
                 document.getElementById('att-input').value = ''; document.getElementById('att-live-preview').innerHTML = '';
                 window.moduleContext.renderAttendanceLogs();
             },
@@ -1650,27 +1647,8 @@
 
             loadProfileByPhoneOrId: function(identifier) {
                 const users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                const matchingUsers = users.filter(u => String(u.primaryContact) === String(identifier) || String(u.id) === String(identifier));
-                
-                if(matchingUsers.length === 0) { alert("User profile not found."); return; }
-
-                let user;
-                if (matchingUsers.length > 1) {
-                    let promptText = "Multiple family members found for this number. Enter the number corresponding to the member you wish to view:\n";
-                    matchingUsers.forEach((u, idx) => {
-                        promptText += `${idx + 1}: ${u.fullName} (${u.id})\n`;
-                    });
-                    const selection = prompt(promptText);
-                    const selectedIdx = parseInt(selection) - 1;
-                    if (isNaN(selectedIdx) || selectedIdx < 0 || selectedIdx >= matchingUsers.length) {
-                        alert("Invalid selection. Loading the first matched profile.");
-                        user = matchingUsers[0];
-                    } else {
-                        user = matchingUsers[selectedIdx];
-                    }
-                } else {
-                    user = matchingUsers[0];
-                }
+                const user = users.find(u => String(u.primaryContact) === String(identifier) || String(u.id) === String(identifier));
+                if(!user) { alert("User profile not found."); return; }
 
                 const fySelect = document.getElementById('search-fy');
                 const fy = fySelect ? fySelect.value : `${new Date().getFullYear()}-${new Date().getFullYear()+1}`;
@@ -1682,7 +1660,7 @@
                 
                 const callBtn = document.getElementById('hub-call-btn'); const waBtn = document.getElementById('hub-wa-btn'); const pContact = document.getElementById('hub-phone');
 
-                if (window.appContext.currentRole === 'staff') {
+                if (appContext.currentRole === 'staff') {
                     photoEl.style.pointerEvents = 'none'; photoEl.style.userSelect = 'none'; photoEl.style.webkitUserDrag = 'none'; photoEl.oncontextmenu = (ev) => ev.preventDefault();
                     pContact.innerText = `******${String(user.primaryContact).slice(-4)}`;
                     if(callBtn) callBtn.style.display = 'none'; if(waBtn) waBtn.style.display = 'none';
@@ -1694,7 +1672,7 @@
                 }
 
                 document.getElementById('hub-name').innerText = user.fullName; document.getElementById('hub-id').innerText = user.id;
-                document.getElementById('hub-details').innerText = `${user.admissionCategory} -${user.trainingCategory}`;
+                document.getElementById('hub-details').innerText = `${user.admissionCategory} - ${user.trainingCategory}`;
                 document.getElementById('hub-doj').innerText = `Date of Joining: ${user.date}`; document.getElementById('hub-fy-label').innerText = fy;
                 document.getElementById('hub-actions').style.display = 'flex';
                 
@@ -1704,8 +1682,8 @@
                 } else {
                     document.getElementById('hub-instruction').style.display = 'block'; document.getElementById('hub-instruction').innerText = "Click on a paid green month to view the receipt.";
                     document.getElementById('btn-hub-edit').style.display = 'flex'; 
-                    document.getElementById('btn-hub-pdf').style.display = window.appContext.currentRole === 'admin' ? 'flex' : 'none';
-                    document.getElementById('btn-hub-delete').style.display = window.appContext.currentRole === 'admin' ? 'flex' : 'none';
+                    document.getElementById('btn-hub-pdf').style.display = appContext.currentRole === 'admin' ? 'flex' : 'none';
+                    document.getElementById('btn-hub-delete').style.display = appContext.currentRole === 'admin' ? 'flex' : 'none';
                 }
                 
                 window.moduleContext.renderFeeCalendar(user.id, fy, user.trainingCategory, user.date);
@@ -1716,9 +1694,9 @@
                 if(e && e.preventDefault) e.preventDefault();
                 const phone = document.getElementById('search-phone').value.trim();
                 const users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                const userExists = users.some(u => String(u.primaryContact) === String(phone));
-                if(!userExists) { alert("User not found. Please register the user first."); return; }
-                window.moduleContext.loadProfileByPhoneOrId(phone);
+                const user = [...users].reverse().find(u => String(u.primaryContact) === String(phone));
+                if(!user) { alert("User not found. Please register the user first."); return; }
+                window.moduleContext.loadProfileByPhoneOrId(user.primaryContact);
             },
 
             renderFeeCalendar: function(userId, fy, trainCat, adDateStr) {
@@ -1983,7 +1961,7 @@
                 document.getElementById('pdf-date').innerText = currentMemberDetails.date;
                 document.getElementById('pdf-photo').src = currentMemberDetails.photo; 
                 document.getElementById('pdf-name').innerText = currentMemberDetails.fullName;
-                document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType \vert{}\vert{} 'N/A'} -${currentMemberDetails.admissionCategory}`;
+                document.getElementById('pdf-admission-details').innerText = `${currentMemberDetails.admissionType || 'N/A'} -${currentMemberDetails.admissionCategory}`;
                 document.getElementById('pdf-training-category').innerText = currentMemberDetails.trainingCategory;
                 document.getElementById('pdf-contact1').innerText = currentMemberDetails.primaryContact; 
                 document.getElementById('pdf-contact2').innerText = currentMemberDetails.alternateContact || 'N/A';
@@ -2128,18 +2106,10 @@
                 }
                 pendingItems.forEach(p => {
                     const dateStr = p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : 'Unpaid / Due';
-                    feeTbody.innerHTML += `<tr class="clickable-row" data-id="${p.userId}" title="Click to view member profile">
+                    feeTbody.innerHTML += `<tr onclick="window.moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile">
                         <td>${dateStr}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:var(--text-muted);">₹0 (Unpaid)</td><td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td><td>PENDING</td>
                     </tr>`;
                 });
-                
-                // Bind new dynamic rows safely
-                document.querySelectorAll('.clickable-row').forEach(row => {
-                   row.addEventListener('click', function() {
-                      window.moduleContext.loadProfileByPhoneOrId(this.getAttribute('data-id'));
-                   });
-                });
-                
                 alert("Report filtered to show all pending dues and shortfalls. Click any row to view that member's profile.");
             },
 
@@ -2218,23 +2188,16 @@
                 document.getElementById('kpi-unpaid-amt').innerText = currStats.unpaidAmt.toLocaleString();
 
                 const admTbody = document.querySelector('#table-admissions tbody');
-                admTbody.innerHTML = currStats.admRows.length ? currStats.admRows.map(u => `<tr class="clickable-row" data-id="${u.id}" title="Click to view member profile"><td>${u.date}</td><td><strong>${u.id}</strong></td><td>${u.fullName}</td><td>${window.appContext.currentRole === 'staff' ? '******' + String(u.primaryContact).slice(-4) : u.primaryContact}</td><td>${u.admissionCategory}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No admissions found for this period.</td></tr>';
+                admTbody.innerHTML = currStats.admRows.length ? currStats.admRows.map(u => `<tr onclick="window.moduleContext.loadProfileByPhoneOrId('${u.id}')" title="Click to view member profile"><td>${u.date}</td><td><strong>${u.id}</strong></td><td>${u.fullName}</td><td>${appContext.currentRole === 'staff' ? '******' + String(u.primaryContact).slice(-4) : u.primaryContact}</td><td>${u.admissionCategory}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No admissions found for this period.</td></tr>';
 
                 const feeTbody = document.querySelector('#table-fees tbody');
-                feeTbody.innerHTML = currStats.feeRows.length ? currStats.feeRows.map(p => `<tr class="clickable-row" data-id="${p.userId}" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:green; font-weight:bold;">₹${p.amountPaid}</td><td>${p.method || 'CASH'}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No fee collections found for this period.</td></tr>';
+                feeTbody.innerHTML = currStats.feeRows.length ? currStats.feeRows.map(p => `<tr onclick="window.moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:green; font-weight:bold;">₹${p.amountPaid}</td><td>${p.method || 'CASH'}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No fee collections found for this period.</td></tr>';
 
                 const expTbody = document.querySelector('#table-expenses-report tbody');
-                expTbody.innerHTML = currStats.expRows.length ? currStats.expRows.map(ex => `<tr><td>${formatDateStr(ex.date)}</td><td>${ex.category}</td><td>${ex.desc \vert{}\vert{} '-'}</td><td>${ex.mode}</td><td style="color:var(--error-red); font-weight:bold;">₹${ex.amount}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No expenses recorded for this period.</td></tr>';
+                expTbody.innerHTML = currStats.expRows.length ? currStats.expRows.map(ex => `<tr><td>${formatDateStr(ex.date)}</td><td>${ex.category}</td><td>${ex.desc || '-'}</td><td>${ex.mode}</td><td style="color:var(--error-red); font-weight:bold;">₹${ex.amount}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;">No expenses recorded for this period.</td></tr>';
 
                 const shortTbody = document.querySelector('#table-shortfalls tbody');
-                shortTbody.innerHTML = currStats.shortRows.length ? currStats.shortRows.map(p => `<tr class="clickable-row" data-id="${p.userId}" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td></tr>`).join('') : '<tr><td colspan="4" style="text-align:center;">No shortfalls found.</td></tr>';
-                
-                // Rebind clicks safely for dynamically created rows
-                document.querySelectorAll('.clickable-row').forEach(row => {
-                   row.addEventListener('click', function() {
-                      window.moduleContext.loadProfileByPhoneOrId(this.getAttribute('data-id'));
-                   });
-                });
+                shortTbody.innerHTML = currStats.shortRows.length ? currStats.shortRows.map(p => `<tr onclick="window.moduleContext.loadProfileByPhoneOrId('${p.userId}')" title="Click to view member profile"><td>${p.lastDate ? new Date(p.lastDate).toLocaleDateString('en-IN') : ''}</td><td><strong>${p.userId}</strong> - ${p.fullName}</td><td>${p.month}</td><td style="color:red; font-weight:bold;">₹${p.pendingAmt}</td></tr>`).join('') : '<tr><td colspan="4" style="text-align:center;">No shortfalls found.</td></tr>';
 
                 let yoyMsg = '', momMsg = '';
                 const prevFyStart = parseInt(fy.split('-')[0]) - 1; const prevFy = `${prevFyStart}-${prevFyStart+1}`;
@@ -2242,14 +2205,14 @@
                 const calcGrowth = (curr, prev) => prev === 0 ? (curr > 0 ? 100 : 0) : Math.round(((curr - prev) / prev) * 100);
                 
                 const yoyRevG = calcGrowth(currStats.rev, yoyStats.rev); const yoyAdmG = calcGrowth(currStats.admCount, yoyStats.admCount);
-                yoyMsg = `<strong>YoY Revenue:</strong> ${yoyRevG >= 0 ? '+' : ''}${yoyRevG}% (₹${yoyStats.rev.toLocaleString()}) <br> <strong>YoY Admissions:</strong>${yoyAdmG >= 0 ? '+' : ''}${yoyAdmG}\% (${yoyStats.admCount})`;
+                yoyMsg = `<strong>YoY Revenue:</strong> ${yoyRevG >= 0 ? '+' : ''}${yoyRevG}% (₹${yoyStats.rev.toLocaleString()}) <br> <strong>YoY Admissions:</strong>${yoyAdmG >= 0 ? '+' : ''}${yoyAdmG}% (${yoyStats.admCount})`;
 
                 if (month !== 'All') {
                     const mIdx = tariffMonthsOrder.indexOf(month); let prevM, prevMFy;
                     if (mIdx === 0) { prevM = 'March'; prevMFy = prevFy; } else { prevM = tariffMonthsOrder[mIdx - 1]; prevMFy = fy; }
                     const momStats = calcStats(prevMFy, prevM);
                     const momRevG = calcGrowth(currStats.rev, momStats.rev); const momAdmG = calcGrowth(currStats.admCount, momStats.admCount);
-                    momMsg = `<br><br><strong>MoM Revenue:</strong> ${momRevG >= 0 ? '+' : ''}${momRevG}% (₹${momStats.rev.toLocaleString()}) <br> <strong>MoM Admissions:</strong>${momAdmG >= 0 ? '+' : ''}${momAdmG}\% (${momStats.admCount})`;
+                    momMsg = `<br><br><strong>MoM Revenue:</strong> ${momRevG >= 0 ? '+' : ''}${momRevG}% (₹${momStats.rev.toLocaleString()}) <br> <strong>MoM Admissions:</strong>${momAdmG >= 0 ? '+' : ''}${momAdmG}% (${momStats.admCount})`;
                 } else { momMsg = '<br><br><span style="color:var(--text-muted); font-size:0.85rem;">MoM Growth N/A for entire year view.</span>'; }
 
                 document.getElementById('yoy-analysis-content').innerHTML = yoyMsg + momMsg;
@@ -2297,66 +2260,9 @@
             if(v.length>=5) e.target.value=`${v.slice(0,2)}-${v.slice(2,4)}-${v.slice(4)}`; else if(v.length>=3) e.target.value=`${v.slice(0,2)}-${v.slice(2)}`;
         }
 
-        // BIND EVENT HELPER TO ENSURE CLICKS REGISTER SECURELY
-        function bindEvent(id, ev, callback) {
-            const el = document.getElementById(id);
-            if (el) el.addEventListener(ev, function(e) {
-                e.preventDefault();
-                callback();
-            });
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
 
             cloudSync.pullInitial();
-
-            // --- BIND ALL MODULE CLICKS AND BUTTONS ---
-            bindEvent('app-logo', 'click', () => window.appContext.goHome());
-            
-            // Homepage Modules
-            bindEvent('mod-admission', 'click', () => window.appContext.startAdmission());
-            bindEvent('mod-attendance', 'click', () => window.appContext.switchView('attendance'));
-            bindEvent('mod-staff-login', 'click', () => window.appContext.openLogin('staff'));
-            bindEvent('mod-admin-login', 'click', () => window.appContext.openLogin('admin'));
-            
-            // Dashboard Modules
-            bindEvent('mod-fee-collection', 'click', () => window.moduleContext.openUserSearch('fee'));
-            bindEvent('mod-user-details', 'click', () => window.moduleContext.openUserSearch('details'));
-            bindEvent('mod-expense', 'click', () => window.appContext.switchView('expense'));
-            bindEvent('mod-reports', 'click', () => window.appContext.switchView('reports'));
-            bindEvent('mod-tariff', 'click', () => window.appContext.switchView('tariff-editor'));
-            bindEvent('mod-upi', 'click', () => window.appContext.switchView('upi-editor'));
-            bindEvent('mod-pin', 'click', () => window.appContext.switchView('pin-editor'));
-            bindEvent('mod-staff', 'click', () => window.appContext.switchView('staff-editor'));
-            bindEvent('btn-logout', 'click', () => window.appContext.logout());
-            
-            // Sub-Module Back Buttons
-            bindEvent('btn-login-back', 'click', () => window.appContext.goHome());
-            bindEvent('btn-exp-back', 'click', () => window.appContext.goHome());
-            bindEvent('btn-att-back', 'click', () => window.appContext.goHome());
-            bindEvent('btn-search-back', 'click', () => window.appContext.goHome());
-            bindEvent('btn-hub-back', 'click', () => window.appContext.switchView('user-search'));
-            bindEvent('btn-rep-back', 'click', () => window.appContext.goHome());
-            bindEvent('btn-upi-back', 'click', () => window.appContext.goHome());
-            bindEvent('btn-pin-back', 'click', () => window.appContext.goHome());
-            bindEvent('btn-staff-back', 'click', () => window.appContext.goHome());
-            bindEvent('btn-tar-back', 'click', () => window.appContext.goHome());
-            
-            // Actions
-            bindEvent('btn-rep-gen', 'click', () => window.moduleContext.generateReport());
-            bindEvent('kpi-shortfall-trigger', 'click', () => window.moduleContext.filterReportByShortfall());
-            bindEvent('btn-upi-save', 'click', () => window.moduleContext.saveUpi());
-            bindEvent('btn-pin-save', 'click', () => window.moduleContext.savePins());
-            bindEvent('btn-tar-save', 'click', () => window.moduleContext.saveTariffs());
-            bindEvent('btn-validate-readm', 'click', () => window.moduleContext.validateReadmission());
-            
-            // Modal Buttons
-            bindEvent('btn-pay-cancel', 'click', () => document.getElementById('paymentProcessModal').style.display='none');
-            bindEvent('btn-pay-confirm', 'click', () => window.moduleContext.confirmPayment());
-            bindEvent('btn-close-success', 'click', () => window.appContext.closeModal());
-            bindEvent('btn-return-profile', 'click', () => window.appContext.switchView('user-hub'));
-            bindEvent('btn-close-vr', 'click', () => document.getElementById('viewReceiptModal').style.display='none');
-            // ------------------------------
 
             const dobInp = document.getElementById('dob'); 
             const dtInp = document.getElementById('dateOfAdmission'); 
@@ -2420,38 +2326,8 @@
                 
                 const btnNext = document.getElementById('btn-next-step');
                 if(btnNext) btnNext.addEventListener('click', () => {
-                    let isValid = true; 
-                    step1.querySelectorAll('input, select, textarea').forEach(input => { 
-                        if (!input.checkValidity()) { input.reportValidity(); isValid = false; } 
-                    });
-                    
-                    if(isValid) { 
-                        // --- DUPLICATE PHONE VALIDATION ---
-                        const primaryPhone = document.getElementById('primaryContact').value.trim();
-                        const admissionCat = document.getElementById('admissionCategory').value;
-                        const isReadmission = document.getElementById('admissionTypeSelect').value === 'Re-Admission';
-                        
-                        if (!IS_EDIT_MODE && !isReadmission) {
-                            const users = JSON.parse(localStorage.getItem('revive_users_db')) || [];
-                            const duplicateExists = users.some(u => String(u.primaryContact) === String(primaryPhone));
-                            
-                            if (duplicateExists) {
-                                if (admissionCat === 'Individual') {
-                                    alert(`The phone number ${primaryPhone} is already registered to a member. For Individual admissions, phone numbers must be unique.`);
-                                    return; // Stop the wizard
-                                } else if (admissionCat === 'Family') {
-                                    const confirmFamily = confirm(`The phone number ${primaryPhone} is already in the system. Proceeding will group this new member under the existing Family number. Continue?`);
-                                    if (!confirmFamily) return; // Stop the wizard if they cancel
-                                }
-                            }
-                        }
-                        // ---------------------------------------
-
-                        step1.classList.remove('active-step'); 
-                        step2.classList.add('active-step'); 
-                        window.scrollTo({ top: 0, behavior: 'smooth' }); 
-                        resizeCanvas(); 
-                    } 
+                    let isValid = true; step1.querySelectorAll('input, select, textarea').forEach(input => { if (!input.checkValidity()) { input.reportValidity(); isValid = false; } });
+                    if(isValid) { step1.classList.remove('active-step'); step2.classList.add('active-step'); window.scrollTo({ top: 0, behavior: 'smooth' }); resizeCanvas(); } 
                 });
 
                 const btnPrev = document.getElementById('btn-prev-step');
@@ -2601,6 +2477,24 @@
                     document.getElementById('prevPhoneInput').value = ''; document.getElementById('firstName').value = ''; document.getElementById('lastName').value = ''; 
                     document.getElementById('primaryContact').value = ''; document.getElementById('alternateContact').value = ''; 
                     document.getElementById('dob').value = ''; document.getElementById('address').value = ''; document.getElementById('age').value = '';
+                }
+            });
+
+            // Ensure window objects are mapped correctly for any direct inline calls left over
+            document.querySelectorAll('.module-card').forEach(card => {
+                if (card.hasAttribute('onclick')) {
+                    let val = card.getAttribute('onclick');
+                    if (!val.startsWith('window.')) {
+                        card.setAttribute('onclick', 'window.' + val);
+                    }
+                }
+            });
+            document.querySelectorAll('form').forEach(form => {
+                if (form.hasAttribute('onsubmit')) {
+                    let val = form.getAttribute('onsubmit');
+                    if (!val.startsWith('window.')) {
+                        form.setAttribute('onsubmit', 'window.' + val);
+                    }
                 }
             });
         });
