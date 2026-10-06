@@ -10,25 +10,48 @@
     
     <style>
         :root {
-            --bg-main: #f9f9f9; --bg-panel: #ffffff; --text-main: #222222; --text-muted: #666666;
-            --accent-orange: #ff6600; --border-color: #e0e0e0; --success-green: #25D366;
-            --warning-yellow: #f39c12; --error-red: #d32f2f;
+            --bg-main: #f9f9f9;
+            --bg-panel: #ffffff;
+            --text-main: #222222;
+            --text-muted: #666666;
+            --accent-orange: #ff6600;
+            --border-color: #e0e0e0;
+            --success-green: #25D366;
+            --warning-yellow: #f39c12;
+            --error-red: #d32f2f;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
         html { font-size: 14px; background-color: var(--bg-main); }
         body { color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
         #app-wrapper { display: flex; flex-direction: column; min-height: 100vh; padding-top: 60px; padding-bottom: 60px; }
-        .app-header { background-color: var(--bg-panel); height: 60px; padding: 0 1.5rem; display: flex; justify-content: center; align-items: center; border-bottom: 3px solid var(--accent-orange); position: fixed; top: 0; left: 0; width: 100%; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+
+        .app-header {
+            background-color: var(--bg-panel); height: 60px; padding: 0 1.5rem; display: flex; justify-content: center; align-items: center;
+            border-bottom: 3px solid var(--accent-orange); position: fixed; top: 0; left: 0; width: 100%; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
         .logo-container { cursor: pointer; display: flex; align-items: center; transition: transform 0.2s; height: 100%; }
         .logo-container:active { transform: scale(0.95); }
         .logo-container img { height: 35px; object-fit: contain; }
 
-        .view-section { display: none; flex: 1; width: 100%; max-width: 1200px; margin: 0 auto; padding: 1.5rem; animation: fadeIn 0.3s ease-in-out; box-sizing: border-box; overflow-y: auto; }
+        .view-section { 
+            display: none; 
+            flex: 1; 
+            width: 100%; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 1.5rem; 
+            animation: fadeIn 0.3s ease-in-out; 
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
         .view-section.active-view { display: block; }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        #cloud-sync-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(249, 249, 249, 0.9); backdrop-filter: blur(5px); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        #cloud-sync-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(249,249,249,0.9); backdrop-filter: blur(4px); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         .spinner { width: 50px; height: 50px; border: 5px solid var(--border-color); border-top-color: var(--accent-orange); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1.5rem; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
@@ -39,15 +62,35 @@
         .dashboard-header h1 { font-size: clamp(1.6rem, 5vw, 2.5rem); font-weight: 900; letter-spacing: 2px; margin-bottom: 0.5rem; text-transform: uppercase; }
         .dashboard-header span { color: var(--accent-orange); }
         
-        .compact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; max-width: 900px; margin: 0 auto; width: 100%; }
-        .module-card { background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem 1rem; text-align: center; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .compact-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+            gap: 1.5rem; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            width: 100%;
+        }
+        
+        .module-card {
+            background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem 1rem;
+            text-align: center; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
         .module-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background-color: var(--accent-orange); transform: scaleX(0); transition: transform 0.3s ease; transform-origin: left; }
         .module-card:hover { transform: translateY(-3px); border-color: var(--accent-orange); box-shadow: 0 8px 25px rgba(255, 102, 0, 0.1); }
         .module-card:hover::before { transform: scaleX(1); }
+        
         .module-icon-svg { width: 42px; height: 42px; stroke: var(--accent-orange); fill: none; stroke-width: 1.5; margin-bottom: 0.8rem; stroke-linecap: round; stroke-linejoin: round; }
         .module-card h3 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0; color: var(--text-main); font-weight: 700; }
-        .module-card * { pointer-events: none; }
-        .module-card, .btn { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+
+        .module-card * {
+            pointer-events: none;
+        }
+
+        .module-card, .btn {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
 
         .module-toolbar { display: flex; align-items: center; margin-bottom: 1.5rem; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); justify-content: space-between; }
         .back-btn { background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; margin-left: -0.5rem; transition: color 0.2s; font-weight: 600; }
@@ -63,6 +106,7 @@
         input, select, textarea { background-color: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-main); padding: 0.9rem 1rem; border-radius: 8px; outline: none; transition: all 0.3s; font-size: 1rem; width: 100%; font-weight: 500; }
         input:focus, select:focus, textarea:focus { border-color: var(--accent-orange); background-color: var(--bg-panel); box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1); }
         input[readonly] { background-color: #e9ecef; color: var(--text-muted); cursor: not-allowed; border-style: dashed; }
+        
         .pin-input { font-size: 2rem; letter-spacing: 0.5rem; text-align: center; padding: 1rem; background-color: var(--bg-main); color: var(--accent-orange); font-weight: 900; }
 
         .btn { padding: 1rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; font-size: 0.95rem; display: inline-flex; justify-content: center; align-items: center; gap: 0.5rem; }
@@ -211,7 +255,7 @@
 
     <div id="app-wrapper">
         <header class="app-header">
-            <div class="logo-container" onclick="appContext.goHome()">
+            <div class="logo-container" onclick="window.appContext.goHome()">
                 <img src="logo.png" alt="REVIVE FITNESS STUDIO" onerror="this.src='https://via.placeholder.com/150x40/ffffff/ff6600?text=REVIVE+FITNESS'">
             </div>
         </header>
@@ -244,13 +288,13 @@
         <main id="view-login" class="view-section">
             <div class="form-layout" style="max-width: 400px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="appContext.goHome()" type="button">
+                    <button class="back-btn" onclick="window.appContext.goHome()" type="button">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         Back
                     </button>
                     <h2 class="module-title" id="login-title">Login</h2>
                 </div>
-                <form id="loginForm" onsubmit="appContext.handleLogin(); return false;">
+                <form id="loginForm" onsubmit="window.appContext.handleLogin(); return false;">
                     <div class="form-group">
                         <input type="password" id="pin-input" class="pin-input" inputmode="numeric" required autocomplete="off">
                     </div>
@@ -299,17 +343,17 @@
                 </div>
             </div>
             <div style="text-align: center; margin-top: 3rem;">
-                <button class="btn secondary" onclick="appContext.logout()" style="font-size: 0.85rem; padding: 0.8rem 2rem;">Log Out Securely</button>
+                <button class="btn secondary" onclick="window.appContext.logout()" style="font-size: 0.85rem; padding: 0.8rem 2rem;">Log Out Securely</button>
             </div>
         </main>
 
         <main id="view-expense" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" onclick="window.appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">Expense Entry</h2>
                 </div>
-                <form id="expenseForm" onsubmit="moduleContext.saveExpense(event); return false;">
+                <form id="expenseForm" onsubmit="window.moduleContext.saveExpense(event); return false;">
                     <div class="form-row">
                         <div class="form-group"><label>Date <span class="required">*</span></label><input type="date" id="exp-date" required></div>
                         <div class="form-group"><label>Amount (₹) <span class="required">*</span></label><input type="number" id="exp-amount" min="1" required></div>
@@ -347,14 +391,14 @@
         <main id="view-attendance" class="view-section">
             <div class="form-layout" style="max-width: 700px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" onclick="window.appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">Daily Attendance Marker</h2>
                 </div>
-                <form id="attendanceForm" onsubmit="moduleContext.markAttendance(event); return false;">
+                <form id="attendanceForm" onsubmit="window.moduleContext.markAttendance(event); return false;">
                     <div class="form-row">
                         <div class="form-group">
                             <label>Enter Phone Number, Admission ID, or Name <span class="required">*</span></label>
-                            <input type="text" id="att-input" placeholder="e.g. 9999999999, REV-0001, or John" oninput="moduleContext.previewMemberName(this.value)" required autocomplete="off">
+                            <input type="text" id="att-input" placeholder="e.g. 9999999999, REV-0001, or John" oninput="window.moduleContext.previewMemberName(this.value)" required autocomplete="off">
                             <div id="att-live-preview" style="margin-top: 6px;"></div>
                         </div>
                         <div class="form-group" style="max-width: 150px; justify-content: flex-end;">
@@ -368,7 +412,7 @@
                 <div style="margin-top: 2.5rem; border-top: 2px solid var(--border-color); padding-top: 1.5rem;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3 style="color: var(--accent-orange); text-transform: uppercase; font-size: 1.1rem;">Attendance Logs</h3>
-                        <input type="date" id="att-filter-date" style="max-width: 180px; padding: 0.5rem;" onchange="moduleContext.renderAttendanceLogs()">
+                        <input type="date" id="att-filter-date" style="max-width: 180px; padding: 0.5rem;" onchange="window.moduleContext.renderAttendanceLogs()">
                     </div>
                     <div class="table-responsive">
                         <table class="data-table" id="table-attendance">
@@ -383,10 +427,10 @@
         <main id="view-user-search" class="view-section">
             <div class="form-layout" style="max-width: 500px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" onclick="window.appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title" id="search-title">Search User</h2>
                 </div>
-                <form id="userSearchForm" onsubmit="moduleContext.fetchUserHub(event); return false;">
+                <form id="userSearchForm" onsubmit="window.moduleContext.fetchUserHub(event); return false;">
                     <div class="form-group"><label>Member Phone Number <span class="required">*</span></label><input type="tel" id="search-phone" pattern="\d{10}" maxlength="10" required></div>
                     <div class="form-group"><label>Financial Year <span class="required">*</span></label><select id="search-fy" required></select></div>
                     <button type="submit" class="btn primary" style="margin-top: 1rem;">Fetch Details</button>
@@ -397,7 +441,7 @@
         <main id="view-user-hub" class="view-section">
             <div class="form-layout" style="max-width: 900px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="appContext.switchView('user-search')" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" onclick="window.appContext.switchView('user-search')" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title" id="hub-title">Member Profile</h2>
                 </div>
                 <div class="profile-snippet">
@@ -414,9 +458,9 @@
                         <p id="hub-doj" style="margin-top:5px; font-weight:700; color:var(--success-green); font-size: 0.85rem;"></p>
                     </div>
                     <div id="hub-actions" style="display:flex; flex-direction:column; gap:0.5rem; width:100%; max-width:200px;">
-                        <button id="btn-hub-edit" class="btn secondary" onclick="moduleContext.editUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Edit Profile</button>
-                        <button id="btn-hub-pdf" class="btn secondary" onclick="moduleContext.regeneratePdf()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Re-Download PDF</button>
-                        <button id="btn-hub-delete" class="btn danger admin-only" onclick="moduleContext.deleteUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Delete User</button>
+                        <button id="btn-hub-edit" class="btn secondary" onclick="window.moduleContext.editUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Edit Profile</button>
+                        <button id="btn-hub-pdf" class="btn secondary" onclick="window.moduleContext.regeneratePdf()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Re-Download PDF</button>
+                        <button id="btn-hub-delete" class="btn danger admin-only" onclick="window.moduleContext.deleteUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Delete User</button>
                     </div>
                 </div>
 
@@ -429,25 +473,24 @@
         <main id="view-reports" class="view-section">
             <div class="form-layout" style="max-width: 1000px; padding: 1.5rem; background:transparent; border:none; box-shadow:none;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" onclick="window.appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">Financial Reports & P&L</h2>
                 </div>
                 
                 <div class="form-row" style="background:var(--bg-panel); padding:1rem; border-radius:8px; border:1px solid var(--border-color); align-items:flex-end;">
                     <div class="form-group"><label>Financial Year</label><select id="report-fy"></select></div>
                     <div class="form-group"><label>Month</label><select id="report-month"><option value="All">Entire Year (All Months)</option></select></div>
-                    <button class="btn primary" onclick="moduleContext.generateReport()" style="max-width:150px; padding: 1rem;">Generate</button>
+                    <button class="btn primary" onclick="window.moduleContext.generateReport()" style="max-width:150px; padding: 1rem;">Generate</button>
                 </div>
 
                 <div id="report-content" style="display:none; margin-top:2rem;">
-                    <!-- Report contents dynamically rendered here -->
                     <div class="report-kpi-grid">
                         <div class="kpi-card"><h4>Total Revenue (Credit)</h4><div class="val" style="color:var(--success-green);">₹<span id="kpi-rev-total">0</span></div></div>
                         <div class="kpi-card"><h4>Total Expenses (Debit)</h4><div class="val" style="color:var(--error-red);">₹<span id="kpi-exp-total">0</span></div></div>
                         <div class="kpi-card"><h4>Net Profit (P&L)</h4><div class="val" id="kpi-pnl-total">₹0</div></div>
                         <div class="kpi-card"><h4>New Admissions</h4><div class="val" id="kpi-adm-count">0</div><span class="sub-val">₹<span id="kpi-adm-amt">0</span></span></div>
                         <div class="kpi-card"><h4>Fees Collected</h4><div class="val" id="kpi-fee-count">0</div><span class="sub-val">₹<span id="kpi-fee-amt">0</span></span></div>
-                        <div class="kpi-card" style="cursor:pointer;" onclick="moduleContext.filterReportByShortfall()" title="Click to view profiles with shortfall payments">
+                        <div class="kpi-card" style="cursor:pointer;" onclick="window.moduleContext.filterReportByShortfall()" title="Click to view profiles with shortfall payments">
                             <h4>Due (Shortfall) 🔍</h4><div class="val" id="kpi-shortfall-count" style="color:var(--warning-yellow);">0</div><span class="sub-val" style="color:var(--warning-yellow);">₹<span id="kpi-shortfall-amt">0</span></span>
                         </div>
                         <div class="kpi-card"><h4>Fee Unpaid</h4><div class="val" id="kpi-unpaid-count" style="color:var(--error-red);">0</div><span class="sub-val" style="color:var(--error-red);">₹<span id="kpi-unpaid-amt">0</span></span></div>
@@ -481,32 +524,32 @@
         <main id="view-upi-editor" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" onclick="window.appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">UPI Settings</h2>
                 </div>
                 <div class="form-row"><div class="form-group"><label>Linked UPI ID <span class="required">*</span></label><input type="text" id="admin-upi-id" placeholder="e.g. revivefitness@upi" required></div></div>
-                <div class="action-row"><button type="button" onclick="moduleContext.saveUpi()" class="btn primary">Save UPI Settings</button></div>
+                <div class="action-row"><button type="button" onclick="window.moduleContext.saveUpi()" class="btn primary">Save UPI Settings</button></div>
             </div>
         </main>
 
         <main id="view-pin-editor" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" onclick="window.appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">PIN Settings</h2>
                 </div>
                 <div class="form-row"><div class="form-group"><label>Admin PIN <span class="required">*</span></label><input type="password" id="admin-admin-pin" placeholder="4-digit PIN" maxlength="4" required></div></div>
-                <div class="action-row"><button type="button" onclick="moduleContext.savePins()" class="btn primary">Save Admin PIN</button></div>
+                <div class="action-row"><button type="button" onclick="window.moduleContext.savePins()" class="btn primary">Save Admin PIN</button></div>
             </div>
         </main>
 
         <main id="view-staff-editor" class="view-section">
             <div class="form-layout" style="max-width: 600px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" onclick="window.appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">Staff Access Management</h2>
                 </div>
-                <form id="staffForm" onsubmit="moduleContext.saveStaff(event); return false;">
+                <form id="staffForm" onsubmit="window.moduleContext.saveStaff(event); return false;">
                     <div class="form-row">
                         <div class="form-group"><label>Staff Name <span class="required">*</span></label><input type="text" id="staff-name" placeholder="e.g. Rahul" required></div>
                         <div class="form-group"><label>Login PIN <span class="required">*</span></label><input type="password" id="staff-pin" placeholder="Create PIN (4-6 digits)" maxlength="6" pattern="\d{4,6}" required></div>
@@ -525,12 +568,12 @@
         <main id="view-tariff-editor" class="view-section">
             <div class="form-layout" style="max-width: 900px;">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" onclick="window.appContext.goHome()" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title">Master Tariff Configurator</h2>
                 </div>
                 <div style="background:var(--bg-main); padding: 1.5rem; border-radius: 8px; border: 1px dashed var(--accent-orange); margin-bottom: 2.5rem;">
                     <h3 style="color:var(--accent-orange); margin-bottom: 0.5rem; font-size: 1.1rem; text-transform: uppercase;">Special Date / Promo Tariffs</h3>
-                    <form id="promoTariffForm" onsubmit="moduleContext.addSpecialTariff(event); return false;">
+                    <form id="promoTariffForm" onsubmit="window.moduleContext.addSpecialTariff(event); return false;">
                         <div class="form-row">
                             <div class="form-group"><label>Promo Name <span class="required">*</span></label><input type="text" id="promo-name" placeholder="e.g. Diwali Offer" required></div>
                             <div class="form-group"><label>Start Date <span class="required">*</span></label><input type="date" id="promo-start" required></div>
@@ -549,14 +592,14 @@
                 <h3 style="color:var(--text-main); margin-bottom: 1rem; font-size: 1.1rem; text-transform: uppercase;">Standard Monthly Tariffs</h3>
                 <div class="form-row"><div class="form-group" style="max-width: 300px;"><label for="fy-select">Financial Year</label><select id="fy-select"></select></div></div>
                 <div id="tariff-months-container" style="margin-top: 1rem;"></div>
-                <div class="action-row"><button type="button" onclick="moduleContext.saveTariffs()" class="btn primary">Save Monthly Tariffs</button></div>
+                <div class="action-row"><button type="button" onclick="window.moduleContext.saveTariffs()" class="btn primary">Save Monthly Tariffs</button></div>
             </div>
         </main>
 
         <main id="view-admission" class="view-section">
             <div class="form-layout">
                 <div class="module-toolbar">
-                    <button class="back-btn" onclick="appContext.goHome()" type="button" id="form-back-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
+                    <button class="back-btn" onclick="window.appContext.goHome()" type="button" id="form-back-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back</button>
                     <h2 class="module-title" id="form-main-title">Admission Registration</h2>
                 </div>
                 <form id="admissionForm">
@@ -594,7 +637,6 @@
                         <div class="action-row"><button type="button" id="btn-next-step" class="btn primary">Proceed to Verification →</button></div>
                     </div>
                     
-                    <!-- Include Step 2 & 3 structures directly (same as provided HTML) -->
                     <div id="step-2" class="step-container">
                         <div class="step-indicator" id="step-2-ind">Step 2 of 3: Digital Verification</div>
                         <div class="verification-group">
@@ -652,17 +694,169 @@
             </div>
         </main>
         
-        <!-- Modals... Same HTML as provided -->
-        <div id="paymentProcessModal" class="modal">...</div>
-        <div id="paymentSuccessModal" class="modal">...</div>
-        <div id="successModal" class="modal">...</div>
-        <div id="receiptSuccessModal" class="modal">...</div>
-        <div id="viewReceiptModal" class="modal">...</div>
+        <div id="paymentProcessModal" class="modal">
+            <div class="modal-content" style="text-align: left;">
+                <h2 class="orange-text" style="text-align:center; font-size:1.4rem;">Process Payment</h2>
+                <div style="background: var(--bg-main); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid var(--border-color);">
+                    <p style="margin-bottom: 5px;"><strong>Month:</strong> <span id="pay-month"></span> <span id="pay-promo-badge"></span></p>
+                    <p style="margin-bottom: 5px;"><strong>Total Due:</strong> ₹<span id="pay-total-due"></span></p>
+                    <p style="margin-bottom: 5px;"><strong>Already Paid:</strong> ₹<span id="pay-already-paid"></span></p>
+                    <p style="color:var(--error-red); font-size:1.1rem; margin-top:10px;"><strong>Balance Left: ₹<span id="pay-balance"></span></strong></p>
+                </div>
+                <div class="form-group">
+                    <label>Amount Paying Now (₹) <span class="required">*</span></label>
+                    <input type="number" id="pay-amount-now" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label>Payment Method <span class="required">*</span></label>
+                    <select id="pay-method">
+                        <option value="UPI">UPI Payment (QR Code)</option>
+                        <option value="CASH">Cash Payment</option>
+                    </select>
+                </div>
+                <div id="pay-upi-section" style="text-align:center; margin: 1rem 0; display:none;">
+                    <div class="qr-wrapper"><img id="pay-upi-qr" src="" style="width:150px; height:150px;"></div>
+                </div>
+                <div class="action-row">
+                    <button type="button" onclick="document.getElementById('paymentProcessModal').style.display='none'" class="btn secondary">Cancel</button>
+                    <button type="button" onclick="window.moduleContext.confirmPayment()" class="btn primary">Confirm</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="paymentSuccessModal" class="modal">
+            <div class="modal-content" style="text-align:center;">
+                <div class="checkmark-circle"><div class="checkmark-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div></div>
+                <h2 style="color: var(--text-main); margin-bottom:0.5rem; font-size:1.8rem;">Payment Successful!</h2>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">Amount received for Admission ID: <strong id="success-paid-id" style="color:var(--accent-orange);"></strong></p>
+                <button id="btn-proceed-to-admission" class="btn primary">Complete Registration</button>
+            </div>
+        </div>
+
+        <div id="successModal" class="modal">
+            <div class="modal-content">
+                <img src="logo.png" alt="REVIVE FITNESS STUDIO" style="height: 45px; margin-bottom: 1.5rem;" onerror="this.style.display='none'">
+                <h2 class="orange-text" id="sm-title">Registration Complete!</h2>
+                <div class="admission-badge" id="generated-id">REV-0000</div>
+                <div class="modal-actions" id="sm-adm-actions">
+                    <button id="btn-download-pdf" class="btn primary" onclick="window.moduleContext.regeneratePdf()">1. Download PDF Record</button>
+                    <button id="btn-whatsapp-welcome" class="btn whatsapp" onclick="window.moduleContext.sendWelcomeMessage()">2. Send Welcome Message</button>
+                    <button id="btn-whatsapp-pdf" class="btn whatsapp" onclick="window.moduleContext.sharePdfRecord()">3. Share PDF Record</button>
+                    <button id="btn-share-adm-receipt" class="btn whatsapp" onclick="window.moduleContext.shareAdmissionReceipt()">4. Share Payment Receipt</button>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn secondary" onclick="window.appContext.closeModal()">Close Window</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="receiptSuccessModal" class="modal">
+            <div class="modal-content">
+                <div class="checkmark-circle"><div class="checkmark-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div></div>
+                <h2 class="orange-text">Payment Recorded!</h2>
+                <p style="margin-bottom: 1.5rem;">Receipt has been successfully generated.</p>
+                <div class="modal-actions">
+                    <button id="btn-share-receipt" onclick="window.moduleContext.shareReceipt('success')" class="btn whatsapp">Share Receipt Image</button>
+                    <button class="btn secondary" onclick="window.appContext.switchView('user-hub')">Return to Profile</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="viewReceiptModal" class="modal">
+            <div class="modal-content">
+                <h2 class="orange-text">Payment Receipt</h2>
+                <p style="margin-bottom: 1.5rem;">Receipt for <span id="vr-month-label" style="font-weight:bold;"></span></p>
+                <div class="modal-actions">
+                    <button id="btn-vr-share" onclick="window.moduleContext.shareReceipt('vr')" class="btn whatsapp">Share Receipt via WhatsApp</button>
+                    <button class="btn secondary" onclick="document.getElementById('viewReceiptModal').style.display='none'">Close</button>
+                </div>
+            </div>
+        </div>
     </div> 
 
-    <!-- PDF/Receipt template zones... Same HTML as provided -->
-    <div id="pdf-template-wrapper">...</div>
-    <div id="receipt-render-zone">...</div>
+    <div id="pdf-template-wrapper">
+        <div id="pdf-template">
+            <div class="pdf-flex-between pdf-border-bottom">
+                <div><img src="logo.png" alt="REVIVE FITNESS STUDIO" class="pdf-logo" onerror="this.src='https://via.placeholder.com/150x45/ffffff/ff6600?text=REVIVE+FITNESS'"></div>
+                <div style="text-align:right; font-weight:bold; font-size:12px; line-height:1.3;">OFFICIAL MEMBER<br>ADMISSION</div>
+            </div>
+            <div class="pdf-meta-box"><span>ADMISSION ID: <span id="pdf-id" style="color:var(--accent-orange);"></span></span><span>REGISTRATION DATE: <span id="pdf-date"></span></span></div>
+            <div class="pdf-data-row">
+                <div style="flex: 0 0 120px;"><img id="pdf-photo" class="pdf-photo" src="" alt="Member Photo"></div>
+                <div style="flex: 1;">
+                    <table class="pdf-table">
+                        <tr><th>FULL NAME</th><td id="pdf-name"></td></tr>
+                        <tr><th>ADMISSION DETAILS</th><td id="pdf-admission-details"></td></tr>
+                        <tr><th>TRAINING CATEGORY</th><td id="pdf-training-category"></td></tr>
+                        <tr><th>PRIMARY CONTACT</th><td id="pdf-contact1"></td></tr>
+                        <tr><th>ALTERNATE CONTACT</th><td id="pdf-contact2"></td></tr>
+                        <tr><th>DATE OF BIRTH & AGE</th><td id="pdf-dob-age"></td></tr>
+                        <tr><th>RESIDENTIAL ADDRESS</th><td id="pdf-address"></td></tr>
+                    </table>
+                </div>
+            </div>
+            <div class="pdf-declaration">
+                <h4>DECLARATION</h4>
+                <p>I hereby declare that the details furnished above are true and correct to the best of my knowledge. I agree to abide by the rules, regulations, and disciplinary guidelines of Revive Fitness. I understand that the membership is non-transferable and fees are non-refundable. I acknowledge that physical exercise involves inherent risks and I participate at my own risk.</p>
+            </div>
+            <div class="pdf-sigs-container">
+                <div class="pdf-sig-block">
+                    <div class="pdf-sig-image-box"><img id="pdf-member-sig" src="" alt="Member Signature" style="display:none;"></div>
+                    <div class="pdf-sig-line">MEMBER SIGNATURE</div>
+                    <div class="pdf-sig-meta"><strong>Verified by:</strong> <span id="member-verified"></span><br><strong>Timestamp:</strong> <span id="member-timestamp"></span><br><strong>Location:</strong> <span id="member-location"></span></div>
+                </div>
+                <div class="pdf-sig-block">
+                    <div class="pdf-sig-image-box"><img src="signature.png" alt="Authorized Signature" onerror="this.style.display='none'"></div>
+                    <div class="pdf-sig-line">AUTHORIZED SIGNATURE</div>
+                    <div class="pdf-sig-meta"><strong>Verified by:</strong> Revive System Admin<br><strong>Timestamp:</strong> <span id="official-timestamp"></span><br><strong>Location:</strong> Revive Fitness Studio H.O</div>
+                </div>
+            </div>
+            <div class="pdf-rules-container">
+                <h3>RULES & REGULATIONS / നിബന്ധനകൾ</h3>
+                <ol class="pdf-rules-list">
+                    <li><strong>Members must strictly observe discipline.</strong><em>അംഗങ്ങൾ കർശനമായി അച്ചടക്കം പാലിക്കേണ്ടതാണ്.</em></li>
+                    <li><strong>Fees must be paid on time. The fee for each month must be paid before the 9th of that month.</strong><em>ഫീസ് കൃത്യസമയത്ത് അടയ്ക്കേണ്ടതാണ്. എല്ലാ മാസവും 9-ാം തീയതിക്ക് മുമ്പായി അതാത് മാസത്തെ ഫീസ് അടയ്ക്കേണ്ടതാണ്.</em></li>
+                    <li><strong>Equipment must be returned to its proper place after use.</strong><em>ക്ലബ്ബിലെ ഉപകരണങ്ങൾ ഉപയോഗിച്ചതിനുശേഷം യഥാസ്ഥാനങ്ങളിൽ തിരികെ വയ്ക്കേണ്ടതാണ്.</em></li>
+                    <li><strong>Advance fees and monthly fees once paid will not be refunded.</strong><em>ഒരിക്കൽ അടച്ച അഡ്വാൻസ് ഫീസും മാസഫീസും മടക്കിത്തരുന്നതല്ല.</em></li>
+                    <li><strong>Belongings brought to the club must be kept at one's own risk.</strong><em>ക്ലബ്ബിൽ കൊണ്ടുവരുന്ന സാധനങ്ങൾ സ്വന്തം ഉത്തരവാദിത്വത്തിൽ സൂക്ഷിക്കേണ്ടതാണ്.</em></li>
+                    <li><strong>The time of practice and name must be entered accurately in the club's register book every day.</strong><em>പ്രാക്ടീസിനായി വരുന്ന സമയവും പേരും എല്ലാ മാസവും ക്ലബ്ബിലെ രജിസ്റ്റർ ബുക്കിൽ കൃത്യമായി രേഖപ്പെടുത്തേണ്ടതാണ്.</em></li>
+                    <li><strong>It is mandatory to use a towel during practice. Practice will not be allowed without a towel.</strong><em>നിർബന്ധമായും ടവ്വൽ ഉപയോഗിച്ച് പ്രാക്ടീസ് ചെയ്യുക. ടവ്വൽ ഇല്ലാത്തപക്ഷം പ്രാക്ടീസ് ചെയ്യാൻ അനുവദിക്കുന്നതല്ല.</em></li>
+                    <li><strong>Workout using a t-shirt and track pants.</strong><em>ടീഷർട്ട്, ട്രാക്ക് പാന്റ് എന്നിവ ഉപയോഗിച്ച് വർക്കൗട്ട് ചെയ്യുക.</em></li>
+                    <li><strong>If absent continuously for 6 months, readmission must be taken.</strong><em>തുടർച്ചയായി 6 മാസം വരാതിരുന്നാൽ തുടർന്ന് റീ അഡ്മിഷൻ എടുക്കേണ്ടി വരുന്നതാണ്.</em></li>
+                    <li><strong>Do not enter the club under the influence of alcohol or drugs. If found, membership will be cancelled.</strong><em>ലഹരി കഴിച്ചുകൊണ്ട് ക്ലബ്ബിൽ പ്രവേശിക്കാൻ പാടില്ല. അങ്ങനെ കണ്ടെത്തിയാൽ അംഗത്വം റദ്ദ് ചെയ്യുന്നതായിരിക്കും.</em></li>
+                    <li><strong>Management is not responsible for any accidents during training.</strong><em>പരിശീലനത്തിനിടയിൽ ഉണ്ടാകുന്ന അത്യാഹിതങ്ങൾക്ക് മാനേജ്മെന്റിന് യാതൊരു ഉത്തരവാദിത്വവും ഉണ്ടായിരിക്കുന്നതല്ല.</em></li>
+                    <li><strong>Members are fully responsible for any damages caused to the club by them.</strong><em>അംഗങ്ങൾമൂലം ക്ലബ്ബിൽ ഉണ്ടാകുന്ന നാശനഷ്ടങ്ങളുടെ പൂർണ്ണ ഉത്തരവാദിത്വം അതത് അംഗങ്ങൾക്ക് തന്നെയായിരിക്കും.</em></li>
+                    <li><strong>Those with any confirmed medical conditions must produce a full medical clearance certificate from a doctor.</strong><em>വൈദ്യശാസ്ത്രപരമായ ഏതെങ്കിലും രോഗം ഉള്ളതായി സ്ഥിരീകരിക്കപ്പെട്ടിട്ടുള്ളവർ ഡോക്ടറുടെ പൂർണ്ണ ആരോഗ്യ സർട്ടിഫിക്കറ്റ് ഹാജരാക്കേണ്ടതാണ്.</em></li>
+                    <li><strong>Ensure that all the above conditions are read, understood, and acceptable. Applicable to everyone.</strong><em>മേൽപ്പറഞ്ഞ നിബന്ധനകൾ എല്ലാം വായിച്ചു ബോധ്യപ്പെടുകയും അവയെല്ലാം സ്വീകാര്യവുമാണെന്ന് ഉറപ്പ് വരുത്തുക. മുകളിൽ പറഞ്ഞ വസ്തുതകൾ എല്ലാവർക്കും ബാധകം.</em></li>
+                </ol>
+            </div>
+            <div class="pdf-footer">Address: Kadayil Arcade, Thanal Nagar, Keralapuram, Keralam 691504 | Contact no: 8921698044</div>
+        </div>
+    </div>
+
+    <div id="receipt-render-zone">
+        <div id="receipt-template">
+            <div class="rcpt-header">
+                <img src="logo.png" onerror="this.style.display='none'">
+                <div class="rcpt-address">Kadayil Arcade, Thanal Nagar, Keralapuram, Keralam 691504<br>Ph: 8921698044</div>
+                <h3 class="rcpt-title">PAYMENT RECEIPT</h3>
+            </div>
+            <table class="rcpt-table">
+                <tr><td><strong>Member Name:</strong></td><td id="rcpt-name" style="text-align:right;"></td></tr>
+                <tr><td><strong>Admission No:</strong></td><td id="rcpt-id" style="text-align:right;"></td></tr>
+                <tr><td><strong>Phone:</strong></td><td id="rcpt-phone" style="text-align:right;"></td></tr>
+                <tr><td><strong>Month Paid For:</strong></td><td id="rcpt-month" style="text-align:right; font-weight:bold; color:var(--accent-orange);"></td></tr>
+            </table>
+            <div class="rcpt-amount-box">
+                <table style="width: 100%; font-size: 14px; line-height:2;">
+                    <tr><td><strong>Amount Paid:</strong></td><td style="text-align: right; color: green; font-weight: 900; font-size:16px;">₹<span id="rcpt-paid"></span></td></tr>
+                    <tr><td><strong>Balance Due:</strong></td><td style="text-align: right; color: red; font-weight: bold;">₹<span id="rcpt-balance"></span></td></tr>
+                    <tr><td><strong>Payment Mode:</strong></td><td style="text-align: right; font-weight:bold;" id="rcpt-mode"></td></tr>
+                </table>
+            </div>
+            <div class="rcpt-footer">Generated on <span id="rcpt-date"></span><br>Thank you for choosing Revive!</div>
+        </div>
+    </div>
 
     <script>
         const CLOUD_SYNC_URL = "https://script.google.com/macros/s/AKfycbxv-ri1TP3f7SzugYNLcz9DuFASuhssX6dZnqA_Me7WyOaM2rcH5WL7q6XdbW2WCstM/exec"; 
@@ -687,18 +881,23 @@
 
         const cloudAPI = {
             pullInitial: async function() {
-                if(!CLOUD_SYNC_URL || CLOUD_SYNC_URL === "YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE") return;
+                if(!CLOUD_SYNC_URL || CLOUD_SYNC_URL === "YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE") {
+                    document.getElementById('cloud-sync-overlay').style.display = 'none';
+                    return;
+                }
+                
                 document.getElementById('cloud-sync-overlay').style.display = 'flex';
+                
                 try {
                     const res = await fetch(CLOUD_SYNC_URL + '?action=pull');
                     const data = await res.json();
                     
-                    if(data.settings) window.liveDB.settings = data.settings;
-                    if(data.staff) window.liveDB.staff = data.staff;
-                    if(data.tariffs) window.liveDB.tariffs = data.tariffs;
-                    if(data.specialTariffs) window.liveDB.specialTariffs = data.specialTariffs;
-                    if(data.users) window.liveDB.users = data.users;
-                    if(data.expenses) window.liveDB.expenses = data.expenses;
+                    window.liveDB.settings = data.settings || {};
+                    window.liveDB.staff = data.staff || [];
+                    window.liveDB.tariffs = data.tariffs || {};
+                    window.liveDB.specialTariffs = data.specialTariffs || [];
+                    window.liveDB.users = data.users || [];
+                    window.liveDB.expenses = data.expenses || [];
                     
                     if(data.payments) {
                         const pObj = {};
@@ -708,6 +907,8 @@
                             pObj[p.userId][p.fy][p.month] = p;
                         });
                         window.liveDB.payments = pObj;
+                    } else {
+                        window.liveDB.payments = {};
                     }
                     
                     if(data.attendance) {
@@ -717,12 +918,21 @@
                             aObj[a.dateKey].push(a);
                         });
                         window.liveDB.attendance = aObj;
+                    } else {
+                        window.liveDB.attendance = {};
                     }
-                } catch(e) { console.error("Cloud Pull Error:", e); alert("Error connecting to server. App may function in offline read-only mode."); }
-                document.getElementById('cloud-sync-overlay').style.display = 'none';
+                } catch(e) { 
+                    console.warn("Could not load from cloud, using blank state", e);
+                    const toast = document.getElementById('cloud-toast');
+                    toast.innerText = "Offline Mode - Server unreachable";
+                    toast.classList.add('show');
+                    setTimeout(() => toast.classList.remove('show'), 3000);
+                } finally {
+                    // GUARANTEE the overlay always hides, even on total network failure
+                    document.getElementById('cloud-sync-overlay').style.display = 'none';
+                }
             },
 
-            // New Real-time Push Method (Awaits response)
             push: async function(action, payload) {
                 if(!CLOUD_SYNC_URL || CLOUD_SYNC_URL === "YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE") return;
                 
@@ -734,7 +944,6 @@
                     const formData = new URLSearchParams();
                     formData.append('data', JSON.stringify({ action, payload }));
 
-                    // Note: Ensure your GAS handles standard CORS if removing 'no-cors' mode.
                     await fetch(CLOUD_SYNC_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -747,7 +956,7 @@
                     toast.innerText = "Network Error! Save failed.";
                     console.error("Push Error:", e);
                     setTimeout(() => toast.classList.remove('show'), 3000);
-                    throw e; // Bubble up so caller knows it failed
+                    throw e;
                 }
             }
         };
@@ -897,10 +1106,9 @@
                     ptFee: document.getElementById('promo-pt').value 
                 };
                 
-                // Write live
                 try {
                     await cloudAPI.push('pushSpecialTariff', promo);
-                    window.liveDB.specialTariffs.push(promo); // update memory
+                    window.liveDB.specialTariffs.push(promo);
                     document.getElementById('promoTariffForm').reset();
                     window.moduleContext.renderSpecialTariffs();
                     alert("Special Date Rate added successfully!");
@@ -1332,7 +1540,6 @@
                 window.moduleContext.generateReceiptImage(record.amountPaid, 0, record.method || "N/A", 'view', record.lastDate);
             },
             
-            // Receipt and Sharing logic stays entirely the same
             generateReceiptImage: function(paidAmt, newBal, mode, triggerFlow, overrideDate) {
                 const dIso = overrideDate || new Date().toISOString(); const dStr = new Date(dIso).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
                 
@@ -1449,7 +1656,6 @@
                 }
             },
             
-            // ... PDF logic remains unchanged ...
             preparePdfDom: function() {
                 if(!currentMemberDetails.photo) currentMemberDetails.photo = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; 
                 if(!currentMemberDetails.signature) currentMemberDetails.signature = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
@@ -1497,7 +1703,6 @@
                 }, 350);
             },
 
-            // Reports calculations updated to use window.liveDB
             initReports: function() {
                 const fySelect = document.getElementById('report-fy'); const monthSelect = document.getElementById('report-month');
                 const currYear = new Date().getFullYear(); fySelect.innerHTML = '';
@@ -1644,7 +1849,6 @@
 
         document.addEventListener('DOMContentLoaded', () => {
 
-            // Initiate pull from server on load
             cloudAPI.pullInitial();
 
             const dobInp = document.getElementById('dob'); 
@@ -1746,8 +1950,7 @@
                         return;
                     }
 
-                    // For new admission logic
-                    preAdmissionId = `REV-${Date.now().toString().slice(-4)}`; // Basic pseudo-ID (Implement real counter on GAS backend if needed)
+                    preAdmissionId = `REV-${Date.now().toString().slice(-4)}`;
                     
                     const adDateVal = document.getElementById('dateOfAdmission').value;
                     const parts = adDateVal.split('-'); const adDateObj = new Date(parts[2], parts[1]-1, parts[0]);
@@ -1827,11 +2030,9 @@
                 const pData = { userId: currentMemberDetails.id, fy: currentMemberDetails._fy, month: currentMemberDetails._month, totalDue: calculatedTotalFee, amountPaid: calculatedTotalFee, status: 'Paid', method: method, lastDate: new Date().toISOString() };
                 
                 try {
-                    // Push the user first
                     await cloudAPI.push('pushUser', currentMemberDetails);
                     window.liveDB.users.push(currentMemberDetails);
                     
-                    // Push the payment
                     await cloudAPI.push('pushPayment', pData);
                     if(!window.liveDB.payments[currentMemberDetails.id]) window.liveDB.payments[currentMemberDetails.id] = {};
                     if(!window.liveDB.payments[currentMemberDetails.id][currentMemberDetails._fy]) window.liveDB.payments[currentMemberDetails.id][currentMemberDetails._fy] = {};
@@ -1851,16 +2052,6 @@
                     document.getElementById('prevPhoneInput').value = ''; document.getElementById('firstName').value = ''; document.getElementById('lastName').value = ''; 
                     document.getElementById('primaryContact').value = ''; document.getElementById('alternateContact').value = ''; 
                     document.getElementById('dob').value = ''; document.getElementById('address').value = ''; document.getElementById('age').value = '';
-                }
-            });
-
-            // Ensure window objects are mapped correctly for any direct inline calls left over
-            document.querySelectorAll('.module-card, form').forEach(el => {
-                if (el.hasAttribute('onclick')) {
-                    let val = el.getAttribute('onclick'); if (!val.startsWith('window.')) { el.setAttribute('onclick', 'window.' + val); }
-                }
-                if (el.hasAttribute('onsubmit')) {
-                    let val = el.getAttribute('onsubmit'); if (!val.startsWith('window.')) { el.setAttribute('onsubmit', 'window.' + val); }
                 }
             });
         });
