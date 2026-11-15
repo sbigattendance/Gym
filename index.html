@@ -1534,9 +1534,10 @@
                             <div class="form-group"><label>End Date <span class="required">*</span></label><input type="date" id="promo-end" required></div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group"><label>Adm. Fee <span class="required">*</span></label><input type="number" id="promo-adm" placeholder="850" required></div>
-                            <div class="form-group"><label>Monthly Fee <span class="required">*</span></label><input type="number" id="promo-reg" placeholder="800" required></div>
-                            <div class="form-group"><label>PT Fee <span class="required">*</span></label><input type="number" id="promo-pt" placeholder="1500" required></div>
+                            <div class="form-group"><label>1. Admission Fee <span class="required">*</span></label><input type="number" id="promo-adm" placeholder="850" required></div>
+                            <div class="form-group"><label>2. Re-Admission Fee <span class="required">*</span></label><input type="number" id="promo-readm" placeholder="500" required></div>
+                            <div class="form-group"><label>3. Monthly Fee <span class="required">*</span></label><input type="number" id="promo-reg" placeholder="800" required></div>
+                            <div class="form-group"><label>4. Personal Training Fee <span class="required">*</span></label><input type="number" id="promo-pt" placeholder="1500" required></div>
                         </div>
                         <button type="submit" class="btn secondary" style="width:auto; padding:0.8rem 1.5rem; border-color:var(--accent-orange); color:var(--accent-orange);">+ Add Special Rate</button>
                     </form>
@@ -1729,7 +1730,8 @@
                             <h3 style="color:var(--accent-orange); text-align:center; margin-bottom:1.2rem; letter-spacing:1px;">FEE SUMMARY (<span id="calc-adm-month-label"></span>)</h3>
                             <div class="fee-row"><span>Synced Admission ID:</span> <strong id="calc-admission-id" style="color:var(--accent-orange);">REV-0000</strong></div>
                             <div class="fee-row"><span id="calc-admin-fee-label">Admission Fee:</span> <strong>₹<span id="calc-admin-fee">0</span></strong></div>
-                            <div class="fee-row"><span>Training Fee:</span> <strong>₹<span id="calc-monthly-fee">0</span></strong></div>
+                            <div class="fee-row"><span id="calc-monthly-fee-label">Monthly Fee:</span> <strong>₹<span id="calc-monthly-fee">0</span></strong></div>
+                            <div class="fee-row" id="calc-pt-fee-row" style="display:none;"><span>Personal Training Fee:</span> <strong>₹<span id="calc-pt-fee">0</span></strong></div>
                             <div class="fee-row" id="calc-prev-arrears-row" style="display:none; background:#fff5eb; padding:6px 8px; border-radius:6px; border-left:3px solid var(--error-red);">
                             <span style="color:var(--error-red); font-weight:800; font-size:0.86rem;">+ Previous Pending Balance (<span id="calc-prev-arrears-label"></span>):</span>
                             <strong style="color:var(--error-red);">+ ₹<span id="calc-prev-arrears-fee">0</span></strong>
@@ -4402,17 +4404,25 @@
             const mScore = mYear * 100 + monthIdx;
             const refDate = (mScore === adInfo.score) ? new Date(adInfo.year, adInfo.monthIdx, adInfo.day) : new Date(mYear, monthIdx, 1);
             const monthTariff = window.moduleContext.getApplicableTariff(refDate, monthName, fy);
-            let due = parseInt(user.trainingCategory === "Personal Training" ? monthTariff.ptFee : monthTariff.regFee, 10) || 0;
+            const isPT = String(user.trainingCategory || "").includes("Personal");
+
             if (mScore === adInfo.score) {
+                const isReAdm = (user.admissionType === "Re-Admission");
+                const admOrReadmFee = isReAdm
+                    ? (Number(monthTariff.readmFee) || Number(APP_CONFIG.baseReadmissionFee) || 500)
+                    : (Number(monthTariff.admFee) || Number(APP_CONFIG.baseAdmissionFee) || 850);
+                let monthlyFee = Number(monthTariff.regFee) || Number(APP_CONFIG.baseMonthlyFee) || 800;
                 const daysInMonth = new Date(adInfo.year, adInfo.monthIdx + 1, 0).getDate();
                 const remainingDays = Math.max(1, daysInMonth - adInfo.day + 1);
                 if (remainingDays < 15) {
-                    due = Math.round((due / 30) * remainingDays);
+                    monthlyFee = Math.round((monthlyFee / 30) * remainingDays);
                 }
-                const isReAdm = (user.admissionType === "Re-Admission");
-                due += isReAdm ? (Number(APP_CONFIG.baseReadmissionFee) || 500) : (parseInt(monthTariff.admFee, 10) || Number(APP_CONFIG.baseAdmissionFee));
+                const ptFee = isPT ? (Number(monthTariff.ptFee) || Number(APP_CONFIG.basePTFee) || 1500) : 0;
+                return admOrReadmFee + monthlyFee + ptFee;
             }
-            return due;
+            return isPT
+                ? (Number(monthTariff.ptFee) || Number(APP_CONFIG.basePTFee) || 1500)
+                : (Number(monthTariff.regFee) || Number(APP_CONFIG.baseMonthlyFee) || 800);
         }
 
         // Get all pending Supplement invoices for a member (across their admission chain)
@@ -4925,7 +4935,12 @@
             },
 
             getApplicableTariff: function(targetDateObj, monthName, fyString) {
-                const defaultTariff = { admFee: Number(APP_CONFIG.baseAdmissionFee) || 850, regFee: Number(APP_CONFIG.baseMonthlyFee) || 800, ptFee: Number(APP_CONFIG.basePTFee) || 1500 };
+                const defaultTariff = {
+                    admFee: Number(APP_CONFIG.baseAdmissionFee) || 850,
+                    readmFee: Number(APP_CONFIG.baseReadmissionFee) || 500,
+                    regFee: Number(APP_CONFIG.baseMonthlyFee) || 800,
+                    ptFee: Number(APP_CONFIG.basePTFee) || 1500
+                };
                 const validDate = (targetDateObj instanceof Date && !isNaN(targetDateObj.getTime())) ? targetDateObj : new Date();
                 const targetTime = new Date(validDate).setHours(0,0,0,0); 
                 
@@ -4937,6 +4952,7 @@
                     if (targetTime >= start && targetTime <= end) {
                         applicableSpecial = {
                             admFee: Number(promo.admFee) || defaultTariff.admFee,
+                            readmFee: Number(promo.readmFee != null && promo.readmFee !== "" ? promo.readmFee : defaultTariff.readmFee),
                             regFee: Number(promo.regFee) || defaultTariff.regFee,
                             ptFee: Number(promo.ptFee) || defaultTariff.ptFee,
                             promoName: promo.name
@@ -4951,6 +4967,7 @@
                     const mt = monthlyDb[fyString][monthName];
                     return {
                         admFee: Number(mt.admFee) || defaultTariff.admFee,
+                        readmFee: Number(mt.readmFee != null && mt.readmFee !== "" ? mt.readmFee : defaultTariff.readmFee),
                         regFee: Number(mt.regFee) || defaultTariff.regFee,
                         ptFee: Number(mt.ptFee) || defaultTariff.ptFee
                     };
@@ -4959,53 +4976,56 @@
             },
             addSpecialTariff: function(e) {
                 if(e) e.preventDefault();
-                const name = document.getElementById('promo-name').value;
-                const start = document.getElementById('promo-start').value;
-                const end = document.getElementById('promo-end').value;
-                const adm = document.getElementById('promo-adm').value;
-                const reg = document.getElementById('promo-reg').value;
-                const pt = document.getElementById('promo-pt').value;
+                const name = document.getElementById("promo-name").value;
+                const start = document.getElementById("promo-start").value;
+                const end = document.getElementById("promo-end").value;
+                const adm = document.getElementById("promo-adm").value;
+                const readmEl = document.getElementById("promo-readm");
+                const readm = readmEl ? readmEl.value : APP_CONFIG.baseReadmissionFee;
+                const reg = document.getElementById("promo-reg").value;
+                const pt = document.getElementById("promo-pt").value;
 
                 if(new Date(start) > new Date(end)) { showNotice("Start date cannot be after end date.", "error"); return; }
 
-                const promo = { id: Date.now().toString(), name, startDate: start, endDate: end, admFee: adm, regFee: reg, ptFee: pt };
+                const promo = { id: Date.now().toString(), name, startDate: start, endDate: end, admFee: adm, readmFee: readm, regFee: reg, ptFee: pt };
                 
-                let db = storage.get('revive_special_tariffs', []);
+                let db = storage.get("revive_special_tariffs", []);
                 db.push(promo);
-                storage.set('revive_special_tariffs', db);
-                cloudSync.push('pushSpecialTariff', promo);
+                storage.set("revive_special_tariffs", db);
+                cloudSync.push("pushSpecialTariff", promo);
                 
-                document.getElementById('promoTariffForm').reset();
+                document.getElementById("promoTariffForm").reset();
                 window.moduleContext.renderSpecialTariffs();
                 showNotice("Special Date Rate added!", "success");
             },
             removeSpecialTariff: function(id) {
-                let db = storage.get('revive_special_tariffs', []);
+                let db = storage.get("revive_special_tariffs", []);
                 db = db.filter(p => p.id !== id);
-                storage.set('revive_special_tariffs', db);
-                cloudSync.push('deleteSpecialTariff', {id: id});
+                storage.set("revive_special_tariffs", db);
+                cloudSync.push("deleteSpecialTariff", {id: id});
                 window.moduleContext.renderSpecialTariffs();
                 showNotice("Special rate removed.", "info");
             },
             renderSpecialTariffs: function() {
-                const container = document.getElementById('promo-list-container');
-                const db = storage.get('revive_special_tariffs', []);
-                container.innerHTML = '';
+                const container = document.getElementById("promo-list-container");
+                const db = storage.get("revive_special_tariffs", []);
+                container.innerHTML = "";
                 
                 if (db.length === 0) {
-                    container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">No active special rates.</p>';
+                    container.innerHTML = "<p style=\"color:var(--text-muted); font-size:0.85rem;\">No active special rates.</p>";
                     return;
                 }
                 db.forEach(p => {
-                    const sd = new Date(p.startDate).toLocaleDateString('en-IN');
-                    const ed = new Date(p.endDate).toLocaleDateString('en-IN');
+                    const sd = new Date(p.startDate).toLocaleDateString("en-IN");
+                    const ed = new Date(p.endDate).toLocaleDateString("en-IN");
+                    const rFee = p.readmFee != null && p.readmFee !== "" ? p.readmFee : APP_CONFIG.baseReadmissionFee;
                     container.innerHTML += `
                         <div class="promo-card">
                             <div>
                                 <h4>${p.name}</h4>
-                                <p>${sd} to ${ed} | Adm: ₹${p.admFee}, Reg: ₹${p.regFee}, PT: ₹${p.ptFee}</p>
+                                <p>${sd} to ${ed} | Adm: ₹${p.admFee}, Re-Adm: ₹${rFee}, Monthly: ₹${p.regFee}, PT: ₹${p.ptFee}</p>
                             </div>
-                            <button type="button" class="btn danger" style="padding:0.4rem 0.8rem; width:auto; border:none;" onclick="window.moduleContext.removeSpecialTariff('${p.id}')">Remove</button>
+                            <button type="button" class="btn danger" style="padding:0.4rem 0.8rem; width:auto; border:none;" onclick="window.moduleContext.removeSpecialTariff(\x27${p.id}\x27)">Remove</button>
                         </div>
                     `;
                 });
@@ -7404,45 +7424,58 @@
 
             initTariffEditor: function() {
                 window.moduleContext.renderSpecialTariffs(); 
-                const fySelect = document.getElementById('fy-select'); const container = document.getElementById('tariff-months-container');
-                const currYear = new Date().getFullYear(); fySelect.innerHTML = '';
+                const fySelect = document.getElementById("fy-select"); const container = document.getElementById("tariff-months-container");
+                const currYear = new Date().getFullYear(); fySelect.innerHTML = "";
                 for(let i = -1; i <= 2; i++) {
-                    const y = currYear + i; const opt = document.createElement('option'); opt.value = `${y}-${y+1}`; opt.innerText = `${y}-${y+1}`;
+                    const y = currYear + i; const opt = document.createElement("option"); opt.value = `${y}-${y+1}`; opt.innerText = `${y}-${y+1}`;
                     if(i === 0) opt.selected = true; fySelect.appendChild(opt);
                 }
-                container.innerHTML = '';
+                container.innerHTML = "";
                 tariffMonthsOrder.forEach(month => {
                     container.innerHTML += `<div class="tariff-row"><div class="tariff-month-name">${month}</div><div class="tariff-inputs">
-                        <div class="form-group"><label style="font-size:0.7rem;">Adm. Fee</label><input type="number" id="tariff-${month}-adm" data-month="${month}" placeholder="850" required></div>
-                        <div class="form-group"><label style="font-size:0.7rem;">Monthly Fee</label><input type="number" id="tariff-${month}-reg" data-month="${month}" placeholder="800" required></div>
-                        <div class="form-group"><label style="font-size:0.7rem;">PT Fee</label><input type="number" id="tariff-${month}-pt" data-month="${month}" placeholder="1500" required></div>
+                        <div class="form-group"><label style="font-size:0.7rem;">1. Admission Fee</label><input type="number" id="tariff-${month}-adm" data-month="${month}" placeholder="850" required></div>
+                        <div class="form-group"><label style="font-size:0.7rem;">2. Re-Admission Fee</label><input type="number" id="tariff-${month}-readm" data-month="${month}" placeholder="500" required></div>
+                        <div class="form-group"><label style="font-size:0.7rem;">3. Monthly Fee</label><input type="number" id="tariff-${month}-reg" data-month="${month}" placeholder="800" required></div>
+                        <div class="form-group"><label style="font-size:0.7rem;">4. Personal Training Fee</label><input type="number" id="tariff-${month}-pt" data-month="${month}" placeholder="1500" required></div>
                     </div></div>`;
                 });
                 window.moduleContext.loadTariffs();
-                fySelect.removeEventListener('change', window.moduleContext.loadTariffs);
-                fySelect.addEventListener('change', window.moduleContext.loadTariffs);
+                fySelect.removeEventListener("change", window.moduleContext.loadTariffs);
+                fySelect.addEventListener("change", window.moduleContext.loadTariffs);
             },
             loadTariffs: function() {
-                const fySelect = document.getElementById('fy-select'); if(!fySelect) return;
+                const fySelect = document.getElementById("fy-select"); if(!fySelect) return;
                 const fy = fySelect.value;
-                const db = storage.get('revive_tariffs', {});
+                const db = storage.get("revive_tariffs", {});
                 const data = db[fy] || {};
                 tariffMonthsOrder.forEach(month => {
-                    const m = data[month] || { admFee: APP_CONFIG.baseAdmissionFee, regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
-                    const iAdm = document.getElementById(`tariff-${month}-adm`); if(iAdm) iAdm.value = m.admFee;
-                    const iReg = document.getElementById(`tariff-${month}-reg`); if(iReg) iReg.value = m.regFee;
-                    const iPt = document.getElementById(`tariff-${month}-pt`); if(iPt) iPt.value = m.ptFee;
+                    const m = data[month] || {
+                        admFee: APP_CONFIG.baseAdmissionFee,
+                        readmFee: APP_CONFIG.baseReadmissionFee,
+                        regFee: APP_CONFIG.baseMonthlyFee,
+                        ptFee: APP_CONFIG.basePTFee
+                    };
+                    const iAdm = document.getElementById(`tariff-${month}-adm`); if(iAdm) iAdm.value = m.admFee != null ? m.admFee : APP_CONFIG.baseAdmissionFee;
+                    const iReadm = document.getElementById(`tariff-${month}-readm`); if(iReadm) iReadm.value = (m.readmFee != null && m.readmFee !== "") ? m.readmFee : APP_CONFIG.baseReadmissionFee;
+                    const iReg = document.getElementById(`tariff-${month}-reg`); if(iReg) iReg.value = m.regFee != null ? m.regFee : APP_CONFIG.baseMonthlyFee;
+                    const iPt = document.getElementById(`tariff-${month}-pt`); if(iPt) iPt.value = m.ptFee != null ? m.ptFee : APP_CONFIG.basePTFee;
                 });
             },
             saveTariffs: function() {
-                const fy = document.getElementById('fy-select').value;
-                let db = storage.get('revive_tariffs', {});
+                const fy = document.getElementById("fy-select").value;
+                let db = storage.get("revive_tariffs", {});
                 if(!db[fy]) db[fy] = {};
                 tariffMonthsOrder.forEach(month => {
-                    db[fy][month] = { admFee: document.getElementById(`tariff-${month}-adm`).value, regFee: document.getElementById(`tariff-${month}-reg`).value, ptFee: document.getElementById(`tariff-${month}-pt`).value };
+                    const readmEl = document.getElementById(`tariff-${month}-readm`);
+                    db[fy][month] = {
+                        admFee: document.getElementById(`tariff-${month}-adm`).value,
+                        readmFee: readmEl ? readmEl.value : APP_CONFIG.baseReadmissionFee,
+                        regFee: document.getElementById(`tariff-${month}-reg`).value,
+                        ptFee: document.getElementById(`tariff-${month}-pt`).value
+                    };
                 });
-                storage.set('revive_tariffs', db);
-                cloudSync.push('pushTariffs', db);
+                storage.set("revive_tariffs", db);
+                cloudSync.push("pushTariffs", db);
                 showNotice(`Standard Monthly Tariffs for ${fy} saved.`, "success");
             },
             
@@ -7906,18 +7939,7 @@
                             action = `onclick="window.moduleContext.viewReceipt(\x27${month}\x27, \x27${fy}\x27)"`;
                         }
                     } else {
-                        const refDate = (mScore === adScore) ? new Date(adYear, adMonthIdx, adDay) : new Date(mYear, monthIdx, 1);
-                        const monthTariff = window.moduleContext.getApplicableTariff(refDate, month, fy);
-                        let due = parseInt(trainCat === "Personal Training" ? monthTariff.ptFee : monthTariff.regFee, 10);
-                        if (mScore === adScore) {
-                            const daysInMonth = new Date(adYear, adMonthIdx + 1, 0).getDate();
-                            const remainingDays = daysInMonth - adDay + 1;
-                            if (remainingDays < 15) {
-                                due = Math.round((due / 30) * remainingDays);
-                            }
-                            const isReAdm = currentActiveUser && currentActiveUser.admissionType === "Re-Admission";
-                            due += isReAdm ? (APP_CONFIG.baseReadmissionFee || 500) : parseInt(monthTariff.admFee, 10);
-                        }
+                        let due = getExpectedMonthFeeForMember(currentActiveUser || { date: adDateStr, trainingCategory: trainCat }, month, fy, mYear, monthIdx);
                         const priorFeeArrears = getMemberPendingFeeMonths(currentActiveUser, mScore).reduce((s, x) => s + x.balance, 0);
                         const priorSuppArrears = getMemberPendingSupplementSales(userId, "").reduce((s, x) => s + x.balance, 0);
                         const cfAmt = priorFeeArrears + priorSuppArrears;
@@ -8252,15 +8274,7 @@
                     if (mTariff.promoName) {
                         document.getElementById("pay-promo-badge").innerHTML = `<span class="promo-badge">PROMO: ${mTariff.promoName} Applied</span>`;
                     }
-                    let baseMonthFee = parseInt(currentActiveUser.trainingCategory === "Personal Training" ? mTariff.ptFee : mTariff.regFee, 10) || 0;
-                    if (mScore === adScore) {
-                        const daysInMonth = new Date(adYear, adMonthIdx + 1, 0).getDate();
-                        const remainingDays = Math.max(1, daysInMonth - adDay + 1);
-                        if (remainingDays < 15) baseMonthFee = Math.round((baseMonthFee / 30) * remainingDays);
-                        const isReAdm = currentActiveUser && currentActiveUser.admissionType === "Re-Admission";
-                        baseMonthFee += isReAdm ? (Number(APP_CONFIG.baseReadmissionFee) || 500) : parseInt(mTariff.admFee, 10);
-                    }
-                    cycleTotalDue = baseMonthFee;
+                    cycleTotalDue = getExpectedMonthFeeForMember(currentActiveUser, month, fy, mYear, mIdx);
                     cycleAlreadyPaid = 0;
                     cycleBalance = cycleTotalDue;
                 }
@@ -9260,7 +9274,10 @@
                         const uFy = u._fy || window.moduleContext.getFyFromDateStr(u.date);
                         if (uFy === targetFy && (targetMonth === 'All' || u._month === targetMonth)) {
                             s.admCount++;
-                            const defaultAdmExpected = (u.admissionType === 'Re-Admission') ? (APP_CONFIG.baseReadmissionFee || 500) : parseInt(((tariffs[targetFy] && tariffs[targetFy][u._month]) ? tariffs[targetFy][u._month].admFee : APP_CONFIG.baseAdmissionFee), 10);
+                            const mTarObj = (tariffs[targetFy] && tariffs[targetFy][u._month]) ? tariffs[targetFy][u._month] : {};
+                            const defaultAdmExpected = (u.admissionType === "Re-Admission")
+                                ? parseInt((mTarObj.readmFee != null && mTarObj.readmFee !== "") ? mTarObj.readmFee : (APP_CONFIG.baseReadmissionFee || 500), 10)
+                                : parseInt(mTarObj.admFee != null ? mTarObj.admFee : APP_CONFIG.baseAdmissionFee, 10);
                             const admFeePaid = u.admFeePaid != null ? parseInt(u.admFeePaid, 10) : defaultAdmExpected;
                             s.admAmt += (isNaN(admFeePaid) ? 0 : admFeePaid);
                             if (!supersededAdmIds.has(String(u.id).trim().toUpperCase())) {
@@ -9314,14 +9331,7 @@
                             const userFyData = (payments[u.id] && payments[u.id][targetFy]) ? payments[u.id][targetFy] : {};
                             const record = userFyData[mName];
 
-                            const monthTariff = (tariffs[targetFy] && tariffs[targetFy][mName]) ? tariffs[targetFy][mName] : { admFee: APP_CONFIG.baseAdmissionFee, regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
-                            let dueAmt = parseInt(u.trainingCategory === 'Personal Training' ? monthTariff.ptFee : monthTariff.regFee, 10);
-                            if (mScore === adScore) {
-                                const daysInMonth = new Date(adYear, adMonthIdx + 1, 0).getDate();
-                                const remainingDays = daysInMonth - adDay + 1;
-                                if (remainingDays < 15) dueAmt = Math.round((dueAmt / 30) * remainingDays);
-                                dueAmt += (u.admissionType === 'Re-Admission') ? (APP_CONFIG.baseReadmissionFee || 500) : parseInt(monthTariff.admFee, 10);
-                            }
+                            let dueAmt = getExpectedMonthFeeForMember(u, mName, targetFy, mYear, monthIdx);
 
                             if (!record) {
                                 s.unpaidCount++;
@@ -11039,15 +11049,21 @@
                     preAdmissionId = getNextAdmissionId();
                 }
 
-                // Re-Admission Fee is fixed at ₹500; Fresh Admission uses tariff admFee (default ₹850)
-                const admFee = isReadm ? (Number(APP_CONFIG.baseReadmissionFee) || 500) : Number(tariff.admFee || APP_CONFIG.baseAdmissionFee);
-                const baseMonthly = Number(trainCat.includes("Personal") ? tariff.ptFee : tariff.regFee);
+                // 1. Admission Fee or Re-Admission Fee (from applicable tariff)
+                const admFee = isReadm
+                    ? Number(tariff.readmFee != null && tariff.readmFee !== "" ? tariff.readmFee : (APP_CONFIG.baseReadmissionFee || 500))
+                    : Number(tariff.admFee != null && tariff.admFee !== "" ? tariff.admFee : (APP_CONFIG.baseAdmissionFee || 850));
 
-                // Pro-rata calculation (identical to Fresh Admission, Fee Calendar, and Reports: pro-rata when remainingDays < 15)
+                // 2. Monthly Fee (ONLY Monthly Fee is pro-rated when remainingDays < 15)
+                const baseMonthly = Number(tariff.regFee != null && tariff.regFee !== "" ? tariff.regFee : (APP_CONFIG.baseMonthlyFee || 800));
                 const daysInMonth = new Date(dInfo.year, dInfo.monthIdx + 1, 0).getDate();
                 const remainingDays = Math.max(1, (daysInMonth - dInfo.day) + 1);
                 const isProRata = remainingDays < 15;
                 const proRataMonthly = isProRata ? Math.round((baseMonthly / 30) * remainingDays) : baseMonthly;
+
+                // 3. Personal Training Fee (Added in full when Personal Training is opted during admission; NEVER pro-rated)
+                const isPT = trainCat.includes("Personal");
+                const ptFeePart = isPT ? Number(tariff.ptFee != null && tariff.ptFee !== "" ? tariff.ptFee : (APP_CONFIG.basePTFee || 1500)) : 0;
 
                 // If Re-Admission, check if the member has any prior pending Supplement or Gym Fee balances
                 let readmFeeArrears = [];
@@ -11067,17 +11083,32 @@
                 };
 
                 calculatedAdmFeePart = admFee;
-                calculatedMonthlyFeePart = proRataMonthly;
-                calculatedTotalFee = admFee + proRataMonthly + readmCarryForward;
+                calculatedMonthlyFeePart = proRataMonthly + ptFeePart;
+                calculatedTotalFee = admFee + proRataMonthly + ptFeePart + readmCarryForward;
 
                 document.getElementById("calc-adm-month-label").innerText = isProRata
-                    ? `${dInfo.monthName} ${dInfo.year} - Pro-Rata (${remainingDays} Days)`
+                    ? `${dInfo.monthName} ${dInfo.year} - Monthly Pro-Rata (${remainingDays} Days)`
                     : `${dInfo.monthName} ${dInfo.year} (Full Month)`;
                 document.getElementById("calc-admission-id").innerText = preAdmissionId;
                 const admLblEl = document.getElementById("calc-admin-fee-label");
                 if (admLblEl) admLblEl.innerText = isReadm ? "Re-Admission Fee:" : "Admission Fee:";
                 document.getElementById("calc-admin-fee").innerText = admFee;
+
+                const monthlyLblEl = document.getElementById("calc-monthly-fee-label");
+                if (monthlyLblEl) monthlyLblEl.innerText = isProRata ? `Monthly Fee (Pro-Rata ${remainingDays}d):` : "Monthly Fee:";
                 document.getElementById("calc-monthly-fee").innerText = proRataMonthly;
+
+                const ptRowEl = document.getElementById("calc-pt-fee-row");
+                const ptValEl = document.getElementById("calc-pt-fee");
+                if (ptRowEl) {
+                    if (isPT) {
+                        ptRowEl.style.display = "flex";
+                        if (ptValEl) ptValEl.innerText = ptFeePart;
+                    } else {
+                        ptRowEl.style.display = "none";
+                        if (ptValEl) ptValEl.innerText = "0";
+                    }
+                }
 
                 const prevArrRow = document.getElementById("calc-prev-arrears-row");
                 const prevArrLbl = document.getElementById("calc-prev-arrears-label");
