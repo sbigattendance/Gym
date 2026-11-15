@@ -239,6 +239,11 @@
         .family-card-meta { flex: 1; min-width: 0; }
         .family-card-meta h4 { margin: 0; font-size: 0.9rem; font-weight: 800; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .family-card-meta p { margin: 2px 0 0 0; font-size: 0.74rem; color: var(--text-muted); line-height: 1.35; }
+        .wallet-badge-card { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 1rem 1.2rem; background: linear-gradient(135deg, #fff8f3 0%, #fff0e5 100%); border: 2px solid var(--accent-orange); border-radius: 12px; margin-bottom: 1.2rem; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 14px rgba(255,102,0,0.08); }
+        .wallet-badge-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(255,102,0,0.16); }
+        .wallet-bal-amount { font-size: 1.65rem; font-weight: 900; color: var(--accent-orange); line-height: 1.1; }
+        .wallet-tx-drawer { display: none; background: var(--bg-panel); border: 1.5px solid var(--border-color); border-radius: 10px; padding: 1.1rem; margin-bottom: 1.5rem; animation: fadeIn 0.25s ease-in-out; }
+        .wallet-redeem-box { background: #f0fdf4; border: 1.5px dashed var(--success-green); border-radius: 8px; padding: 0.75rem 0.9rem; margin: 0.65rem 0; }
 
         .contact-action-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; background: var(--bg-panel); border: 1px solid var(--border-color); margin-left: 6px; cursor: pointer; text-decoration: none; transition: transform 0.2s; }
         .contact-action-btn:hover { transform: scale(1.1); }
@@ -539,6 +544,10 @@
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                     <h3>Supplement Store Config</h3>
                 </div>
+                <div class="module-card admin-only" onclick="window.appContext.switchView('wallet-refund')">
+                    <svg class="module-icon-svg" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect><path d="M16 12h.01"></path><path d="M2 10h20"></path></svg>
+                    <h3>Wallet Refund</h3>
+                </div>
                 <div class="module-card admin-only" onclick="window.appContext.switchView('expense')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                     <h3>Expense Entry</h3>
@@ -574,6 +583,79 @@
             </div>
             <div style="text-align: center; margin-top: 3rem;">
                 <button class="btn secondary" onclick="window.appContext.logout()" style="font-size: 0.85rem; padding: 0.8rem 2rem; max-width: 260px;">Log Out Securely</button>
+            </div>
+        </main>
+
+        <!-- Admin Module: Wallet Refund Processing -->
+        <main id="view-wallet-refund" class="view-section">
+            <div class="form-layout" style="max-width: 820px;">
+                <div class="module-toolbar">
+                    <button class="back-btn" onclick="window.appContext.goHome()" type="button">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                        Back
+                    </button>
+                    <h2 class="module-title">Wallet Refund Processing</h2>
+                </div>
+
+                <div style="background:var(--bg-main); padding:1.3rem; border-radius:10px; border:1px solid var(--border-color); margin-bottom:1.5rem;">
+                    <h3 style="color:var(--accent-orange); font-size:1rem; text-transform:uppercase; margin:0 0 0.8rem 0;">1. Select Member by Contact Number, Name, or Admission ID</h3>
+                    <div class="form-group" style="margin-bottom:0.5rem;">
+                        <input type="text" id="refund-member-search" placeholder="Type member mobile number, name, or REV ID..." oninput="window.moduleContext.previewRefundMember(this.value)" autocomplete="off" style="background:#fff;">
+                        <div id="refund-member-live-preview" style="margin-top:6px;"></div>
+                    </div>
+
+                    <div id="refund-selected-member-card" style="display:none; margin-top:1rem; padding:1rem 1.2rem; background:#fff8f3; border:2px solid var(--accent-orange); border-radius:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                            <div>
+                                <div style="font-size:0.75rem; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Selected Member</div>
+                                <div style="font-size:1.15rem; font-weight:900; color:var(--text-main);" id="refund-mem-name">-</div>
+                                <div style="font-size:0.84rem; color:var(--text-muted); font-weight:700;" id="refund-mem-meta">-</div>
+                            </div>
+                            <div style="text-align:right; background:#fff; padding:0.75rem 1.1rem; border-radius:8px; border:1.5px solid var(--accent-orange);">
+                                <div style="font-size:0.72rem; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Available Wallet Balance</div>
+                                <div style="font-size:1.6rem; font-weight:900; color:var(--accent-orange);">₹<span id="refund-mem-wallet-bal">0</span></div>
+                            </div>
+                        </div>
+
+                        <form id="walletRefundForm" onsubmit="window.moduleContext.processAdminWalletRefund(event); return false;" style="margin-top:1.2rem; padding-top:1rem; border-top:1px dashed #ffcc99;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Refund Amount (₹) <span class="required">*</span></label>
+                                    <input type="number" id="refund-amount-input" min="1" placeholder="Enter amount to refund" style="background:#fff; font-weight:900; font-size:1.1rem;" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Refund Mode <span class="required">*</span></label>
+                                    <select id="refund-mode-input" style="background:#fff;" required>
+                                        <option value="CASH">Cash Refund</option>
+                                        <option value="UPI">UPI / Bank Transfer</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-bottom:1rem;">
+                                <label>Refund Reason / Remark (For Future Identification) <span class="required">*</span></label>
+                                <input type="text" id="refund-remark-input" placeholder="e.g. Excess deposit refund / Member relocating / Medical pause" style="background:#fff;" required>
+                            </div>
+                            <div class="form-group" style="max-width:280px; margin-bottom:1rem;">
+                                <label>Admin PIN Authorization <span class="required">*</span></label>
+                                <input type="password" id="refund-admin-pin" class="pin-input" style="font-size:1.3rem; padding:0.55rem; background:#fff;" placeholder="Enter Admin PIN" inputmode="numeric" maxlength="6" required oninput="window.moduleContext.previewPinIdentity(this.value, 'refund-pin-identity')">
+                                <div id="refund-pin-identity" style="margin-top:4px; font-size:0.8rem; font-weight:700; text-align:center;"></div>
+                            </div>
+                            <button type="submit" class="btn danger" style="background:var(--error-red); color:#fff;">Process Wallet Refund</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div style="margin-top:2rem; padding-top:1.2rem; border-top:1px solid var(--border-color);">
+                    <h3 style="color:var(--accent-orange); font-size:1.05rem; text-transform:uppercase; margin-bottom:0.8rem;">Wallet Refund & Transaction Register</h3>
+                    <div class="table-responsive">
+                        <table class="data-table" id="table-admin-wallet-refunds">
+                            <thead>
+                                <tr><th>Date</th><th>Tx ID</th><th>Member</th><th>Type</th><th>Amount</th><th>Balance After</th><th>Remark / Reason</th><th>By</th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </main>
 
@@ -733,6 +815,37 @@
                         <button id="btn-hub-edit" type="button" class="btn secondary" onclick="window.moduleContext.editUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Edit Profile</button>
                         <button id="btn-hub-pdf" type="button" class="btn secondary" onclick="window.moduleContext.regeneratePdf()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Re-Download PDF</button>
                         <button id="btn-hub-delete" type="button" class="btn danger admin-only" onclick="window.moduleContext.cancelUserAdmission()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Cancel Admission</button>
+                    </div>
+                </div>
+
+                <!-- Member Wallet Balance Card (Click to view Wallet Transactions) & Add Funds Button -->
+                <div class="wallet-badge-card" id="hub-wallet-card" onclick="window.moduleContext.toggleHubWalletTransactions()">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <div style="width:46px; height:46px; border-radius:50%; background:var(--accent-orange); color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.35rem; font-weight:900; flex-shrink:0;">💳</div>
+                        <div>
+                            <div style="font-size:0.74rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.6px;">Member Wallet Balance <span style="color:var(--accent-orange); text-decoration:underline; margin-left:4px;">(Click to View Transactions ▾)</span></div>
+                            <div class="wallet-bal-amount">₹<span id="hub-wallet-balance">0</span></div>
+                            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600; margin-top:2px;">Can be redeemed automatically or partially during Fee Collection & Supplement Purchases</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:8px; align-items:center;" onclick="event.stopPropagation();">
+                        <button type="button" class="btn primary" style="width:auto; padding:0.65rem 1.1rem; font-size:0.8rem;" onclick="window.moduleContext.openWalletTopupModal()">+ Add Funds to Wallet</button>
+                        <button type="button" class="btn secondary" style="width:auto; padding:0.65rem 1rem; font-size:0.78rem;" onclick="window.moduleContext.toggleHubWalletTransactions()">📜 Transactions</button>
+                    </div>
+                </div>
+
+                <div id="hub-wallet-tx-drawer" class="wallet-tx-drawer">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; border-bottom:1px solid var(--border-color); padding-bottom:0.5rem;">
+                        <h4 style="margin:0; color:var(--accent-orange); text-transform:uppercase; font-size:0.92rem;">💳 Wallet Transaction History (<span id="hub-wallet-tx-count">0</span>)</h4>
+                        <button type="button" class="btn secondary" style="width:auto; padding:0.3rem 0.7rem; font-size:0.72rem;" onclick="window.moduleContext.toggleHubWalletTransactions()">✕ Close</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table" id="table-hub-wallet-tx">
+                            <thead>
+                                <tr><th>Date & Time</th><th>Tx ID</th><th>Type</th><th>Amount</th><th>Balance After</th><th>Remark / Reference</th><th>By</th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -1755,6 +1868,19 @@
                             <div id="supp-coupon-msg" style="margin-top:6px; font-size:0.82rem; font-weight:700;"></div>
                         </div>
 
+                        <!-- Member Wallet Redemption Provision in Supplement Store Checkout -->
+                        <div id="supp-wallet-redeem-section" class="wallet-redeem-box" style="display:none; margin-top:0.9rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
+                                <span style="font-size:0.84rem; font-weight:800; color:#15803d;">💳 Member Wallet Balance: ₹<span id="supp-wallet-avail">0</span></span>
+                                <button type="button" class="btn secondary" style="width:auto; padding:0.28rem 0.7rem; font-size:0.74rem; border-color:#15803d; color:#15803d;" onclick="window.moduleContext.useMaxWalletInSuppCheckout()">Redeem Max Wallet</button>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <label for="supp-wallet-redeem-input" style="margin:0; font-size:0.78rem; color:#166534; flex:1;">Redeem from Wallet Now (₹):</label>
+                                <input type="number" id="supp-wallet-redeem-input" min="0" value="0" style="max-width:140px; padding:0.45rem 0.7rem; font-weight:900; background:#fff; border-color:#15803d;" oninput="window.moduleContext.onSuppWalletRedeemChange()" onchange="window.moduleContext.onSuppWalletRedeemChange()">
+                            </div>
+                            <div style="font-size:0.8rem; font-weight:800; color:var(--text-main); margin-top:6px; text-align:right;">Remaining Payable (Cash/UPI) After Wallet: <span style="color:var(--accent-orange); font-size:0.98rem;">₹<span id="supp-net-after-wallet">0</span></span></div>
+                        </div>
+
                         <div style="margin-top:1rem; padding:1rem; background:#fff8f3; border:2px solid var(--accent-orange); border-radius:10px;">
                             <label for="supp-pay-amount-now" style="color:var(--accent-orange); font-size:0.85rem; display:block; margin-bottom:0.5rem;">Enter Paying Amount Now (₹) — Edit if Partial Payment <span class="required">*</span></label>
                             <div style="display:flex; gap:8px; align-items:center;">
@@ -1972,11 +2098,22 @@
                     </div>
                     <p style="margin-bottom: 2px; font-size:0.85rem; color:var(--text-muted);"><strong>Total Combined Due:</strong> ₹<span id="pay-total-due"></span></p>
                     <p style="color:var(--accent-orange); font-size:1.1rem; margin-top:4px;"><strong>Total Payable Balance Due Now: ₹<span id="pay-balance"></span></strong></p>
+                    <div id="pay-wallet-redeem-section" class="wallet-redeem-box" style="display:none;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
+                            <span style="font-size:0.8rem; font-weight:800; color:#15803d;">💳 Available Member Wallet: ₹<span id="pay-wallet-avail">0</span></span>
+                            <button type="button" class="btn secondary" style="width:auto; padding:0.22rem 0.6rem; font-size:0.7rem; border-color:#15803d; color:#15803d;" onclick="window.moduleContext.useMaxWalletInPayModal()">Redeem Max Wallet</button>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <label for="pay-wallet-redeem-input" style="margin:0; font-size:0.75rem; color:#166534; flex:1;">Redeem from Wallet (₹):</label>
+                            <input type="number" id="pay-wallet-redeem-input" min="0" value="0" style="max-width:130px; padding:0.4rem 0.6rem; font-weight:900; background:#fff; border-color:#15803d;" oninput="window.moduleContext.onPayModalWalletRedeemChange()" onchange="window.moduleContext.onPayModalWalletRedeemChange()">
+                        </div>
+                        <div style="font-size:0.76rem; font-weight:800; color:var(--text-main); margin-top:5px; text-align:right;">Net Cash/UPI to Collect After Wallet: <span style="color:var(--accent-orange); font-size:0.92rem;">₹<span id="pay-net-after-wallet">0</span></span></div>
+                    </div>
                 </div>
                 <div style="background:#fff8f3; border:2px solid var(--accent-orange); border-radius:10px; padding:0.9rem; margin-bottom:0.9rem;">
                     <label for="pay-amount-now" style="color:var(--accent-orange); font-size:0.8rem; display:block; margin-bottom:0.4rem;">Enter Paying Amount Now (₹) — Edit if Partial <span class="required">*</span></label>
                     <div style="display:flex; gap:8px; align-items:center;">
-                        <input type="number" id="pay-amount-now" min="1" style="font-size:1.25rem; font-weight:900; background:#fff;" oninput="window.moduleContext.updatePaymentModalUI()" onchange="window.moduleContext.updatePaymentModalUI()" required>
+                        <input type="number" id="pay-amount-now" min="0" style="font-size:1.25rem; font-weight:900; background:#fff;" oninput="window.moduleContext.updatePaymentModalUI()" onchange="window.moduleContext.updatePaymentModalUI()" required>
                         <button type="button" class="btn primary" style="width:auto; padding:0.75rem 1rem; font-size:0.78rem; white-space:nowrap;" onclick="window.moduleContext.updatePaymentModalUI()">Update QR</button>
                     </div>
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.65rem; padding-top:0.55rem; border-top:1px dashed #ffcc99; font-size:0.9rem;">
@@ -2233,6 +2370,44 @@
         </div>
 
         <!-- In-page Confirmation Modal (avoids browser blocking confirm()) -->
+        <div id="walletTopupModal" class="modal">
+            <div class="modal-content" style="max-width:440px; text-align:left;">
+                <h2 class="orange-text" style="text-align:center; font-size:1.3rem; margin-top:0;">💳 Add Funds to Member Wallet</h2>
+                <div style="background:var(--bg-main); padding:0.85rem 1rem; border-radius:8px; border:1px solid var(--border-color); margin-bottom:1rem; font-size:0.88rem;">
+                    <div><strong>Member:</strong> <span id="wt-member-name">-</span></div>
+                    <div style="margin-top:4px;"><strong>Current Wallet Balance:</strong> <span style="color:var(--accent-orange); font-weight:900;">₹<span id="wt-current-bal">0</span></span></div>
+                </div>
+                <div class="form-group" style="margin-bottom:0.85rem;">
+                    <label>Amount to Add (₹) <span class="required">*</span></label>
+                    <input type="number" id="wt-amount-input" min="1" placeholder="e.g. 1000" style="font-size:1.2rem; font-weight:900; background:#fff;" oninput="window.moduleContext.updateWalletTopupQrUI()" onchange="window.moduleContext.updateWalletTopupQrUI()" required>
+                </div>
+                <div class="form-group" style="margin-bottom:0.85rem;">
+                    <label>Payment Mode <span class="required">*</span></label>
+                    <select id="wt-method-input" onchange="window.moduleContext.updateWalletTopupQrUI()">
+                        <option value="UPI">UPI Payment (QR Code)</option>
+                        <option value="CASH">Cash Payment</option>
+                    </select>
+                </div>
+                <div id="wt-upi-section" style="text-align:center; margin:0.8rem 0; padding:0.8rem; background:var(--bg-main); border-radius:10px; border:1px dashed var(--border-color); display:none;">
+                    <div style="font-size:0.84rem; font-weight:800; margin-bottom:6px;">Scan QR to Top-Up Wallet: <span style="color:var(--accent-orange); font-size:1.1rem;">₹<span id="wt-qr-amt">0</span></span></div>
+                    <div class="qr-wrapper"><img id="wt-upi-qr" src="" alt="Wallet Topup QR" style="width:145px; height:145px;"></div>
+                </div>
+                <div class="form-group" style="margin-bottom:0.85rem;">
+                    <label>Note / Remark (Optional)</label>
+                    <input type="text" id="wt-remark-input" placeholder="e.g. Advance wallet deposit">
+                </div>
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label>Staff / Admin PIN <span class="required">*</span></label>
+                    <input type="password" id="wt-staff-pin" class="pin-input" style="font-size:1.35rem; padding:0.55rem;" placeholder="Enter PIN" inputmode="numeric" maxlength="6" oninput="window.moduleContext.previewPinIdentity(this.value, 'wt-pin-identity')">
+                    <div id="wt-pin-identity" style="margin-top:4px; font-size:0.8rem; font-weight:700; text-align:center;"></div>
+                </div>
+                <div class="action-row" style="margin-top:1rem;">
+                    <button type="button" class="btn secondary" onclick="document.getElementById('walletTopupModal').style.display='none'">Cancel</button>
+                    <button type="button" class="btn primary" onclick="window.moduleContext.confirmWalletTopup()">Verify & Add Funds</button>
+                </div>
+            </div>
+        </div>
+
         <div id="confirmDialogModal" class="modal">
             <div class="modal-content" style="max-width:400px;">
                 <h3 class="orange-text" id="confirm-modal-title" style="font-size:1.2rem;">Confirm Action</h3>
@@ -4070,6 +4245,113 @@
             return age >= 0 ? age : '';
         }
         
+        // ==========================================
+        // MEMBER WALLET LEDGER & BALANCE HELPERS
+        // ==========================================
+        function getWalletTransactionsDb() {
+            const s = storage.get("revive_settings_db", {});
+            let txs = storage.get("revive_wallet_tx_db", null);
+            if (!Array.isArray(txs)) {
+                txs = (s && Array.isArray(s.walletTxBackup)) ? s.walletTxBackup : [];
+                storage.set("revive_wallet_tx_db", txs);
+            }
+            return txs;
+        }
+
+        function saveWalletTransactionsDb(txs) {
+            const list = Array.isArray(txs) ? txs : [];
+            storage.set("revive_wallet_tx_db", list);
+            const s = storage.get("revive_settings_db", {});
+            s.walletTxBackup = list;
+            storage.set("revive_settings_db", s);
+        }
+
+        function getMemberWalletTransactions(userId) {
+            if (!userId) return [];
+            const targetBase = parseRevIdParts(userId).baseNum;
+            const allTxs = getWalletTransactionsDb();
+            return allTxs.filter(tx => {
+                if (!tx || !tx.userId) return false;
+                if (String(tx.userId).toUpperCase() === String(userId).toUpperCase()) return true;
+                if (targetBase > 0 && parseRevIdParts(tx.userId).baseNum === targetBase) return true;
+                return false;
+            });
+        }
+
+        function getMemberWalletBalance(userId) {
+            if (!userId) return 0;
+            const txs = getMemberWalletTransactions(userId);
+            if (txs.length > 0) {
+                let bal = 0;
+                txs.forEach(tx => {
+                    const amt = Math.max(0, Math.round(Number(tx.amount) || 0));
+                    const t = String(tx.type || "").toUpperCase();
+                    if (t === "CREDIT" || t === "TOPUP" || t === "ADD") bal += amt;
+                    else if (t === "DEBIT" || t === "REDEEM" || t === "REFUND") bal -= amt;
+                });
+                return Math.max(0, bal);
+            }
+            const users = storage.get("revive_users_db", []);
+            const targetBase = parseRevIdParts(userId).baseNum;
+            const u = users.find(x => x && (String(x.id).toUpperCase() === String(userId).toUpperCase() || (targetBase > 0 && parseRevIdParts(x.id).baseNum === targetBase)));
+            return (u && Number(u.walletBalance) > 0) ? Math.round(Number(u.walletBalance)) : 0;
+        }
+
+        function recordMemberWalletTransaction(userObj, type, amount, remark, refId, method, byIdentity) {
+            if (!userObj || !userObj.id) return null;
+            const cleanAmt = Math.max(0, Math.round(Number(amount) || 0));
+            if (cleanAmt <= 0) return null;
+            const normType = String(type || "CREDIT").toUpperCase();
+            const currBal = getMemberWalletBalance(userObj.id);
+            const isCredit = (normType === "CREDIT" || normType === "TOPUP" || normType === "ADD");
+            const newBal = isCredit ? (currBal + cleanAmt) : Math.max(0, currBal - cleanAmt);
+
+            const now = new Date();
+            const dateStr = `${String(now.getDate()).padStart(2, "0")}-${String(now.getMonth() + 1).padStart(2, "0")}-${now.getFullYear()}`;
+            const txRecord = {
+                id: "WTX-" + Date.now() + "-" + Math.floor(Math.random() * 900 + 100),
+                date: dateStr,
+                isoDate: now.toISOString(),
+                userId: userObj.id,
+                fullName: userObj.fullName || "",
+                phone: normalizeTenDigitPhone(userObj.primaryContact || userObj.phone || ""),
+                type: normType,
+                amount: cleanAmt,
+                balanceAfter: newBal,
+                method: method || "WALLET",
+                reference: refId || "",
+                remark: remark || "",
+                processedBy: byIdentity || "Admin"
+            };
+
+            const allTxs = getWalletTransactionsDb();
+            allTxs.push(txRecord);
+            saveWalletTransactionsDb(allTxs);
+            cloudSync.push("pushWalletTransaction", txRecord);
+
+            // Update walletBalance on user record(s) in revive_users_db
+            let users = storage.get("revive_users_db", []);
+            const targetBase = parseRevIdParts(userObj.id).baseNum;
+            let updatedUser = null;
+            users = users.map(u => {
+                if (!u || !u.id) return u;
+                if (String(u.id).toUpperCase() === String(userObj.id).toUpperCase() || (targetBase > 0 && parseRevIdParts(u.id).baseNum === targetBase)) {
+                    const up = { ...u, walletBalance: newBal };
+                    if (String(u.id).toUpperCase() === String(userObj.id).toUpperCase()) updatedUser = up;
+                    return up;
+                }
+                return u;
+            });
+            storage.set("revive_users_db", users);
+            if (updatedUser) {
+                cloudSync.push("pushUser", updatedUser);
+                if (currentActiveUser && String(currentActiveUser.id).toUpperCase() === String(updatedUser.id).toUpperCase()) {
+                    currentActiveUser.walletBalance = newBal;
+                }
+            }
+            return txRecord;
+        }
+
         // Calculate single month expected base due for a member
         function getExpectedMonthFeeForMember(user, monthName, fy, mYear, monthIdx) {
             if (!user) return 0;
@@ -4212,6 +4494,7 @@
                 if(viewName === 'reports') window.moduleContext.initReports();
                 if(viewName === 'attendance') window.moduleContext.initAttendanceView();
                 if(viewName === 'expense') window.moduleContext.initExpenseView();
+                if(viewName === 'wallet-refund') window.moduleContext.initWalletRefundView();
                 if(viewName === 'supplement-store') window.moduleContext.initSupplementStore();
                 if(viewName === 'supplement-admin') window.moduleContext.initSupplementAdmin();
                 if(viewName === 'supplement-store-config') window.moduleContext.initSupplementStoreConfig();
@@ -7378,6 +7661,7 @@
                             const fmFeeArrears = getMemberPendingFeeMonths(fm, null).reduce((sum, x) => sum + x.balance, 0);
                             const fmSuppArrears = getMemberPendingSupplementSales(fm.id).reduce((sum, x) => sum + x.balance, 0);
                             const fmTotalPending = fmFeeArrears + fmSuppArrears;
+                            const fmWalletBal = getMemberWalletBalance(fm.id);
                             const statusBadge = fmCanc
                                 ? `<span class="deleted-badge" style="font-size:0.62rem;">Cancelled</span>`
                                 : `<span style="background:var(--success-green); color:#fff; font-size:0.62rem; padding:1px 6px; border-radius:8px; font-weight:800; text-transform:uppercase;">Active</span>`;
@@ -7390,7 +7674,7 @@
                                 <div class="family-card-meta">
                                     <h4>${fm.fullName} ${isCurr ? "<span style=\"color:var(--accent-orange); font-size:0.7rem;\">(Viewing)</span>" : ""}</h4>
                                     <p><strong>${fm.id}</strong> • ${fm.trainingCategory || "Regular"} ${statusBadge}</p>
-                                    <p style="margin-top:3px;">${dueBadge}</p>
+                                    <p style="margin-top:3px;">${dueBadge} &nbsp;|&nbsp; <span style="color:#15803d; font-weight:800; font-size:0.73rem;">💳 Wallet: ₹${fmWalletBal}</span></p>
                                 </div>
                             </div>`;
                         });
@@ -7489,6 +7773,7 @@
                     }
                 }
                 
+                window.moduleContext.renderHubWalletSection(user.id);
                 window.moduleContext.renderFeeCalendar(user.id, currentActiveUser.selectedFY, user.trainingCategory, dInfo.formattedDate);
                 window.appContext.switchView('user-hub');
             },
@@ -7633,6 +7918,255 @@
                 });
             },
 
+            renderHubWalletSection: function(userId) {
+                const bal = getMemberWalletBalance(userId);
+                const balEl = document.getElementById("hub-wallet-balance");
+                if (balEl) balEl.innerText = bal.toLocaleString("en-IN");
+
+                const txs = getMemberWalletTransactions(userId).slice().reverse();
+                const cntEl = document.getElementById("hub-wallet-tx-count");
+                if (cntEl) cntEl.innerText = txs.length;
+
+                const tbody = document.querySelector("#table-hub-wallet-tx tbody");
+                if (!tbody) return;
+                if (txs.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:1rem;">No wallet transactions recorded yet. Click "+ Add Funds to Wallet" to top up.</td></tr>`;
+                    return;
+                }
+                tbody.innerHTML = txs.map(tx => {
+                    const t = String(tx.type || "").toUpperCase();
+                    const isCredit = (t === "CREDIT" || t === "TOPUP" || t === "ADD");
+                    const isRefund = (t === "REFUND");
+                    const badgeBg = isCredit ? "#dcfce7" : (isRefund ? "#fee2e2" : "#fef3c7");
+                    const badgeCol = isCredit ? "#15803d" : (isRefund ? "#b91c1c" : "#b45309");
+                    const sign = isCredit ? "+" : "-";
+                    const dtDisp = tx.isoDate ? new Date(tx.isoDate).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) : (tx.date || "-");
+                    return `
+                        <tr>
+                            <td style="font-size:0.8rem;">${dtDisp}</td>
+                            <td><strong>${tx.id}</strong></td>
+                            <td><span style="background:${badgeBg}; color:${badgeCol}; padding:2px 8px; border-radius:12px; font-size:0.72rem; font-weight:800;">${t}</span></td>
+                            <td style="font-weight:900; color:${isCredit ? "var(--success-green)" : "var(--error-red)"};">${sign} ₹${Number(tx.amount || 0).toLocaleString("en-IN")}</td>
+                            <td style="font-weight:800;">₹${Number(tx.balanceAfter || 0).toLocaleString("en-IN")}</td>
+                            <td style="font-size:0.82rem;">${tx.remark || "-"}${tx.reference ? ` <small style="color:var(--text-muted);">(${tx.reference})</small>` : ""}</td>
+                            <td style="font-size:0.8rem;">${tx.processedBy || "-"} <small style="color:var(--text-muted);">(${tx.method || "-"})</small></td>
+                        </tr>
+                    `;
+                }).join("");
+            },
+
+            toggleHubWalletTransactions: function() {
+                const drawer = document.getElementById("hub-wallet-tx-drawer");
+                if (!drawer) return;
+                if (currentActiveUser && currentActiveUser.id) {
+                    window.moduleContext.renderHubWalletSection(currentActiveUser.id);
+                }
+                drawer.style.display = (drawer.style.display === "block") ? "none" : "block";
+            },
+
+            openWalletTopupModal: function() {
+                if (!currentActiveUser || !currentActiveUser.id) return;
+                const currBal = getMemberWalletBalance(currentActiveUser.id);
+                document.getElementById("wt-member-name").innerText = `${currentActiveUser.fullName} (${currentActiveUser.id})`;
+                document.getElementById("wt-current-bal").innerText = currBal.toLocaleString("en-IN");
+                document.getElementById("wt-amount-input").value = "";
+                document.getElementById("wt-method-input").value = "UPI";
+                document.getElementById("wt-remark-input").value = "Advance Wallet Deposit";
+                document.getElementById("wt-staff-pin").value = "";
+                document.getElementById("wt-pin-identity").innerText = "";
+                document.getElementById("wt-upi-section").style.display = "none";
+                document.getElementById("walletTopupModal").style.display = "flex";
+            },
+
+            updateWalletTopupQrUI: function() {
+                const amt = Math.max(0, parseInt(document.getElementById("wt-amount-input").value || "0", 10) || 0);
+                const method = document.getElementById("wt-method-input").value;
+                const upiSec = document.getElementById("wt-upi-section");
+                if (method === "UPI" && amt > 0) {
+                    upiSec.style.display = "block";
+                    document.getElementById("wt-qr-amt").innerText = amt;
+                    renderUpiQrToElement("wt-upi-qr", amt, 145);
+                } else {
+                    upiSec.style.display = "none";
+                }
+            },
+
+            confirmWalletTopup: function() {
+                if (!currentActiveUser || !currentActiveUser.id) return;
+                const amt = parseInt(document.getElementById("wt-amount-input").value || "0", 10);
+                if (isNaN(amt) || amt <= 0) {
+                    showNotice("Please enter a valid top-up amount greater than ₹0.", "error");
+                    document.getElementById("wt-amount-input").focus();
+                    return;
+                }
+                const pinVal = document.getElementById("wt-staff-pin").value;
+                const identity = verifyCollectorPin(pinVal);
+                if (!identity) {
+                    showNotice("Please enter a valid Staff or Admin PIN to authorize wallet top-up.", "error");
+                    document.getElementById("wt-staff-pin").focus();
+                    return;
+                }
+                const method = document.getElementById("wt-method-input").value;
+                const remark = document.getElementById("wt-remark-input").value.trim() || "Wallet Funds Added";
+
+                const tx = recordMemberWalletTransaction(currentActiveUser, "CREDIT", amt, remark, "TOP-UP", method, identity);
+                document.getElementById("walletTopupModal").style.display = "none";
+                window.moduleContext.loadProfileByPhoneOrId(currentActiveUser.id);
+                const drawer = document.getElementById("hub-wallet-tx-drawer");
+                if (drawer) drawer.style.display = "block";
+                showNotice(`✔ Added ₹${amt} to ${currentActiveUser.fullName}\x27s Wallet! New Balance: ₹${tx ? tx.balanceAfter : getMemberWalletBalance(currentActiveUser.id)}`, "success");
+            },
+
+            // Admin Module: Wallet Refund Processing
+            initWalletRefundView: function() {
+                window._selectedRefundMember = null;
+                const searchEl = document.getElementById("refund-member-search");
+                if (searchEl) searchEl.value = "";
+                const prevEl = document.getElementById("refund-member-live-preview");
+                if (prevEl) prevEl.innerHTML = "";
+                const cardEl = document.getElementById("refund-selected-member-card");
+                if (cardEl) cardEl.style.display = "none";
+                window.moduleContext.renderAdminWalletRefundsTable();
+            },
+
+            previewRefundMember: function(val) {
+                const previewEl = document.getElementById("refund-member-live-preview");
+                if (!previewEl) return;
+                const cleanVal = String(val || "").trim();
+                if (!cleanVal) {
+                    previewEl.innerHTML = "";
+                    return;
+                }
+                const matches = findUsersForAttendance(cleanVal, true);
+                if (matches && matches.length > 0) {
+                    let html = `<div style="display:grid; gap:8px; max-height:240px; overflow-y:auto; padding:4px;">`;
+                    matches.forEach(u => {
+                        const wBal = getMemberWalletBalance(u.id);
+                        const safeId = String(u.id).replace(/\x27/g, "\\\x27");
+                        const photoUrl = u.photo || DEFAULT_AVATAR_SVG;
+                        html += `
+                        <div style="display:flex; align-items:center; gap:12px; padding:10px; border:1px solid var(--border-color); border-radius:8px; cursor:pointer; background:var(--bg-panel);"
+                             onclick="window.moduleContext.selectRefundMember(\x27${safeId}\x27)">
+                            <img src="${photoUrl}" alt="${u.fullName}" style="width:45px; height:45px; border-radius:50%; object-fit:cover; border:2px solid var(--accent-orange);">
+                            <div style="flex:1;">
+                                <div style="font-weight:800; color:var(--text-main);">${u.fullName} <span style="font-size:0.75rem; color:var(--text-muted);">(${u.id})</span></div>
+                                <div style="font-size:0.8rem; color:var(--text-muted);">Ph: ${u.primaryContact} | Category: ${u.admissionCategory || "Individual"}</div>
+                            </div>
+                            <div style="text-align:right; font-weight:900; color:${wBal > 0 ? "var(--success-green)" : "var(--text-muted)"};">
+                                💳 Wallet: ₹${wBal}
+                            </div>
+                        </div>`;
+                    });
+                    html += `</div>`;
+                    previewEl.innerHTML = html;
+                } else {
+                    previewEl.innerHTML = `<span style="color:var(--text-muted); font-size:0.85rem;">No members found matching "${cleanVal}".</span>`;
+                }
+            },
+
+            selectRefundMember: function(userId) {
+                const users = storage.get("revive_users_db", []);
+                const archived = storage.get("revive_archived_users_db", []);
+                const allUsers = [...users, ...archived.filter(a => !users.some(u => String(u.id) === String(a.id)))];
+                let user = allUsers.find(u => u && String(u.id).toUpperCase() === String(userId).toUpperCase());
+                if (!user) return;
+                user = resolveToLatestUserRecord(user, users);
+                window._selectedRefundMember = user;
+
+                const wBal = getMemberWalletBalance(user.id);
+                document.getElementById("refund-member-search").value = `${user.fullName} (${user.id}) - ${user.primaryContact}`;
+                document.getElementById("refund-member-live-preview").innerHTML = "";
+                document.getElementById("refund-mem-name").innerText = `${user.fullName} (${user.id})`;
+                document.getElementById("refund-mem-meta").innerText = `Mobile: ${user.primaryContact} | ${user.admissionCategory || "Individual"} - ${user.trainingCategory || "Regular"}`;
+                document.getElementById("refund-mem-wallet-bal").innerText = wBal.toLocaleString("en-IN");
+
+                const amtInput = document.getElementById("refund-amount-input");
+                amtInput.value = wBal > 0 ? wBal : "";
+                amtInput.max = wBal;
+                document.getElementById("refund-remark-input").value = "";
+                document.getElementById("refund-admin-pin").value = "";
+                document.getElementById("refund-pin-identity").innerText = "";
+                document.getElementById("refund-selected-member-card").style.display = "block";
+            },
+
+            processAdminWalletRefund: function(e) {
+                if (e) e.preventDefault();
+                const user = window._selectedRefundMember;
+                if (!user || !user.id) {
+                    showNotice("Please select a member first.", "error");
+                    return;
+                }
+                const availBal = getMemberWalletBalance(user.id);
+                if (availBal <= 0) {
+                    showNotice(`${user.fullName} has ₹0 in their wallet. Refund cannot be processed.`, "error");
+                    return;
+                }
+                const refundAmt = parseInt(document.getElementById("refund-amount-input").value || "0", 10);
+                if (isNaN(refundAmt) || refundAmt <= 0 || refundAmt > availBal) {
+                    showNotice(`Please enter a valid refund amount between ₹1 and ₹${availBal}.`, "error");
+                    document.getElementById("refund-amount-input").focus();
+                    return;
+                }
+                const remark = document.getElementById("refund-remark-input").value.trim();
+                if (!remark) {
+                    showNotice("Please enter a Refund Reason / Remark for future identification.", "error");
+                    document.getElementById("refund-remark-input").focus();
+                    return;
+                }
+                const mode = document.getElementById("refund-mode-input").value;
+                const pinVal = document.getElementById("refund-admin-pin").value.trim();
+                const settings = storage.get("revive_settings_db", {});
+                const adminPin = settings.adminPin != null ? String(settings.adminPin) : "1234";
+                if (pinVal !== adminPin) {
+                    showNotice("Invalid Admin PIN. Only Admin can process wallet refunds.", "error");
+                    document.getElementById("refund-admin-pin").focus();
+                    return;
+                }
+
+                const tx = recordMemberWalletTransaction(user, "REFUND", refundAmt, remark, "ADMIN-REFUND", mode, "Admin");
+                const newBal = tx ? tx.balanceAfter : getMemberWalletBalance(user.id);
+                document.getElementById("refund-mem-wallet-bal").innerText = newBal.toLocaleString("en-IN");
+                document.getElementById("refund-amount-input").value = newBal > 0 ? newBal : "";
+                document.getElementById("refund-amount-input").max = newBal;
+                document.getElementById("refund-remark-input").value = "";
+                document.getElementById("refund-admin-pin").value = "";
+                document.getElementById("refund-pin-identity").innerText = "";
+
+                window.moduleContext.renderAdminWalletRefundsTable();
+                showNotice(`✔ Refund of ₹${refundAmt} processed for ${user.fullName}! Remaining Wallet Balance: ₹${newBal}`, "success");
+            },
+
+            renderAdminWalletRefundsTable: function() {
+                const tbody = document.querySelector("#table-admin-wallet-refunds tbody");
+                if (!tbody) return;
+                const allTxs = getWalletTransactionsDb().slice().reverse();
+                if (allTxs.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:1.2rem;">No wallet transactions or refunds recorded yet.</td></tr>`;
+                    return;
+                }
+                tbody.innerHTML = allTxs.map(tx => {
+                    const t = String(tx.type || "").toUpperCase();
+                    const isCredit = (t === "CREDIT" || t === "TOPUP" || t === "ADD");
+                    const isRefund = (t === "REFUND");
+                    const badgeBg = isCredit ? "#dcfce7" : (isRefund ? "#fee2e2" : "#fef3c7");
+                    const badgeCol = isCredit ? "#15803d" : (isRefund ? "#b91c1c" : "#b45309");
+                    const sign = isCredit ? "+" : "-";
+                    const dtDisp = tx.isoDate ? new Date(tx.isoDate).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) : (tx.date || "-");
+                    return `
+                        <tr>
+                            <td style="font-size:0.8rem;">${dtDisp}</td>
+                            <td><strong>${tx.id}</strong></td>
+                            <td><strong>${tx.fullName || "-"}</strong><br><small style="color:var(--text-muted);">${tx.userId} • ${tx.phone || ""}</small></td>
+                            <td><span style="background:${badgeBg}; color:${badgeCol}; padding:2px 8px; border-radius:12px; font-size:0.72rem; font-weight:800;">${t}</span></td>
+                            <td style="font-weight:900; color:${isCredit ? "var(--success-green)" : "var(--error-red)"};">${sign} ₹${Number(tx.amount || 0).toLocaleString("en-IN")}</td>
+                            <td style="font-weight:800;">₹${Number(tx.balanceAfter || 0).toLocaleString("en-IN")}</td>
+                            <td style="font-size:0.82rem;">${tx.remark || "-"}${tx.reference ? ` <small style="color:var(--text-muted);">(${tx.reference})</small>` : ""}</td>
+                            <td style="font-size:0.8rem;">${tx.processedBy || "-"} <small style="color:var(--text-muted);">(${tx.method || "-"})</small></td>
+                        </tr>
+                    `;
+                }).join("");
+            },
+
             initPayment: function(month, fy) {
                 const paymentsDb = storage.get("revive_payments_db", {});
                 const record = (paymentsDb[currentActiveUser.id] && paymentsDb[currentActiveUser.id][fy] && paymentsDb[currentActiveUser.id][fy][month]) ? paymentsDb[currentActiveUser.id][fy][month] : null;
@@ -7735,6 +8269,25 @@
                 const viewRcptBtn = document.getElementById("btn-paymodal-view-rcpt");
                 if (viewRcptBtn) viewRcptBtn.style.display = cycleAlreadyPaid > 0 ? "inline-flex" : "none";
                 
+                const availWallet = currentActiveUser ? getMemberWalletBalance(currentActiveUser.id) : 0;
+                activePaymentConfig.availWallet = availWallet;
+                const wSec = document.getElementById("pay-wallet-redeem-section");
+                const wAvailEl = document.getElementById("pay-wallet-avail");
+                const wInput = document.getElementById("pay-wallet-redeem-input");
+                if (wSec && wInput) {
+                    if (availWallet > 0 && combinedBalance > 0) {
+                        wSec.style.display = "block";
+                        if (wAvailEl) wAvailEl.innerText = availWallet;
+                        wInput.value = 0;
+                        wInput.max = Math.min(availWallet, combinedBalance);
+                    } else {
+                        wSec.style.display = "none";
+                        wInput.value = 0;
+                    }
+                }
+                const netAfterEl = document.getElementById("pay-net-after-wallet");
+                if (netAfterEl) netAfterEl.innerText = combinedBalance;
+
                 const inputAmt = document.getElementById("pay-amount-now");
                 inputAmt.value = combinedBalance;
                 inputAmt.max = combinedBalance;
@@ -7820,6 +8373,26 @@
                 const viewRcptBtn = document.getElementById("btn-paymodal-view-rcpt");
                 if (viewRcptBtn) viewRcptBtn.style.display = "none";
 
+                const availWallet = getMemberWalletBalance(sale.userId);
+                activePaymentConfig.availWallet = availWallet;
+                activePaymentConfig.targetUserId = sale.userId;
+                const wSec = document.getElementById("pay-wallet-redeem-section");
+                const wAvailEl = document.getElementById("pay-wallet-avail");
+                const wInput = document.getElementById("pay-wallet-redeem-input");
+                if (wSec && wInput) {
+                    if (availWallet > 0 && combinedBalance > 0) {
+                        wSec.style.display = "block";
+                        if (wAvailEl) wAvailEl.innerText = availWallet;
+                        wInput.value = 0;
+                        wInput.max = Math.min(availWallet, combinedBalance);
+                    } else {
+                        wSec.style.display = "none";
+                        wInput.value = 0;
+                    }
+                }
+                const netAfterEl = document.getElementById("pay-net-after-wallet");
+                if (netAfterEl) netAfterEl.innerText = combinedBalance;
+
                 const inputAmt = document.getElementById("pay-amount-now");
                 inputAmt.value = combinedBalance;
                 inputAmt.max = combinedBalance;
@@ -7839,12 +8412,56 @@
                 currentSuppSaleRecord = sale;
                 window.moduleContext.generateSupplementInvoiceImage(sale, "view");
             },
+            useMaxWalletInPayModal: function() {
+                if (!activePaymentConfig) return;
+                const avail = Number(activePaymentConfig.availWallet || 0);
+                const maxRedeem = Math.min(avail, activePaymentConfig.balance);
+                const wInput = document.getElementById("pay-wallet-redeem-input");
+                if (wInput) wInput.value = maxRedeem;
+                window.moduleContext.onPayModalWalletRedeemChange();
+            },
+
+            onPayModalWalletRedeemChange: function() {
+                if (!activePaymentConfig) return;
+                const avail = Number(activePaymentConfig.availWallet || 0);
+                const maxRedeem = Math.min(avail, activePaymentConfig.balance);
+                const wInput = document.getElementById("pay-wallet-redeem-input");
+                let wRedeem = parseInt(wInput ? wInput.value : "0", 10);
+                if (isNaN(wRedeem) || wRedeem < 0) wRedeem = 0;
+                if (wRedeem > maxRedeem) {
+                    wRedeem = maxRedeem;
+                    if (wInput) wInput.value = wRedeem;
+                }
+                const netCashUpi = Math.max(0, activePaymentConfig.balance - wRedeem);
+                const netAfterEl = document.getElementById("pay-net-after-wallet");
+                if (netAfterEl) netAfterEl.innerText = netCashUpi;
+
+                const inputAmt = document.getElementById("pay-amount-now");
+                if (inputAmt) {
+                    inputAmt.max = netCashUpi;
+                    inputAmt.value = netCashUpi;
+                }
+                window.moduleContext.updatePaymentModalUI();
+            },
+
             updatePaymentModalUI: function() {
                 const method = document.getElementById("pay-method").value;
+                const maxBal = activePaymentConfig ? activePaymentConfig.balance : 0;
+                const avail = activePaymentConfig ? Number(activePaymentConfig.availWallet || 0) : 0;
+                const wInput = document.getElementById("pay-wallet-redeem-input");
+                let wRedeem = parseInt(wInput ? wInput.value : "0", 10);
+                if (isNaN(wRedeem) || wRedeem < 0) wRedeem = 0;
+                wRedeem = Math.min(wRedeem, Math.min(avail, maxBal));
+
+                const maxCashUpi = Math.max(0, maxBal - wRedeem);
+                const netAfterEl = document.getElementById("pay-net-after-wallet");
+                if (netAfterEl) netAfterEl.innerText = maxCashUpi;
+
                 const rawAmt = parseInt(document.getElementById("pay-amount-now").value, 10);
-                const maxBal = activePaymentConfig ? activePaymentConfig.balance : (isNaN(rawAmt) ? 0 : rawAmt);
-                const amt = isNaN(rawAmt) ? 0 : Math.min(maxBal, Math.max(0, rawAmt));
-                const pendingAfter = Math.max(0, maxBal - amt);
+                const cashUpiAmt = isNaN(rawAmt) ? 0 : Math.min(maxCashUpi, Math.max(0, rawAmt));
+                const totalClearingNow = wRedeem + cashUpiAmt;
+                const pendingAfter = Math.max(0, maxBal - totalClearingNow);
+
                 const pillEl = document.getElementById("pay-shortfall-pill");
                 if (pillEl) {
                     if (pendingAfter > 0) {
@@ -7857,7 +8474,7 @@
                 }
 
                 const qrAmtLbl = document.getElementById("pay-qr-amt-label");
-                if (qrAmtLbl) qrAmtLbl.innerText = amt;
+                if (qrAmtLbl) qrAmtLbl.innerText = cashUpiAmt;
                 const qrShortLbl = document.getElementById("pay-qr-shortfall-label");
                 if (qrShortLbl) {
                     if (pendingAfter > 0) {
@@ -7869,14 +8486,27 @@
                 }
 
                 const upiSec = document.getElementById("pay-upi-section");
-                if(method === "UPI" && amt > 0) {
+                if(method === "UPI" && cashUpiAmt > 0) {
                     upiSec.style.display = "block";
-                    renderUpiQrToElement("pay-upi-qr", amt, 160);
+                    renderUpiQrToElement("pay-upi-qr", cashUpiAmt, 160);
                 } else { upiSec.style.display = "none"; }
             },
             confirmPayment: function() {
-                const payAmt = parseInt(document.getElementById("pay-amount-now").value, 10);
-                if(isNaN(payAmt) || payAmt <= 0 || payAmt > activePaymentConfig.balance) {
+                const avail = activePaymentConfig ? Number(activePaymentConfig.availWallet || 0) : 0;
+                const wInput = document.getElementById("pay-wallet-redeem-input");
+                let wRedeem = parseInt(wInput ? wInput.value : "0", 10);
+                if (isNaN(wRedeem) || wRedeem < 0) wRedeem = 0;
+                if (wRedeem > Math.min(avail, activePaymentConfig.balance)) {
+                    showNotice("Wallet redeem amount exceeds available wallet balance.", "error");
+                    return;
+                }
+
+                const maxCashUpi = Math.max(0, activePaymentConfig.balance - wRedeem);
+                const rawCashUpi = parseInt(document.getElementById("pay-amount-now").value, 10);
+                const cashUpiAmt = isNaN(rawCashUpi) ? 0 : rawCashUpi;
+                const payAmt = wRedeem + cashUpiAmt;
+
+                if (cashUpiAmt < 0 || cashUpiAmt > maxCashUpi || payAmt <= 0 || payAmt > activePaymentConfig.balance) {
                     showNotice("Invalid payment amount entered.", "error");
                     return;
                 }
@@ -7889,16 +8519,32 @@
                     return;
                 }
                 
-                const method = document.getElementById("pay-method").value;
+                const rawMethod = document.getElementById("pay-method").value;
+                const method = wRedeem > 0 ? (cashUpiAmt > 0 ? `${rawMethod} + WALLET (₹${wRedeem})` : "WALLET") : rawMethod;
                 const nowIso = new Date().toISOString();
                 let remainingPool = payAmt;
+
+                // Deduct redeemed wallet amount and log Wallet Transaction
+                if (wRedeem > 0 && currentActiveUser) {
+                    const refLabel = activePaymentConfig.paymentType === "supplement_due"
+                        ? `Supp Due ${activePaymentConfig.invoiceId}`
+                        : `Fee ${activePaymentConfig.month} (${activePaymentConfig.fy})`;
+                    recordMemberWalletTransaction(
+                        currentActiveUser,
+                        "DEBIT",
+                        wRedeem,
+                        `Redeemed for ${refLabel}`,
+                        refLabel,
+                        "WALLET",
+                        collectorIdentity
+                    );
+                }
 
                 let paymentsDb = storage.get("revive_payments_db", {});
                 let salesDb = storage.get("revive_supplement_sales_db", []);
                 let updatedAnySupp = false;
                 let updatedAnyFee = false;
 
-                // Helper to settle a pending gym fee month from remainingPool
                 const settleFeeMonthFromPool = (pf) => {
                     if (remainingPool <= 0 || pf.balance <= 0) return;
                     const alloc = Math.min(remainingPool, pf.balance);
@@ -7928,7 +8574,6 @@
                     updatedAnyFee = true;
                 };
 
-                // Helper to settle a pending supplement invoice from remainingPool
                 const settleSuppInvoiceFromPool = (ps) => {
                     if (remainingPool <= 0 || ps.balance <= 0) return;
                     const alloc = Math.min(remainingPool, ps.balance);
@@ -7949,11 +8594,8 @@
                 };
 
                 if (activePaymentConfig.paymentType === "supplement_due") {
-                    // 1. Settle older supplement dues first
                     (activePaymentConfig.priorSuppDues || []).forEach(settleSuppInvoiceFromPool);
-                    // 2. Settle prior gym fee dues if any
                     (activePaymentConfig.priorFeeDues || []).forEach(settleFeeMonthFromPool);
-                    // 3. Settle the target supplement invoice
                     const idx = salesDb.findIndex(s => String(s.id) === String(activePaymentConfig.invoiceId));
                     if (idx !== -1) {
                         const alloc = Math.min(remainingPool, activePaymentConfig.cycleBalance);
@@ -7983,12 +8625,8 @@
                     return;
                 }
 
-                // Gym Fee Payment Flow:
-                // 1. Auto-settle prior pending Gym Fee months (oldest first)
                 (activePaymentConfig.priorFeeDues || []).forEach(settleFeeMonthFromPool);
-                // 2. Auto-settle prior pending Supplement invoices
                 (activePaymentConfig.priorSuppDues || []).forEach(settleSuppInvoiceFromPool);
-                // 3. Apply remaining amount to the selected month cycle
                 const cycleAlloc = Math.min(remainingPool, activePaymentConfig.cycleBalance);
                 const newCyclePaid = activePaymentConfig.cycleAlreadyPaid + cycleAlloc;
                 const newCycleBal = Math.max(0, activePaymentConfig.cycleTotalDue - newCyclePaid);
@@ -8007,6 +8645,7 @@
                     amountPaid: newCyclePaid,
                     balanceDue: newCycleBal,
                     lastPaidAmount: payAmt,
+                    walletRedeemed: wRedeem,
                     carryForwardCleared: payAmt - cycleAlloc,
                     status: newCycleStatus,
                     method: method,
@@ -9458,7 +10097,7 @@
                 const prevArrearsVal = document.getElementById("supp-pay-prev-arrears");
 
                 if (prevArrearsTotal > 0) {
-                    if (currOrderRow) currOrderRow.style.display = "flex";
+                    if (currOrderRow) currOrderRow.display = "flex", currOrderRow.style.display = "flex";
                     if (currOrderVal) currOrderVal.innerText = currentOrderNet;
                     if (prevArrearsRow) prevArrearsRow.style.display = "flex";
                     if (prevArrearsVal) prevArrearsVal.innerText = prevArrearsTotal;
@@ -9475,12 +10114,65 @@
 
                 document.getElementById("supp-pay-net").innerText = finalNet;
 
+                // Member Wallet Redemption Box in Supplement Store Step 3
+                const availWallet = (selectedSuppMember && selectedSuppMember.id) ? getMemberWalletBalance(selectedSuppMember.id) : 0;
+                const wSec = document.getElementById("supp-wallet-redeem-section");
+                const wAvailEl = document.getElementById("supp-wallet-avail");
+                const wInput = document.getElementById("supp-wallet-redeem-input");
+                if (wSec && wInput) {
+                    if (availWallet > 0 && finalNet > 0) {
+                        wSec.style.display = "block";
+                        if (wAvailEl) wAvailEl.innerText = availWallet;
+                        if (resetPayingAmountToFull) wInput.value = 0;
+                        wInput.max = Math.min(availWallet, finalNet);
+                    } else {
+                        wSec.style.display = "none";
+                        wInput.value = 0;
+                    }
+                }
+                const wRedeem = Math.min(availWallet, Math.max(0, parseInt(wInput ? wInput.value : "0", 10) || 0));
+                const maxCashUpi = Math.max(0, finalNet - wRedeem);
+                const netAfterWEl = document.getElementById("supp-net-after-wallet");
+                if (netAfterWEl) netAfterWEl.innerText = maxCashUpi;
+
                 const suppPayNowInput = document.getElementById("supp-pay-amount-now");
                 if (suppPayNowInput) {
-                    suppPayNowInput.max = finalNet;
-                    if (resetPayingAmountToFull || parseInt(suppPayNowInput.value || "0", 10) > finalNet) {
-                        suppPayNowInput.value = finalNet;
+                    suppPayNowInput.max = maxCashUpi;
+                    if (resetPayingAmountToFull || parseInt(suppPayNowInput.value || "0", 10) > maxCashUpi) {
+                        suppPayNowInput.value = maxCashUpi;
                     }
+                }
+                window.moduleContext.updateSuppPaymentUI();
+            },
+
+            useMaxWalletInSuppCheckout: function() {
+                const { finalNet } = window.moduleContext.getSupplementCartSubtotalInfo();
+                const availWallet = (selectedSuppMember && selectedSuppMember.id) ? getMemberWalletBalance(selectedSuppMember.id) : 0;
+                const maxRedeem = Math.min(availWallet, finalNet);
+                const wInput = document.getElementById("supp-wallet-redeem-input");
+                if (wInput) wInput.value = maxRedeem;
+                window.moduleContext.onSuppWalletRedeemChange();
+            },
+
+            onSuppWalletRedeemChange: function() {
+                const { finalNet } = window.moduleContext.getSupplementCartSubtotalInfo();
+                const availWallet = (selectedSuppMember && selectedSuppMember.id) ? getMemberWalletBalance(selectedSuppMember.id) : 0;
+                const maxRedeem = Math.min(availWallet, finalNet);
+                const wInput = document.getElementById("supp-wallet-redeem-input");
+                let wRedeem = parseInt(wInput ? wInput.value : "0", 10);
+                if (isNaN(wRedeem) || wRedeem < 0) wRedeem = 0;
+                if (wRedeem > maxRedeem) {
+                    wRedeem = maxRedeem;
+                    if (wInput) wInput.value = wRedeem;
+                }
+                const maxCashUpi = Math.max(0, finalNet - wRedeem);
+                const netAfterWEl = document.getElementById("supp-net-after-wallet");
+                if (netAfterWEl) netAfterWEl.innerText = maxCashUpi;
+
+                const suppPayNowInput = document.getElementById("supp-pay-amount-now");
+                if (suppPayNowInput) {
+                    suppPayNowInput.max = maxCashUpi;
+                    suppPayNowInput.value = maxCashUpi;
                 }
                 window.moduleContext.updateSuppPaymentUI();
             },
@@ -9530,16 +10222,26 @@
             updateSuppPaymentUI: function() {
                 const method = document.getElementById("suppPaymentMethod").value;
                 const netAmt = parseInt(document.getElementById("supp-pay-net").innerText || "0", 10);
+                const availWallet = (selectedSuppMember && selectedSuppMember.id) ? getMemberWalletBalance(selectedSuppMember.id) : 0;
+                const wInput = document.getElementById("supp-wallet-redeem-input");
+                let wRedeem = parseInt(wInput ? wInput.value : "0", 10);
+                if (isNaN(wRedeem) || wRedeem < 0) wRedeem = 0;
+                wRedeem = Math.min(wRedeem, Math.min(availWallet, netAmt));
+
+                const maxCashUpi = Math.max(0, netAmt - wRedeem);
+                const netAfterWEl = document.getElementById("supp-net-after-wallet");
+                if (netAfterWEl) netAfterWEl.innerText = maxCashUpi;
+
                 const rawPaying = parseInt(document.getElementById("supp-pay-amount-now").value, 10);
-                const payingNow = isNaN(rawPaying) ? 0 : Math.min(netAmt, Math.max(0, rawPaying));
-                const pendingBal = Math.max(0, netAmt - payingNow);
+                const payingCashUpi = isNaN(rawPaying) ? 0 : Math.min(maxCashUpi, Math.max(0, rawPaying));
+                const pendingBal = Math.max(0, netAmt - (wRedeem + payingCashUpi));
                 document.getElementById("supp-pay-pending").innerText = pendingBal;
 
                 const upiSec = document.getElementById("supp-upi-section");
-                if (method === "UPI" && payingNow > 0) {
+                if (method === "UPI" && payingCashUpi > 0) {
                     upiSec.style.display = "block";
-                    document.getElementById("supp-qr-amount-display").innerText = payingNow;
-                    renderUpiQrToElement("supp-upi-qr-code", payingNow, 190);
+                    document.getElementById("supp-qr-amount-display").innerText = payingCashUpi;
+                    renderUpiQrToElement("supp-upi-qr-code", payingCashUpi, 190);
                 } else {
                     upiSec.style.display = "none";
                 }
@@ -9617,11 +10319,22 @@
                 const currentOrderTotal = Math.max(0, baseSellingAmount - couponDiscount);
                 const combinedPayableLimit = currentOrderTotal + prevArrearsTotal;
 
-                const rawPayNow = parseInt(document.getElementById("supp-pay-amount-now").value, 10);
-                if (isNaN(rawPayNow) || rawPayNow < 0 || rawPayNow > combinedPayableLimit) {
-                    showNotice("Please enter a valid Amount Paying Now (between ₹0 and ₹" + combinedPayableLimit + ").", "error");
+                const availWallet = (selectedSuppMember && selectedSuppMember.id) ? getMemberWalletBalance(selectedSuppMember.id) : 0;
+                const wInput = document.getElementById("supp-wallet-redeem-input");
+                let wRedeem = parseInt(wInput ? wInput.value : "0", 10);
+                if (isNaN(wRedeem) || wRedeem < 0) wRedeem = 0;
+                if (wRedeem > Math.min(availWallet, combinedPayableLimit)) {
+                    showNotice("Wallet redeem amount exceeds available wallet balance.", "error");
                     return;
                 }
+
+                const maxCashUpi = Math.max(0, combinedPayableLimit - wRedeem);
+                const rawCashUpi = parseInt(document.getElementById("supp-pay-amount-now").value, 10);
+                if (isNaN(rawCashUpi) || rawCashUpi < 0 || rawCashUpi > maxCashUpi) {
+                    showNotice("Please enter a valid Amount Paying Now (between ₹0 and ₹" + maxCashUpi + ").", "error");
+                    return;
+                }
+                const totalClearingNow = wRedeem + rawCashUpi;
 
                 storage.set("revive_supplements_db", supps);
                 cloudSync.push("pushSupplements", supps);
@@ -9635,15 +10348,27 @@
                 const fyStart = m >= 3 ? y : y - 1;
                 const fyString = `${fyStart}-${fyStart + 1}`;
                 const invId = getNextSupplementInvoiceId();
-                const payMethod = document.getElementById("suppPaymentMethod").value;
+                const rawPayMethod = document.getElementById("suppPaymentMethod").value;
+                const payMethod = wRedeem > 0 ? (rawCashUpi > 0 ? `${rawPayMethod} + WALLET (₹${wRedeem})` : "WALLET") : rawPayMethod;
                 const custAddress = document.getElementById("supp-cust-address").value.trim() || selectedSuppMember.address || "Keralapuram";
 
-                let remainingPool = rawPayNow;
+                if (wRedeem > 0 && selectedSuppMember) {
+                    recordMemberWalletTransaction(
+                        selectedSuppMember,
+                        "DEBIT",
+                        wRedeem,
+                        `Redeemed for Supplement Invoice ${invId}`,
+                        invId,
+                        "WALLET",
+                        sellerIdentity
+                    );
+                }
+
+                let remainingPool = totalClearingNow;
                 let salesDb = storage.get("revive_supplement_sales_db", []);
                 let paymentsDb = storage.get("revive_payments_db", {});
                 let updatedAnyFee = false;
 
-                // 1. Settle older pending Supplement invoices first (FIFO)
                 (prevSuppDues || []).forEach(ps => {
                     if (remainingPool <= 0 || ps.balance <= 0) return;
                     const alloc = Math.min(remainingPool, ps.balance);
@@ -9662,7 +10387,6 @@
                     }
                 });
 
-                // 2. Settle older pending Gym Fee months if any
                 (prevFeeDues || []).forEach(pf => {
                     if (remainingPool <= 0 || pf.balance <= 0) return;
                     const alloc = Math.min(remainingPool, pf.balance);
@@ -9692,10 +10416,9 @@
                 });
                 if (updatedAnyFee) storage.set("revive_payments_db", paymentsDb);
 
-                // 3. Allocate remaining amount to the new Supplement invoice
                 const amountPaidForNewOrder = Math.min(remainingPool, currentOrderTotal);
                 const balanceDueNow = Math.max(0, currentOrderTotal - amountPaidForNewOrder);
-                const prevArrearsPaidNow = rawPayNow - amountPaidForNewOrder;
+                const prevArrearsPaidNow = totalClearingNow - amountPaidForNewOrder;
 
                 const saleRecord = {
                     id: invId,
@@ -9717,10 +10440,11 @@
                     totalAmount: currentOrderTotal,
                     amountPaid: amountPaidForNewOrder,
                     balanceDue: balanceDueNow,
+                    walletRedeemed: wRedeem,
                     prevArrearsAdded: prevArrearsTotal,
                     prevArrearsPaid: prevArrearsPaidNow,
-                    combinedPaidNow: rawPayNow,
-                    combinedBalanceAfter: Math.max(0, combinedPayableLimit - rawPayNow),
+                    combinedPaidNow: totalClearingNow,
+                    combinedBalanceAfter: Math.max(0, combinedPayableLimit - totalClearingNow),
                     status: balanceDueNow === 0 ? "Paid" : (amountPaidForNewOrder > 0 ? "Partial" : "Unpaid"),
                     totalCost: totalCost,
                     method: payMethod,
