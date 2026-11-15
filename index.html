@@ -164,6 +164,12 @@
         /* Fix #9: Allow dynamic mirror correction on selfie camera & true orientation on previews */
         video, #selfie-preview, #sig-preview { width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 2; }
         #sig-preview { object-fit: contain; background: #fff; }
+        .sig-mode-tabs { display: flex; gap: 0.5rem; width: 100%; max-width: 420px; margin-bottom: 0.4rem; }
+        .sig-mode-tab { flex: 1; padding: 0.55rem 0.6rem; border-radius: 8px; border: 1.5px solid var(--border-color); background: var(--bg-panel); color: var(--text-muted); font-size: 0.78rem; font-weight: 800; text-transform: uppercase; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 5px; transition: all 0.2s; }
+        .sig-mode-tab:hover { border-color: var(--accent-orange); color: var(--accent-orange); }
+        .sig-mode-tab.active-sig-tab { background: var(--accent-orange); color: #fff; border-color: var(--accent-orange); box-shadow: 0 3px 10px rgba(255,102,0,0.22); }
+        #sig-draw-pad { width: 100%; height: 100%; display: none; cursor: crosshair; touch-action: none; background: #ffffff; position: relative; z-index: 3; }
+        .sig-draw-baseline { position: absolute; left: 24px; right: 24px; bottom: 34px; border-bottom: 1.5px dashed #cbd5e1; pointer-events: none; z-index: 4; display: none; text-align: right; font-size: 0.68rem; color: #94a3b8; font-weight: 700; padding-bottom: 2px; }
         .control-btns { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; width: 100%; max-width: 420px; }
 
         #reAdmissionSection { background: var(--bg-main); padding: 1.2rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px dashed var(--accent-orange); display: none; animation: fadeIn 0.3s ease; }
@@ -225,6 +231,14 @@
         .profile-snippet img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-orange); }
         .profile-snippet-info h3 { margin: 0 0 5px 0; color: var(--accent-orange); }
         .profile-snippet-info p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
+        .family-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; margin-top: 8px; }
+        .family-profile-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: var(--bg-panel); border: 2px solid var(--border-color); cursor: pointer; transition: all 0.2s ease; text-align: left; position: relative; }
+        .family-profile-card:hover { border-color: var(--accent-orange); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255,102,0,0.1); }
+        .family-profile-card.active-family-card { border-color: var(--accent-orange); background: #fff5eb; box-shadow: 0 4px 14px rgba(255,102,0,0.16); }
+        .family-profile-card img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-orange); flex-shrink: 0; }
+        .family-card-meta { flex: 1; min-width: 0; }
+        .family-card-meta h4 { margin: 0; font-size: 0.9rem; font-weight: 800; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .family-card-meta p { margin: 2px 0 0 0; font-size: 0.74rem; color: var(--text-muted); line-height: 1.35; }
 
         .contact-action-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; background: var(--bg-panel); border: 1px solid var(--border-color); margin-left: 6px; cursor: pointer; text-decoration: none; transition: transform 0.2s; }
         .contact-action-btn:hover { transform: scale(1.1); }
@@ -1459,7 +1473,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="alternateContact">Alternate Contact</label>
-                                <input type="tel" id="alternateContact" pattern="\d{10}" maxlength="10" title="Exactly 10 digits required" placeholder="Optional">
+                                <input type="tel" id="alternateContact" pattern="\d{10}" maxlength="10" title="Exactly 10 digits required" placeholder="Optional" oninput="this.value = this.value.replace(/\D/g, \x27\x27).slice(0, 10)">
                             </div>
                         </div>
 
@@ -1499,38 +1513,50 @@
                                 <img id="selfie-preview" style="display:none;" alt="Member Portrait" />
                             </div>
                             <div class="control-btns">
-                                <button type="button" id="btn-start-camera" class="btn secondary" style="flex:1;">Open Camera</button>
-                                <button type="button" id="btn-switch-camera" class="btn secondary" style="display:none; flex:1;">Switch Camera</button>
-                                <button type="button" id="btn-flip-camera" class="btn secondary" style="display:none; flex:1;">⇄ Flip Mirror</button>
-                                <button type="button" id="btn-capture" class="btn primary" style="display:none; flex:1;">Capture Photo</button>
-                                <button type="button" id="btn-retake" class="btn secondary" style="display:none; flex:1;">Retake Photo</button>
+                                <button type="button" id="btn-start-camera" class="btn secondary" style="flex:1; font-size:0.82rem; padding:0.75rem;">📷 Open Camera</button>
+                                <button type="button" id="btn-upload-selfie-gallery" class="btn secondary" style="flex:1; font-size:0.82rem; padding:0.75rem;">📁 Upload Photo</button>
+                                <input type="file" id="selfie-file-input" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png" style="display:none;">
+                                <button type="button" id="btn-switch-camera" class="btn secondary" style="display:none; flex:1; font-size:0.82rem; padding:0.75rem;">Switch Camera</button>
+                                <button type="button" id="btn-flip-camera" class="btn secondary" style="display:none; flex:1; font-size:0.82rem; padding:0.75rem;">⇄ Flip Mirror</button>
+                                <button type="button" id="btn-capture" class="btn primary" style="display:none; flex:1; font-size:0.82rem; padding:0.75rem;">Capture Photo</button>
+                                <button type="button" id="btn-retake" class="btn danger" style="display:none; flex:1; font-size:0.82rem; padding:0.75rem;">Retake / Change</button>
                             </div>
                             <input type="hidden" id="selfie-data" required>
                         </div>
 
-                        <!-- Fix #8 & #9: Signature Upload with Live Camera Capture or Image File Upload -->
+                        <!-- Fix #8 & #9: Member Signature with Direct Touch/Mouse Drawing Pad, Live Camera Capture, or Gallery Upload -->
                         <div class="verification-group">
                             <label>2. Member Signature <span class="required">*</span></label>
-                            
-                            <div class="sig-camera-container">
-                                <div class="camera-placeholder" id="sig-placeholder" style="text-align:center; color:var(--text-muted); font-size:0.82rem;">
+                            <div class="sig-mode-tabs">
+                                <button type="button" id="tab-sig-draw" class="sig-mode-tab active-sig-tab">✍️ Draw Signature</button>
+                                <button type="button" id="tab-sig-camera" class="sig-mode-tab">📷 Live Camera</button>
+                                <button type="button" id="tab-sig-upload" class="sig-mode-tab">📁 Upload Image</button>
+                            </div>
+                            <div class="sig-camera-container" id="sig-stage-container">
+                                <div class="camera-placeholder" id="sig-placeholder" style="display:none; text-align:center; color:var(--text-muted); font-size:0.82rem;">
                                     <svg viewBox="0 0 24 24" style="width:36px; height:36px; margin-bottom:4px;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                                     <div>No signature captured yet</div>
                                 </div>
+                                <canvas id="sig-draw-pad" style="display:block;"></canvas>
+                                <div class="sig-draw-baseline" id="sig-draw-baseline" style="display:block;">Sign above line</div>
                                 <video id="sig-camera-stream" autoplay playsinline style="display:none;"></video>
                                 <div class="sig-guide-overlay" id="sig-camera-guide"><span>ALIGN SIGNATURE INSIDE BOX</span></div>
                                 <canvas id="sig-canvas-snapshot" style="display:none;"></canvas>
                                 <img id="sig-preview" style="display:none;" alt="Signature Preview" />
                             </div>
                             <div class="control-btns">
-                                <button type="button" id="btn-start-sig-camera" class="btn secondary" style="flex:1; font-size:0.82rem; padding:0.75rem;">📷 Use Live Camera</button>
+                                <button type="button" id="btn-start-sig-draw" class="btn secondary" style="display:none; flex:1; font-size:0.82rem; padding:0.75rem;">✍️ Draw on Pad</button>
+                                <button type="button" id="btn-clear-sig-draw" class="btn secondary" style="flex:1; font-size:0.82rem; padding:0.75rem;">🧹 Clear Pad</button>
+                                <button type="button" id="btn-save-sig-draw" class="btn primary" style="flex:1; font-size:0.82rem; padding:0.75rem;">✔ Use Drawn Signature</button>
+                                <button type="button" id="btn-start-sig-camera" class="btn secondary" style="display:none; flex:1; font-size:0.82rem; padding:0.75rem;">📷 Open Camera</button>
                                 <button type="button" id="btn-switch-sig-camera" class="btn secondary" style="display:none; flex:1; font-size:0.82rem; padding:0.75rem;">Switch Lens</button>
                                 <button type="button" id="btn-capture-sig" class="btn primary" style="display:none; flex:1; font-size:0.82rem; padding:0.75rem;">Capture Signature</button>
-                                <button type="button" id="btn-upload-sig-gallery" class="btn secondary" style="flex:1; font-size:0.82rem; padding:0.75rem;">📁 Choose from Gallery / Storage</button>
+                                <button type="button" id="btn-upload-sig-gallery" class="btn secondary" style="display:none; flex:1; font-size:0.82rem; padding:0.75rem;">📁 Choose Image</button>
                                 <input type="file" id="sig-file-input" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,application/octet-stream" style="display:none;">
                                 <button type="button" id="btn-edit-sig-crop" class="btn secondary" style="display:none; flex:1; font-size:0.82rem; padding:0.75rem; border-color:var(--accent-orange); color:var(--accent-orange);">✂ Crop / Enhance</button>
-                                <button type="button" id="btn-retake-sig" class="btn danger" style="display:none; flex:1; font-size:0.82rem; padding:0.75rem;">Clear / Retake</button>
+                                <button type="button" id="btn-retake-sig" class="btn danger" style="display:none; flex:1; font-size:0.82rem; padding:0.75rem;">Clear / Change Signature</button>
                             </div>
+                            <div id="sig-status-hint" style="font-size:0.78rem; color:var(--text-muted); margin-top:6px; font-weight:700; text-align:center;">Sign inside the box using finger/mouse, or switch to Live Camera / Upload above.</div>
                             <input type="hidden" id="sig-data" required>
                         </div>
 
@@ -1548,7 +1574,11 @@
                             <div class="fee-row"><span>Synced Admission ID:</span> <strong id="calc-admission-id" style="color:var(--accent-orange);">REV-0000</strong></div>
                             <div class="fee-row"><span id="calc-admin-fee-label">Admission Fee:</span> <strong>₹<span id="calc-admin-fee">0</span></strong></div>
                             <div class="fee-row"><span>Training Fee:</span> <strong>₹<span id="calc-monthly-fee">0</span></strong></div>
-                            <div class="fee-row fee-total"><span>Total Payable <span id="calc-promo-badge"></span>:</span> <strong>₹<span id="calc-total-fee">0</span></strong></div>
+                            <div class="fee-row" id="calc-prev-arrears-row" style="display:none; background:#fff5eb; padding:6px 8px; border-radius:6px; border-left:3px solid var(--error-red);">
+                            <span style="color:var(--error-red); font-weight:800; font-size:0.86rem;">+ Previous Pending Balance (<span id="calc-prev-arrears-label"></span>):</span>
+                            <strong style="color:var(--error-red);">+ ₹<span id="calc-prev-arrears-fee">0</span></strong>
+                        </div>
+                        <div class="fee-row fee-total"><span>Total Payable <span id="calc-promo-badge"></span>:</span> <strong>₹<span id="calc-total-fee">0</span></strong></div>
                             
                             <div style="margin-top:1rem; padding:1rem; background:#fff8f3; border:2px solid var(--accent-orange); border-radius:10px;">
                                 <label for="adm-pay-amount-now" style="color:var(--accent-orange); font-size:0.85rem; display:block; margin-bottom:0.5rem;">Enter Paying Amount Now (₹) — Edit if Partial Payment <span class="required">*</span></label>
@@ -1707,7 +1737,12 @@
                             <span>Coupon Applied:<strong id="supp-applied-coupon-tag" style="display:none;"></strong></span>
                             <strong style="color:var(--success-green);">- ₹<span id="supp-pay-coupon-disc">0</span></strong>
                         </div>
-                        <div class="fee-row fee-total"><span>Net Payable Amount:</span> <strong>₹<span id="supp-pay-net">0</span></strong></div>
+                        <div class="fee-row" id="supp-Current-order-net-row" style="display:none;"><span>Current Order Net:</span> <strong>₹<span id="supp-pay-current-net">0</span></strong></div>
+                        <div class="fee-row" id="supp-prev-arrears-row" style="display:none; background:#fff5eb; padding:6px 8px; border-radius:6px; border-left:3px solid var(--error-red);">
+                            <span style="color:var(--error-red); font-weight:800; font-size:0.86rem;">+ Previous Pending Balance (<span id="supp-prev-arrears-label"></span>):</span>
+                            <strong style="color:var(--error-red);">+ ₹<span id="supp-pay-prev-arrears">0</span></strong>
+                        </div>
+                        <div class="fee-row fee-total"><span>Total Payable Amount:</span> <strong>₹<span id="supp-pay-net">0</span></strong></div>
 
                         <!-- Coupon Code Provision (Active coupons are not revealed here; user must enter code manually) -->
                         <div style="margin-top:1rem; padding:0.9rem; background:var(--bg-panel); border:1px dashed var(--accent-orange); border-radius:8px;">
@@ -1930,8 +1965,13 @@
                         <span><strong>Billing:</strong> <span id="pay-month"></span> (<span id="pay-fy-display"></span>) <span id="pay-promo-badge"></span></span>
                         <button type="button" id="btn-paymodal-view-rcpt" class="btn secondary" style="display:none; width:auto; padding:0.25rem 0.6rem; font-size:0.72rem;" onclick="window.moduleContext.viewPartialReceiptFromModal()">🧾 View Receipt</button>
                     </div>
-                    <p style="margin-bottom: 4px;"><strong>Total Fee:</strong> ₹<span id="pay-total-due"></span> &nbsp;|&nbsp; <strong>Already Paid:</strong> ₹<span id="pay-already-paid"></span></p>
-                    <p style="color:var(--accent-orange); font-size:1.05rem; margin-top:6px;"><strong>Payable Balance Due: ₹<span id="pay-balance"></span></strong></p>
+                    <p style="margin-bottom: 4px;"><strong>Current Cycle Fee:</strong> ₹<span id="pay-current-cycle-fee">0</span> &nbsp;|&nbsp; <strong>Already Paid:</strong> ₹<span id="pay-already-paid">0</span></p>
+                    <div id="pay-carryforward-box" style="display:none; margin: 6px 0; padding: 8px 10px; background: #fff5eb; border-left: 3px solid var(--error-red); border-radius: 6px; font-size: 0.82rem; line-height: 1.45;">
+                        <div style="font-weight:800; color:var(--error-red); text-transform:uppercase; font-size:0.75rem; margin-bottom:2px;">+ Previous Pending Balance Auto-Added: ₹<span id="pay-carryforward-total">0</span></div>
+                        <div id="pay-carryforward-details" style="color:var(--text-main); font-size:0.78rem;"></div>
+                    </div>
+                    <p style="margin-bottom: 2px; font-size:0.85rem; color:var(--text-muted);"><strong>Total Combined Due:</strong> ₹<span id="pay-total-due"></span></p>
+                    <p style="color:var(--accent-orange); font-size:1.1rem; margin-top:4px;"><strong>Total Payable Balance Due Now: ₹<span id="pay-balance"></span></strong></p>
                 </div>
                 <div style="background:#fff8f3; border:2px solid var(--accent-orange); border-radius:10px; padding:0.9rem; margin-bottom:0.9rem;">
                     <label for="pay-amount-now" style="color:var(--accent-orange); font-size:0.8rem; display:block; margin-bottom:0.4rem;">Enter Paying Amount Now (₹) — Edit if Partial <span class="required">*</span></label>
@@ -2374,7 +2414,8 @@
                         <tr><td style="color:#666;">Total MRP Value:</td><td style="text-align: right; text-decoration:line-through; color:#777;">₹<span id="sinv-mrp"></span></td></tr>
                         <tr><td style="color:#666;">Store Offer Savings:</td><td style="text-align: right; color: #138a36; font-weight:bold;">- ₹<span id="sinv-disc"></span></td></tr>
                         <tr id="sinv-coupon-row" style="display:none;"><td style="color:#666; font-weight:700;">Coupon Applied:<strong id="sinv-coupon-code" style="display:none;"></strong></td><td style="text-align: right; color: #138a36; font-weight:bold;">- ₹<span id="sinv-coupon-disc">0</span></td></tr>
-                        <tr style="border-top:1px dashed #ddd;"><td style="font-weight:800;">Net Bill Amount:</td><td style="text-align: right; font-weight: 900; font-size:14px;">₹<span id="sinv-net"></span></td></tr>
+                        <tr id="sinv-prev-arrears-row" style="display:none;"><td style="color:#d32f2f; font-weight:700;">+ Previous Pending Balance Added:</td><td style="text-align: right; color: #d32f2f; font-weight:bold;">+ ₹<span id="sinv-prev-arrears">0</span></td></tr>
+                        <tr style="border-top:1px dashed #ddd;"><td style="font-weight:800;">Total Bill Payable:</td><td style="text-align: right; font-weight: 900; font-size:14px;">₹<span id="sinv-net"></span></td></tr>
                         <tr><td style="font-weight:800;">Amount Paid:</td><td style="text-align: right; color: #138a36; font-weight: 900; font-size:15.5px;">₹<span id="sinv-paid"></span></td></tr>
                         <tr><td style="font-weight:800;">Shortfall / Pending:</td><td id="sinv-bal-cell" style="text-align: right; color: #d32f2f; font-weight: 900;">₹<span id="sinv-bal">0</span></td></tr>
                         <tr><td style="color:#666; font-weight:700;">Payment Mode:</td><td style="text-align: right; font-weight:bold;" id="sinv-mode"></td></tr>
@@ -3952,6 +3993,7 @@
                 day,
                 monthIdx,
                 year,
+                dateObj: new Date(year, monthIdx, day),
                 score: year * 100 + monthIdx,
                 fy: fyString,
                 monthName,
@@ -4028,6 +4070,100 @@
             return age >= 0 ? age : '';
         }
         
+        // Calculate single month expected base due for a member
+        function getExpectedMonthFeeForMember(user, monthName, fy, mYear, monthIdx) {
+            if (!user) return 0;
+            const adInfo = parseAdmissionDateInfo(user.date, user._month, user._fy);
+            const mScore = mYear * 100 + monthIdx;
+            const refDate = (mScore === adInfo.score) ? new Date(adInfo.year, adInfo.monthIdx, adInfo.day) : new Date(mYear, monthIdx, 1);
+            const monthTariff = window.moduleContext.getApplicableTariff(refDate, monthName, fy);
+            let due = parseInt(user.trainingCategory === "Personal Training" ? monthTariff.ptFee : monthTariff.regFee, 10) || 0;
+            if (mScore === adInfo.score) {
+                const daysInMonth = new Date(adInfo.year, adInfo.monthIdx + 1, 0).getDate();
+                const remainingDays = Math.max(1, daysInMonth - adInfo.day + 1);
+                if (remainingDays < 15) {
+                    due = Math.round((due / 30) * remainingDays);
+                }
+                const isReAdm = (user.admissionType === "Re-Admission");
+                due += isReAdm ? (Number(APP_CONFIG.baseReadmissionFee) || 500) : (parseInt(monthTariff.admFee, 10) || Number(APP_CONFIG.baseAdmissionFee));
+            }
+            return due;
+        }
+
+        // Get all pending Supplement invoices for a member (across their admission chain)
+        function getMemberPendingSupplementSales(userId, excludeInvoiceId = "") {
+            if (!userId) return [];
+            const targetBase = parseRevIdParts(userId).baseNum;
+            const sales = storage.get("revive_supplement_sales_db", []);
+            return sales.filter(s => {
+                if (!s || !s.id) return false;
+                if (excludeInvoiceId && String(s.id) === String(excludeInvoiceId)) return false;
+                const sameUser = (String(s.userId).toUpperCase() === String(userId).toUpperCase()) ||
+                                 (targetBase > 0 && parseRevIdParts(s.userId).baseNum === targetBase);
+                if (!sameUser) return false;
+                const tot = parseInt(s.totalAmount || 0, 10);
+                const paid = s.amountPaid != null ? parseInt(s.amountPaid, 10) : tot;
+                const bal = Math.max(0, tot - paid);
+                return bal > 0;
+            }).map(s => {
+                const tot = parseInt(s.totalAmount || 0, 10);
+                const paid = s.amountPaid != null ? parseInt(s.amountPaid, 10) : tot;
+                return {
+                    ...s,
+                    totalDue: tot,
+                    alreadyPaid: paid,
+                    balance: Math.max(0, tot - paid)
+                };
+            });
+        }
+
+        // Get all prior pending Gym Fee months for a member strictly before (or up to) targetScore
+        function getMemberPendingFeeMonths(user, maxScoreExclusive = null) {
+            if (!user || !user.id || isUserCancelled(user)) return [];
+            const paymentsDb = storage.get("revive_payments_db", {});
+            const adInfo = parseAdmissionDateInfo(user.date, user._month, user._fy);
+            const adScore = adInfo.score;
+            const today = new Date();
+            const currentScore = today.getFullYear() * 100 + today.getMonth();
+            const startFyYear = parseInt(adInfo.fy.split("-")[0], 10);
+            const endFyYear = today.getMonth() >= 3 ? today.getFullYear() : today.getFullYear() - 1;
+
+            const pendingList = [];
+            for (let y = startFyYear; y <= Math.max(startFyYear, endFyYear); y++) {
+                const fyStr = `${y}-${y + 1}`;
+                const userFyData = (paymentsDb[user.id] && paymentsDb[user.id][fyStr]) ? paymentsDb[user.id][fyStr] : {};
+                tariffMonthsOrder.forEach((mName, idx) => {
+                    const mIdx = tariffMonthIndices[idx];
+                    const mYear = mIdx >= 3 ? y : y + 1;
+                    const mScore = mYear * 100 + mIdx;
+                    if (mScore < adScore || mScore > currentScore) return;
+                    if (maxScoreExclusive !== null && mScore >= maxScoreExclusive) return;
+
+                    const rec = userFyData[mName];
+                    if (rec && rec.status === "Paid") return;
+                    const expectedTotal = rec ? (parseInt(rec.totalDue, 10) || 0) : getExpectedMonthFeeForMember(user, mName, fyStr, mYear, mIdx);
+                    const alreadyPaid = rec ? (parseInt(rec.amountPaid, 10) || 0) : 0;
+                    const bal = Math.max(0, expectedTotal - alreadyPaid);
+                    if (bal > 0) {
+                        pendingList.push({
+                            userId: user.id,
+                            fy: fyStr,
+                            month: mName,
+                            mYear,
+                            mIdx,
+                            mScore,
+                            totalDue: expectedTotal,
+                            alreadyPaid,
+                            balance: bal,
+                            status: alreadyPaid > 0 ? "Partial" : "Unpaid"
+                        });
+                    }
+                });
+            }
+            pendingList.sort((a, b) => a.mScore - b.mScore);
+            return pendingList;
+        }
+
         function findUsersForAttendance(val, includeCancelled = false) {
             const cleanVal = String(val).trim().toLowerCase();
             const cleanAlphaNum = cleanVal.replace(/[^a-z0-9]/g, '');
@@ -4241,25 +4377,23 @@
                 document.getElementById('selfie-placeholder').style.display = 'block';
                 document.getElementById('selfie-data').value = '';
                 document.getElementById('btn-start-camera').style.display = 'inline-flex';
+                const upSelfieEl = document.getElementById('btn-upload-selfie-gallery');
+                if (upSelfieEl) upSelfieEl.style.display = 'inline-flex';
                 document.getElementById('btn-switch-camera').style.display = 'none';
                 const flipBtnEl = document.getElementById('btn-flip-camera');
                 if (flipBtnEl) flipBtnEl.style.display = 'none';
                 document.getElementById('btn-capture').style.display = 'none';
                 document.getElementById('btn-retake').style.display = 'none';
 
-                // Reset signature camera/upload UI
-                document.getElementById('sig-preview').style.display = 'none';
-                document.getElementById('sig-camera-stream').style.display = 'none';
-                document.getElementById('sig-placeholder').style.display = 'block';
+                // Reset signature drawing/camera/upload UI (default to interactive Draw mode)
                 document.getElementById('sig-data').value = '';
-                document.getElementById('btn-start-sig-camera').style.display = 'inline-flex';
-                document.getElementById('btn-switch-sig-camera').style.display = 'none';
-                document.getElementById('btn-capture-sig').style.display = 'none';
-                const editCropBtn = document.getElementById('btn-edit-sig-crop');
-                if (editCropBtn) editCropBtn.style.display = 'none';
-                const sigGuideEl = document.getElementById('sig-camera-guide');
-                if (sigGuideEl) sigGuideEl.style.display = 'none';
-                document.getElementById('btn-retake-sig').style.display = 'none';
+                if (typeof window.resetSignaturePadToDrawMode === 'function') {
+                    window.resetSignaturePadToDrawMode();
+                } else {
+                    document.getElementById('sig-preview').style.display = 'none';
+                    document.getElementById('sig-camera-stream').style.display = 'none';
+                    document.getElementById('sig-placeholder').style.display = 'none';
+                }
 
                 const dobErrEl = document.getElementById('dob-error-msg'); if (dobErrEl) { dobErrEl.style.display = 'none'; dobErrEl.innerText = ''; }
                 const admDtErrEl = document.getElementById('adm-date-error-msg'); if (admDtErrEl) { admDtErrEl.style.display = 'none'; admDtErrEl.innerText = ''; }
@@ -4320,73 +4454,142 @@
                 }
             },
 
-            // Fix #3: Strict Duplicate Phone Number Validation for Individual Category
-            // Once a mobile number is registered in the portal, it CANNOT be used again under Individual category (only allowed under Family category or when doing Re-Admission of that exact same member).
-            findDuplicateIndividualUser: function(phone, category, admType, excludeId) {
+            // Fix #3: Comprehensive Contact Number & Category Validation (Individual vs Family, Cancelled Exception, Family Move-Out)
+            validatePhoneForRegistration: function(phone, category, admType, excludeId) {
                 const cleanPhone = normalizeTenDigitPhone(phone);
-                if (cleanPhone.length !== 10) return null;
-                if (String(category || '').trim() !== 'Individual') return null;
-
-                const users = storage.get('revive_users_db', []);
-                const archived = storage.get('revive_archived_users_db', []);
-                const allRecords = [...users, ...archived.filter(a => !users.some(u => String(u.id) === String(a.id)))];
-
-                // If Re-Admission is selected for an existing member, exclude that member's own base ID series so they can re-admit with their own number
-                let allowedBaseNum = 0;
-                if (admType === 'Re-Admission' && window._selectedReadmissionUser && window._selectedReadmissionUser.id) {
-                    const selPhone = normalizeTenDigitPhone(window._selectedReadmissionUser.primaryContact || window._selectedReadmissionUser.phone || '');
-                    if (selPhone === cleanPhone) {
-                        allowedBaseNum = parseRevIdParts(window._selectedReadmissionUser.id).baseNum;
-                    }
+                if (cleanPhone.length !== 10) {
+                    return { allowed: true, duplicateUser: null, reason: "", message: "", linkedFamilyMembers: [] };
                 }
-                const excludeBaseNum = excludeId ? parseRevIdParts(excludeId).baseNum : 0;
+                const normCat = String(category || "Individual").trim();
+                const normType = String(admType || "New Admission").trim();
 
-                // Find any existing member with this 10-digit phone number (resolved to their latest record)
-                const matched = allRecords.filter(u => {
-                    if (!u) return false;
-                    const uId = String(u.id || '').trim();
-                    if (excludeId && uId.toUpperCase() === String(excludeId).trim().toUpperCase()) return false;
-                    const uBaseNum = parseRevIdParts(uId).baseNum;
-                    if (excludeBaseNum > 0 && uBaseNum === excludeBaseNum) return false;
-                    if (allowedBaseNum > 0 && uBaseNum === allowedBaseNum) return false;
+                const users = storage.get("revive_users_db", []);
+                const supersededIds = getSupersededUserIdsSet(users);
 
-                    const uPrimary = normalizeTenDigitPhone(u.primaryContact || u.phone || u.contact || u['Primary Contact'] || '');
-                    return uPrimary === cleanPhone;
+                // Only evaluate the latest non-superseded record in each member admission chain (e.g. REV-0007-01 supersedes REV-0007)
+                const latestRecords = users.filter(u => u && u.id && !supersededIds.has(String(u.id).trim().toUpperCase()));
+
+                // Identify self record if editing an existing member or performing a validated Re-Admission
+                let selfRecord = null;
+                if (IS_EDIT_MODE && excludeId) {
+                    const foundSelf = users.find(u => u && String(u.id).trim().toUpperCase() === String(excludeId).trim().toUpperCase());
+                    if (foundSelf) selfRecord = resolveToLatestUserRecord(foundSelf, users);
+                } else if (!IS_EDIT_MODE && normType === "Re-Admission" && window._selectedReadmissionUser && window._selectedReadmissionUser.id) {
+                    selfRecord = resolveToLatestUserRecord(window._selectedReadmissionUser, users);
+                } else if (excludeId) {
+                    const foundSelf = users.find(u => u && String(u.id).trim().toUpperCase() === String(excludeId).trim().toUpperCase());
+                    if (foundSelf) selfRecord = resolveToLatestUserRecord(foundSelf, users);
+                }
+
+                const selfBaseNum = selfRecord ? parseRevIdParts(selfRecord.id).baseNum : (excludeId ? parseRevIdParts(excludeId).baseNum : 0);
+                const selfPhone = selfRecord ? normalizeTenDigitPhone(selfRecord.primaryContact || selfRecord.phone || "") : "";
+
+                // Find all OTHER Active (non-cancelled) members holding this 10-digit phone number
+                // Cancelled registrations do NOT block reuse ("duplicate are not allowed until its a cancelled one")
+                const otherActiveMatches = latestRecords.filter(u => {
+                    if (isUserCancelled(u)) return false;
+                    const uBaseNum = parseRevIdParts(u.id).baseNum;
+                    if (selfBaseNum > 0 && uBaseNum === selfBaseNum) return false;
+                    if (excludeId && String(u.id).trim().toUpperCase() === String(excludeId).trim().toUpperCase()) return false;
+                    const uPhone = normalizeTenDigitPhone(u.primaryContact || u.phone || u.contact || u["Primary Contact"] || "");
+                    return uPhone === cleanPhone;
                 });
 
-                if (matched.length === 0) return null;
-                // Prefer active non-superseded record for display
-                const activeMatch = matched.find(m => !isUserCancelled(m)) || matched[matched.length - 1];
-                return resolveToLatestUserRecord(activeMatch, users);
+                if (normCat === "Individual") {
+                    // Rule A: If a member was registered under Family and is moving out to Individual (via Re-Admission or Edit Member), they CANNOT keep the same Family number
+                    if (selfRecord && selfPhone === cleanPhone && String(selfRecord.admissionCategory || "").trim() === "Family") {
+                        return {
+                            allowed: false,
+                            duplicateUser: selfRecord,
+                            reason: "family_move_out",
+                            message: `Mobile number ${cleanPhone} is registered under Family (${selfRecord.fullName} - ${selfRecord.id}). When moving out from a Family registration to an Individual registration, the same family number cannot be used — please enter a separate mobile number.`,
+                            linkedFamilyMembers: []
+                        };
+                    }
+
+                    // Rule B: Under Individual registration, no other Active member (whether Individual or Family) can hold the same number
+                    if (otherActiveMatches.length > 0) {
+                        const dupUser = otherActiveMatches[0];
+                        const isFamHolder = String(dupUser.admissionCategory || "").trim() === "Family";
+                        const msg = isFamHolder
+                            ? `Mobile number ${cleanPhone} is already registered under an active Family membership (${dupUser.fullName} - ${dupUser.id}). If anyone from the family is registering as Individual, the same family number cannot be used.`
+                            : `Mobile number ${cleanPhone} is already registered to active Individual member ${dupUser.fullName} (${dupUser.id}). Duplicate numbers are not allowed under Individual registration unless the previous admission is Cancelled.`;
+                        return {
+                            allowed: false,
+                            duplicateUser: dupUser,
+                            reason: isFamHolder ? "family_move_out" : "duplicate_individual",
+                            message: msg,
+                            linkedFamilyMembers: []
+                        };
+                    }
+
+                    return { allowed: true, duplicateUser: null, reason: "", message: "", linkedFamilyMembers: [] };
+                } else {
+                    // Category === "Family"
+                    // Check if any OTHER Active member with this phone is registered as "Individual"
+                    const activeIndividualHolder = otherActiveMatches.find(u => String(u.admissionCategory || "Individual").trim() === "Individual");
+                    if (activeIndividualHolder) {
+                        return {
+                            allowed: false,
+                            duplicateUser: activeIndividualHolder,
+                            reason: "active_individual_conflict",
+                            message: `Mobile number ${cleanPhone} is already registered to active Individual member ${activeIndividualHolder.fullName} (${activeIndividualHolder.id}). An active Individual number cannot be reused unless that member is Cancelled or switched to Family first.`,
+                            linkedFamilyMembers: []
+                        };
+                    }
+
+                    const activeFamilyHolders = otherActiveMatches.filter(u => String(u.admissionCategory || "").trim() === "Family");
+                    return {
+                        allowed: true,
+                        duplicateUser: null,
+                        reason: "",
+                        message: "",
+                        linkedFamilyMembers: activeFamilyHolders
+                    };
+                }
+            },
+
+            findDuplicateIndividualUser: function(phone, category, admType, excludeId) {
+                const res = window.moduleContext.validatePhoneForRegistration(phone, category, admType, excludeId);
+                return res.allowed ? null : res.duplicateUser;
             },
 
             checkDuplicatePhoneLive: function() {
-                const phoneEl = document.getElementById('primaryContact');
-                const catEl = document.getElementById('admissionCategory');
-                const typeEl = document.getElementById('admissionTypeSelect');
-                const msgEl = document.getElementById('dup-phone-msg');
+                const phoneEl = document.getElementById("primaryContact");
+                const catEl = document.getElementById("admissionCategory");
+                const typeEl = document.getElementById("admissionTypeSelect");
+                const msgEl = document.getElementById("dup-phone-msg");
                 if (!phoneEl || !catEl || !typeEl || !msgEl) return true;
 
                 // Keep only digits in primaryContact input
-                const digitsOnly = String(phoneEl.value || '').replace(/\D/g, '').slice(0, 10);
+                const digitsOnly = String(phoneEl.value || "").replace(/\D/g, "").slice(0, 10);
                 if (phoneEl.value !== digitsOnly) {
                     phoneEl.value = digitsOnly;
                 }
 
-                const excludeId = (IS_EDIT_MODE && currentActiveUser) ? currentActiveUser.id : '';
-                const dupUser = window.moduleContext.findDuplicateIndividualUser(digitsOnly, catEl.value, typeEl.value, excludeId);
-                if (dupUser) {
-                    const errTxt = `Mobile number ${digitsOnly} is already registered to ${dupUser.fullName} (${dupUser.id}). The same number cannot be used again under Individual registration — please switch Admission Category to "Family" (or use a different number).`;
-                    msgEl.style.display = 'block';
-                    msgEl.innerHTML = `⚠ <strong>Duplicate Number Blocked (Individual):</strong> ${errTxt}`;
-                    phoneEl.setCustomValidity(errTxt);
-                    phoneEl.style.borderColor = 'var(--error-red)';
+                const excludeId = (IS_EDIT_MODE && currentActiveUser) ? currentActiveUser.id : "";
+                const check = window.moduleContext.validatePhoneForRegistration(digitsOnly, catEl.value, typeEl.value, excludeId);
+
+                if (!check.allowed) {
+                    msgEl.style.display = "block";
+                    msgEl.style.color = "var(--error-red)";
+                    msgEl.innerHTML = `⚠ <strong>Duplicate Number Blocked:</strong> ${check.message}`;
+                    phoneEl.setCustomValidity(check.message);
+                    phoneEl.style.borderColor = "var(--error-red)";
                     return false;
+                } else if (check.linkedFamilyMembers && check.linkedFamilyMembers.length > 0) {
+                    const namesList = check.linkedFamilyMembers.map(m => `${m.fullName} (${m.id})`).join(", ");
+                    msgEl.style.display = "block";
+                    msgEl.style.color = "var(--success-green)";
+                    msgEl.innerHTML = `✔ <strong>Family Number Linked:</strong> Shared with active Family member(s): ${namesList}`;
+                    phoneEl.setCustomValidity("");
+                    phoneEl.style.borderColor = "var(--success-green)";
+                    return true;
                 } else {
-                    msgEl.style.display = 'none';
-                    msgEl.innerText = '';
-                    phoneEl.setCustomValidity('');
-                    phoneEl.style.borderColor = '';
+                    msgEl.style.display = "none";
+                    msgEl.innerText = "";
+                    phoneEl.setCustomValidity("");
+                    phoneEl.style.borderColor = "";
                     return true;
                 }
             },
@@ -4396,24 +4599,35 @@
             },
 
             getApplicableTariff: function(targetDateObj, monthName, fyString) {
-                const defaultTariff = { admFee: APP_CONFIG.baseAdmissionFee, regFee: APP_CONFIG.baseMonthlyFee, ptFee: APP_CONFIG.basePTFee };
-                const targetTime = new Date(targetDateObj).setHours(0,0,0,0); 
+                const defaultTariff = { admFee: Number(APP_CONFIG.baseAdmissionFee) || 850, regFee: Number(APP_CONFIG.baseMonthlyFee) || 800, ptFee: Number(APP_CONFIG.basePTFee) || 1500 };
+                const validDate = (targetDateObj instanceof Date && !isNaN(targetDateObj.getTime())) ? targetDateObj : new Date();
+                const targetTime = new Date(validDate).setHours(0,0,0,0); 
                 
-                const specialDb = storage.get('revive_special_tariffs', []);
+                const specialDb = storage.get("revive_special_tariffs", []);
                 let applicableSpecial = null;
                 for (let promo of specialDb) {
                     let start = new Date(promo.startDate).setHours(0,0,0,0);
                     let end = new Date(promo.endDate).setHours(0,0,0,0);
                     if (targetTime >= start && targetTime <= end) {
-                        applicableSpecial = { admFee: promo.admFee, regFee: promo.regFee, ptFee: promo.ptFee, promoName: promo.name };
+                        applicableSpecial = {
+                            admFee: Number(promo.admFee) || defaultTariff.admFee,
+                            regFee: Number(promo.regFee) || defaultTariff.regFee,
+                            ptFee: Number(promo.ptFee) || defaultTariff.ptFee,
+                            promoName: promo.name
+                        };
                         break;
                     }
                 }
                 if (applicableSpecial) return applicableSpecial;
 
-                const monthlyDb = storage.get('revive_tariffs', {});
+                const monthlyDb = storage.get("revive_tariffs", {});
                 if (monthlyDb[fyString] && monthlyDb[fyString][monthName]) {
-                    return monthlyDb[fyString][monthName];
+                    const mt = monthlyDb[fyString][monthName];
+                    return {
+                        admFee: Number(mt.admFee) || defaultTariff.admFee,
+                        regFee: Number(mt.regFee) || defaultTariff.regFee,
+                        ptFee: Number(mt.ptFee) || defaultTariff.ptFee
+                    };
                 }
                 return defaultTariff;
             },
@@ -6955,18 +7169,25 @@
                 let users = storage.get('revive_users_db', []);
                 const supersededAttIds = getSupersededUserIdsSet(users);
                 const cleanAttAlpha = String(val).toLowerCase().replace(/[^a-z0-9]/g, '');
+                // 1. Check exact Admission ID match first
                 let user = users.find(u =>
                     u && u.id &&
                     !supersededAttIds.has(String(u.id).trim().toUpperCase()) &&
                     !isUserCancelled(u) && (
                         String(u.id).toLowerCase() === String(val).toLowerCase() ||
-                        String(u.id).toLowerCase().replace(/[^a-z0-9]/g, '') === cleanAttAlpha ||
-                        normalizeTenDigitPhone(u.primaryContact) === normalizeTenDigitPhone(val)
+                        String(u.id).toLowerCase().replace(/[^a-z0-9]/g, "") === cleanAttAlpha
                     )
                 );
+                // 2. Otherwise check active matches by phone or name
                 if (!user) {
-                    let matches = findUsersForAttendance(val);
-                    if(matches.length === 1) user = matches[0];
+                    const matches = findUsersForAttendance(val, false);
+                    if (matches.length === 1) {
+                        user = matches[0];
+                    } else if (matches.length > 1) {
+                        window.moduleContext.previewMemberName(val);
+                        resBox.innerHTML = `<span style="color:var(--accent-orange); font-weight:bold;">👨‍👩‍👧‍👦 ${matches.length} active members share this contact/name. Please tap the specific member above to mark attendance.</span>`;
+                        return;
+                    }
                 }
                 if (user) user = resolveToLatestUserRecord(user, users);
 
@@ -7135,24 +7356,49 @@
                 user._month = dInfo.monthName;
 
                 const userPhoneNorm = normalizeTenDigitPhone(user.primaryContact);
-                const samePhoneMembers = users.filter(u => !supersededIds.has(String(u.id).trim().toUpperCase()) && normalizeTenDigitPhone(u.primaryContact) === userPhoneNorm);
-                const famSwitcher = document.getElementById('hub-family-switcher');
+                const samePhoneMembers = users
+                    .filter(u => u && u.id && !supersededIds.has(String(u.id).trim().toUpperCase()) && normalizeTenDigitPhone(u.primaryContact) === userPhoneNorm)
+                    .map(u => resolveToLatestUserRecord(u, users));
+                const famSwitcher = document.getElementById("hub-family-switcher");
                 if (famSwitcher) {
-                    if (samePhoneMembers.length > 1) {
-                        famSwitcher.style.display = 'block';
-                        let famHtml = `<div style="font-size:0.8rem; font-weight:800; color:var(--accent-orange); text-transform:uppercase; margin-bottom:8px;">👨‍👩‍👧‍👦 ${samePhoneMembers.length} Members Registered Under Phone ${appContext.currentRole !== 'admin' ? maskPhoneLast4(user.primaryContact) : user.primaryContact} (Click to Switch):</div>`;
-                        famHtml += `<div style="display:flex; flex-wrap:wrap; gap:8px;">`;
+                    const isFamilyTagged = (String(user.admissionCategory || "").trim() === "Family") || samePhoneMembers.length > 1;
+                    if (isFamilyTagged && samePhoneMembers.length > 0) {
+                        famSwitcher.style.display = "block";
+                        const dispPhone = appContext.currentRole !== "admin" ? maskPhoneLast4(user.primaryContact) : user.primaryContact;
+                        let famHtml = `<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
+                            <div style="font-size:0.82rem; font-weight:900; color:var(--accent-orange); text-transform:uppercase; letter-spacing:0.5px;">👨‍👩‍👧‍👦 Family Profiles Tagged Under Phone ${dispPhone} (${samePhoneMembers.length} Member${samePhoneMembers.length > 1 ? "s" : ""})</div>
+                            <span style="font-size:0.74rem; color:var(--text-muted); font-weight:700;">Tap any family member card below to view their profile & dues</span>
+                        </div>`;
+                        famHtml += `<div class="family-cards-grid">`;
                         samePhoneMembers.forEach(fm => {
-                            const isCurr = String(fm.id) === String(user.id);
-                            const safeFid = String(fm.id).replace(/'/g, "\'");
-                            const stLbl = isUserCancelled(fm) ? ' [Cancelled]' : '';
-                            famHtml += `<button type="button" onclick="window.moduleContext.loadProfileByPhoneOrId('${safeFid}')" class="btn ${isCurr ? 'primary' : 'secondary'}" style="width:auto; padding:0.45rem 0.9rem; font-size:0.8rem; border-radius:20px;">${fm.fullName} (${fm.id})${stLbl}</button>`;
+                            const isCurr = String(fm.id).toUpperCase() === String(user.id).toUpperCase();
+                            const safeFid = String(fm.id).replace(/\x27/g, "\\\x27");
+                            const fmPhoto = fm.photo || DEFAULT_AVATAR_SVG;
+                            const fmCanc = isUserCancelled(fm);
+                            const fmFeeArrears = getMemberPendingFeeMonths(fm, null).reduce((sum, x) => sum + x.balance, 0);
+                            const fmSuppArrears = getMemberPendingSupplementSales(fm.id).reduce((sum, x) => sum + x.balance, 0);
+                            const fmTotalPending = fmFeeArrears + fmSuppArrears;
+                            const statusBadge = fmCanc
+                                ? `<span class="deleted-badge" style="font-size:0.62rem;">Cancelled</span>`
+                                : `<span style="background:var(--success-green); color:#fff; font-size:0.62rem; padding:1px 6px; border-radius:8px; font-weight:800; text-transform:uppercase;">Active</span>`;
+                            const dueBadge = fmTotalPending > 0
+                                ? `<span style="color:var(--error-red); font-weight:800; font-size:0.73rem;">⚠ Pending Due: ₹${fmTotalPending}</span>`
+                                : `<span style="color:var(--success-green); font-weight:800; font-size:0.73rem;">✔ No Pending Dues</span>`;
+                            famHtml += `
+                            <div class="family-profile-card ${isCurr ? "active-family-card" : ""}" onclick="window.moduleContext.loadProfileByPhoneOrId(\x27${safeFid}\x27)">
+                                <img src="${fmPhoto}" alt="${fm.fullName}">
+                                <div class="family-card-meta">
+                                    <h4>${fm.fullName} ${isCurr ? "<span style=\"color:var(--accent-orange); font-size:0.7rem;\">(Viewing)</span>" : ""}</h4>
+                                    <p><strong>${fm.id}</strong> • ${fm.trainingCategory || "Regular"} ${statusBadge}</p>
+                                    <p style="margin-top:3px;">${dueBadge}</p>
+                                </div>
+                            </div>`;
                         });
                         famHtml += `</div>`;
                         famSwitcher.innerHTML = famHtml;
                     } else {
-                        famSwitcher.style.display = 'none';
-                        famSwitcher.innerHTML = '';
+                        famSwitcher.style.display = "none";
+                        famSwitcher.innerHTML = "";
                     }
                 }
 
@@ -7309,31 +7555,39 @@
                         let byStr = record.collectedBy ? `<br><span style="font-size:0.62rem; opacity:0.9;">By: ${record.collectedBy}</span>` : '';
                         displayAmt = `Paid: ₹${record.amountPaid}<br><span style="font-size:0.68rem;">Due: ₹0 (Cleared)</span>${payDateStr}${byStr}${attBadge}`; 
                         action = `onclick="window.moduleContext.viewReceipt('${month}', '${fy}')"`;
-                    } else if (record && record.status === 'Partial') {
-                        statusClass = 'status-partial'; 
+                    } else if (record && record.status === "Partial") {
+                        statusClass = "status-partial"; 
                         let bal = Math.max(0, parseInt(record.totalDue, 10) - parseInt(record.amountPaid, 10)); 
-                        displayAmt = `Fee: ₹${record.totalDue}<br>Paid: ₹${record.amountPaid}<br>Shortfall: ₹${bal}${attBadge}`; 
+                        const priorFeeArrears = getMemberPendingFeeMonths(currentActiveUser, mScore).reduce((s, x) => s + x.balance, 0);
+                        const priorSuppArrears = getMemberPendingSupplementSales(userId, "").reduce((s, x) => s + x.balance, 0);
+                        const cfAmt = priorFeeArrears + priorSuppArrears;
+                        const cfTag = cfAmt > 0 ? `<br><span style="font-size:0.65rem; background:rgba(211,47,47,0.85); color:#fff; padding:1px 4px; border-radius:3px;">+Prev Due: ₹${cfAmt}</span>` : "";
+                        displayAmt = `Fee: ₹${record.totalDue}<br>Paid: ₹${record.amountPaid}<br>Shortfall: ₹${bal}${cfTag}${attBadge}`; 
                         if (!currentActiveUser || !isUserCancelled(currentActiveUser)) {
-                            action = `onclick="window.moduleContext.initPayment('${month}', '${fy}')"`;
+                            action = `onclick="window.moduleContext.initPayment(\x27${month}\x27, \x27${fy}\x27)"`;
                         } else {
-                            action = `onclick="window.moduleContext.viewReceipt('${month}', '${fy}')"`;
+                            action = `onclick="window.moduleContext.viewReceipt(\x27${month}\x27, \x27${fy}\x27)"`;
                         }
                     } else {
                         const refDate = (mScore === adScore) ? new Date(adYear, adMonthIdx, adDay) : new Date(mYear, monthIdx, 1);
                         const monthTariff = window.moduleContext.getApplicableTariff(refDate, month, fy);
-                        let due = parseInt(trainCat === 'Personal Training' ? monthTariff.ptFee : monthTariff.regFee, 10);
+                        let due = parseInt(trainCat === "Personal Training" ? monthTariff.ptFee : monthTariff.regFee, 10);
                         if (mScore === adScore) {
                             const daysInMonth = new Date(adYear, adMonthIdx + 1, 0).getDate();
                             const remainingDays = daysInMonth - adDay + 1;
                             if (remainingDays < 15) {
                                 due = Math.round((due / 30) * remainingDays);
                             }
-                            const isReAdm = currentActiveUser && currentActiveUser.admissionType === 'Re-Admission';
+                            const isReAdm = currentActiveUser && currentActiveUser.admissionType === "Re-Admission";
                             due += isReAdm ? (APP_CONFIG.baseReadmissionFee || 500) : parseInt(monthTariff.admFee, 10);
                         }
-                        displayAmt = `Fee: ₹${due}<br>Pending: ₹${due}${attBadge}`;
+                        const priorFeeArrears = getMemberPendingFeeMonths(currentActiveUser, mScore).reduce((s, x) => s + x.balance, 0);
+                        const priorSuppArrears = getMemberPendingSupplementSales(userId, "").reduce((s, x) => s + x.balance, 0);
+                        const cfAmt = priorFeeArrears + priorSuppArrears;
+                        const cfTag = cfAmt > 0 ? `<br><span style="font-size:0.65rem; background:rgba(0,0,0,0.28); color:#fff; padding:1px 4px; border-radius:3px;">+Prev Due: ₹${cfAmt}</span>` : "";
+                        displayAmt = `Fee: ₹${due}<br>Pending: ₹${due}${cfTag}${attBadge}`;
                         if (!currentActiveUser || !isUserCancelled(currentActiveUser)) {
-                            action = `onclick="window.moduleContext.initPayment('${month}', '${fy}')"`;
+                            action = `onclick="window.moduleContext.initPayment(\x27${month}\x27, \x27${fy}\x27)"`;
                         }
                     }
                     
@@ -7380,11 +7634,11 @@
             },
 
             initPayment: function(month, fy) {
-                const paymentsDb = storage.get('revive_payments_db', {});
+                const paymentsDb = storage.get("revive_payments_db", {});
                 const record = (paymentsDb[currentActiveUser.id] && paymentsDb[currentActiveUser.id][fy] && paymentsDb[currentActiveUser.id][fy][month]) ? paymentsDb[currentActiveUser.id][fy][month] : null;
                 
-                let totalDue, alreadyPaid, balance;
-                document.getElementById('pay-promo-badge').innerHTML = ''; 
+                let cycleTotalDue, cycleAlreadyPaid, cycleBalance;
+                document.getElementById("pay-promo-badge").innerHTML = ""; 
 
                 const adInfo = parseAdmissionDateInfo(currentActiveUser.date, currentActiveUser._month, currentActiveUser._fy);
                 const adDay = adInfo.day;
@@ -7392,185 +7646,354 @@
                 const adYear = adInfo.year;
                 const adScore = adInfo.score;
 
-                const fyStartYear = parseInt(fy.split('-')[0], 10);
+                const fyStartYear = parseInt(fy.split("-")[0], 10);
                 const mIdx = tariffMonthIndices[tariffMonthsOrder.indexOf(month)];
                 const mYear = mIdx >= 3 ? fyStartYear : fyStartYear + 1;
                 const mScore = mYear * 100 + mIdx;
 
-                if(record) { 
-                    totalDue = parseInt(record.totalDue, 10);
-                    alreadyPaid = parseInt(record.amountPaid, 10);
-                    balance = totalDue - alreadyPaid; 
+                if (record) { 
+                    cycleTotalDue = parseInt(record.totalDue, 10) || 0;
+                    cycleAlreadyPaid = parseInt(record.amountPaid, 10) || 0;
+                    cycleBalance = Math.max(0, cycleTotalDue - cycleAlreadyPaid); 
                 } else {
-                    const refDate = (mScore === adScore) ? new Date(adYear, adMonthIdx, adDay) : new Date();
+                    const refDate = (mScore === adScore) ? new Date(adYear, adMonthIdx, adDay) : new Date(mYear, mIdx, 1);
                     const mTariff = window.moduleContext.getApplicableTariff(refDate, month, fy);
                     if (mTariff.promoName) {
-                        document.getElementById('pay-promo-badge').innerHTML = `<span class="promo-badge">PROMO: ${mTariff.promoName} Applied</span>`;
+                        document.getElementById("pay-promo-badge").innerHTML = `<span class="promo-badge">PROMO: ${mTariff.promoName} Applied</span>`;
                     }
-                    let baseMonthFee = parseInt(currentActiveUser.trainingCategory === 'Personal Training' ? mTariff.ptFee : mTariff.regFee, 10);
+                    let baseMonthFee = parseInt(currentActiveUser.trainingCategory === "Personal Training" ? mTariff.ptFee : mTariff.regFee, 10) || 0;
                     if (mScore === adScore) {
                         const daysInMonth = new Date(adYear, adMonthIdx + 1, 0).getDate();
-                        const remainingDays = daysInMonth - adDay + 1;
+                        const remainingDays = Math.max(1, daysInMonth - adDay + 1);
                         if (remainingDays < 15) baseMonthFee = Math.round((baseMonthFee / 30) * remainingDays);
-                        const isReAdm = currentActiveUser && currentActiveUser.admissionType === 'Re-Admission';
-                        baseMonthFee += isReAdm ? (APP_CONFIG.baseReadmissionFee || 500) : parseInt(mTariff.admFee, 10);
+                        const isReAdm = currentActiveUser && currentActiveUser.admissionType === "Re-Admission";
+                        baseMonthFee += isReAdm ? (Number(APP_CONFIG.baseReadmissionFee) || 500) : parseInt(mTariff.admFee, 10);
                     }
-                    totalDue = baseMonthFee;
-                    alreadyPaid = 0;
-                    balance = totalDue;
+                    cycleTotalDue = baseMonthFee;
+                    cycleAlreadyPaid = 0;
+                    cycleBalance = cycleTotalDue;
                 }
 
-                activePaymentConfig = { month, fy, totalDue, alreadyPaid, balance, isAdmissionMonth: (mScore === adScore), paymentType: 'gym_fee' };
-                document.getElementById('pay-month').innerText = month;
-                document.getElementById('pay-fy-display').innerText = fy;
-                document.getElementById('pay-total-due').innerText = totalDue;
-                document.getElementById('pay-already-paid').innerText = alreadyPaid;
-                document.getElementById('pay-balance').innerText = balance;
-                const viewRcptBtn = document.getElementById('btn-paymodal-view-rcpt');
-                if (viewRcptBtn) viewRcptBtn.style.display = alreadyPaid > 0 ? 'inline-flex' : 'none';
+                // Automatically carry forward any prior unpaid/partial Gym Fee months + any pending Supplement invoices
+                const priorFeeDues = getMemberPendingFeeMonths(currentActiveUser, mScore);
+                const priorSuppDues = getMemberPendingSupplementSales(currentActiveUser.id, "");
+                const priorFeeSum = priorFeeDues.reduce((sum, x) => sum + x.balance, 0);
+                const priorSuppSum = priorSuppDues.reduce((sum, x) => sum + x.balance, 0);
+                const carryForwardTotal = priorFeeSum + priorSuppSum;
+
+                const combinedTotalDue = cycleTotalDue + carryForwardTotal;
+                const combinedBalance = cycleBalance + carryForwardTotal;
+
+                activePaymentConfig = {
+                    month,
+                    fy,
+                    mYear,
+                    mIdx,
+                    mScore,
+                    cycleTotalDue,
+                    cycleAlreadyPaid,
+                    cycleBalance,
+                    priorFeeDues,
+                    priorSuppDues,
+                    carryForwardTotal,
+                    totalDue: combinedTotalDue,
+                    alreadyPaid: cycleAlreadyPaid,
+                    balance: combinedBalance,
+                    isAdmissionMonth: (mScore === adScore),
+                    paymentType: "gym_fee"
+                };
+
+                document.getElementById("pay-month").innerText = month;
+                document.getElementById("pay-fy-display").innerText = fy;
+                const currCycleEl = document.getElementById("pay-current-cycle-fee");
+                if (currCycleEl) currCycleEl.innerText = cycleTotalDue;
+                document.getElementById("pay-total-due").innerText = combinedTotalDue;
+                document.getElementById("pay-already-paid").innerText = cycleAlreadyPaid;
+                document.getElementById("pay-balance").innerText = combinedBalance;
+
+                const cfBox = document.getElementById("pay-carryforward-box");
+                const cfTotEl = document.getElementById("pay-carryforward-total");
+                const cfDetEl = document.getElementById("pay-carryforward-details");
+                if (cfBox) {
+                    if (carryForwardTotal > 0) {
+                        cfBox.style.display = "block";
+                        if (cfTotEl) cfTotEl.innerText = carryForwardTotal;
+                        const detailParts = [];
+                        priorFeeDues.forEach(pf => {
+                            detailParts.push(`• ${pf.month} (${pf.fy}) Fee Pending: <strong>₹${pf.balance}</strong>`);
+                        });
+                        priorSuppDues.forEach(ps => {
+                            detailParts.push(`• Supplement ${ps.id} Pending: <strong>₹${ps.balance}</strong>`);
+                        });
+                        if (cfDetEl) cfDetEl.innerHTML = detailParts.join("<br>");
+                    } else {
+                        cfBox.style.display = "none";
+                        if (cfDetEl) cfDetEl.innerHTML = "";
+                    }
+                }
+
+                const viewRcptBtn = document.getElementById("btn-paymodal-view-rcpt");
+                if (viewRcptBtn) viewRcptBtn.style.display = cycleAlreadyPaid > 0 ? "inline-flex" : "none";
                 
-                const inputAmt = document.getElementById('pay-amount-now');
-                inputAmt.value = balance;
-                inputAmt.max = balance;
-                document.getElementById('pay-method').value = 'UPI';
-                document.getElementById('pay-staff-pin').value = '';
-                document.getElementById('pay-pin-identity').style.color = 'var(--text-muted)';
-                document.getElementById('pay-pin-identity').innerText = '';
+                const inputAmt = document.getElementById("pay-amount-now");
+                inputAmt.value = combinedBalance;
+                inputAmt.max = combinedBalance;
+                document.getElementById("pay-method").value = "UPI";
+                document.getElementById("pay-staff-pin").value = "";
+                document.getElementById("pay-pin-identity").style.color = "var(--text-muted)";
+                document.getElementById("pay-pin-identity").innerText = "";
                 window.moduleContext.updatePaymentModalUI();
-                document.getElementById('paymentProcessModal').style.display = 'flex';
+                document.getElementById("paymentProcessModal").style.display = "flex";
             },
             viewPartialReceiptFromModal: function() {
                 if (!activePaymentConfig) return;
-                document.getElementById('paymentProcessModal').style.display = 'none';
+                document.getElementById("paymentProcessModal").style.display = "none";
                 window.moduleContext.viewReceipt(activePaymentConfig.month, activePaymentConfig.fy);
             },
             initSupplementBalancePay: function(invoiceId) {
-                const sales = storage.get('revive_supplement_sales_db', []);
+                const sales = storage.get("revive_supplement_sales_db", []);
                 const sale = sales.find(s => String(s.id) === String(invoiceId));
                 if (!sale) return;
-                const totalDue = parseInt(sale.totalAmount || 0, 10);
-                const alreadyPaid = sale.amountPaid != null ? parseInt(sale.amountPaid, 10) : totalDue;
-                const balance = Math.max(0, totalDue - alreadyPaid);
-                if (balance <= 0) {
+                const cycleTotalDue = parseInt(sale.totalAmount || 0, 10);
+                const cycleAlreadyPaid = sale.amountPaid != null ? parseInt(sale.amountPaid, 10) : cycleTotalDue;
+                const cycleBalance = Math.max(0, cycleTotalDue - cycleAlreadyPaid);
+                if (cycleBalance <= 0) {
                     window.moduleContext.viewSupplementInvoiceById(invoiceId);
                     return;
                 }
+
+                // Also check if member has other older pending supplement invoices or pending gym fee balances
+                const otherSuppDues = getMemberPendingSupplementSales(sale.userId, sale.id);
+                const priorFeeDues = currentActiveUser ? getMemberPendingFeeMonths(currentActiveUser, null) : [];
+                const otherSuppSum = otherSuppDues.reduce((sum, x) => sum + x.balance, 0);
+                const priorFeeSum = priorFeeDues.reduce((sum, x) => sum + x.balance, 0);
+                const carryForwardTotal = otherSuppSum + priorFeeSum;
+
+                const combinedTotalDue = cycleTotalDue + carryForwardTotal;
+                const combinedBalance = cycleBalance + carryForwardTotal;
+
                 activePaymentConfig = {
-                    paymentType: 'supplement_due',
+                    paymentType: "supplement_due",
                     invoiceId: sale.id,
                     month: `Supplement ${sale.id}`,
                     fy: sale.fy,
-                    totalDue,
-                    alreadyPaid,
-                    balance
+                    cycleTotalDue,
+                    cycleAlreadyPaid,
+                    cycleBalance,
+                    priorFeeDues,
+                    priorSuppDues: otherSuppDues,
+                    carryForwardTotal,
+                    totalDue: combinedTotalDue,
+                    alreadyPaid: cycleAlreadyPaid,
+                    balance: combinedBalance
                 };
-                document.getElementById('pay-promo-badge').innerHTML = '';
-                document.getElementById('pay-month').innerText = `Supplement Invoice ${sale.id}`;
-                document.getElementById('pay-fy-display').innerText = sale.date || '';
-                document.getElementById('pay-total-due').innerText = totalDue;
-                document.getElementById('pay-already-paid').innerText = alreadyPaid;
-                document.getElementById('pay-balance').innerText = balance;
-                const viewRcptBtn = document.getElementById('btn-paymodal-view-rcpt');
-                if (viewRcptBtn) viewRcptBtn.style.display = 'none';
+                document.getElementById("pay-promo-badge").innerHTML = "";
+                document.getElementById("pay-month").innerText = `Supplement Invoice ${sale.id}`;
+                document.getElementById("pay-fy-display").innerText = sale.date || "";
+                const currCycleEl = document.getElementById("pay-current-cycle-fee");
+                if (currCycleEl) currCycleEl.innerText = cycleTotalDue;
+                document.getElementById("pay-total-due").innerText = combinedTotalDue;
+                document.getElementById("pay-already-paid").innerText = cycleAlreadyPaid;
+                document.getElementById("pay-balance").innerText = combinedBalance;
 
-                const inputAmt = document.getElementById('pay-amount-now');
-                inputAmt.value = balance;
-                inputAmt.max = balance;
-                document.getElementById('pay-method').value = 'UPI';
-                document.getElementById('pay-staff-pin').value = '';
-                document.getElementById('pay-pin-identity').innerText = '';
+                const cfBox = document.getElementById("pay-carryforward-box");
+                const cfTotEl = document.getElementById("pay-carryforward-total");
+                const cfDetEl = document.getElementById("pay-carryforward-details");
+                if (cfBox) {
+                    if (carryForwardTotal > 0) {
+                        cfBox.style.display = "block";
+                        if (cfTotEl) cfTotEl.innerText = carryForwardTotal;
+                        const detailParts = [];
+                        otherSuppDues.forEach(ps => {
+                            detailParts.push(`• Supplement ${ps.id} Pending: <strong>₹${ps.balance}</strong>`);
+                        });
+                        priorFeeDues.forEach(pf => {
+                            detailParts.push(`• ${pf.month} (${pf.fy}) Fee Pending: <strong>₹${pf.balance}</strong>`);
+                        });
+                        if (cfDetEl) cfDetEl.innerHTML = detailParts.join("<br>");
+                    } else {
+                        cfBox.style.display = "none";
+                        if (cfDetEl) cfDetEl.innerHTML = "";
+                    }
+                }
+
+                const viewRcptBtn = document.getElementById("btn-paymodal-view-rcpt");
+                if (viewRcptBtn) viewRcptBtn.style.display = "none";
+
+                const inputAmt = document.getElementById("pay-amount-now");
+                inputAmt.value = combinedBalance;
+                inputAmt.max = combinedBalance;
+                document.getElementById("pay-method").value = "UPI";
+                document.getElementById("pay-staff-pin").value = "";
+                document.getElementById("pay-pin-identity").innerText = "";
                 window.moduleContext.updatePaymentModalUI();
-                document.getElementById('paymentProcessModal').style.display = 'flex';
+                document.getElementById("paymentProcessModal").style.display = "flex";
             },
             viewSupplementInvoiceById: function(invoiceId) {
-                const sales = storage.get('revive_supplement_sales_db', []);
+                const sales = storage.get("revive_supplement_sales_db", []);
                 const sale = sales.find(s => String(s.id) === String(invoiceId));
                 if (!sale) {
                     showNotice("Invoice record not found.", "error");
                     return;
                 }
                 currentSuppSaleRecord = sale;
-                window.moduleContext.generateSupplementInvoiceImage(sale, 'view');
+                window.moduleContext.generateSupplementInvoiceImage(sale, "view");
             },
             updatePaymentModalUI: function() {
-                const method = document.getElementById('pay-method').value;
-                const rawAmt = parseInt(document.getElementById('pay-amount-now').value, 10);
+                const method = document.getElementById("pay-method").value;
+                const rawAmt = parseInt(document.getElementById("pay-amount-now").value, 10);
                 const maxBal = activePaymentConfig ? activePaymentConfig.balance : (isNaN(rawAmt) ? 0 : rawAmt);
                 const amt = isNaN(rawAmt) ? 0 : Math.min(maxBal, Math.max(0, rawAmt));
                 const pendingAfter = Math.max(0, maxBal - amt);
-                const pillEl = document.getElementById('pay-shortfall-pill');
+                const pillEl = document.getElementById("pay-shortfall-pill");
                 if (pillEl) {
                     if (pendingAfter > 0) {
-                        pillEl.style.color = 'var(--error-red)';
+                        pillEl.style.color = "var(--error-red)";
                         pillEl.innerHTML = `₹<span id="pay-pending-after">${pendingAfter}</span> (Shortfall / Pending)`;
                     } else {
-                        pillEl.style.color = 'var(--success-green)';
+                        pillEl.style.color = "var(--success-green)";
                         pillEl.innerHTML = `₹<span id="pay-pending-after">0</span> (Cleared)`;
                     }
                 }
 
-                const qrAmtLbl = document.getElementById('pay-qr-amt-label');
+                const qrAmtLbl = document.getElementById("pay-qr-amt-label");
                 if (qrAmtLbl) qrAmtLbl.innerText = amt;
-                const qrShortLbl = document.getElementById('pay-qr-shortfall-label');
+                const qrShortLbl = document.getElementById("pay-qr-shortfall-label");
                 if (qrShortLbl) {
                     if (pendingAfter > 0) {
-                        qrShortLbl.style.display = 'block';
+                        qrShortLbl.style.display = "block";
                         qrShortLbl.innerText = `Shortfall / Pending Balance: ₹${pendingAfter}`;
                     } else {
-                        qrShortLbl.style.display = 'none';
+                        qrShortLbl.style.display = "none";
                     }
                 }
 
-                const upiSec = document.getElementById('pay-upi-section');
-                if(method === 'UPI' && amt > 0) {
-                    upiSec.style.display = 'block';
-                    renderUpiQrToElement('pay-upi-qr', amt, 160);
-                } else { upiSec.style.display = 'none'; }
+                const upiSec = document.getElementById("pay-upi-section");
+                if(method === "UPI" && amt > 0) {
+                    upiSec.style.display = "block";
+                    renderUpiQrToElement("pay-upi-qr", amt, 160);
+                } else { upiSec.style.display = "none"; }
             },
             confirmPayment: function() {
-                const payAmt = parseInt(document.getElementById('pay-amount-now').value, 10);
+                const payAmt = parseInt(document.getElementById("pay-amount-now").value, 10);
                 if(isNaN(payAmt) || payAmt <= 0 || payAmt > activePaymentConfig.balance) {
                     showNotice("Invalid payment amount entered.", "error");
                     return;
                 }
 
-                const pinVal = document.getElementById('pay-staff-pin').value;
+                const pinVal = document.getElementById("pay-staff-pin").value;
                 const collectorIdentity = verifyCollectorPin(pinVal);
                 if (!collectorIdentity) {
                     showNotice("Please enter a valid Staff or Admin PIN to verify fee collection.", "error");
-                    document.getElementById('pay-staff-pin').focus();
+                    document.getElementById("pay-staff-pin").focus();
                     return;
                 }
                 
-                const method = document.getElementById('pay-method').value;
-                const newPaid = activePaymentConfig.alreadyPaid + payAmt;
-                const newBal = Math.max(0, activePaymentConfig.totalDue - newPaid);
-                const newStatus = newBal === 0 ? 'Paid' : 'Partial';
+                const method = document.getElementById("pay-method").value;
+                const nowIso = new Date().toISOString();
+                let remainingPool = payAmt;
 
-                if (activePaymentConfig.paymentType === 'supplement_due') {
-                    let salesDb = storage.get('revive_supplement_sales_db', []);
-                    const idx = salesDb.findIndex(s => String(s.id) === String(activePaymentConfig.invoiceId));
+                let paymentsDb = storage.get("revive_payments_db", {});
+                let salesDb = storage.get("revive_supplement_sales_db", []);
+                let updatedAnySupp = false;
+                let updatedAnyFee = false;
+
+                // Helper to settle a pending gym fee month from remainingPool
+                const settleFeeMonthFromPool = (pf) => {
+                    if (remainingPool <= 0 || pf.balance <= 0) return;
+                    const alloc = Math.min(remainingPool, pf.balance);
+                    remainingPool -= alloc;
+                    const newPaid = pf.alreadyPaid + alloc;
+                    const newBal = Math.max(0, pf.totalDue - newPaid);
+                    const newStatus = newBal === 0 ? "Paid" : "Partial";
+                    if (!paymentsDb[pf.userId]) paymentsDb[pf.userId] = {};
+                    if (!paymentsDb[pf.userId][pf.fy]) paymentsDb[pf.userId][pf.fy] = {};
+                    const pRec = {
+                        userId: pf.userId,
+                        fullName: currentActiveUser ? currentActiveUser.fullName : "",
+                        primaryContact: currentActiveUser ? currentActiveUser.primaryContact : "",
+                        fy: pf.fy,
+                        month: pf.month,
+                        totalDue: pf.totalDue,
+                        amountPaid: newPaid,
+                        balanceDue: newBal,
+                        lastPaidAmount: alloc,
+                        status: newStatus,
+                        method: method,
+                        collectedBy: collectorIdentity,
+                        lastDate: nowIso
+                    };
+                    paymentsDb[pf.userId][pf.fy][pf.month] = pRec;
+                    cloudSync.push("pushPayment", pRec);
+                    updatedAnyFee = true;
+                };
+
+                // Helper to settle a pending supplement invoice from remainingPool
+                const settleSuppInvoiceFromPool = (ps) => {
+                    if (remainingPool <= 0 || ps.balance <= 0) return;
+                    const alloc = Math.min(remainingPool, ps.balance);
+                    remainingPool -= alloc;
+                    const idx = salesDb.findIndex(s => String(s.id) === String(ps.id));
                     if (idx !== -1) {
+                        const newPaid = ps.alreadyPaid + alloc;
+                        const newBal = Math.max(0, ps.totalDue - newPaid);
                         salesDb[idx].amountPaid = newPaid;
                         salesDb[idx].balanceDue = newBal;
-                        salesDb[idx].status = newStatus;
+                        salesDb[idx].status = newBal === 0 ? "Paid" : "Partial";
                         salesDb[idx].method = method;
                         salesDb[idx].soldBy = collectorIdentity;
-                        salesDb[idx].lastClearedDate = new Date().toISOString();
-                        storage.set('revive_supplement_sales_db', salesDb);
-                        cloudSync.push('pushSupplementSale', salesDb[idx]);
+                        salesDb[idx].lastClearedDate = nowIso;
+                        cloudSync.push("pushSupplementSale", salesDb[idx]);
+                        updatedAnySupp = true;
+                    }
+                };
+
+                if (activePaymentConfig.paymentType === "supplement_due") {
+                    // 1. Settle older supplement dues first
+                    (activePaymentConfig.priorSuppDues || []).forEach(settleSuppInvoiceFromPool);
+                    // 2. Settle prior gym fee dues if any
+                    (activePaymentConfig.priorFeeDues || []).forEach(settleFeeMonthFromPool);
+                    // 3. Settle the target supplement invoice
+                    const idx = salesDb.findIndex(s => String(s.id) === String(activePaymentConfig.invoiceId));
+                    if (idx !== -1) {
+                        const alloc = Math.min(remainingPool, activePaymentConfig.cycleBalance);
+                        remainingPool -= alloc;
+                        const newPaid = activePaymentConfig.cycleAlreadyPaid + alloc;
+                        const newBal = Math.max(0, activePaymentConfig.cycleTotalDue - newPaid);
+                        salesDb[idx].amountPaid = newPaid;
+                        salesDb[idx].balanceDue = newBal;
+                        salesDb[idx].status = newBal === 0 ? "Paid" : (newPaid > 0 ? "Partial" : "Unpaid");
+                        salesDb[idx].method = method;
+                        salesDb[idx].soldBy = collectorIdentity;
+                        salesDb[idx].lastClearedDate = nowIso;
+                        cloudSync.push("pushSupplementSale", salesDb[idx]);
                         currentSuppSaleRecord = salesDb[idx];
+                        updatedAnySupp = true;
                     }
-                    document.getElementById('paymentProcessModal').style.display = 'none';
+                    if (updatedAnySupp) storage.set("revive_supplement_sales_db", salesDb);
+                    if (updatedAnyFee) storage.set("revive_payments_db", paymentsDb);
+
+                    document.getElementById("paymentProcessModal").style.display = "none";
                     if (currentActiveUser) {
-                        window.moduleContext.renderHubSupplementSales(currentActiveUser.id);
+                        window.moduleContext.loadProfileByPhoneOrId(currentActiveUser.id);
                     }
-                    showNotice(newBal === 0 ? `Supplement Invoice ${activePaymentConfig.invoiceId} fully cleared!` : `Partial payment of ₹${payAmt} recorded (Pending: ₹${newBal}).`, "success");
+                    const overallBal = Math.max(0, activePaymentConfig.balance - payAmt);
+                    showNotice(overallBal === 0 ? `All pending balances & Invoice ${activePaymentConfig.invoiceId} fully cleared!` : `Payment of ₹${payAmt} recorded (Remaining Due: ₹${overallBal}).`, "success");
                     window.moduleContext.shareSupplementInvoice();
                     return;
                 }
 
-                let paymentsDb = storage.get('revive_payments_db', {});
+                // Gym Fee Payment Flow:
+                // 1. Auto-settle prior pending Gym Fee months (oldest first)
+                (activePaymentConfig.priorFeeDues || []).forEach(settleFeeMonthFromPool);
+                // 2. Auto-settle prior pending Supplement invoices
+                (activePaymentConfig.priorSuppDues || []).forEach(settleSuppInvoiceFromPool);
+                // 3. Apply remaining amount to the selected month cycle
+                const cycleAlloc = Math.min(remainingPool, activePaymentConfig.cycleBalance);
+                const newCyclePaid = activePaymentConfig.cycleAlreadyPaid + cycleAlloc;
+                const newCycleBal = Math.max(0, activePaymentConfig.cycleTotalDue - newCyclePaid);
+                const newCycleStatus = newCycleBal === 0 ? "Paid" : (newCyclePaid > 0 ? "Partial" : "Unpaid");
+
                 if(!paymentsDb[currentActiveUser.id]) paymentsDb[currentActiveUser.id] = {};
                 if(!paymentsDb[currentActiveUser.id][activePaymentConfig.fy]) paymentsDb[currentActiveUser.id][activePaymentConfig.fy] = {};
                 
@@ -7580,32 +8003,38 @@
                     primaryContact: currentActiveUser.primaryContact,
                     fy: activePaymentConfig.fy,
                     month: activePaymentConfig.month,
-                    totalDue: activePaymentConfig.totalDue,
-                    amountPaid: newPaid,
-                    balanceDue: newBal,
+                    totalDue: activePaymentConfig.cycleTotalDue,
+                    amountPaid: newCyclePaid,
+                    balanceDue: newCycleBal,
                     lastPaidAmount: payAmt,
-                    status: newStatus,
+                    carryForwardCleared: payAmt - cycleAlloc,
+                    status: newCycleStatus,
                     method: method,
                     collectedBy: collectorIdentity,
-                    lastDate: new Date().toISOString()
+                    lastDate: nowIso
                 };
                 paymentsDb[currentActiveUser.id][activePaymentConfig.fy][activePaymentConfig.month] = pData;
-                storage.set('revive_payments_db', paymentsDb);
-                cloudSync.push('pushPayment', pData);
+                storage.set("revive_payments_db", paymentsDb);
+                cloudSync.push("pushPayment", pData);
+                if (updatedAnySupp) storage.set("revive_supplement_sales_db", salesDb);
 
                 if (activePaymentConfig.isAdmissionMonth) {
-                    let usersDb = storage.get('revive_users_db', []);
+                    let usersDb = storage.get("revive_users_db", []);
                     const uIdx = usersDb.findIndex(u => String(u.id) === String(currentActiveUser.id));
                     if (uIdx !== -1) {
                         const baseAdm = parseInt(usersDb[uIdx].admFeeExpected || APP_CONFIG.baseAdmissionFee, 10);
-                        usersDb[uIdx].admFeePaid = Math.min(baseAdm, newPaid);
-                        storage.set('revive_users_db', usersDb);
+                        usersDb[uIdx].admFeePaid = Math.min(baseAdm, newCyclePaid);
+                        storage.set("revive_users_db", usersDb);
                     }
                 }
 
-                document.getElementById('paymentProcessModal').style.display = 'none';
-                window.moduleContext.generateReceiptImage(newPaid, newBal, method, collectorIdentity, 'success', pData.lastDate, activePaymentConfig.totalDue);
-                window.moduleContext.renderFeeCalendar(currentActiveUser.id, activePaymentConfig.fy, currentActiveUser.trainingCategory, currentActiveUser.date);
+                const totalCombinedPaid = activePaymentConfig.alreadyPaid + payAmt;
+                const totalCombinedBalAfter = Math.max(0, activePaymentConfig.balance - payAmt);
+                const totalCombinedDueForRcpt = totalCombinedPaid + totalCombinedBalAfter;
+
+                document.getElementById("paymentProcessModal").style.display = "none";
+                window.moduleContext.generateReceiptImage(totalCombinedPaid, totalCombinedBalAfter, method, collectorIdentity, "success", pData.lastDate, totalCombinedDueForRcpt);
+                window.moduleContext.loadProfileByPhoneOrId(currentActiveUser.id);
             },
             viewReceipt: function(month, fy) {
                 const paymentsDb = storage.get('revive_payments_db', {});
@@ -7842,14 +8271,14 @@
 
                 document.getElementById('sig-data').value = u.signature || '';
                 if(u.signature) {
-                    const sigPrev = document.getElementById('sig-preview');
-                    sigPrev.src = u.signature; sigPrev.style.display = 'block';
-                    document.getElementById('sig-placeholder').style.display = 'none';
-                    document.getElementById('btn-start-sig-camera').style.display = 'none';
-                    document.getElementById('btn-switch-sig-camera').style.display = 'none';
-                    const editCropBtn = document.getElementById('btn-edit-sig-crop');
-                    if (editCropBtn) editCropBtn.style.display = 'inline-flex';
-                    document.getElementById('btn-retake-sig').style.display = 'inline-flex';
+                    if (typeof window.showCapturedSignaturePreview === 'function') {
+                        window.showCapturedSignaturePreview(u.signature, true);
+                    } else {
+                        const sigPrev = document.getElementById('sig-preview');
+                        sigPrev.src = u.signature; sigPrev.style.display = 'block';
+                    }
+                } else if (typeof window.resetSignaturePadToDrawMode === 'function') {
+                    window.resetSignaturePadToDrawMode();
                 }
                 window.appContext.switchView('admission');
             },
@@ -7894,6 +8323,16 @@
             reactivateUserAdmission: function() {
                 if (!currentActiveUser) return;
                 const targetUser = currentActiveUser;
+                const phoneCheck = window.moduleContext.validatePhoneForRegistration(
+                    targetUser.primaryContact,
+                    targetUser.admissionCategory || "Individual",
+                    "New Admission",
+                    targetUser.id
+                );
+                if (!phoneCheck.allowed) {
+                    showNotice(`Cannot reactivate: ${phoneCheck.message}`, "error");
+                    return;
+                }
                 window.appContext.askConfirm(
                     "Reactivate Admission",
                     `Reactivate admission for ${targetUser.fullName} (${targetUser.id}) and mark their status as "Active" in Google Sheets?`,
@@ -8535,7 +8974,6 @@
 
             applyReadmissionValidationForUser: function(rawUser) {
                 const user = resolveToLatestUserRecord(rawUser);
-                window._selectedReadmissionUser = user;
                 const resBox = document.getElementById('validationResultBox');
                 const admissionTypeSelect = document.getElementById('admissionTypeSelect');
                 resBox.style.display = 'block';
@@ -8553,6 +8991,7 @@
                 const nextReadmId = getNextReadmissionIdForUser(user);
 
                 if (currDate >= sixMonthsThreshold || isUserCancelled(user)) {
+                    window._selectedReadmissionUser = user;
                     admissionTypeSelect.value = 'Re-Admission';
                     if (user.admissionCategory) document.getElementById('admissionCategory').value = user.admissionCategory;
                     if (user.trainingCategory) document.getElementById('trainingCategory').value = user.trainingCategory;
@@ -8580,6 +9019,7 @@
                         </div>
                     `;
                 } else {
+                    window._selectedReadmissionUser = null;
                     resBox.innerHTML = `
                         <span style="color:var(--warning-yellow); font-weight:bold; font-size:1.05rem;">ℹ RE-ADMISSION NOT NECESSARY (Within 6 Months)</span><br>
                         <span style="color:var(--text-main); font-size:0.88rem;">This member registered on <strong>${uDateInfo.formattedDate}</strong> (less than 6 months ago). Re-admission is not required — they can continue directly with their existing admission (<strong>${user.id} - ${user.fullName}</strong>).</span><br><br>
@@ -8905,7 +9345,7 @@
                     const qty = parseInt(supplementCart[pid] || 0, 10);
                     if (item && qty > 0) {
                         const mrp = parseFloat(item.mrp) > 0 ? Math.round(parseFloat(item.mrp)) : 0;
-                        const sellPrice = (item.offerPrice !== '' && item.offerPrice != null && parseFloat(item.offerPrice) > 0)
+                        const sellPrice = (item.offerPrice !== "" && item.offerPrice != null && parseFloat(item.offerPrice) > 0)
                             ? Math.round(parseFloat(item.offerPrice))
                             : mrp;
                         totalMrp += qty * mrp;
@@ -8917,7 +9357,7 @@
                     const minOrd = Math.max(0, parseFloat(activeAppliedCoupon.minOrder || 0) || 0);
                     const cVal = Math.max(0, parseFloat(activeAppliedCoupon.value || 0) || 0);
                     if (baseSellingTotal >= minOrd) {
-                        if (String(activeAppliedCoupon.type || '').toUpperCase().includes('PERC')) {
+                        if (String(activeAppliedCoupon.type || "").toUpperCase().includes("PERC")) {
                             couponDisc = Math.round((baseSellingTotal * cVal) / 100);
                         } else {
                             couponDisc = Math.round(cVal);
@@ -8927,72 +9367,118 @@
                         activeAppliedCoupon = null;
                     }
                 }
-                const finalNet = Math.max(0, baseSellingTotal - couponDisc);
-                return { totalMrp, baseSellingTotal, couponDisc, finalNet };
+                const currentOrderNet = Math.max(0, baseSellingTotal - couponDisc);
+
+                // Check if the selected member has any previous pending Supplement or Gym Fee balances
+                let prevSuppDues = [];
+                let prevFeeDues = [];
+                if (selectedSuppMember && selectedSuppMember.id) {
+                    prevSuppDues = getMemberPendingSupplementSales(selectedSuppMember.id, "");
+                    prevFeeDues = getMemberPendingFeeMonths(selectedSuppMember, null);
+                }
+                const prevSuppArrears = prevSuppDues.reduce((sum, x) => sum + x.balance, 0);
+                const prevFeeArrears = prevFeeDues.reduce((sum, x) => sum + x.balance, 0);
+                const prevArrearsTotal = prevSuppArrears + prevFeeArrears;
+                const finalNet = currentOrderNet + prevArrearsTotal;
+
+                return {
+                    totalMrp,
+                    baseSellingTotal,
+                    couponDisc,
+                    currentOrderNet,
+                    prevSuppDues,
+                    prevFeeDues,
+                    prevSuppArrears,
+                    prevFeeArrears,
+                    prevArrearsTotal,
+                    finalNet
+                };
             },
 
             proceedToSuppPayment: function() {
-                if (!selectedSuppMember || !document.getElementById('supp-cust-id').value) {
-                    const typed = document.getElementById('supp-member-search').value.trim();
+                if (!selectedSuppMember || !document.getElementById("supp-cust-id").value) {
+                    const typed = document.getElementById("supp-member-search").value.trim();
                     if (typed) {
                         const matches = findUsersForAttendance(typed, false);
                         if (matches.length === 1) window.moduleContext.selectSuppMember(matches[0].id);
                     }
                 }
-                if (!selectedSuppMember || !document.getElementById('supp-cust-id').value) {
+                if (!selectedSuppMember || !document.getElementById("supp-cust-id").value) {
                     showNotice("Please search and select a valid Member (by Phone, Admission ID, or Name) first.", "error");
-                    document.getElementById('supp-member-search').focus();
+                    document.getElementById("supp-member-search").focus();
                     return;
                 }
 
                 activeAppliedCoupon = null;
-                document.getElementById('supp-coupon-input').value = '';
-                document.getElementById('supp-coupon-msg').innerText = '';
-                document.getElementById('btn-remove-supp-coupon').style.display = 'none';
-                document.getElementById('supp-coupon-discount-row').style.display = 'none';
+                document.getElementById("supp-coupon-input").value = "";
+                document.getElementById("supp-coupon-msg").innerText = "";
+                document.getElementById("btn-remove-supp-coupon").style.display = "none";
+                document.getElementById("supp-coupon-discount-row").style.display = "none";
 
                 window.moduleContext.recalcSupplementSummaryTotals(true);
 
-                document.getElementById('supp-staff-pin').value = '';
-                document.getElementById('supp-pin-identity').style.color = 'var(--text-muted)';
-                document.getElementById('supp-pin-identity').innerText = '';
+                document.getElementById("supp-staff-pin").value = "";
+                document.getElementById("supp-pin-identity").style.color = "var(--text-muted)";
+                document.getElementById("supp-pin-identity").innerText = "";
 
                 window.moduleContext.updateSuppPaymentUI();
-                document.getElementById('supp-step-2').classList.remove('active-step');
-                document.getElementById('supp-step-3').classList.add('active-step');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                document.getElementById("supp-step-2").classList.remove("active-step");
+                document.getElementById("supp-step-3").classList.add("active-step");
+                window.scrollTo({ top: 0, behavior: "smooth" });
             },
 
             recalcSupplementSummaryTotals: function(resetPayingAmountToFull = true) {
-                const { totalMrp, baseSellingTotal, couponDisc, finalNet } = window.moduleContext.getSupplementCartSubtotalInfo();
+                const { totalMrp, baseSellingTotal, couponDisc, currentOrderNet, prevSuppDues, prevFeeDues, prevArrearsTotal, finalNet } = window.moduleContext.getSupplementCartSubtotalInfo();
                 const nextInvId = getNextSupplementInvoiceId();
-                document.getElementById('supp-pay-inv-id').innerText = nextInvId;
+                document.getElementById("supp-pay-inv-id").innerText = nextInvId;
                 if (selectedSuppMember) {
-                    document.getElementById('supp-pay-member-label').innerText = `${selectedSuppMember.fullName} (${selectedSuppMember.id})`;
+                    document.getElementById("supp-pay-member-label").innerText = `${selectedSuppMember.fullName} (${selectedSuppMember.id})`;
                 }
-                document.getElementById('supp-pay-mrp').innerText = totalMrp;
-                document.getElementById('supp-pay-disc').innerText = Math.max(0, totalMrp - baseSellingTotal);
+                document.getElementById("supp-pay-mrp").innerText = totalMrp;
+                document.getElementById("supp-pay-disc").innerText = Math.max(0, totalMrp - baseSellingTotal);
 
-                const cpnRow = document.getElementById('supp-coupon-discount-row');
-                const cpnTag = document.getElementById('supp-applied-coupon-tag');
+                const cpnRow = document.getElementById("supp-coupon-discount-row");
+                const cpnTag = document.getElementById("supp-applied-coupon-tag");
                 if (cpnTag) {
-                    cpnTag.style.display = 'none';
-                    cpnTag.innerText = '';
+                    cpnTag.style.display = "none";
+                    cpnTag.innerText = "";
                 }
                 if (activeAppliedCoupon && couponDisc > 0) {
-                    cpnRow.style.display = 'flex';
-                    document.getElementById('supp-pay-coupon-disc').innerText = couponDisc;
+                    cpnRow.style.display = "flex";
+                    document.getElementById("supp-pay-coupon-disc").innerText = couponDisc;
                 } else {
-                    cpnRow.style.display = 'none';
-                    document.getElementById('supp-pay-coupon-disc').innerText = '0';
+                    cpnRow.style.display = "none";
+                    document.getElementById("supp-pay-coupon-disc").innerText = "0";
                 }
 
-                document.getElementById('supp-pay-net').innerText = finalNet;
+                const currOrderRow = document.getElementById("supp-Current-order-net-row");
+                const currOrderVal = document.getElementById("supp-pay-current-net");
+                const prevArrearsRow = document.getElementById("supp-prev-arrears-row");
+                const prevArrearsLbl = document.getElementById("supp-prev-arrears-label");
+                const prevArrearsVal = document.getElementById("supp-pay-prev-arrears");
 
-                const suppPayNowInput = document.getElementById('supp-pay-amount-now');
+                if (prevArrearsTotal > 0) {
+                    if (currOrderRow) currOrderRow.style.display = "flex";
+                    if (currOrderVal) currOrderVal.innerText = currentOrderNet;
+                    if (prevArrearsRow) prevArrearsRow.style.display = "flex";
+                    if (prevArrearsVal) prevArrearsVal.innerText = prevArrearsTotal;
+                    if (prevArrearsLbl) {
+                        const tags = [];
+                        prevSuppDues.forEach(s => tags.push(`${s.id}: ₹${s.balance}`));
+                        prevFeeDues.forEach(f => tags.push(`${f.month} Fee: ₹${f.balance}`));
+                        prevArrearsLbl.innerText = tags.join(", ");
+                    }
+                } else {
+                    if (currOrderRow) currOrderRow.style.display = "none";
+                    if (prevArrearsRow) prevArrearsRow.style.display = "none";
+                }
+
+                document.getElementById("supp-pay-net").innerText = finalNet;
+
+                const suppPayNowInput = document.getElementById("supp-pay-amount-now");
                 if (suppPayNowInput) {
                     suppPayNowInput.max = finalNet;
-                    if (resetPayingAmountToFull || parseInt(suppPayNowInput.value || '0', 10) > finalNet) {
+                    if (resetPayingAmountToFull || parseInt(suppPayNowInput.value || "0", 10) > finalNet) {
                         suppPayNowInput.value = finalNet;
                     }
                 }
@@ -9000,18 +9486,18 @@
             },
 
             applySupplementCoupon: function() {
-                const codeInput = document.getElementById('supp-coupon-input');
-                const msgEl = document.getElementById('supp-coupon-msg');
-                const removeBtn = document.getElementById('btn-remove-supp-coupon');
-                const code = String(codeInput.value || '').trim().toUpperCase();
+                const codeInput = document.getElementById("supp-coupon-input");
+                const msgEl = document.getElementById("supp-coupon-msg");
+                const removeBtn = document.getElementById("btn-remove-supp-coupon");
+                const code = String(codeInput.value || "").trim().toUpperCase();
                 if (!code) {
                     showNotice("Please enter a coupon code.", "error");
                     return;
                 }
                 const coupons = ensureDefaultSuppCoupons();
-                const matched = coupons.find(c => String(c.code || '').trim().toUpperCase() === code);
+                const matched = coupons.find(c => String(c.code || "").trim().toUpperCase() === code);
                 if (!matched) {
-                    msgEl.style.color = 'var(--error-red)';
+                    msgEl.style.color = "var(--error-red)";
                     msgEl.innerText = `✖ Invalid coupon code.`;
                     return;
                 }
@@ -9019,63 +9505,65 @@
                 const { baseSellingTotal } = window.moduleContext.getSupplementCartSubtotalInfo();
                 const minOrd = Math.max(0, parseFloat(matched.minOrder || 0) || 0);
                 if (baseSellingTotal < minOrd) {
-                    msgEl.style.color = 'var(--error-red)';
+                    msgEl.style.color = "var(--error-red)";
                     msgEl.innerText = `✖ This coupon requires a minimum order of ₹${minOrd}.`;
                     return;
                 }
                 activeAppliedCoupon = matched;
                 window.moduleContext.recalcSupplementSummaryTotals(true);
                 const { couponDisc, finalNet } = window.moduleContext.getSupplementCartSubtotalInfo();
-                msgEl.style.color = 'var(--success-green)';
-                msgEl.innerText = `✔ Coupon Applied! You saved an extra ₹${couponDisc} (Net Payable: ₹${finalNet}).`;
-                removeBtn.style.display = 'inline-flex';
+                msgEl.style.color = "var(--success-green)";
+                msgEl.innerText = `✔ Coupon Applied! You saved an extra ₹${couponDisc} (Total Payable: ₹${finalNet}).`;
+                removeBtn.style.display = "inline-flex";
                 showNotice(`Coupon applied (-₹${couponDisc})!`, "success");
             },
 
             removeSupplementCoupon: function() {
                 activeAppliedCoupon = null;
-                document.getElementById('supp-coupon-input').value = '';
-                document.getElementById('supp-coupon-msg').innerText = '';
-                document.getElementById('btn-remove-supp-coupon').style.display = 'none';
+                document.getElementById("supp-coupon-input").value = "";
+                document.getElementById("supp-coupon-msg").innerText = "";
+                document.getElementById("btn-remove-supp-coupon").style.display = "none";
                 window.moduleContext.recalcSupplementSummaryTotals(true);
                 showNotice("Coupon removed.", "info");
             },
 
             updateSuppPaymentUI: function() {
-                const method = document.getElementById('suppPaymentMethod').value;
-                const netAmt = parseInt(document.getElementById('supp-pay-net').innerText || '0', 10);
-                const rawPaying = parseInt(document.getElementById('supp-pay-amount-now').value, 10);
+                const method = document.getElementById("suppPaymentMethod").value;
+                const netAmt = parseInt(document.getElementById("supp-pay-net").innerText || "0", 10);
+                const rawPaying = parseInt(document.getElementById("supp-pay-amount-now").value, 10);
                 const payingNow = isNaN(rawPaying) ? 0 : Math.min(netAmt, Math.max(0, rawPaying));
                 const pendingBal = Math.max(0, netAmt - payingNow);
-                document.getElementById('supp-pay-pending').innerText = pendingBal;
+                document.getElementById("supp-pay-pending").innerText = pendingBal;
 
-                const upiSec = document.getElementById('supp-upi-section');
-                if (method === 'UPI' && payingNow > 0) {
-                    upiSec.style.display = 'block';
-                    document.getElementById('supp-qr-amount-display').innerText = payingNow;
-                    renderUpiQrToElement('supp-upi-qr-code', payingNow, 190);
+                const upiSec = document.getElementById("supp-upi-section");
+                if (method === "UPI" && payingNow > 0) {
+                    upiSec.style.display = "block";
+                    document.getElementById("supp-qr-amount-display").innerText = payingNow;
+                    renderUpiQrToElement("supp-upi-qr-code", payingNow, 190);
                 } else {
-                    upiSec.style.display = 'none';
+                    upiSec.style.display = "none";
                 }
             },
 
             backToSuppStep: function(stepNum) {
-                document.getElementById('supp-step-1').classList.remove('active-step');
-                document.getElementById('supp-step-2').classList.remove('active-step');
-                document.getElementById('supp-step-3').classList.remove('active-step');
-                document.getElementById(`supp-step-${stepNum}`).classList.add('active-step');
+                document.getElementById("supp-step-1").classList.remove("active-step");
+                document.getElementById("supp-step-2").classList.remove("active-step");
+                document.getElementById("supp-step-3").classList.remove("active-step");
+                document.getElementById(`supp-step-${stepNum}`).classList.add("active-step");
                 if (stepNum === 1) window.moduleContext.renderRecentSuppInvoicesInStore();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                window.scrollTo({ top: 0, behavior: "smooth" });
             },
 
             completeSupplementSale: function() {
-                const pinVal = document.getElementById('supp-staff-pin').value;
+                const pinVal = document.getElementById("supp-staff-pin").value;
                 const sellerIdentity = verifyCollectorPin(pinVal);
                 if (!sellerIdentity) {
                     showNotice("Invalid Staff or Admin PIN. Please enter a valid PIN to finalize this sale.", "error");
-                    document.getElementById('supp-staff-pin').focus();
+                    document.getElementById("supp-staff-pin").focus();
                     return;
                 }
+
+                const { prevSuppDues, prevFeeDues, prevArrearsTotal } = window.moduleContext.getSupplementCartSubtotalInfo();
 
                 let supps = ensureDefaultSupplements();
                 const itemsSold = [];
@@ -9093,7 +9581,7 @@
                     }
                     supps[idx].stock = parseInt(supps[idx].stock, 10) - qty;
                     const mrp = parseFloat(supps[idx].mrp) > 0 ? Math.round(parseFloat(supps[idx].mrp)) : 0;
-                    const offer = (supps[idx].offerPrice !== '' && supps[idx].offerPrice != null && parseFloat(supps[idx].offerPrice) > 0)
+                    const offer = (supps[idx].offerPrice !== "" && supps[idx].offerPrice != null && parseFloat(supps[idx].offerPrice) > 0)
                         ? Math.round(parseFloat(supps[idx].offerPrice))
                         : mrp;
                     const cost = parseInt(supps[idx].costPrice || 0, 10);
@@ -9112,12 +9600,12 @@
                 }
 
                 let couponDiscount = 0;
-                let couponCodeStr = '';
-                let couponDetailsStr = '';
+                let couponCodeStr = "";
+                let couponDetailsStr = "";
                 if (activeAppliedCoupon) {
                     couponCodeStr = activeAppliedCoupon.code;
                     const cVal = parseFloat(activeAppliedCoupon.value || 0) || 0;
-                    if (String(activeAppliedCoupon.type || '').toUpperCase().includes('PERC')) {
+                    if (String(activeAppliedCoupon.type || "").toUpperCase().includes("PERC")) {
                         couponDiscount = Math.round((baseSellingAmount * cVal) / 100);
                         couponDetailsStr = `${activeAppliedCoupon.code} (${cVal}% OFF = -Rs.${couponDiscount})`;
                     } else {
@@ -9126,34 +9614,93 @@
                     }
                     couponDiscount = Math.min(baseSellingAmount, Math.max(0, couponDiscount));
                 }
-                const totalAmount = Math.max(0, baseSellingAmount - couponDiscount);
+                const currentOrderTotal = Math.max(0, baseSellingAmount - couponDiscount);
+                const combinedPayableLimit = currentOrderTotal + prevArrearsTotal;
 
-                storage.set('revive_supplements_db', supps);
-                cloudSync.push('pushSupplements', supps);
+                const rawPayNow = parseInt(document.getElementById("supp-pay-amount-now").value, 10);
+                if (isNaN(rawPayNow) || rawPayNow < 0 || rawPayNow > combinedPayableLimit) {
+                    showNotice("Please enter a valid Amount Paying Now (between ₹0 and ₹" + combinedPayableLimit + ").", "error");
+                    return;
+                }
+
+                storage.set("revive_supplements_db", supps);
+                cloudSync.push("pushSupplements", supps);
 
                 const now = new Date();
-                const dateStr = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
-                const monthName = now.toLocaleString('default', { month: 'long' });
+                const nowIso = now.toISOString();
+                const dateStr = `${String(now.getDate()).padStart(2, "0")}-${String(now.getMonth() + 1).padStart(2, "0")}-${now.getFullYear()}`;
+                const monthName = now.toLocaleString("default", { month: "long" });
                 const y = now.getFullYear();
                 const m = now.getMonth();
                 const fyStart = m >= 3 ? y : y - 1;
                 const fyString = `${fyStart}-${fyStart + 1}`;
                 const invId = getNextSupplementInvoiceId();
-                const payMethod = document.getElementById('suppPaymentMethod').value;
-                const custAddress = document.getElementById('supp-cust-address').value.trim() || selectedSuppMember.address || 'Keralapuram';
+                const payMethod = document.getElementById("suppPaymentMethod").value;
+                const custAddress = document.getElementById("supp-cust-address").value.trim() || selectedSuppMember.address || "Keralapuram";
 
-                const rawPayNow = parseInt(document.getElementById('supp-pay-amount-now').value, 10);
-                if (isNaN(rawPayNow) || rawPayNow < 0 || rawPayNow > totalAmount) {
-                    showNotice("Please enter a valid Amount Paying Now (between ₹0 and ₹" + totalAmount + ").", "error");
-                    return;
-                }
-                const amountPaidNow = rawPayNow;
-                const balanceDueNow = Math.max(0, totalAmount - amountPaidNow);
+                let remainingPool = rawPayNow;
+                let salesDb = storage.get("revive_supplement_sales_db", []);
+                let paymentsDb = storage.get("revive_payments_db", {});
+                let updatedAnyFee = false;
+
+                // 1. Settle older pending Supplement invoices first (FIFO)
+                (prevSuppDues || []).forEach(ps => {
+                    if (remainingPool <= 0 || ps.balance <= 0) return;
+                    const alloc = Math.min(remainingPool, ps.balance);
+                    remainingPool -= alloc;
+                    const sIdx = salesDb.findIndex(x => String(x.id) === String(ps.id));
+                    if (sIdx !== -1) {
+                        const newPaid = ps.alreadyPaid + alloc;
+                        const newBal = Math.max(0, ps.totalDue - newPaid);
+                        salesDb[sIdx].amountPaid = newPaid;
+                        salesDb[sIdx].balanceDue = newBal;
+                        salesDb[sIdx].status = newBal === 0 ? "Paid" : "Partial";
+                        salesDb[sIdx].method = payMethod;
+                        salesDb[sIdx].soldBy = sellerIdentity;
+                        salesDb[sIdx].lastClearedDate = nowIso;
+                        cloudSync.push("pushSupplementSale", salesDb[sIdx]);
+                    }
+                });
+
+                // 2. Settle older pending Gym Fee months if any
+                (prevFeeDues || []).forEach(pf => {
+                    if (remainingPool <= 0 || pf.balance <= 0) return;
+                    const alloc = Math.min(remainingPool, pf.balance);
+                    remainingPool -= alloc;
+                    const newPaid = pf.alreadyPaid + alloc;
+                    const newBal = Math.max(0, pf.totalDue - newPaid);
+                    if (!paymentsDb[pf.userId]) paymentsDb[pf.userId] = {};
+                    if (!paymentsDb[pf.userId][pf.fy]) paymentsDb[pf.userId][pf.fy] = {};
+                    const pRec = {
+                        userId: pf.userId,
+                        fullName: selectedSuppMember.fullName,
+                        primaryContact: selectedSuppMember.primaryContact,
+                        fy: pf.fy,
+                        month: pf.month,
+                        totalDue: pf.totalDue,
+                        amountPaid: newPaid,
+                        balanceDue: newBal,
+                        lastPaidAmount: alloc,
+                        status: newBal === 0 ? "Paid" : "Partial",
+                        method: payMethod,
+                        collectedBy: sellerIdentity,
+                        lastDate: nowIso
+                    };
+                    paymentsDb[pf.userId][pf.fy][pf.month] = pRec;
+                    cloudSync.push("pushPayment", pRec);
+                    updatedAnyFee = true;
+                });
+                if (updatedAnyFee) storage.set("revive_payments_db", paymentsDb);
+
+                // 3. Allocate remaining amount to the new Supplement invoice
+                const amountPaidForNewOrder = Math.min(remainingPool, currentOrderTotal);
+                const balanceDueNow = Math.max(0, currentOrderTotal - amountPaidForNewOrder);
+                const prevArrearsPaidNow = rawPayNow - amountPaidForNewOrder;
 
                 const saleRecord = {
                     id: invId,
                     date: dateStr,
-                    isoDate: now.toISOString(),
+                    isoDate: nowIso,
                     fy: fyString,
                     month: monthName,
                     userId: selectedSuppMember.id,
@@ -9167,41 +9714,44 @@
                     couponCode: couponCodeStr,
                     couponDiscount: couponDiscount,
                     couponDetails: couponDetailsStr,
-                    totalAmount: totalAmount,
-                    amountPaid: amountPaidNow,
+                    totalAmount: currentOrderTotal,
+                    amountPaid: amountPaidForNewOrder,
                     balanceDue: balanceDueNow,
-                    status: balanceDueNow === 0 ? 'Paid' : (amountPaidNow > 0 ? 'Partial' : 'Unpaid'),
+                    prevArrearsAdded: prevArrearsTotal,
+                    prevArrearsPaid: prevArrearsPaidNow,
+                    combinedPaidNow: rawPayNow,
+                    combinedBalanceAfter: Math.max(0, combinedPayableLimit - rawPayNow),
+                    status: balanceDueNow === 0 ? "Paid" : (amountPaidForNewOrder > 0 ? "Partial" : "Unpaid"),
                     totalCost: totalCost,
                     method: payMethod,
                     soldBy: sellerIdentity
                 };
 
-                let salesDb = storage.get('revive_supplement_sales_db', []);
                 salesDb.push(saleRecord);
-                storage.set('revive_supplement_sales_db', salesDb);
-                cloudSync.push('pushSupplementSale', saleRecord);
+                storage.set("revive_supplement_sales_db", salesDb);
+                cloudSync.push("pushSupplementSale", saleRecord);
 
                 currentSuppSaleRecord = saleRecord;
                 supplementCart = {};
                 activeAppliedCoupon = null;
 
-                document.getElementById('supp-generated-inv-id').innerText = invId;
-                document.getElementById('supp-sm-sold-by').innerText = sellerIdentity;
+                document.getElementById("supp-generated-inv-id").innerText = invId;
+                document.getElementById("supp-sm-sold-by").innerText = sellerIdentity;
                 showNotice(`Supplement Sale ${invId} recorded!`, "success");
-                window.moduleContext.generateSupplementInvoiceImage(saleRecord, 'sale_success');
+                window.moduleContext.generateSupplementInvoiceImage(saleRecord, "sale_success");
             },
             populateSupplementInvoiceDom: function(sale) {
                 if (!sale) return;
                 applyLogoToExportTemplates();
                 const dObj = sale.isoDate ? new Date(sale.isoDate) : new Date();
-                const dStr = (isNaN(dObj.getTime()) ? (sale.date || '') : dObj.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }));
-                document.getElementById('sinv-id').innerText = sale.id || 'INV-0001';
-                document.getElementById('sinv-date').innerText = dStr;
-                document.getElementById('sinv-member').innerText = `${sale.fullName || '-'} (${sale.userId || '-'})`;
-                document.getElementById('sinv-phone').innerText = sale.phone || '-';
-                document.getElementById('sinv-address').innerText = sale.address || '-';
+                const dStr = (isNaN(dObj.getTime()) ? (sale.date || "") : dObj.toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }));
+                document.getElementById("sinv-id").innerText = sale.id || "INV-0001";
+                document.getElementById("sinv-date").innerText = dStr;
+                document.getElementById("sinv-member").innerText = `${sale.fullName || "-"} (${sale.userId || "-"})`;
+                document.getElementById("sinv-phone").innerText = sale.phone || "-";
+                document.getElementById("sinv-address").innerText = sale.address || "-";
 
-                const itemsTbody = document.querySelector('#sinv-items-table tbody');
+                const itemsTbody = document.querySelector("#sinv-items-table tbody");
                 if (itemsTbody) {
                     const itemsArr = Array.isArray(sale.items) ? sale.items : [];
                     itemsTbody.innerHTML = itemsArr.map(it => {
@@ -9210,51 +9760,63 @@
                             <tr style="border-bottom:1px solid #eee;">
                                 <td style="padding:5px 4px; font-weight:700; color:#111;">${it.name}</td>
                                 <td style="padding:5px 4px; text-align:center; font-weight:700;">${it.qty}</td>
-                                <td style="padding:5px 4px; text-align:right; color:#777; text-decoration:line-through;">₹${Number(it.mrp || 0).toLocaleString('en-IN')}</td>
-                                <td style="padding:5px 4px; text-align:right; font-weight:700;">₹${Number(it.offerPrice || it.unitPrice || 0).toLocaleString('en-IN')}</td>
-                                <td style="padding:5px 4px; text-align:right; font-weight:900; color:#111;">₹${lineTotal.toLocaleString('en-IN')}</td>
+                                <td style="padding:5px 4px; text-align:right; color:#777; text-decoration:line-through;">₹${Number(it.mrp || 0).toLocaleString("en-IN")}</td>
+                                <td style="padding:5px 4px; text-align:right; font-weight:700;">₹${Number(it.offerPrice || it.unitPrice || 0).toLocaleString("en-IN")}</td>
+                                <td style="padding:5px 4px; text-align:right; font-weight:900; color:#111;">₹${lineTotal.toLocaleString("en-IN")}</td>
                             </tr>
                         `;
-                    }).join('');
+                    }).join("");
                 }
 
                 const totalMrp = Number(sale.totalMrp || 0);
                 const baseSelling = Number(sale.baseSellingAmount != null ? sale.baseSellingAmount : sale.totalAmount || 0);
                 const storeSavings = Math.max(0, totalMrp - baseSelling);
                 const couponDisc = Number(sale.couponDiscount || 0);
-                const netAmount = Number(sale.totalAmount || 0);
-                const paidAmt = Number(sale.amountPaid || 0);
-                const balAmt = Math.max(0, Number(sale.balanceDue != null ? sale.balanceDue : (netAmount - paidAmt)));
+                const prevArrearsAdded = Number(sale.prevArrearsAdded || 0);
+                const netAmount = Number(sale.totalAmount || 0) + prevArrearsAdded;
+                const paidAmt = sale.combinedPaidNow != null ? Number(sale.combinedPaidNow) : Number(sale.amountPaid || 0);
+                const balAmt = sale.combinedBalanceAfter != null ? Number(sale.combinedBalanceAfter) : Math.max(0, Number(sale.balanceDue != null ? sale.balanceDue : (netAmount - paidAmt)));
 
-                document.getElementById('sinv-mrp').innerText = totalMrp.toLocaleString('en-IN');
-                document.getElementById('sinv-disc').innerText = storeSavings.toLocaleString('en-IN');
+                document.getElementById("sinv-mrp").innerText = totalMrp.toLocaleString("en-IN");
+                document.getElementById("sinv-disc").innerText = storeSavings.toLocaleString("en-IN");
 
-                const cpnRow = document.getElementById('sinv-coupon-row');
-                const cpnCodeEl = document.getElementById('sinv-coupon-code');
-                const cpnDiscEl = document.getElementById('sinv-coupon-disc');
+                const cpnRow = document.getElementById("sinv-coupon-row");
+                const cpnCodeEl = document.getElementById("sinv-coupon-code");
+                const cpnDiscEl = document.getElementById("sinv-coupon-disc");
                 if (cpnCodeEl) {
-                    cpnCodeEl.innerText = '';
-                    cpnCodeEl.style.display = 'none';
+                    cpnCodeEl.innerText = "";
+                    cpnCodeEl.style.display = "none";
                 }
                 if (cpnRow) {
                     if (couponDisc > 0) {
-                        cpnRow.style.display = '';
-                        if (cpnDiscEl) cpnDiscEl.innerText = couponDisc.toLocaleString('en-IN');
+                        cpnRow.style.display = "";
+                        if (cpnDiscEl) cpnDiscEl.innerText = couponDisc.toLocaleString("en-IN");
                     } else {
-                        cpnRow.style.display = 'none';
+                        cpnRow.style.display = "none";
                     }
                 }
 
-                document.getElementById('sinv-net').innerText = netAmount.toLocaleString('en-IN');
-                document.getElementById('sinv-paid').innerText = paidAmt.toLocaleString('en-IN');
-                document.getElementById('sinv-bal').innerText = balAmt === 0 ? '0 (Cleared)' : `${balAmt.toLocaleString('en-IN')} (Pending)`;
-                const balCell = document.getElementById('sinv-bal-cell');
-                if (balCell) balCell.style.color = balAmt === 0 ? '#138a36' : '#d32f2f';
-                document.getElementById('sinv-mode').innerText = `${sale.method || 'UPI'} (${sale.status || (balAmt === 0 ? 'Paid' : 'Partial')})`;
-                document.getElementById('sinv-seller').innerText = sale.soldBy || 'Studio Admin';
+                const prevRow = document.getElementById("sinv-prev-arrears-row");
+                const prevEl = document.getElementById("sinv-prev-arrears");
+                if (prevRow) {
+                    if (prevArrearsAdded > 0) {
+                        prevRow.style.display = "";
+                        if (prevEl) prevEl.innerText = prevArrearsAdded.toLocaleString("en-IN");
+                    } else {
+                        prevRow.style.display = "none";
+                    }
+                }
+
+                document.getElementById("sinv-net").innerText = netAmount.toLocaleString("en-IN");
+                document.getElementById("sinv-paid").innerText = paidAmt.toLocaleString("en-IN");
+                document.getElementById("sinv-bal").innerText = balAmt === 0 ? "0 (Cleared)" : `${balAmt.toLocaleString("en-IN")} (Pending)`;
+                const balCell = document.getElementById("sinv-bal-cell");
+                if (balCell) balCell.style.color = balAmt === 0 ? "#138a36" : "#d32f2f";
+                document.getElementById("sinv-mode").innerText = `${sale.method || "UPI"} (${balAmt === 0 ? "Paid" : (paidAmt > 0 ? "Partial" : "Unpaid")})`;
+                document.getElementById("sinv-seller").innerText = sale.soldBy || "Studio Admin";
             },
 
-            generateSupplementInvoiceImage: function(sale, triggerFlow = 'sale_success') {
+            generateSupplementInvoiceImage: function(sale, triggerFlow = sale_success) {
                 if (!sale) return;
                 currentSuppSaleRecord = sale;
                 window.moduleContext.populateSupplementInvoiceDom(sale);
@@ -9683,13 +10245,13 @@
             },
 
             calculateFeeStructure: function() {
-                const admDateStr = document.getElementById('dateOfAdmission').value;
-                const admType = document.getElementById('admissionTypeSelect').value;
-                const trainCat = document.getElementById('trainingCategory').value;
+                const admDateStr = document.getElementById("dateOfAdmission").value;
+                const admType = document.getElementById("admissionTypeSelect").value;
+                const trainCat = document.getElementById("trainingCategory").value;
                 const dInfo = parseAdmissionDateInfo(admDateStr);
                 const tariff = window.moduleContext.getApplicableTariff(dInfo.dateObj, dInfo.monthName, dInfo.fy);
 
-                const isReadm = (admType === 'Re-Admission');
+                const isReadm = (admType === "Re-Admission");
                 if (isReadm && window._selectedReadmissionUser) {
                     preAdmissionId = getNextReadmissionIdForUser(window._selectedReadmissionUser);
                 } else {
@@ -9697,32 +10259,71 @@
                 }
 
                 // Re-Admission Fee is fixed at ₹500; Fresh Admission uses tariff admFee (default ₹850)
-                const admFee = isReadm ? APP_CONFIG.baseReadmissionFee : tariff.admFee;
-                const baseMonthly = trainCat.includes('Personal') ? tariff.ptFee : tariff.regFee;
+                const admFee = isReadm ? (Number(APP_CONFIG.baseReadmissionFee) || 500) : Number(tariff.admFee || APP_CONFIG.baseAdmissionFee);
+                const baseMonthly = Number(trainCat.includes("Personal") ? tariff.ptFee : tariff.regFee);
 
-                // Pro-rata calculation for both Fresh Admission and Re-Admission based on remaining days in the joining month
+                // Pro-rata calculation (identical to Fresh Admission, Fee Calendar, and Reports: pro-rata when remainingDays < 15)
                 const daysInMonth = new Date(dInfo.year, dInfo.monthIdx + 1, 0).getDate();
                 const remainingDays = Math.max(1, (daysInMonth - dInfo.day) + 1);
-                const proRataMonthly = Math.round((baseMonthly / daysInMonth) * remainingDays);
+                const isProRata = remainingDays < 15;
+                const proRataMonthly = isProRata ? Math.round((baseMonthly / 30) * remainingDays) : baseMonthly;
+
+                // If Re-Admission, check if the member has any prior pending Supplement or Gym Fee balances
+                let readmFeeArrears = [];
+                let readmSuppArrears = [];
+                if (isReadm && window._selectedReadmissionUser && window._selectedReadmissionUser.id) {
+                    readmFeeArrears = getMemberPendingFeeMonths(window._selectedReadmissionUser, dInfo.score);
+                    readmSuppArrears = getMemberPendingSupplementSales(window._selectedReadmissionUser.id, "");
+                }
+                const readmPrevFeeSum = readmFeeArrears.reduce((s, x) => s + x.balance, 0);
+                const readmPrevSuppSum = readmSuppArrears.reduce((s, x) => s + x.balance, 0);
+                const readmCarryForward = readmPrevFeeSum + readmPrevSuppSum;
+
+                window._readmCarryForwardInfo = {
+                    feeDues: readmFeeArrears,
+                    suppDues: readmSuppArrears,
+                    totalArrears: readmCarryForward
+                };
 
                 calculatedAdmFeePart = admFee;
                 calculatedMonthlyFeePart = proRataMonthly;
-                calculatedTotalFee = admFee + proRataMonthly;
+                calculatedTotalFee = admFee + proRataMonthly + readmCarryForward;
 
-                document.getElementById('calc-adm-month-label').innerText = `${dInfo.monthName} ${dInfo.year} - Pro-Rata (${remainingDays}/${daysInMonth} Days)`;
-                document.getElementById('calc-admission-id').innerText = preAdmissionId;
-                const admLblEl = document.getElementById('calc-admin-fee-label');
-                if (admLblEl) admLblEl.innerText = isReadm ? 'Re-Admission Fee:' : 'Admission Fee:';
-                document.getElementById('calc-admin-fee').innerText = admFee;
-                document.getElementById('calc-monthly-fee').innerText = proRataMonthly;
-                document.getElementById('calc-total-fee').innerText = calculatedTotalFee;
+                document.getElementById("calc-adm-month-label").innerText = isProRata
+                    ? `${dInfo.monthName} ${dInfo.year} - Pro-Rata (${remainingDays} Days)`
+                    : `${dInfo.monthName} ${dInfo.year} (Full Month)`;
+                document.getElementById("calc-admission-id").innerText = preAdmissionId;
+                const admLblEl = document.getElementById("calc-admin-fee-label");
+                if (admLblEl) admLblEl.innerText = isReadm ? "Re-Admission Fee:" : "Admission Fee:";
+                document.getElementById("calc-admin-fee").innerText = admFee;
+                document.getElementById("calc-monthly-fee").innerText = proRataMonthly;
 
-                const promoBadge = document.getElementById('calc-promo-badge');
-                if (promoBadge) {
-                    promoBadge.innerHTML = tariff.promoName ? `<span class="promo-tag">${tariff.promoName}</span>` : '';
+                const prevArrRow = document.getElementById("calc-prev-arrears-row");
+                const prevArrLbl = document.getElementById("calc-prev-arrears-label");
+                const prevArrVal = document.getElementById("calc-prev-arrears-fee");
+                if (prevArrRow) {
+                    if (readmCarryForward > 0) {
+                        prevArrRow.style.display = "flex";
+                        if (prevArrVal) prevArrVal.innerText = readmCarryForward;
+                        if (prevArrLbl) {
+                            const tags = [];
+                            readmFeeArrears.forEach(f => tags.push(`${f.month} Fee: ₹${f.balance}`));
+                            readmSuppArrears.forEach(s => tags.push(`${s.id}: ₹${s.balance}`));
+                            prevArrLbl.innerText = tags.join(", ");
+                        }
+                    } else {
+                        prevArrRow.style.display = "none";
+                    }
                 }
 
-                const payNowInput = document.getElementById('adm-pay-amount-now');
+                document.getElementById("calc-total-fee").innerText = calculatedTotalFee;
+
+                const promoBadge = document.getElementById("calc-promo-badge");
+                if (promoBadge) {
+                    promoBadge.innerHTML = tariff.promoName ? `<span class="promo-tag">${tariff.promoName}</span>` : "";
+                }
+
+                const payNowInput = document.getElementById("adm-pay-amount-now");
                 if (payNowInput) {
                     payNowInput.value = calculatedTotalFee;
                     payNowInput.max = calculatedTotalFee;
@@ -9795,15 +10396,14 @@
             applySigCrop: function() {
                 const outUrl = window._croppedSigResultDataUrl || window._rawSigSourceDataUrl;
                 if (outUrl) {
-                    document.getElementById('sig-data').value = outUrl;
-                    const sigPrev = document.getElementById('sig-preview');
-                    sigPrev.src = outUrl;
-                    sigPrev.style.display = 'block';
-                    document.getElementById('sig-placeholder').style.display = 'none';
-                    document.getElementById('btn-start-sig-camera').style.display = 'none';
-                    const editCropBtn = document.getElementById('btn-edit-sig-crop');
-                    if (editCropBtn) editCropBtn.style.display = 'inline-flex';
-                    document.getElementById('btn-retake-sig').style.display = 'inline-flex';
+                    if (typeof window.showCapturedSignaturePreview === 'function') {
+                        window.showCapturedSignaturePreview(outUrl, true);
+                    } else {
+                        document.getElementById('sig-data').value = outUrl;
+                        const sigPrev = document.getElementById('sig-preview');
+                        sigPrev.src = outUrl;
+                        sigPrev.style.display = 'block';
+                    }
                 }
                 window.moduleContext.cancelSigCrop();
             }
@@ -9966,13 +10566,8 @@
                     const catVal = document.getElementById('admissionCategory').value;
                     const typeVal = document.getElementById('admissionTypeSelect').value;
                     const excludeId = (IS_EDIT_MODE && currentActiveUser) ? currentActiveUser.id : '';
-                    const dupUser = window.moduleContext.findDuplicateIndividualUser(phoneVal, catVal, typeVal, excludeId);
-                    showNotice(
-                        dupUser
-                            ? `Mobile number ${phoneVal} is already registered to ${dupUser.fullName} (${dupUser.id}). Same number cannot be used under Individual registration — only allowed under Family.`
-                            : "This mobile number is already registered. Same number cannot be used under Individual registration.",
-                        "error"
-                    );
+                    const pCheck = window.moduleContext.validatePhoneForRegistration(phoneVal, catVal, typeVal, excludeId);
+                    showNotice(pCheck.message || "Duplicate mobile number is not allowed for this registration category.", "error");
                     document.getElementById('primaryContact').reportValidity();
                     document.getElementById('primaryContact').focus();
                     return;
@@ -10101,76 +10696,380 @@
                 document.getElementById('btn-capture').style.display = 'none';
                 document.getElementById('btn-retake').style.display = 'inline-flex';
             });
-            document.getElementById('btn-retake').addEventListener('click', startPortraitCamera);
+            document.getElementById('btn-retake').addEventListener('click', () => {
+                document.getElementById('selfie-data').value = '';
+                selfiePrev.style.display = 'none';
+                document.getElementById('selfie-placeholder').style.display = 'block';
+                document.getElementById('btn-start-camera').style.display = 'inline-flex';
+                const upSelfieBtn = document.getElementById('btn-upload-selfie-gallery');
+                if (upSelfieBtn) upSelfieBtn.style.display = 'inline-flex';
+                document.getElementById('btn-retake').style.display = 'none';
+            });
+            const btnUpSelfie = document.getElementById('btn-upload-selfie-gallery');
+            const inpSelfieFile = document.getElementById('selfie-file-input');
+            if (btnUpSelfie && inpSelfieFile) {
+                btnUpSelfie.addEventListener('click', () => inpSelfieFile.click());
+                inpSelfieFile.addEventListener('change', (e) => {
+                    const file = e.target.files && e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            canvasSnap.width = 320;
+                            canvasSnap.height = 320;
+                            const ctx = canvasSnap.getContext('2d');
+                            const minDim = Math.min(img.width, img.height);
+                            const sx = Math.round((img.width - minDim) / 2);
+                            const sy = Math.round((img.height - minDim) / 2);
+                            ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, 320, 320);
+                            const dUrl = canvasSnap.toDataURL('image/jpeg', 0.85);
+                            document.getElementById('selfie-data').value = dUrl;
+                            selfiePrev.src = dUrl;
+                            selfiePrev.style.display = 'block';
+                            videoEl.style.display = 'none';
+                            document.getElementById('selfie-placeholder').style.display = 'none';
+                            if (activePortraitStream) {
+                                activePortraitStream.getTracks().forEach(t => t.stop());
+                                activePortraitStream = null;
+                            }
+                            document.getElementById('btn-start-camera').style.display = 'none';
+                            btnUpSelfie.style.display = 'none';
+                            document.getElementById('btn-switch-camera').style.display = 'none';
+                            if (flipCamBtn) flipCamBtn.style.display = 'none';
+                            document.getElementById('btn-capture').style.display = 'none';
+                            document.getElementById('btn-retake').style.display = 'inline-flex';
+                        };
+                        img.src = ev.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
 
-            // Member Signature Camera & Upload Controls
-            let sigFacingMode = 'environment';
-            const sigVideo = document.getElementById('sig-camera-stream');
-            const sigCanvas = document.getElementById('sig-canvas-snapshot');
-            const sigPrev = document.getElementById('sig-preview');
+            // Member Signature Controls: Interactive Touch/Mouse Drawing Pad + Live Camera Capture + Gallery Upload
+            let sigFacingMode = "environment";
+            let sigHasStrokes = false;
+            let isDrawingSig = false;
+            let lastSigPt = { x: 0, y: 0 };
+
+            const sigDrawPad = document.getElementById("sig-draw-pad");
+            const sigDrawBaseline = document.getElementById("sig-draw-baseline");
+            const sigVideo = document.getElementById("sig-camera-stream");
+            const sigCanvas = document.getElementById("sig-canvas-snapshot");
+            const sigPrev = document.getElementById("sig-preview");
+            const sigPlaceholder = document.getElementById("sig-placeholder");
+            const sigStatusHint = document.getElementById("sig-status-hint");
+
+            const tabSigDraw = document.getElementById("tab-sig-draw");
+            const tabSigCamera = document.getElementById("tab-sig-camera");
+            const tabSigUpload = document.getElementById("tab-sig-upload");
+
+            const btnStartSigDraw = document.getElementById("btn-start-sig-draw");
+            const btnClearSigDraw = document.getElementById("btn-clear-sig-draw");
+            const btnSaveSigDraw = document.getElementById("btn-save-sig-draw");
+            const btnStartSigCam = document.getElementById("btn-start-sig-camera");
+            const btnSwitchSigCam = document.getElementById("btn-switch-sig-camera");
+            const btnCaptureSig = document.getElementById("btn-capture-sig");
+            const btnUploadSigGal = document.getElementById("btn-upload-sig-gallery");
+            const editSigCropBtn = document.getElementById("btn-edit-sig-crop");
+            const btnRetakeSig = document.getElementById("btn-retake-sig");
+
+            function stopSigCameraStream() {
+                if (activeSigStream) {
+                    activeSigStream.getTracks().forEach(t => t.stop());
+                    activeSigStream = null;
+                }
+                if (sigVideo) sigVideo.style.display = "none";
+                const guide = document.getElementById("sig-camera-guide");
+                if (guide) guide.style.display = "none";
+            }
+
+            function initAndResizeSigDrawPad(preserveExistingStrokes = false) {
+                if (!sigDrawPad) return;
+                const container = document.getElementById("sig-stage-container");
+                const rectW = (container && container.clientWidth > 50) ? container.clientWidth : 380;
+                const rectH = (container && container.clientHeight > 40) ? container.clientHeight : 146;
+                const dpr = Math.max(window.devicePixelRatio || 1, 1);
+
+                let prevDataUrl = null;
+                if (preserveExistingStrokes && sigHasStrokes) {
+                    try { prevDataUrl = sigDrawPad.toDataURL("image/png"); } catch (e) {}
+                }
+
+                sigDrawPad.width = Math.round(rectW * dpr);
+                sigDrawPad.height = Math.round(rectH * dpr);
+                const ctx = sigDrawPad.getContext("2d");
+                ctx.scale(dpr, dpr);
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, rectW, rectH);
+                ctx.strokeStyle = "#111111";
+                ctx.lineWidth = 2.6;
+                ctx.lineCap = "round";
+                ctx.lineJoin = "round";
+
+                if (prevDataUrl) {
+                    const img = new Image();
+                    img.onload = function() {
+                        ctx.drawImage(img, 0, 0, rectW, rectH);
+                    };
+                    img.src = prevDataUrl;
+                } else {
+                    sigHasStrokes = false;
+                }
+            }
+
+            function exportDrawnSignatureToDataUrl() {
+                if (!sigDrawPad || !sigHasStrokes) return "";
+                const outCanvas = document.createElement("canvas");
+                outCanvas.width = 420;
+                outCanvas.height = 150;
+                const oCtx = outCanvas.getContext("2d");
+                oCtx.fillStyle = "#ffffff";
+                oCtx.fillRect(0, 0, outCanvas.width, outCanvas.height);
+                oCtx.drawImage(sigDrawPad, 0, 0, outCanvas.width, outCanvas.height);
+                const dUrl = outCanvas.toDataURL("image/png");
+                document.getElementById("sig-data").value = dUrl;
+                return dUrl;
+            }
+
+            function setActiveSigTabPill(mode) {
+                [tabSigDraw, tabSigCamera, tabSigUpload].forEach(t => {
+                    if (t) t.classList.remove("active-sig-tab");
+                });
+                if (mode === "draw" && tabSigDraw) tabSigDraw.classList.add("active-sig-tab");
+                if (mode === "camera" && tabSigCamera) tabSigCamera.classList.add("active-sig-tab");
+                if (mode === "upload" && tabSigUpload) tabSigUpload.classList.add("active-sig-tab");
+            }
+
+            function hideAllSigActionBtns() {
+                [btnStartSigDraw, btnClearSigDraw, btnSaveSigDraw, btnStartSigCam, btnSwitchSigCam, btnCaptureSig, btnUploadSigGal, editSigCropBtn, btnRetakeSig].forEach(b => {
+                    if (b) b.style.display = "none";
+                });
+            }
+
+            window.showCapturedSignaturePreview = function(dataUrl, allowCrop = false) {
+                stopSigCameraStream();
+                document.getElementById("sig-data").value = dataUrl;
+                if (sigDrawPad) sigDrawPad.style.display = "none";
+                if (sigDrawBaseline) sigDrawBaseline.style.display = "none";
+                if (sigPlaceholder) sigPlaceholder.style.display = "none";
+                if (sigPrev) {
+                    sigPrev.src = dataUrl;
+                    sigPrev.style.display = "block";
+                }
+                hideAllSigActionBtns();
+                if (allowCrop && editSigCropBtn) editSigCropBtn.style.display = "inline-flex";
+                if (btnRetakeSig) btnRetakeSig.style.display = "inline-flex";
+                if (sigStatusHint) {
+                    sigStatusHint.style.color = "var(--success-green)";
+                    sigStatusHint.innerText = "✔ Signature ready! You can proceed or click Clear / Change Signature.";
+                }
+            };
+
+            window.resetSignaturePadToDrawMode = function() {
+                stopSigCameraStream();
+                setActiveSigTabPill("draw");
+                document.getElementById("sig-data").value = "";
+                if (sigPrev) sigPrev.style.display = "none";
+                if (sigPlaceholder) sigPlaceholder.style.display = "none";
+                if (sigDrawPad) sigDrawPad.style.display = "block";
+                if (sigDrawBaseline) sigDrawBaseline.style.display = "block";
+                initAndResizeSigDrawPad(false);
+                hideAllSigActionBtns();
+                if (btnClearSigDraw) btnClearSigDraw.style.display = "inline-flex";
+                if (btnSaveSigDraw) btnSaveSigDraw.style.display = "inline-flex";
+                if (sigStatusHint) {
+                    sigStatusHint.style.color = "var(--text-muted)";
+                    sigStatusHint.innerText = "Sign inside the box using finger/mouse, or switch to Live Camera / Upload above.";
+                }
+            };
+
+            function getSigPadPoint(e) {
+                const r = sigDrawPad.getBoundingClientRect();
+                const clientX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
+                const clientY = (e.touches && e.touches.length > 0) ? e.touches[0].clientY : e.clientY;
+                return { x: clientX - r.left, y: clientY - r.top };
+            }
+
+            if (sigDrawPad) {
+                sigDrawPad.addEventListener("mousedown", (e) => {
+                    isDrawingSig = true;
+                    sigHasStrokes = true;
+                    lastSigPt = getSigPadPoint(e);
+                    const ctx = sigDrawPad.getContext("2d");
+                    ctx.beginPath();
+                    ctx.moveTo(lastSigPt.x, lastSigPt.y);
+                    ctx.lineTo(lastSigPt.x + 0.1, lastSigPt.y + 0.1);
+                    ctx.stroke();
+                    if (sigStatusHint) {
+                        sigStatusHint.style.color = "var(--success-green)";
+                        sigStatusHint.innerText = "✔ Drawing captured live — click Proceed to Payment or Use Drawn Signature.";
+                    }
+                });
+                sigDrawPad.addEventListener("mousemove", (e) => {
+                    if (!isDrawingSig) return;
+                    const pt = getSigPadPoint(e);
+                    const ctx = sigDrawPad.getContext("2d");
+                    ctx.beginPath();
+                    ctx.moveTo(lastSigPt.x, lastSigPt.y);
+                    ctx.lineTo(pt.x, pt.y);
+                    ctx.stroke();
+                    lastSigPt = pt;
+                });
+                window.addEventListener("mouseup", () => {
+                    if (isDrawingSig) {
+                        isDrawingSig = false;
+                        exportDrawnSignatureToDataUrl();
+                    }
+                });
+
+                sigDrawPad.addEventListener("touchstart", (e) => {
+                    e.preventDefault();
+                    isDrawingSig = true;
+                    sigHasStrokes = true;
+                    lastSigPt = getSigPadPoint(e);
+                    const ctx = sigDrawPad.getContext("2d");
+                    ctx.beginPath();
+                    ctx.moveTo(lastSigPt.x, lastSigPt.y);
+                    ctx.lineTo(lastSigPt.x + 0.1, lastSigPt.y + 0.1);
+                    ctx.stroke();
+                    if (sigStatusHint) {
+                        sigStatusHint.style.color = "var(--success-green)";
+                        sigStatusHint.innerText = "✔ Drawing captured live — click Proceed to Payment or Use Drawn Signature.";
+                    }
+                }, { passive: false });
+                sigDrawPad.addEventListener("touchmove", (e) => {
+                    e.preventDefault();
+                    if (!isDrawingSig) return;
+                    const pt = getSigPadPoint(e);
+                    const ctx = sigDrawPad.getContext("2d");
+                    ctx.beginPath();
+                    ctx.moveTo(lastSigPt.x, lastSigPt.y);
+                    ctx.lineTo(pt.x, pt.y);
+                    ctx.stroke();
+                    lastSigPt = pt;
+                }, { passive: false });
+                window.addEventListener("touchend", () => {
+                    if (isDrawingSig) {
+                        isDrawingSig = false;
+                        exportDrawnSignatureToDataUrl();
+                    }
+                });
+            }
+
+            if (btnClearSigDraw) {
+                btnClearSigDraw.addEventListener("click", () => {
+                    initAndResizeSigDrawPad(false);
+                    document.getElementById("sig-data").value = "";
+                    if (sigStatusHint) {
+                        sigStatusHint.style.color = "var(--text-muted)";
+                        sigStatusHint.innerText = "Pad cleared. Sign inside the box using finger, stylus, or mouse.";
+                    }
+                });
+            }
+
+            if (btnSaveSigDraw) {
+                btnSaveSigDraw.addEventListener("click", () => {
+                    if (!sigHasStrokes) {
+                        showNotice("Please draw the member signature inside the box first.", "error");
+                        return;
+                    }
+                    const dUrl = exportDrawnSignatureToDataUrl();
+                    window._rawSigSourceDataUrl = dUrl;
+                    window.showCapturedSignaturePreview(dUrl, false);
+                    showNotice("Drawn signature applied!", "success");
+                });
+            }
 
             async function startSigCamera() {
+                setActiveSigTabPill("camera");
+                if (sigDrawPad) sigDrawPad.style.display = "none";
+                if (sigDrawBaseline) sigDrawBaseline.style.display = "none";
+                if (sigPrev) sigPrev.style.display = "none";
                 try {
-                    if (activeSigStream) {
-                        activeSigStream.getTracks().forEach(t => t.stop());
-                    }
+                    stopSigCameraStream();
                     activeSigStream = await navigator.mediaDevices.getUserMedia({
                         video: { facingMode: sigFacingMode, width: { ideal: 800 }, height: { ideal: 400 } },
                         audio: false
                     });
                     sigVideo.srcObject = activeSigStream;
-                    sigVideo.style.display = 'block';
-                    sigPrev.style.display = 'none';
-                    document.getElementById('sig-placeholder').style.display = 'none';
-                    const guide = document.getElementById('sig-camera-guide');
-                    if (guide) guide.style.display = 'flex';
-                    document.getElementById('btn-start-sig-camera').style.display = 'none';
-                    document.getElementById('btn-switch-sig-camera').style.display = 'inline-flex';
-                    document.getElementById('btn-capture-sig').style.display = 'inline-flex';
-                    document.getElementById('btn-retake-sig').style.display = 'none';
+                    sigVideo.style.display = "block";
+                    if (sigPlaceholder) sigPlaceholder.style.display = "none";
+                    const guide = document.getElementById("sig-camera-guide");
+                    if (guide) guide.style.display = "flex";
+                    hideAllSigActionBtns();
+                    if (btnSwitchSigCam) btnSwitchSigCam.style.display = "inline-flex";
+                    if (btnCaptureSig) btnCaptureSig.style.display = "inline-flex";
+                    if (sigStatusHint) {
+                        sigStatusHint.style.color = "var(--text-muted)";
+                        sigStatusHint.innerText = "Align paper signature inside the box and tap Capture Signature.";
+                    }
                 } catch (err) {
-                    showNotice("Camera unavailable. Generating digital signature stamp or use Choose from Gallery.", "info");
-                    const c = document.createElement('canvas');
-                    c.width = 360; c.height = 120;
-                    const cx = c.getContext('2d');
-                    cx.fillStyle = '#ffffff'; cx.fillRect(0, 0, 360, 120);
-                    cx.fillStyle = '#111111'; cx.font = 'italic bold 28px Georgia, serif'; cx.textAlign = 'center'; cx.textBaseline = 'middle';
-                    cx.fillText(currentMemberDetails.fullName || 'Member Signature', 180, 60);
-                    const dUrl = c.toDataURL('image/png');
-                    document.getElementById('sig-data').value = dUrl;
-                    sigPrev.src = dUrl; sigPrev.style.display = 'block';
-                    document.getElementById('sig-placeholder').style.display = 'none';
-                    document.getElementById('btn-retake-sig').style.display = 'inline-flex';
+                    showNotice("Camera unavailable — switched to interactive Draw Signature pad.", "info");
+                    window.resetSignaturePadToDrawMode();
                 }
             }
 
-            document.getElementById('btn-start-sig-camera').addEventListener('click', startSigCamera);
-            document.getElementById('btn-switch-sig-camera').addEventListener('click', () => {
-                sigFacingMode = sigFacingMode === 'environment' ? 'user' : 'environment';
-                startSigCamera();
-            });
-            document.getElementById('btn-capture-sig').addEventListener('click', () => {
-                sigCanvas.width = 480;
-                sigCanvas.height = 180;
-                const ctx = sigCanvas.getContext('2d');
-                ctx.drawImage(sigVideo, 0, 0, 480, 180);
-                const rawUrl = sigCanvas.toDataURL('image/png');
-                sigVideo.style.display = 'none';
-                const guide = document.getElementById('sig-camera-guide');
-                if (guide) guide.style.display = 'none';
-                if (activeSigStream) {
-                    activeSigStream.getTracks().forEach(t => t.stop());
-                    activeSigStream = null;
-                }
-                document.getElementById('btn-switch-sig-camera').style.display = 'none';
-                document.getElementById('btn-capture-sig').style.display = 'none';
-                window.moduleContext.openSigCropModal(rawUrl);
-            });
+            if (tabSigDraw) {
+                tabSigDraw.addEventListener("click", () => {
+                    window.resetSignaturePadToDrawMode();
+                });
+            }
+            if (tabSigCamera) {
+                tabSigCamera.addEventListener("click", () => {
+                    startSigCamera();
+                });
+            }
+            if (tabSigUpload) {
+                tabSigUpload.addEventListener("click", () => {
+                    stopSigCameraStream();
+                    setActiveSigTabPill("upload");
+                    if (sigDrawPad) sigDrawPad.style.display = "none";
+                    if (sigDrawBaseline) sigDrawBaseline.style.display = "none";
+                    if (!document.getElementById("sig-data").value) {
+                        if (sigPrev) sigPrev.style.display = "none";
+                        if (sigPlaceholder) sigPlaceholder.style.display = "block";
+                    }
+                    hideAllSigActionBtns();
+                    if (btnUploadSigGal) btnUploadSigGal.style.display = "inline-flex";
+                    if (document.getElementById("sig-data").value && btnRetakeSig) {
+                        btnRetakeSig.style.display = "inline-flex";
+                    }
+                    if (sigStatusHint) {
+                        sigStatusHint.style.color = "var(--text-muted)";
+                        sigStatusHint.innerText = "Click Choose Image below to upload a signature image from your device.";
+                    }
+                    document.getElementById("sig-file-input").click();
+                });
+            }
 
-            document.getElementById('btn-upload-sig-gallery').addEventListener('click', () => {
-                document.getElementById('sig-file-input').click();
-            });
-            document.getElementById('sig-file-input').addEventListener('change', (e) => {
+            if (btnStartSigDraw) btnStartSigDraw.addEventListener("click", () => window.resetSignaturePadToDrawMode());
+            if (btnStartSigCam) btnStartSigCam.addEventListener("click", startSigCamera);
+            if (btnSwitchSigCam) {
+                btnSwitchSigCam.addEventListener("click", () => {
+                    sigFacingMode = sigFacingMode === "environment" ? "user" : "environment";
+                    startSigCamera();
+                });
+            }
+            if (btnCaptureSig) {
+                btnCaptureSig.addEventListener("click", () => {
+                    sigCanvas.width = 480;
+                    sigCanvas.height = 180;
+                    const ctx = sigCanvas.getContext("2d");
+                    ctx.drawImage(sigVideo, 0, 0, 480, 180);
+                    const rawUrl = sigCanvas.toDataURL("image/png");
+                    stopSigCameraStream();
+                    hideAllSigActionBtns();
+                    window.moduleContext.openSigCropModal(rawUrl);
+                });
+            }
+
+            if (btnUploadSigGal) {
+                btnUploadSigGal.addEventListener("click", () => {
+                    document.getElementById("sig-file-input").click();
+                });
+            }
+            document.getElementById("sig-file-input").addEventListener("change", (e) => {
                 const file = e.target.files && e.target.files[0];
                 if (!file) return;
                 const reader = new FileReader();
@@ -10179,20 +11078,25 @@
                 };
                 reader.readAsDataURL(file);
             });
-            const editSigCropBtn = document.getElementById('btn-edit-sig-crop');
             if (editSigCropBtn) {
-                editSigCropBtn.addEventListener('click', () => {
-                    const curr = window._rawSigSourceDataUrl || document.getElementById('sig-data').value;
+                editSigCropBtn.addEventListener("click", () => {
+                    const curr = window._rawSigSourceDataUrl || document.getElementById("sig-data").value;
                     if (curr) window.moduleContext.openSigCropModal(curr);
                 });
             }
-            document.getElementById('btn-retake-sig').addEventListener('click', () => {
-                document.getElementById('sig-data').value = '';
-                sigPrev.style.display = 'none';
-                document.getElementById('sig-placeholder').style.display = 'block';
-                document.getElementById('btn-start-sig-camera').style.display = 'inline-flex';
-                if (editSigCropBtn) editSigCropBtn.style.display = 'none';
-                document.getElementById('btn-retake-sig').style.display = 'none';
+            if (btnRetakeSig) {
+                btnRetakeSig.addEventListener("click", () => {
+                    window.resetSignaturePadToDrawMode();
+                });
+            }
+
+            // Initialize draw pad when Step 1 -> Step 2 transitions
+            document.getElementById("btn-next-step").addEventListener("click", () => {
+                setTimeout(() => {
+                    if (document.getElementById("step-2").classList.contains("active-step") && !document.getElementById("sig-data").value) {
+                        window.resetSignaturePadToDrawMode();
+                    }
+                }, 40);
             });
 
             // Step 2 -> Step 3 (or Save Changes if IS_EDIT_MODE)
@@ -10206,6 +11110,9 @@
                     return;
                 }
 
+                if (!document.getElementById('sig-data').value && sigHasStrokes) {
+                    exportDrawnSignatureToDataUrl();
+                }
                 const photoData = document.getElementById('selfie-data').value;
                 const sigData = document.getElementById('sig-data').value;
                 if (!photoData) {
@@ -10346,30 +11253,88 @@
                 syncAdmissionCounter();
                 cloudSync.push('pushUser', newUserRecord);
 
-                let paymentsDb = storage.get('revive_payments_db', {});
+                let paymentsDb = storage.get("revive_payments_db", {});
+                let salesDb = storage.get("revive_supplement_sales_db", []);
+                const nowIso = new Date().toISOString();
+                let remainingAdmPool = newUserRecord.initialAmountPaid;
+                let updatedSuppDuringReadm = false;
+
+                if (isReadm && window._readmCarryForwardInfo && window._readmCarryForwardInfo.totalArrears > 0) {
+                    (window._readmCarryForwardInfo.feeDues || []).forEach(pf => {
+                        if (remainingAdmPool <= 0 || pf.balance <= 0) return;
+                        const alloc = Math.min(remainingAdmPool, pf.balance);
+                        remainingAdmPool -= alloc;
+                        const newPaid = pf.alreadyPaid + alloc;
+                        const newBal = Math.max(0, pf.totalDue - newPaid);
+                        if (!paymentsDb[pf.userId]) paymentsDb[pf.userId] = {};
+                        if (!paymentsDb[pf.userId][pf.fy]) paymentsDb[pf.userId][pf.fy] = {};
+                        const oldRec = {
+                            userId: pf.userId,
+                            fullName: newUserRecord.fullName,
+                            primaryContact: newUserRecord.primaryContact,
+                            fy: pf.fy,
+                            month: pf.month,
+                            totalDue: pf.totalDue,
+                            amountPaid: newPaid,
+                            balanceDue: newBal,
+                            lastPaidAmount: alloc,
+                            status: newBal === 0 ? "Paid" : "Partial",
+                            method: currentMemberDetails.paymentMethod || "UPI",
+                            collectedBy: newUserRecord.collectedBy,
+                            lastDate: nowIso
+                        };
+                        paymentsDb[pf.userId][pf.fy][pf.month] = oldRec;
+                        cloudSync.push("pushPayment", oldRec);
+                    });
+
+                    (window._readmCarryForwardInfo.suppDues || []).forEach(ps => {
+                        if (remainingAdmPool <= 0 || ps.balance <= 0) return;
+                        const alloc = Math.min(remainingAdmPool, ps.balance);
+                        remainingAdmPool -= alloc;
+                        const sIdx = salesDb.findIndex(x => String(x.id) === String(ps.id));
+                        if (sIdx !== -1) {
+                            const newPaid = ps.alreadyPaid + alloc;
+                            const newBal = Math.max(0, ps.totalDue - newPaid);
+                            salesDb[sIdx].amountPaid = newPaid;
+                            salesDb[sIdx].balanceDue = newBal;
+                            salesDb[sIdx].status = newBal === 0 ? "Paid" : "Partial";
+                            salesDb[sIdx].method = currentMemberDetails.paymentMethod || "UPI";
+                            salesDb[sIdx].soldBy = newUserRecord.collectedBy;
+                            salesDb[sIdx].lastClearedDate = nowIso;
+                            cloudSync.push("pushSupplementSale", salesDb[sIdx]);
+                            updatedSuppDuringReadm = true;
+                        }
+                    });
+                    if (updatedSuppDuringReadm) storage.set("revive_supplement_sales_db", salesDb);
+                }
+
+                const currentCycleDue = calculatedAdmFeePart + calculatedMonthlyFeePart;
+                const currentCyclePaid = Math.min(remainingAdmPool, currentCycleDue);
+                const balDue = Math.max(0, currentCycleDue - currentCyclePaid);
+
                 if (!paymentsDb[finalId]) paymentsDb[finalId] = {};
                 if (!paymentsDb[finalId][dInfo.fy]) paymentsDb[finalId][dInfo.fy] = {};
 
-                const balDue = Math.max(0, newUserRecord.initialTotalDue - newUserRecord.initialAmountPaid);
                 const pRecord = {
                     userId: finalId,
                     fullName: newUserRecord.fullName,
                     primaryContact: newUserRecord.primaryContact,
                     fy: dInfo.fy,
                     month: dInfo.monthName,
-                    totalDue: newUserRecord.initialTotalDue,
-                    amountPaid: newUserRecord.initialAmountPaid,
+                    totalDue: currentCycleDue,
+                    amountPaid: currentCyclePaid,
                     balanceDue: balDue,
                     lastPaidAmount: newUserRecord.initialAmountPaid,
                     admFeeIncluded: newUserRecord.admFeeExpected,
-                    status: balDue === 0 ? 'Paid' : (newUserRecord.initialAmountPaid > 0 ? 'Partial' : 'Unpaid'),
-                    method: currentMemberDetails.paymentMethod || 'UPI',
+                    status: balDue === 0 ? "Paid" : (currentCyclePaid > 0 ? "Partial" : "Unpaid"),
+                    method: currentMemberDetails.paymentMethod || "UPI",
                     collectedBy: newUserRecord.collectedBy,
-                    lastDate: new Date().toISOString()
+                    lastDate: nowIso
                 };
                 paymentsDb[finalId][dInfo.fy][dInfo.monthName] = pRecord;
-                storage.set('revive_payments_db', paymentsDb);
-                cloudSync.push('pushPayment', pRecord);
+                storage.set("revive_payments_db", paymentsDb);
+                cloudSync.push("pushPayment", pRecord);
+                window._readmCarryForwardInfo = null;
 
                 currentMemberDetails = newUserRecord;
                 currentActiveUser = newUserRecord;
