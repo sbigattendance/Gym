@@ -227,22 +227,30 @@
         .status-partial { background: var(--warning-yellow); border-color: #c87f0a; color: #000; }
         .status-unpaid { background: var(--error-red); border-color: #a72424; }
 
-        .profile-snippet { display: flex; gap: 1rem; align-items: center; background: var(--bg-main); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid var(--border-color); }
-        .profile-snippet img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-orange); }
-        .profile-snippet-info h3 { margin: 0 0 5px 0; color: var(--accent-orange); }
-        .profile-snippet-info p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
-        .family-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; margin-top: 8px; }
-        .family-profile-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: var(--bg-panel); border: 2px solid var(--border-color); cursor: pointer; transition: all 0.2s ease; text-align: left; position: relative; }
-        .family-profile-card:hover { border-color: var(--accent-orange); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255,102,0,0.1); }
-        .family-profile-card.active-family-card { border-color: var(--accent-orange); background: #fff5eb; box-shadow: 0 4px 14px rgba(255,102,0,0.16); }
-        .family-profile-card img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-orange); flex-shrink: 0; }
+        .profile-snippet { display: flex; flex-direction: column; gap: 0.9rem; background: var(--bg-panel); padding: 1.25rem; border-radius: 14px; margin-bottom: 1rem; border: 1px solid var(--border-color); box-shadow: 0 4px 16px rgba(0,0,0,0.03); }
+        .profile-top-row { display: flex; align-items: center; gap: 1rem; width: 100%; text-align: left; }
+        .profile-snippet img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2.5px solid var(--accent-orange); flex-shrink: 0; }
+        .profile-snippet-info { flex: 1; min-width: 0; }
+        .profile-snippet-info h3 { margin: 0 0 4px 0; color: var(--text-main); font-size: 1.2rem; font-weight: 900; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+        .profile-snippet-info p { margin: 0; font-size: 0.84rem; color: var(--text-muted); line-height: 1.45; }
+        .profile-meta-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .profile-meta-pill { font-size: 0.73rem; font-weight: 700; padding: 3px 9px; border-radius: 6px; background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border-color); }
+        #hub-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.5rem; width: 100%; padding-top: 0.75rem; border-top: 1px solid var(--border-color); }
+        #hub-actions .btn { padding: 0.55rem 0.75rem; font-size: 0.75rem; border-radius: 8px; letter-spacing: 0.5px; }
+        .wallet-badge-card { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 0.95rem 1.2rem; background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%); color: #ffffff; border: 1.5px solid var(--accent-orange); border-radius: 12px; margin-bottom: 1rem; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 6px 16px rgba(0,0,0,0.08); user-select: none; }
+        .wallet-badge-card:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(255,102,0,0.18); }
+        .wallet-bal-amount { font-size: 1.55rem; font-weight: 900; color: var(--accent-orange); line-height: 1.1; }
+        .wallet-expand-pill { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 20px; background: rgba(255,102,0,0.15); border: 1px solid rgba(255,102,0,0.45); color: #ff9838; font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+        .wallet-tx-drawer { display: none; background: var(--bg-panel); border: 1.5px solid var(--accent-orange); border-radius: 12px; padding: 1.1rem; margin-top: -0.4rem; margin-bottom: 1.1rem; box-shadow: 0 6px 18px rgba(0,0,0,0.05); animation: fadeIn 0.22s ease-in-out; }
+        .family-section-box { display: none; margin-bottom: 1.2rem; padding: 0.95rem 1.1rem; background: var(--bg-panel); border: 1px solid var(--border-color); border-left: 4px solid var(--accent-orange); border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.02); }
+        .family-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin-top: 8px; }
+        .family-profile-card { display: flex; align-items: center; gap: 10px; padding: 9px 11px; border-radius: 10px; background: var(--bg-main); border: 1.5px solid var(--border-color); cursor: pointer; transition: all 0.2s ease; text-align: left; position: relative; }
+        .family-profile-card:hover { border-color: var(--accent-orange); background: #fff8f3; }
+        .family-profile-card.active-family-card { border-color: var(--accent-orange); background: #fff5eb; }
+        .family-profile-card img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-orange); flex-shrink: 0; }
         .family-card-meta { flex: 1; min-width: 0; }
-        .family-card-meta h4 { margin: 0; font-size: 0.9rem; font-weight: 800; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .family-card-meta p { margin: 2px 0 0 0; font-size: 0.74rem; color: var(--text-muted); line-height: 1.35; }
-        .wallet-badge-card { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 1rem 1.2rem; background: linear-gradient(135deg, #fff8f3 0%, #fff0e5 100%); border: 2px solid var(--accent-orange); border-radius: 12px; margin-bottom: 1.2rem; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 14px rgba(255,102,0,0.08); }
-        .wallet-badge-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(255,102,0,0.16); }
-        .wallet-bal-amount { font-size: 1.65rem; font-weight: 900; color: var(--accent-orange); line-height: 1.1; }
-        .wallet-tx-drawer { display: none; background: var(--bg-panel); border: 1.5px solid var(--border-color); border-radius: 10px; padding: 1.1rem; margin-bottom: 1.5rem; animation: fadeIn 0.25s ease-in-out; }
+        .family-card-meta h4 { margin: 0; font-size: 0.88rem; font-weight: 800; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .family-card-meta p { margin: 2px 0 0 0; font-size: 0.73rem; color: var(--text-muted); line-height: 1.3; }
         .wallet-redeem-box { background: #f0fdf4; border: 1.5px dashed var(--success-green); border-radius: 8px; padding: 0.75rem 0.9rem; margin: 0.65rem 0; }
 
         .contact-action-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; background: var(--bg-panel); border: 1px solid var(--border-color); margin-left: 6px; cursor: pointer; text-decoration: none; transition: transform 0.2s; }
@@ -337,9 +345,9 @@
             .form-row { flex-direction: column; gap: 1rem; margin-bottom: 1rem; }
             .form-layout { padding: 1.2rem; border: none; box-shadow: none; background: transparent; }
             .btn { padding: 0.9rem 1.2rem; }
-            .profile-snippet { flex-direction: column; text-align: center; }
-            .profile-snippet img { width: 90px; height: 90px; }
-            #hub-actions { width: 100%; max-width: 100%; }
+            .profile-top-row { align-items: center; }
+            .profile-snippet img { width: 66px; height: 66px; }
+            #hub-actions { grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); }
         }
     </style>
 </head>
@@ -788,76 +796,86 @@
 
         <main id="view-user-hub" class="view-section">
             <div class="form-layout" style="max-width: 900px;">
-                <div class="module-toolbar">
+                <div class="module-toolbar" style="margin-bottom:1rem;">
                     <button class="back-btn" id="hub-back-btn" onclick="window.moduleContext.handleUserHubBack()" type="button">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         <span id="hub-back-btn-label">Back</span>
                     </button>
                     <h2 class="module-title" id="hub-title">Member Profile</h2>
                 </div>
-                
-                <div id="hub-family-switcher" style="display:none; margin-bottom:1rem; padding:0.9rem 1rem; background:#fff8f3; border:1px dashed var(--accent-orange); border-radius:8px;"></div>
-                <div class="profile-snippet">
-                    <img id="hub-photo" src="" alt="User Photo">
-                    <div class="profile-snippet-info" style="flex:1;">
-                        <h3 id="hub-name">John Doe</h3>
-                        <p>
-                            <strong id="hub-id" style="color:var(--text-main);">REV-0000</strong> | 
-                            <span id="hub-phone">9999999999</span>
-                            <a id="hub-call-btn" href="tel:0000000000" class="contact-action-btn call-icon" title="Call Member">📞</a>
-                            <a id="hub-wa-btn" href="https://api.whatsapp.com" target="_blank" class="contact-action-btn wa-icon" title="WhatsApp Member">💬</a>
-                        </p>
-                        <p id="hub-details" style="margin-top:5px;">Regular - Individual</p>
-                        <p id="hub-doj" style="margin-top:5px; font-weight:700; color:var(--success-green); font-size: 0.85rem;"></p>
-                        <p id="hub-registered-by" style="margin-top:3px; font-size: 0.78rem; color:var(--text-muted);"></p>
-                    </div>
-                    <div id="hub-actions" style="display:flex; flex-direction:column; gap:0.5rem; width:100%; max-width:200px;">
-                        <button id="btn-hub-edit" type="button" class="btn secondary" onclick="window.moduleContext.editUser()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Edit Profile</button>
-                        <button id="btn-hub-pdf" type="button" class="btn secondary" onclick="window.moduleContext.regeneratePdf()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Re-Download PDF</button>
-                        <button id="btn-hub-delete" type="button" class="btn danger admin-only" onclick="window.moduleContext.cancelUserAdmission()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Cancel Admission</button>
-                    </div>
-                </div>
 
-                <!-- Member Wallet Balance Card (Click to view Wallet Transactions) & Add Funds Button -->
-                <div class="wallet-badge-card" id="hub-wallet-card" onclick="window.moduleContext.toggleHubWalletTransactions()">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <div style="width:46px; height:46px; border-radius:50%; background:var(--accent-orange); color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.35rem; font-weight:900; flex-shrink:0;">💳</div>
-                        <div>
-                            <div style="font-size:0.74rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.6px;">Member Wallet Balance <span style="color:var(--accent-orange); text-decoration:underline; margin-left:4px;">(Click to View Transactions ▾)</span></div>
-                            <div class="wallet-bal-amount">₹<span id="hub-wallet-balance">0</span></div>
-                            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600; margin-top:2px;">Can be redeemed automatically or partially during Fee Collection & Supplement Purchases</div>
+                <!-- 1. Member Profile Card -->
+                <div class="profile-snippet">
+                    <div class="profile-top-row">
+                        <img id="hub-photo" src="" alt="User Photo">
+                        <div class="profile-snippet-info">
+                            <h3 id="hub-name">Member Name</h3>
+                            <p style="display:flex; align-items:center; flex-wrap:wrap; gap:4px;">
+                                <strong id="hub-id" style="color:var(--accent-orange); font-weight:900;">REV-0000</strong>
+                                <span style="color:var(--border-color);">•</span>
+                                <span id="hub-phone" style="font-weight:700; color:var(--text-main);">9999999999</span>
+                                <a id="hub-call-btn" href="tel:0000000000" class="contact-action-btn call-icon" title="Call Member">📞</a>
+                                <a id="hub-wa-btn" href="https://api.whatsapp.com" target="_blank" class="contact-action-btn wa-icon" title="WhatsApp Member">💬</a>
+                            </p>
+                            <div class="profile-meta-pills">
+                                <span class="profile-meta-pill" id="hub-details">Individual • Regular</span>
+                                <span class="profile-meta-pill" id="hub-doj" style="color:var(--success-green); border-color:#b7ebc9; background:#f4fbf7;">Joined: -</span>
+                                <span class="profile-meta-pill" id="hub-registered-by">By: Admin</span>
+                            </div>
                         </div>
                     </div>
-                    <div style="display:flex; gap:8px; align-items:center;" onclick="event.stopPropagation();">
-                        <button type="button" class="btn primary" style="width:auto; padding:0.65rem 1.1rem; font-size:0.8rem;" onclick="window.moduleContext.openWalletTopupModal()">+ Add Funds to Wallet</button>
-                        <button type="button" class="btn secondary" style="width:auto; padding:0.65rem 1rem; font-size:0.78rem;" onclick="window.moduleContext.toggleHubWalletTransactions()">📜 Transactions</button>
+                    <div id="hub-actions">
+                        <button id="btn-hub-edit" type="button" class="btn secondary" onclick="window.moduleContext.editUser()">Edit Profile</button>
+                        <button id="btn-hub-pdf" type="button" class="btn secondary" onclick="window.moduleContext.regeneratePdf()">Download PDF</button>
+                        <button id="btn-hub-delete" type="button" class="btn danger admin-only" onclick="window.moduleContext.cancelUserAdmission()">Cancel Admission</button>
                     </div>
                 </div>
 
+                <!-- 2. Current Wallet Balance Bar (Click to expand Wallet controls & transactions) -->
+                <div class="wallet-badge-card" id="hub-wallet-card" onclick="window.moduleContext.toggleHubWalletTransactions()">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <div style="width:42px; height:42px; border-radius:10px; background:rgba(255,102,0,0.18); border:1px solid var(--accent-orange); color:var(--accent-orange); display:flex; align-items:center; justify-content:center; font-size:1.25rem; flex-shrink:0;">💳</div>
+                        <div>
+                            <div style="font-size:0.72rem; font-weight:800; color:#cbd5e1; text-transform:uppercase; letter-spacing:0.8px;">Current Wallet Balance</div>
+                            <div class="wallet-bal-amount">₹<span id="hub-wallet-balance">0</span></div>
+                        </div>
+                    </div>
+                    <div class="wallet-expand-pill" id="hub-wallet-toggle-lbl">Wallet Options & History ▾</div>
+                </div>
+
+                <!-- Expandable Wallet Panel (Shown ONLY when Wallet card is clicked) -->
                 <div id="hub-wallet-tx-drawer" class="wallet-tx-drawer">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; border-bottom:1px solid var(--border-color); padding-bottom:0.5rem;">
-                        <h4 style="margin:0; color:var(--accent-orange); text-transform:uppercase; font-size:0.92rem;">💳 Wallet Transaction History (<span id="hub-wallet-tx-count">0</span>)</h4>
-                        <button type="button" class="btn secondary" style="width:auto; padding:0.3rem 0.7rem; font-size:0.72rem;" onclick="window.moduleContext.toggleHubWalletTransactions()">✕ Close</button>
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:0.85rem; padding-bottom:0.65rem; border-bottom:1px solid var(--border-color);">
+                        <h4 style="margin:0; color:var(--text-main); text-transform:uppercase; font-size:0.86rem; letter-spacing:0.5px;">💳 Wallet Transactions (<span id="hub-wallet-tx-count">0</span>)</h4>
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <button type="button" class="btn primary" style="width:auto; padding:0.45rem 0.95rem; font-size:0.76rem;" onclick="window.moduleContext.openWalletTopupModal()">+ Add Funds</button>
+                            <button type="button" class="btn secondary" style="width:auto; padding:0.45rem 0.75rem; font-size:0.74rem;" onclick="window.moduleContext.toggleHubWalletTransactions()">✕ Close</button>
+                        </div>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table" id="table-hub-wallet-tx">
                             <thead>
-                                <tr><th>Date & Time</th><th>Tx ID</th><th>Type</th><th>Amount</th><th>Balance After</th><th>Remark / Reference</th><th>By</th></tr>
+                                <tr><th>Date</th><th>Tx ID</th><th>Type</th><th>Amount</th><th>Balance</th><th>Remark / Ref</th><th>By</th></tr>
                             </thead>
                             <tbody></tbody>
                         </table>
                     </div>
                 </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.5rem;">
-                    <h3 style="color:var(--accent-orange); margin:0;">FEE CALENDAR & ATTENDANCE (<span id="hub-fy-label"></span>)</h3>
-                    <select id="hub-fy-switcher" style="max-width:160px; padding:0.4rem 0.8rem; font-size:0.85rem;" onchange="window.moduleContext.switchHubFy(this.value)"></select>
+                <!-- 3. Tagged Family Profiles (Shown below Wallet when Family members share the same phone) -->
+                <div id="hub-family-switcher" class="family-section-box"></div>
+
+                <!-- 4. Fee Calendar & Attendance -->
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin: 1.2rem 0 0.5rem 0;">
+                    <h3 style="color:var(--accent-orange); margin:0; font-size:1rem; letter-spacing:0.5px;">FEE CALENDAR & ATTENDANCE (<span id="hub-fy-label"></span>)</h3>
+                    <select id="hub-fy-switcher" style="max-width:150px; padding:0.4rem 0.75rem; font-size:0.82rem; font-weight:700;" onchange="window.moduleContext.switchHubFy(this.value)"></select>
                 </div>
-                <p id="hub-instruction" style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;"></p>
+                <p id="hub-instruction" style="display:none; color:var(--text-muted); font-size:0.82rem; margin-bottom:0.8rem;"></p>
                 <div class="calendar-grid" id="fee-calendar"></div>
 
-                <div id="hub-supp-section" style="display:none; margin-top:2rem; padding-top:1.2rem; border-top:1px solid var(--border-color);">
-                    <h3 style="color:var(--accent-orange); margin-bottom:0.8rem; font-size:1rem; text-transform:uppercase;">Supplement Invoices & Pending Dues</h3>
+                <!-- 5. Supplement Invoices & Pending Dues -->
+                <div id="hub-supp-section" style="display:none; margin-top:1.8rem; padding-top:1.2rem; border-top:1px solid var(--border-color);">
+                    <h3 style="color:var(--accent-orange); margin-bottom:0.8rem; font-size:0.98rem; text-transform:uppercase;">Supplement Invoices & Dues</h3>
                     <div class="table-responsive">
                         <table class="data-table" id="table-hub-supp-sales">
                             <thead><tr><th>Date</th><th>Invoice</th><th>Items</th><th>Total Bill</th><th>Paid</th><th>Balance Due</th><th>Action</th></tr></thead>
@@ -7648,9 +7666,8 @@
                     if (isFamilyTagged && samePhoneMembers.length > 0) {
                         famSwitcher.style.display = "block";
                         const dispPhone = appContext.currentRole !== "admin" ? maskPhoneLast4(user.primaryContact) : user.primaryContact;
-                        let famHtml = `<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
-                            <div style="font-size:0.82rem; font-weight:900; color:var(--accent-orange); text-transform:uppercase; letter-spacing:0.5px;">👨‍👩‍👧‍👦 Family Profiles Tagged Under Phone ${dispPhone} (${samePhoneMembers.length} Member${samePhoneMembers.length > 1 ? "s" : ""})</div>
-                            <span style="font-size:0.74rem; color:var(--text-muted); font-weight:700;">Tap any family member card below to view their profile & dues</span>
+                        let famHtml = `<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:4px;">
+                            <div style="font-size:0.78rem; font-weight:900; color:var(--accent-orange); text-transform:uppercase; letter-spacing:0.5px;">👨‍👩‍👧‍👦 Family Profiles (${samePhoneMembers.length}) — ${dispPhone}</div>
                         </div>`;
                         famHtml += `<div class="family-cards-grid">`;
                         samePhoneMembers.forEach(fm => {
@@ -7663,18 +7680,18 @@
                             const fmTotalPending = fmFeeArrears + fmSuppArrears;
                             const fmWalletBal = getMemberWalletBalance(fm.id);
                             const statusBadge = fmCanc
-                                ? `<span class="deleted-badge" style="font-size:0.62rem;">Cancelled</span>`
-                                : `<span style="background:var(--success-green); color:#fff; font-size:0.62rem; padding:1px 6px; border-radius:8px; font-weight:800; text-transform:uppercase;">Active</span>`;
+                                ? `<span class="deleted-badge" style="font-size:0.6rem;">Cancelled</span>`
+                                : `<span style="background:var(--success-green); color:#fff; font-size:0.6rem; padding:1px 5px; border-radius:6px; font-weight:800; text-transform:uppercase;">Active</span>`;
                             const dueBadge = fmTotalPending > 0
-                                ? `<span style="color:var(--error-red); font-weight:800; font-size:0.73rem;">⚠ Pending Due: ₹${fmTotalPending}</span>`
-                                : `<span style="color:var(--success-green); font-weight:800; font-size:0.73rem;">✔ No Pending Dues</span>`;
+                                ? `<span style="color:var(--error-red); font-weight:800;">Due: ₹${fmTotalPending}</span>`
+                                : `<span style="color:var(--success-green); font-weight:800;">Cleared</span>`;
                             famHtml += `
                             <div class="family-profile-card ${isCurr ? "active-family-card" : ""}" onclick="window.moduleContext.loadProfileByPhoneOrId(\x27${safeFid}\x27)">
                                 <img src="${fmPhoto}" alt="${fm.fullName}">
                                 <div class="family-card-meta">
-                                    <h4>${fm.fullName} ${isCurr ? "<span style=\"color:var(--accent-orange); font-size:0.7rem;\">(Viewing)</span>" : ""}</h4>
-                                    <p><strong>${fm.id}</strong> • ${fm.trainingCategory || "Regular"} ${statusBadge}</p>
-                                    <p style="margin-top:3px;">${dueBadge} &nbsp;|&nbsp; <span style="color:#15803d; font-weight:800; font-size:0.73rem;">💳 Wallet: ₹${fmWalletBal}</span></p>
+                                    <h4>${fm.fullName} ${isCurr ? "<span style=\"color:var(--accent-orange); font-size:0.68rem;\">• Active View</span>" : ""}</h4>
+                                    <p><strong>${fm.id}</strong> • ${String(fm.trainingCategory || "Regular").replace(" Training", "")} ${statusBadge}</p>
+                                    <p style="margin-top:2px;">${dueBadge} &nbsp;•&nbsp; <span style="color:#15803d; font-weight:800;">Wallet: ₹${fmWalletBal}</span></p>
                                 </div>
                             </div>`;
                         });
@@ -7737,38 +7754,46 @@
                     : ' <span style="background:var(--success-green); color:#fff; font-size:0.65rem; padding:3px 8px; border-radius:12px; vertical-align:middle; margin-left:6px; text-transform:uppercase; font-weight:800;">Active</span>';
                 document.getElementById('hub-name').innerHTML = user.fullName + statusBadgeHtml;
                 document.getElementById('hub-id').innerText = user.id;
-                document.getElementById('hub-details').innerText = `${user.admissionType || 'New Admission'} | ${user.admissionCategory} - ${user.trainingCategory}`;
-                document.getElementById('hub-doj').innerText = `Date of Admission: ${dInfo.formattedDate}`;
-                document.getElementById('hub-registered-by').innerText = `By: ${user.collectedBy || 'Admin'} | Status: ${isCanc ? 'Cancelled' : 'Active'}`;
-                document.getElementById('hub-fy-label').innerText = currentActiveUser.selectedFY;
-                document.getElementById('hub-actions').style.display = 'flex';
+                const cleanTrain = String(user.trainingCategory || "Regular").replace(" Training", "");
+                document.getElementById("hub-details").innerText = `${user.admissionCategory || "Individual"} • ${cleanTrain}`;
+                document.getElementById("hub-doj").innerText = `Joined: ${dInfo.formattedDate}`;
+                document.getElementById("hub-registered-by").innerText = `By: ${user.collectedBy || "Admin"}`;
+
+                // Collapse wallet drawer by default whenever switching/opening a profile so only Current Wallet Balance shows until clicked
+                const wDrawer = document.getElementById("hub-wallet-tx-drawer");
+                if (wDrawer) wDrawer.style.display = "none";
+                const wToggleLbl = document.getElementById("hub-wallet-toggle-lbl");
+                if (wToggleLbl) wToggleLbl.innerText = "Wallet Options & History ▾";
                 
-                const cancelBtn = document.getElementById('btn-hub-delete');
-                if (currentHubMode === 'fee') {
-                    document.getElementById('hub-instruction').style.display = "none";
-                    document.getElementById('btn-hub-edit').style.display = 'none';
-                    document.getElementById('btn-hub-pdf').style.display = 'none';
-                    if (cancelBtn) cancelBtn.style.display = 'none';
+                const cancelBtn = document.getElementById("btn-hub-delete");
+                const actionsWrap = document.getElementById("hub-actions");
+                if (currentHubMode === "fee") {
+                    document.getElementById("hub-instruction").style.display = "none";
+                    document.getElementById("btn-hub-edit").style.display = "none";
+                    document.getElementById("btn-hub-pdf").style.display = "none";
+                    if (cancelBtn) cancelBtn.style.display = "none";
+                    if (actionsWrap) actionsWrap.style.display = "none";
                 } else {
-                    document.getElementById('hub-instruction').style.display = "none";
-                    document.getElementById('btn-hub-edit').style.display = isCanc ? 'none' : 'flex'; 
-                    document.getElementById('btn-hub-pdf').style.display = appContext.currentRole === 'admin' ? 'flex' : 'none';
+                    if (actionsWrap) actionsWrap.style.display = "grid";
+                    document.getElementById("hub-instruction").style.display = "none";
+                    document.getElementById("btn-hub-edit").style.display = isCanc ? "none" : "inline-flex"; 
+                    document.getElementById("btn-hub-pdf").style.display = appContext.currentRole === "admin" ? "inline-flex" : "none";
                     if (cancelBtn) {
-                        if (appContext.currentRole === 'admin') {
-                            cancelBtn.style.display = 'flex';
+                        if (appContext.currentRole === "admin") {
+                            cancelBtn.style.display = "inline-flex";
                             if (isCanc) {
-                                cancelBtn.innerText = 'Reactivate Admission';
-                                cancelBtn.className = 'btn primary admin-only';
-                                cancelBtn.style.backgroundColor = 'var(--success-green)';
+                                cancelBtn.innerText = "Reactivate";
+                                cancelBtn.className = "btn primary admin-only";
+                                cancelBtn.style.backgroundColor = "var(--success-green)";
                                 cancelBtn.onclick = function() { window.moduleContext.reactivateUserAdmission(); };
                             } else {
-                                cancelBtn.innerText = 'Cancel Admission';
-                                cancelBtn.className = 'btn danger admin-only';
-                                cancelBtn.style.backgroundColor = '';
+                                cancelBtn.innerText = "Cancel Admission";
+                                cancelBtn.className = "btn danger admin-only";
+                                cancelBtn.style.backgroundColor = "";
                                 cancelBtn.onclick = function() { window.moduleContext.cancelUserAdmission(); };
                             }
                         } else {
-                            cancelBtn.style.display = 'none';
+                            cancelBtn.style.display = "none";
                         }
                     }
                 }
@@ -7957,11 +7982,14 @@
 
             toggleHubWalletTransactions: function() {
                 const drawer = document.getElementById("hub-wallet-tx-drawer");
+                const lbl = document.getElementById("hub-wallet-toggle-lbl");
                 if (!drawer) return;
                 if (currentActiveUser && currentActiveUser.id) {
                     window.moduleContext.renderHubWalletSection(currentActiveUser.id);
                 }
-                drawer.style.display = (drawer.style.display === "block") ? "none" : "block";
+                const isOpening = (drawer.style.display !== "block");
+                drawer.style.display = isOpening ? "block" : "none";
+                if (lbl) lbl.innerText = isOpening ? "Hide Wallet ▴" : "Wallet Options & History ▾";
             },
 
             openWalletTopupModal: function() {
@@ -8014,6 +8042,8 @@
                 window.moduleContext.loadProfileByPhoneOrId(currentActiveUser.id);
                 const drawer = document.getElementById("hub-wallet-tx-drawer");
                 if (drawer) drawer.style.display = "block";
+                const wToggleLbl = document.getElementById("hub-wallet-toggle-lbl");
+                if (wToggleLbl) wToggleLbl.innerText = "Hide Wallet ▴";
                 showNotice(`✔ Added ₹${amt} to ${currentActiveUser.fullName}\x27s Wallet! New Balance: ₹${tx ? tx.balanceAfter : getMemberWalletBalance(currentActiveUser.id)}`, "success");
             },
 
