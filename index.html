@@ -227,30 +227,36 @@
         .status-partial { background: var(--warning-yellow); border-color: #c87f0a; color: #000; }
         .status-unpaid { background: var(--error-red); border-color: #a72424; }
 
-        .profile-snippet { display: flex; flex-direction: column; gap: 0.9rem; background: var(--bg-panel); padding: 1.25rem; border-radius: 14px; margin-bottom: 1rem; border: 1px solid var(--border-color); box-shadow: 0 4px 16px rgba(0,0,0,0.03); }
-        .profile-top-row { display: flex; align-items: center; gap: 1rem; width: 100%; text-align: left; }
-        .profile-snippet img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2.5px solid var(--accent-orange); flex-shrink: 0; }
-        .profile-snippet-info { flex: 1; min-width: 0; }
-        .profile-snippet-info h3 { margin: 0 0 4px 0; color: var(--text-main); font-size: 1.2rem; font-weight: 900; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
-        .profile-snippet-info p { margin: 0; font-size: 0.84rem; color: var(--text-muted); line-height: 1.45; }
-        .profile-meta-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-        .profile-meta-pill { font-size: 0.73rem; font-weight: 700; padding: 3px 9px; border-radius: 6px; background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border-color); }
-        #hub-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.5rem; width: 100%; padding-top: 0.75rem; border-top: 1px solid var(--border-color); }
-        #hub-actions .btn { padding: 0.55rem 0.75rem; font-size: 0.75rem; border-radius: 8px; letter-spacing: 0.5px; }
-        .wallet-badge-card { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 0.95rem 1.2rem; background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%); color: #ffffff; border: 1.5px solid var(--accent-orange); border-radius: 12px; margin-bottom: 1rem; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 6px 16px rgba(0,0,0,0.08); user-select: none; }
-        .wallet-badge-card:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(255,102,0,0.18); }
-        .wallet-bal-amount { font-size: 1.55rem; font-weight: 900; color: var(--accent-orange); line-height: 1.1; }
-        .wallet-expand-pill { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 20px; background: rgba(255,102,0,0.15); border: 1px solid rgba(255,102,0,0.45); color: #ff9838; font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
-        .wallet-tx-drawer { display: none; background: var(--bg-panel); border: 1.5px solid var(--accent-orange); border-radius: 12px; padding: 1.1rem; margin-top: -0.4rem; margin-bottom: 1.1rem; box-shadow: 0 6px 18px rgba(0,0,0,0.05); animation: fadeIn 0.22s ease-in-out; }
-        .family-section-box { display: none; margin-bottom: 1.2rem; padding: 0.95rem 1.1rem; background: var(--bg-panel); border: 1px solid var(--border-color); border-left: 4px solid var(--accent-orange); border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.02); }
-        .family-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin-top: 8px; }
-        .family-profile-card { display: flex; align-items: center; gap: 10px; padding: 9px 11px; border-radius: 10px; background: var(--bg-main); border: 1.5px solid var(--border-color); cursor: pointer; transition: all 0.2s ease; text-align: left; position: relative; }
+        .profile-snippet { display: flex; flex-direction: column; gap: 0.85rem; background: var(--bg-panel); padding: 1.15rem 1.2rem; border-radius: 14px; margin-bottom: 0.9rem; border: 1.5px solid var(--border-color); box-shadow: 0 4px 14px rgba(0,0,0,0.03); box-sizing: border-box; width: 100%; overflow: hidden; }
+        .profile-top-row { display: flex; align-items: center; gap: 0.95rem; width: 100%; text-align: left; }
+        .profile-snippet img { width: 68px; height: 68px; border-radius: 50%; object-fit: cover; border: 2.5px solid var(--accent-orange); flex-shrink: 0; }
+        .profile-snippet-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+        .profile-name-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; }
+        .profile-snippet-info h3 { margin: 0; color: var(--text-main); font-size: 1.18rem; font-weight: 900; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .profile-contact-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; }
+        .profile-id-phone { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; min-width: 0; white-space: nowrap; }
+        .profile-contact-icons { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; }
+        .profile-meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; padding-top: 0.65rem; border-top: 1px dashed var(--border-color); text-align: center; }
+        .profile-meta-item { background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 8px; padding: 6px 4px; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+        .profile-meta-lbl { font-size: 0.62rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 2px; }
+        .profile-meta-val { font-size: 0.75rem; font-weight: 800; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        #hub-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; padding-top: 0.2rem; }
+        #hub-actions .btn { padding: 0.58rem 0.4rem; font-size: 0.72rem; border-radius: 8px; letter-spacing: 0.3px; width: 100%; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .wallet-badge-card { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 0.9rem 1.1rem; background: linear-gradient(135deg, #1a1a1a 0%, #2b2b2b 100%); color: #ffffff; border: 1.5px solid var(--accent-orange); border-radius: 12px; margin-bottom: 0.9rem; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 14px rgba(0,0,0,0.08); user-select: none; box-sizing: border-box; width: 100%; overflow: hidden; }
+        .wallet-badge-card:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(255,102,0,0.16); }
+        .wallet-left-group { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+        .wallet-bal-amount { font-size: 1.45rem; font-weight: 900; color: var(--accent-orange); line-height: 1.1; margin-top: 2px; }
+        .wallet-expand-pill { display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 6px 11px; border-radius: 20px; background: rgba(255,102,0,0.16); border: 1px solid rgba(255,102,0,0.5); color: #ff9838; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; flex-shrink: 0; }
+        .wallet-tx-drawer { display: none; background: var(--bg-panel); border: 1.5px solid var(--accent-orange); border-radius: 12px; padding: 1rem; margin-top: -0.35rem; margin-bottom: 1rem; box-shadow: 0 6px 18px rgba(0,0,0,0.05); animation: fadeIn 0.22s ease-in-out; box-sizing: border-box; width: 100%; overflow: hidden; }
+        .family-section-box { display: none; margin-bottom: 1.1rem; padding: 0.95rem 1rem; background: var(--bg-panel); border: 1.5px solid var(--border-color); border-left: 4px solid var(--accent-orange); border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.02); box-sizing: border-box; width: 100%; overflow: hidden; }
+        .family-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin-top: 8px; width: 100%; }
+        .family-profile-card { display: flex; align-items: center; gap: 10px; padding: 9px 11px; border-radius: 10px; background: var(--bg-main); border: 1.5px solid var(--border-color); cursor: pointer; transition: all 0.2s ease; text-align: left; position: relative; box-sizing: border-box; width: 100%; overflow: hidden; }
         .family-profile-card:hover { border-color: var(--accent-orange); background: #fff8f3; }
         .family-profile-card.active-family-card { border-color: var(--accent-orange); background: #fff5eb; }
         .family-profile-card img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-orange); flex-shrink: 0; }
         .family-card-meta { flex: 1; min-width: 0; }
         .family-card-meta h4 { margin: 0; font-size: 0.88rem; font-weight: 800; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .family-card-meta p { margin: 2px 0 0 0; font-size: 0.73rem; color: var(--text-muted); line-height: 1.3; }
+        .family-card-meta p { margin: 2px 0 0 0; font-size: 0.73rem; color: var(--text-muted); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .wallet-redeem-box { background: #f0fdf4; border: 1.5px dashed var(--success-green); border-radius: 8px; padding: 0.75rem 0.9rem; margin: 0.65rem 0; }
 
         .contact-action-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; background: var(--bg-panel); border: 1px solid var(--border-color); margin-left: 6px; cursor: pointer; text-decoration: none; transition: transform 0.2s; }
@@ -346,8 +352,9 @@
             .form-layout { padding: 1.2rem; border: none; box-shadow: none; background: transparent; }
             .btn { padding: 0.9rem 1.2rem; }
             .profile-top-row { align-items: center; }
-            .profile-snippet img { width: 66px; height: 66px; }
-            #hub-actions { grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); }
+            .profile-snippet img { width: 62px; height: 62px; }
+            #hub-actions { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+            #hub-actions .btn { font-size: 0.68rem; padding: 0.55rem 0.25rem; }
         }
     </style>
 </head>
@@ -796,7 +803,7 @@
 
         <main id="view-user-hub" class="view-section">
             <div class="form-layout" style="max-width: 900px;">
-                <div class="module-toolbar" style="margin-bottom:1rem;">
+                <div class="module-toolbar" style="margin-bottom:0.9rem;">
                     <button class="back-btn" id="hub-back-btn" onclick="window.moduleContext.handleUserHubBack()" type="button">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         <span id="hub-back-btn-label">Back</span>
@@ -804,26 +811,44 @@
                     <h2 class="module-title" id="hub-title">Member Profile</h2>
                 </div>
 
-                <!-- 1. Member Profile Card -->
+                <!-- 1. Member Profile Card (Aligned & Contained) -->
                 <div class="profile-snippet">
                     <div class="profile-top-row">
                         <img id="hub-photo" src="" alt="User Photo">
                         <div class="profile-snippet-info">
-                            <h3 id="hub-name">Member Name</h3>
-                            <p style="display:flex; align-items:center; flex-wrap:wrap; gap:4px;">
-                                <strong id="hub-id" style="color:var(--accent-orange); font-weight:900;">REV-0000</strong>
-                                <span style="color:var(--border-color);">•</span>
-                                <span id="hub-phone" style="font-weight:700; color:var(--text-main);">9999999999</span>
-                                <a id="hub-call-btn" href="tel:0000000000" class="contact-action-btn call-icon" title="Call Member">📞</a>
-                                <a id="hub-wa-btn" href="https://api.whatsapp.com" target="_blank" class="contact-action-btn wa-icon" title="WhatsApp Member">💬</a>
-                            </p>
-                            <div class="profile-meta-pills">
-                                <span class="profile-meta-pill" id="hub-details">Individual • Regular</span>
-                                <span class="profile-meta-pill" id="hub-doj" style="color:var(--success-green); border-color:#b7ebc9; background:#f4fbf7;">Joined: -</span>
-                                <span class="profile-meta-pill" id="hub-registered-by">By: Admin</span>
+                            <div class="profile-name-row">
+                                <h3 id="hub-name">Member Name</h3>
+                                <span id="hub-status-badge"></span>
+                            </div>
+                            <div class="profile-contact-row">
+                                <div class="profile-id-phone">
+                                    <strong id="hub-id" style="color:var(--accent-orange); font-weight:900;">REV-0000</strong>
+                                    <span style="color:var(--border-color);">|</span>
+                                    <span id="hub-phone" style="font-weight:700; color:var(--text-main);">9999999999</span>
+                                </div>
+                                <div class="profile-contact-icons">
+                                    <a id="hub-call-btn" href="tel:0000000000" class="contact-action-btn call-icon" style="margin:0; width:28px; height:28px;" title="Call Member">📞</a>
+                                    <a id="hub-wa-btn" href="https://api.whatsapp.com" target="_blank" class="contact-action-btn wa-icon" style="margin:0; width:28px; height:28px;" title="WhatsApp Member">💬</a>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <div class="profile-meta-grid">
+                        <div class="profile-meta-item">
+                            <span class="profile-meta-lbl">Plan & Category</span>
+                            <span class="profile-meta-val" id="hub-details">Family • Regular</span>
+                        </div>
+                        <div class="profile-meta-item" style="background:#f4fbf7; border-color:#b7ebc9;">
+                            <span class="profile-meta-lbl" style="color:#15803d;">Joined Date</span>
+                            <span class="profile-meta-val" id="hub-doj" style="color:var(--success-green);">19-10-2026</span>
+                        </div>
+                        <div class="profile-meta-item">
+                            <span class="profile-meta-lbl">Registered By</span>
+                            <span class="profile-meta-val" id="hub-registered-by">Admin</span>
+                        </div>
+                    </div>
+
                     <div id="hub-actions">
                         <button id="btn-hub-edit" type="button" class="btn secondary" onclick="window.moduleContext.editUser()">Edit Profile</button>
                         <button id="btn-hub-pdf" type="button" class="btn secondary" onclick="window.moduleContext.regeneratePdf()">Download PDF</button>
@@ -831,25 +856,25 @@
                     </div>
                 </div>
 
-                <!-- 2. Current Wallet Balance Bar (Click to expand Wallet controls & transactions) -->
+                <!-- 2. Current Wallet Balance Bar (Strictly Contained — Click to expand Wallet panel) -->
                 <div class="wallet-badge-card" id="hub-wallet-card" onclick="window.moduleContext.toggleHubWalletTransactions()">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <div style="width:42px; height:42px; border-radius:10px; background:rgba(255,102,0,0.18); border:1px solid var(--accent-orange); color:var(--accent-orange); display:flex; align-items:center; justify-content:center; font-size:1.25rem; flex-shrink:0;">💳</div>
-                        <div>
-                            <div style="font-size:0.72rem; font-weight:800; color:#cbd5e1; text-transform:uppercase; letter-spacing:0.8px;">Current Wallet Balance</div>
+                    <div class="wallet-left-group">
+                        <div style="width:40px; height:40px; border-radius:10px; background:rgba(255,102,0,0.18); border:1px solid var(--accent-orange); color:var(--accent-orange); display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;">💳</div>
+                        <div style="min-width:0;">
+                            <div style="font-size:0.68rem; font-weight:800; color:#cbd5e1; text-transform:uppercase; letter-spacing:0.6px; white-space:nowrap;">Current Wallet Balance</div>
                             <div class="wallet-bal-amount">₹<span id="hub-wallet-balance">0</span></div>
                         </div>
                     </div>
-                    <div class="wallet-expand-pill" id="hub-wallet-toggle-lbl">Wallet Options & History ▾</div>
+                    <div class="wallet-expand-pill" id="hub-wallet-toggle-lbl">Wallet ▾</div>
                 </div>
 
                 <!-- Expandable Wallet Panel (Shown ONLY when Wallet card is clicked) -->
                 <div id="hub-wallet-tx-drawer" class="wallet-tx-drawer">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:0.85rem; padding-bottom:0.65rem; border-bottom:1px solid var(--border-color);">
-                        <h4 style="margin:0; color:var(--text-main); text-transform:uppercase; font-size:0.86rem; letter-spacing:0.5px;">💳 Wallet Transactions (<span id="hub-wallet-tx-count">0</span>)</h4>
-                        <div style="display:flex; gap:8px; align-items:center;">
-                            <button type="button" class="btn primary" style="width:auto; padding:0.45rem 0.95rem; font-size:0.76rem;" onclick="window.moduleContext.openWalletTopupModal()">+ Add Funds</button>
-                            <button type="button" class="btn secondary" style="width:auto; padding:0.45rem 0.75rem; font-size:0.74rem;" onclick="window.moduleContext.toggleHubWalletTransactions()">✕ Close</button>
+                        <h4 style="margin:0; color:var(--text-main); text-transform:uppercase; font-size:0.84rem; letter-spacing:0.5px;">💳 Wallet History (<span id="hub-wallet-tx-count">0</span>)</h4>
+                        <div style="display:flex; gap:6px; align-items:center;">
+                            <button type="button" class="btn primary" style="width:auto; padding:0.42rem 0.85rem; font-size:0.74rem;" onclick="window.moduleContext.openWalletTopupModal()">+ Add Funds</button>
+                            <button type="button" class="btn secondary" style="width:auto; padding:0.42rem 0.7rem; font-size:0.72rem;" onclick="window.moduleContext.toggleHubWalletTransactions()">✕ Close</button>
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -862,20 +887,20 @@
                     </div>
                 </div>
 
-                <!-- 3. Tagged Family Profiles (Shown below Wallet when Family members share the same phone) -->
+                <!-- 3. Tagged Family Profiles (Below Wallet) -->
                 <div id="hub-family-switcher" class="family-section-box"></div>
 
                 <!-- 4. Fee Calendar & Attendance -->
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin: 1.2rem 0 0.5rem 0;">
-                    <h3 style="color:var(--accent-orange); margin:0; font-size:1rem; letter-spacing:0.5px;">FEE CALENDAR & ATTENDANCE (<span id="hub-fy-label"></span>)</h3>
-                    <select id="hub-fy-switcher" style="max-width:150px; padding:0.4rem 0.75rem; font-size:0.82rem; font-weight:700;" onchange="window.moduleContext.switchHubFy(this.value)"></select>
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin: 1.1rem 0 0.5rem 0;">
+                    <h3 style="color:var(--accent-orange); margin:0; font-size:0.96rem; letter-spacing:0.5px;">FEE CALENDAR & ATTENDANCE (<span id="hub-fy-label"></span>)</h3>
+                    <select id="hub-fy-switcher" style="max-width:140px; padding:0.38rem 0.7rem; font-size:0.8rem; font-weight:700;" onchange="window.moduleContext.switchHubFy(this.value)"></select>
                 </div>
                 <p id="hub-instruction" style="display:none; color:var(--text-muted); font-size:0.82rem; margin-bottom:0.8rem;"></p>
                 <div class="calendar-grid" id="fee-calendar"></div>
 
                 <!-- 5. Supplement Invoices & Pending Dues -->
-                <div id="hub-supp-section" style="display:none; margin-top:1.8rem; padding-top:1.2rem; border-top:1px solid var(--border-color);">
-                    <h3 style="color:var(--accent-orange); margin-bottom:0.8rem; font-size:0.98rem; text-transform:uppercase;">Supplement Invoices & Dues</h3>
+                <div id="hub-supp-section" style="display:none; margin-top:1.6rem; padding-top:1.1rem; border-top:1px solid var(--border-color);">
+                    <h3 style="color:var(--accent-orange); margin-bottom:0.8rem; font-size:0.95rem; text-transform:uppercase;">Supplement Invoices & Dues</h3>
                     <div class="table-responsive">
                         <table class="data-table" id="table-hub-supp-sales">
                             <thead><tr><th>Date</th><th>Invoice</th><th>Items</th><th>Total Bill</th><th>Paid</th><th>Balance Due</th><th>Action</th></tr></thead>
@@ -7565,19 +7590,19 @@
             },
 
             previewUserSearch: function(val) {
-                const previewEl = document.getElementById('search-user-live-preview');
+                const previewEl = document.getElementById("search-user-live-preview");
                 if (!previewEl) return;
-                const cleanVal = String(val || '').trim();
-                if (!cleanVal) { previewEl.innerHTML = ''; return; }
+                const cleanVal = String(val || "").trim();
+                if (!cleanVal) { previewEl.innerHTML = ""; return; }
 
-                const includeCancelled = (currentHubMode === 'details' || appContext.currentRole === 'admin');
+                const includeCancelled = (currentHubMode === "details" || appContext.currentRole === "admin");
                 const matches = findUsersForAttendance(cleanVal, includeCancelled);
                 if (matches && matches.length > 0) {
                     let html = `<div style="font-size:0.78rem; font-weight:700; color:var(--accent-orange); margin-bottom:6px;">Found ${matches.length} member(s) — click a member to open profile:</div>`;
-                    html += '<div style="display:grid; gap:8px; max-height: 260px; overflow-y: auto; padding: 4px;">';
+                    html += `<div style="display:grid; gap:8px; max-height: 260px; overflow-y: auto; padding: 4px;">`;
                     matches.forEach(user => {
                         const photoUrl = user.photo || DEFAULT_AVATAR_SVG;
-                        const safeId = String(user.id).replace(/'/g, "\'");
+                        const safeId = String(user.id).replace(/\x27/g, "\\\x27");
                         const dInfo = parseAdmissionDateInfo(user.date, user._month, user._fy);
                         const isCanc = isUserCancelled(user);
                         const statusPill = isCanc
@@ -7585,15 +7610,15 @@
                             : `<span style="font-size:0.65rem; background:var(--success-green); color:#fff; padding:2px 6px; border-radius:4px; margin-left:4px; text-transform:uppercase; font-weight:800;">Active</span>`;
                         html += `
                         <div style="display:flex; align-items:center; gap:12px; padding:10px; border:1px solid var(--border-color); border-radius:8px; cursor:pointer; background:var(--bg-panel); transition: transform 0.2s;" 
-                             onclick="window.moduleContext.loadProfileByPhoneOrId('${safeId}')">
+                             onclick="window.moduleContext.loadProfileByPhoneOrId(\x27${safeId}\x27)">
                             <img src="${photoUrl}" alt="${user.fullName}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-orange);">
                             <div style="flex:1; text-align:left;">
-                                <div style="color:var(--text-main); font-weight:800; font-size:0.98rem;">${user.fullName} <span style="font-size:0.72rem; background:#fff5eb; color:var(--accent-orange); padding:2px 6px; border-radius:4px; border:1px solid #ffcc99; margin-left:4px;">${user.admissionCategory || 'Individual'}</span>${statusPill}</div>
-                                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">ID: <strong>${user.id}</strong> | Ph: ${appContext.currentRole !== 'admin' ? maskPhoneLast4(user.primaryContact) : user.primaryContact} | Joined: ${dInfo.formattedDate}</div>
+                                <div style="color:var(--text-main); font-weight:800; font-size:0.98rem;">${user.fullName} <span style="font-size:0.72rem; background:#fff5eb; color:var(--accent-orange); padding:2px 6px; border-radius:4px; border:1px solid #ffcc99; margin-left:4px;">${user.admissionCategory || "Individual"}</span>${statusPill}</div>
+                                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">ID: <strong>${user.id}</strong> | Ph: ${appContext.currentRole !== "admin" ? maskPhoneLast4(user.primaryContact) : user.primaryContact} | Joined: ${dInfo.formattedDate}</div>
                             </div>
                         </div>`;
                     });
-                    html += '</div>';
+                    html += `</div>`;
                     previewEl.innerHTML = html;
                 } else {
                     previewEl.innerHTML = `<span style="color:var(--text-muted); font-size:0.85rem;">No members found matching "${cleanVal}".</span>`;
@@ -7603,47 +7628,47 @@
             openProfileFromReadmission: function(userId) {
                 window.moduleContext.selectReadmissionMember(userId, true);
                 window._returnToAdmissionOnHubBack = true;
-                currentHubMode = 'fee';
-                const backLbl = document.getElementById('hub-back-btn-label');
-                if (backLbl) backLbl.innerText = 'Back to Re-Admission';
+                currentHubMode = "fee";
+                const backLbl = document.getElementById("hub-back-btn-label");
+                if (backLbl) backLbl.innerText = "Back to Re-Admission";
                 window.moduleContext.loadProfileByPhoneOrId(userId);
             },
 
             handleUserHubBack: function() {
                 if (window._returnToAdmissionOnHubBack) {
                     window._returnToAdmissionOnHubBack = false;
-                    const backLbl = document.getElementById('hub-back-btn-label');
-                    if (backLbl) backLbl.innerText = 'Back';
-                    window.appContext.switchView('admission');
+                    const backLbl = document.getElementById("hub-back-btn-label");
+                    if (backLbl) backLbl.innerText = "Back";
+                    window.appContext.switchView("admission");
                     return;
                 }
-                window.appContext.switchView('user-search');
+                window.appContext.switchView("user-search");
             },
 
             switchHubFy: function(newFy) {
                 if (!currentActiveUser) return;
                 currentActiveUser.selectedFY = newFy;
-                document.getElementById('hub-fy-label').innerText = newFy;
+                document.getElementById("hub-fy-label").innerText = newFy;
                 const dInfo = parseAdmissionDateInfo(currentActiveUser.date, currentActiveUser._month, currentActiveUser._fy);
                 window.moduleContext.renderFeeCalendar(currentActiveUser.id, newFy, currentActiveUser.trainingCategory, dInfo.formattedDate);
             },
 
             loadProfileByPhoneOrId: function(identifier) {
-                const cleanId = String(identifier || '').trim();
-                const cleanAlpha = cleanId.toLowerCase().replace(/[^a-z0-9]/g, '');
+                const cleanId = String(identifier || "").trim();
+                const cleanAlpha = cleanId.toLowerCase().replace(/[^a-z0-9]/g, "");
                 const cleanPhoneNorm = normalizeTenDigitPhone(cleanId);
-                const users = storage.get('revive_users_db', []);
+                const users = storage.get("revive_users_db", []);
                 const supersededIds = getSupersededUserIdsSet(users);
-                let user = users.find(u => !supersededIds.has(String(u.id).trim().toUpperCase()) && !isUserCancelled(u) && (String(u.id).toLowerCase() === cleanId.toLowerCase() || String(u.id).toLowerCase().replace(/[^a-z0-9]/g, '') === cleanAlpha));
+                let user = users.find(u => !supersededIds.has(String(u.id).trim().toUpperCase()) && !isUserCancelled(u) && (String(u.id).toLowerCase() === cleanId.toLowerCase() || String(u.id).toLowerCase().replace(/[^a-z0-9]/g, "") === cleanAlpha));
                 if (!user) {
-                    user = users.find(u => String(u.id).toLowerCase() === cleanId.toLowerCase() || String(u.id).toLowerCase().replace(/[^a-z0-9]/g, '') === cleanAlpha);
+                    user = users.find(u => String(u.id).toLowerCase() === cleanId.toLowerCase() || String(u.id).toLowerCase().replace(/[^a-z0-9]/g, "") === cleanAlpha);
                 }
                 if (!user && cleanPhoneNorm.length === 10) {
                     user = [...users].reverse().find(u => !supersededIds.has(String(u.id).trim().toUpperCase()) && !isUserCancelled(u) && normalizeTenDigitPhone(u.primaryContact) === cleanPhoneNorm);
                 }
                 if (!user) {
-                    const archived = storage.get('revive_archived_users_db', []);
-                    user = [...users, ...archived].reverse().find(u => String(u.id).toLowerCase() === cleanId.toLowerCase() || String(u.id).toLowerCase().replace(/[^a-z0-9]/g, '') === cleanAlpha || (cleanPhoneNorm.length === 10 && normalizeTenDigitPhone(u.primaryContact) === cleanPhoneNorm));
+                    const archived = storage.get("revive_archived_users_db", []);
+                    user = [...users, ...archived].reverse().find(u => String(u.id).toLowerCase() === cleanId.toLowerCase() || String(u.id).toLowerCase().replace(/[^a-z0-9]/g, "") === cleanAlpha || (cleanPhoneNorm.length === 10 && normalizeTenDigitPhone(u.primaryContact) === cleanPhoneNorm));
                 }
                 if(!user) { showNotice("User profile not found.", "error"); return; }
                 user = resolveToLatestUserRecord(user, users);
@@ -7651,8 +7676,8 @@
                 const dInfo = parseAdmissionDateInfo(user.date, user._month, user._fy);
                 user.date = dInfo.formattedDate;
                 user.dob = normalizeDobToDdMmYyyy(user.dob);
-                const hubBackLbl = document.getElementById('hub-back-btn-label');
-                if (hubBackLbl) hubBackLbl.innerText = window._returnToAdmissionOnHubBack ? 'Back to Re-Admission' : 'Back';
+                const hubBackLbl = document.getElementById("hub-back-btn-label");
+                if (hubBackLbl) hubBackLbl.innerText = window._returnToAdmissionOnHubBack ? "Back to Re-Admission" : "Back";
                 user._fy = dInfo.fy;
                 user._month = dInfo.monthName;
 
@@ -7704,27 +7729,27 @@
                 }
 
                 const userAdmFy = dInfo.fy;
-                const fySelect = document.getElementById('search-fy');
+                const fySelect = document.getElementById("search-fy");
                 const fy = (fySelect && fySelect.value) ? fySelect.value : userAdmFy;
                 
                 currentActiveUser = user;
                 currentActiveUser.selectedFY = fy;
 
                 const actualAdmFy = dInfo.fy;
-                const admFyStart = parseInt(actualAdmFy.split('-')[0], 10);
+                const admFyStart = parseInt(actualAdmFy.split("-")[0], 10);
                 const nowD = new Date();
                 const currFyStart = nowD.getMonth() >= 3 ? nowD.getFullYear() : nowD.getFullYear() - 1;
                 const maxFyStart = Math.max(admFyStart, currFyStart);
-                if (parseInt(fy.split('-')[0], 10) < admFyStart || parseInt(fy.split('-')[0], 10) > maxFyStart) {
+                if (parseInt(fy.split("-")[0], 10) < admFyStart || parseInt(fy.split("-")[0], 10) > maxFyStart) {
                     currentActiveUser.selectedFY = `${maxFyStart}-${maxFyStart + 1}`;
                 }
                 const activeFy = currentActiveUser.selectedFY;
-                const hubFySwitcher = document.getElementById('hub-fy-switcher');
+                const hubFySwitcher = document.getElementById("hub-fy-switcher");
                 if (hubFySwitcher) {
-                    hubFySwitcher.innerHTML = '';
+                    hubFySwitcher.innerHTML = "";
                     for (let y = admFyStart; y <= maxFyStart; y++) {
                         const fyOptVal = `${y}-${y+1}`;
-                        const opt = document.createElement('option');
+                        const opt = document.createElement("option");
                         opt.value = fyOptVal;
                         opt.innerText = `FY ${fyOptVal}`;
                         if (fyOptVal === activeFy) opt.selected = true;
@@ -7732,38 +7757,40 @@
                     }
                 }
                 
-                const photoEl = document.getElementById('hub-photo');
+                const photoEl = document.getElementById("hub-photo");
                 photoEl.src = user.photo || DEFAULT_AVATAR_SVG;
                 
-                const callBtn = document.getElementById('hub-call-btn'); const waBtn = document.getElementById('hub-wa-btn'); const pContact = document.getElementById('hub-phone');
+                const callBtn = document.getElementById("hub-call-btn"); const waBtn = document.getElementById("hub-wa-btn"); const pContact = document.getElementById("hub-phone");
 
-                if (appContext.currentRole !== 'admin') {
-                    photoEl.style.pointerEvents = 'none'; photoEl.style.userSelect = 'none'; photoEl.style.webkitUserDrag = 'none'; photoEl.oncontextmenu = (ev) => ev.preventDefault();
+                if (appContext.currentRole !== "admin") {
+                    photoEl.style.pointerEvents = "none"; photoEl.style.userSelect = "none"; photoEl.style.webkitUserDrag = "none"; photoEl.oncontextmenu = (ev) => ev.preventDefault();
                     pContact.innerText = `******${String(user.primaryContact).slice(-4)}`;
-                    if(callBtn) callBtn.style.display = 'none'; if(waBtn) waBtn.style.display = 'none';
+                    if(callBtn) callBtn.style.display = "none"; if(waBtn) waBtn.style.display = "none";
                 } else {
-                    photoEl.style.pointerEvents = 'auto'; photoEl.style.userSelect = 'auto'; photoEl.style.webkitUserDrag = 'auto'; photoEl.oncontextmenu = null;
+                    photoEl.style.pointerEvents = "auto"; photoEl.style.userSelect = "auto"; photoEl.style.webkitUserDrag = "auto"; photoEl.oncontextmenu = null;
                     pContact.innerText = user.primaryContact;
-                    if(callBtn) { callBtn.style.display = 'inline-flex'; callBtn.href = `tel:${user.primaryContact}`; }
-                    if(waBtn) { waBtn.style.display = 'inline-flex'; waBtn.href = `https://api.whatsapp.com/send?phone=91${user.primaryContact}&text=${encodeURIComponent(`Hello ${user.firstName}, regarding your membership at Revive Fitness Studio:`)}`; }
+                    if(callBtn) { callBtn.style.display = "inline-flex"; callBtn.href = `tel:${user.primaryContact}`; }
+                    if(waBtn) { waBtn.style.display = "inline-flex"; waBtn.href = `https://api.whatsapp.com/send?phone=91${user.primaryContact}&text=${encodeURIComponent(`Hello ${user.firstName}, regarding your membership at Revive Fitness Studio:`)}`; }
                 }
 
                 const isCanc = isUserCancelled(user);
                 const statusBadgeHtml = isCanc
-                    ? ' <span class="deleted-badge" style="padding:3px 8px; border-radius:12px;">Cancelled</span>'
-                    : ' <span style="background:var(--success-green); color:#fff; font-size:0.65rem; padding:3px 8px; border-radius:12px; vertical-align:middle; margin-left:6px; text-transform:uppercase; font-weight:800;">Active</span>';
-                document.getElementById('hub-name').innerHTML = user.fullName + statusBadgeHtml;
-                document.getElementById('hub-id').innerText = user.id;
+                    ? `<span class="deleted-badge" style="padding:3px 9px; border-radius:12px; font-size:0.65rem; font-weight:800; flex-shrink:0;">Cancelled</span>`
+                    : `<span style="background:var(--success-green); color:#fff; font-size:0.65rem; padding:3px 9px; border-radius:12px; text-transform:uppercase; font-weight:800; flex-shrink:0;">Active</span>`;
+                document.getElementById("hub-name").innerText = user.fullName;
+                const statusBadgeEl = document.getElementById("hub-status-badge");
+                if (statusBadgeEl) statusBadgeEl.innerHTML = statusBadgeHtml;
+                document.getElementById("hub-id").innerText = user.id;
                 const cleanTrain = String(user.trainingCategory || "Regular").replace(" Training", "");
                 document.getElementById("hub-details").innerText = `${user.admissionCategory || "Individual"} • ${cleanTrain}`;
-                document.getElementById("hub-doj").innerText = `Joined: ${dInfo.formattedDate}`;
-                document.getElementById("hub-registered-by").innerText = `By: ${user.collectedBy || "Admin"}`;
+                document.getElementById("hub-doj").innerText = dInfo.formattedDate;
+                document.getElementById("hub-registered-by").innerText = user.collectedBy || "Admin";
+                document.getElementById("hub-fy-label").innerText = currentActiveUser.selectedFY;
 
-                // Collapse wallet drawer by default whenever switching/opening a profile so only Current Wallet Balance shows until clicked
                 const wDrawer = document.getElementById("hub-wallet-tx-drawer");
                 if (wDrawer) wDrawer.style.display = "none";
                 const wToggleLbl = document.getElementById("hub-wallet-toggle-lbl");
-                if (wToggleLbl) wToggleLbl.innerText = "Wallet Options & History ▾";
+                if (wToggleLbl) wToggleLbl.innerText = "Wallet ▾";
                 
                 const cancelBtn = document.getElementById("btn-hub-delete");
                 const actionsWrap = document.getElementById("hub-actions");
@@ -7787,7 +7814,7 @@
                                 cancelBtn.style.backgroundColor = "var(--success-green)";
                                 cancelBtn.onclick = function() { window.moduleContext.reactivateUserAdmission(); };
                             } else {
-                                cancelBtn.innerText = "Cancel Admission";
+                                cancelBtn.innerText = "Cancel";
                                 cancelBtn.className = "btn danger admin-only";
                                 cancelBtn.style.backgroundColor = "";
                                 cancelBtn.onclick = function() { window.moduleContext.cancelUserAdmission(); };
@@ -7800,7 +7827,7 @@
                 
                 window.moduleContext.renderHubWalletSection(user.id);
                 window.moduleContext.renderFeeCalendar(user.id, currentActiveUser.selectedFY, user.trainingCategory, dInfo.formattedDate);
-                window.appContext.switchView('user-hub');
+                window.appContext.switchView("user-hub");
             },
 
             fetchUserHub: function(e) {
@@ -7989,7 +8016,7 @@
                 }
                 const isOpening = (drawer.style.display !== "block");
                 drawer.style.display = isOpening ? "block" : "none";
-                if (lbl) lbl.innerText = isOpening ? "Hide Wallet ▴" : "Wallet Options & History ▾";
+                if (lbl) lbl.innerText = isOpening ? "Hide ▴" : "Wallet ▾";
             },
 
             openWalletTopupModal: function() {
@@ -8043,7 +8070,7 @@
                 const drawer = document.getElementById("hub-wallet-tx-drawer");
                 if (drawer) drawer.style.display = "block";
                 const wToggleLbl = document.getElementById("hub-wallet-toggle-lbl");
-                if (wToggleLbl) wToggleLbl.innerText = "Hide Wallet ▴";
+                if (wToggleLbl) wToggleLbl.innerText = "Hide ▴";
                 showNotice(`✔ Added ₹${amt} to ${currentActiveUser.fullName}\x27s Wallet! New Balance: ₹${tx ? tx.balanceAfter : getMemberWalletBalance(currentActiveUser.id)}`, "success");
             },
 
