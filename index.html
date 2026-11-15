@@ -10569,14 +10569,18 @@
                 if (itemsTbody) {
                     const itemsArr = Array.isArray(sale.items) ? sale.items : [];
                     itemsTbody.innerHTML = itemsArr.map(it => {
-                        const lineTotal = (Number(it.offerPrice || it.unitPrice || 0) * Number(it.qty || 1));
+                        const unitSell = Number(it.offerPrice || it.unitPrice || it.mrp || 0);
+                        const mrpVal = Number(it.mrp || unitSell);
+                        const lineTotal = unitSell * Number(it.qty || 1);
+                        const priceHtml = mrpVal > unitSell
+                            ? `<span style="color:#888; text-decoration:line-through; font-size:10px; margin-right:3px;">₹${mrpVal.toLocaleString("en-IN")}</span><strong>₹${unitSell.toLocaleString("en-IN")}</strong>`
+                            : `<strong>₹${unitSell.toLocaleString("en-IN")}</strong>`;
                         return `
                             <tr style="border-bottom:1px solid #eee;">
-                                <td style="padding:5px 4px; font-weight:700; color:#111;">${it.name}</td>
-                                <td style="padding:5px 4px; text-align:center; font-weight:700;">${it.qty}</td>
-                                <td style="padding:5px 4px; text-align:right; color:#777; text-decoration:line-through;">₹${Number(it.mrp || 0).toLocaleString("en-IN")}</td>
-                                <td style="padding:5px 4px; text-align:right; font-weight:700;">₹${Number(it.offerPrice || it.unitPrice || 0).toLocaleString("en-IN")}</td>
-                                <td style="padding:5px 4px; text-align:right; font-weight:900; color:#111;">₹${lineTotal.toLocaleString("en-IN")}</td>
+                                <td style="padding:6px 10px; font-weight:700; color:#111;">${it.name}</td>
+                                <td style="padding:6px 6px; text-align:center; font-weight:700;">${it.qty}</td>
+                                <td style="padding:6px 8px; text-align:right;">${priceHtml}</td>
+                                <td style="padding:6px 10px; text-align:right; font-weight:900; color:#111;">₹${lineTotal.toLocaleString("en-IN")}</td>
                             </tr>
                         `;
                     }).join("");
@@ -10757,6 +10761,8 @@
                 document.getElementById('supp-inv-date').value = toIsoDateKey(new Date());
                 const titleEl = document.getElementById('supp-inv-form-title');
                 if (titleEl) titleEl.innerText = 'Record Purchase & Stock Entry';
+                const qtyLbl = document.getElementById('supp-inv-qty-label');
+                if (qtyLbl) qtyLbl.innerHTML = 'Purchase Qty <span class="required">*</span>';
                 const saveBtn = document.getElementById('btn-save-supp-inv');
                 if (saveBtn) saveBtn.innerText = 'Save Product & Record Stock';
                 const cancelBtn = document.getElementById('btn-cancel-supp-edit');
@@ -10767,15 +10773,16 @@
 
             saveSupplementInventory: function(e) {
                 if (e) e.preventDefault();
-                const editId = document.getElementById('supp-inv-id').value.trim();
-                const dateVal = document.getElementById('supp-inv-date').value || toIsoDateKey(new Date());
-                const nameVal = document.getElementById('supp-inv-name').value.trim();
-                const catVal = document.getElementById('supp-inv-cat').value.trim() || 'Supplement';
-                const entryMode = document.getElementById('supp-inv-entry-mode') ? document.getElementById('supp-inv-entry-mode').value : 'ADD';
-                const costVal = Math.max(0, Math.round(parseFloat(document.getElementById('supp-inv-cost').value) || 0));
-                const mrpVal = Math.max(1, Math.round(parseFloat(document.getElementById('supp-inv-mrp').value) || 0));
-                const qtyVal = Math.max(0, parseInt(document.getElementById('supp-inv-qty').value, 10) || 0);
-                const payMode = document.getElementById('supp-inv-paymode') ? document.getElementById('supp-inv-paymode').value : 'UPI';
+                const editId = document.getElementById("supp-inv-id").value.trim();
+                const dateVal = document.getElementById("supp-inv-date").value || toIsoDateKey(new Date());
+                const nameVal = document.getElementById("supp-inv-name").value.trim();
+                const catVal = document.getElementById("supp-inv-cat").value.trim() || "Supplement";
+                const rawMode = document.getElementById("supp-inv-entry-mode") ? document.getElementById("supp-inv-entry-mode").value : "purchase";
+                const isSetMode = (rawMode === "update" || rawMode === "SET");
+                const costVal = Math.max(0, Math.round(parseFloat(document.getElementById("supp-inv-cost").value) || 0));
+                const mrpVal = Math.max(1, Math.round(parseFloat(document.getElementById("supp-inv-mrp").value) || 0));
+                const qtyVal = Math.max(0, parseInt(document.getElementById("supp-inv-qty").value, 10) || 0);
+                const payMode = document.getElementById("supp-inv-paymode") ? document.getElementById("supp-inv-paymode").value : "UPI";
 
                 if (!nameVal) {
                     showNotice("Please enter the supplement product name.", "error");
@@ -10790,8 +10797,8 @@
                 if (idx !== -1) {
                     prodId = supps[idx].id;
                     const prevStock = parseInt(supps[idx].stock, 10) || 0;
-                    const newStock = entryMode === 'SET' ? qtyVal : (prevStock + qtyVal);
-                    addedUnits = entryMode === 'SET' ? Math.max(0, newStock - prevStock) : qtyVal;
+                    const newStock = isSetMode ? qtyVal : (prevStock + qtyVal);
+                    addedUnits = isSetMode ? Math.max(0, newStock - prevStock) : qtyVal;
                     const existingOffer = parseFloat(supps[idx].offerPrice) || mrpVal;
                     supps[idx] = {
                         ...supps[idx],
@@ -10804,7 +10811,7 @@
                         lastPurchaseDate: dateVal
                     };
                 } else {
-                    prodId = 'SUPP-' + String(Date.now()).slice(-4);
+                    prodId = "SUPP-" + String(Date.now()).slice(-4);
                     supps.push({
                         id: prodId,
                         name: nameVal,
@@ -10818,13 +10825,13 @@
                     });
                 }
 
-                storage.set('revive_supplements_db', supps);
-                cloudSync.push('pushSupplements', supps);
+                storage.set("revive_supplements_db", supps);
+                cloudSync.push("pushSupplements", supps);
 
-                if (addedUnits > 0) {
+                if (!isSetMode && addedUnits > 0) {
                     const dInfo = parseAdmissionDateInfo(dateVal);
                     const purRec = {
-                        id: 'PUR-' + String(Date.now()).slice(-5),
+                        id: "PUR-" + String(Date.now()).slice(-5),
                         date: dInfo.formattedDate,
                         fy: dInfo.fy,
                         month: dInfo.monthName,
@@ -10836,10 +10843,10 @@
                         mode: payMode,
                         timestamp: new Date().toISOString()
                     };
-                    let purDb = storage.get('revive_supplement_purchases_db', []);
+                    let purDb = storage.get("revive_supplement_purchases_db", []);
                     purDb.push(purRec);
-                    storage.set('revive_supplement_purchases_db', purDb);
-                    cloudSync.push('pushSupplementPurchase', purRec);
+                    storage.set("revive_supplement_purchases_db", purDb);
+                    cloudSync.push("pushSupplementPurchase", purRec);
                 }
 
                 window.moduleContext.resetSuppInventoryForm();
@@ -10851,31 +10858,33 @@
                 const supps = ensureDefaultSupplements();
                 const found = supps.find(s => String(s.id) === String(prodId));
                 if (!found) return;
-                document.getElementById('supp-inv-id').value = found.id;
-                document.getElementById('supp-inv-offer').value = found.offerPrice || found.mrp;
-                document.getElementById('supp-inv-date').value = found.lastPurchaseDate || toIsoDateKey(new Date());
-                document.getElementById('supp-inv-name').value = found.name;
-                document.getElementById('supp-inv-cat').value = found.category || '';
-                if (document.getElementById('supp-inv-entry-mode')) {
-                    document.getElementById('supp-inv-entry-mode').value = 'SET';
+                document.getElementById("supp-inv-id").value = found.id;
+                document.getElementById("supp-inv-offer").value = found.offerPrice || found.mrp;
+                document.getElementById("supp-inv-date").value = found.lastPurchaseDate || toIsoDateKey(new Date());
+                document.getElementById("supp-inv-name").value = found.name;
+                document.getElementById("supp-inv-cat").value = found.category || "";
+                if (document.getElementById("supp-inv-entry-mode")) {
+                    document.getElementById("supp-inv-entry-mode").value = "update";
                 }
-                document.getElementById('supp-inv-cost').value = found.costPrice || 0;
-                document.getElementById('supp-inv-mrp').value = found.mrp || 0;
-                document.getElementById('supp-inv-qty').value = found.stock || 0;
-                const titleEl = document.getElementById('supp-inv-form-title');
+                const qtyLbl = document.getElementById("supp-inv-qty-label");
+                if (qtyLbl) qtyLbl.innerHTML = `Updated Stock Qty <span class="required">*</span>`;
+                document.getElementById("supp-inv-cost").value = found.costPrice || 0;
+                document.getElementById("supp-inv-mrp").value = found.mrp || 0;
+                document.getElementById("supp-inv-qty").value = found.stock || 0;
+                const titleEl = document.getElementById("supp-inv-form-title");
                 if (titleEl) titleEl.innerText = `Edit Product: ${found.name}`;
-                const saveBtn = document.getElementById('btn-save-supp-inv');
-                if (saveBtn) saveBtn.innerText = 'Update Product & Stock';
-                const cancelBtn = document.getElementById('btn-cancel-supp-edit');
-                if (cancelBtn) cancelBtn.style.display = 'inline-flex';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                const saveBtn = document.getElementById("btn-save-supp-inv");
+                if (saveBtn) saveBtn.innerText = "Update Product & Stock";
+                const cancelBtn = document.getElementById("btn-cancel-supp-edit");
+                if (cancelBtn) cancelBtn.style.display = "inline-flex";
+                window.scrollTo({ top: 0, behavior: "smooth" });
             },
 
             deleteSupplementProduct: function(prodId) {
                 window.appContext.askConfirm("Delete Supplement", "Remove this supplement product from inventory?", () => {
                     let supps = ensureDefaultSupplements().filter(s => String(s.id) !== String(prodId));
-                    storage.set('revive_supplements_db', supps);
-                    cloudSync.push('pushSupplements', supps);
+                    storage.set("revive_supplements_db", supps);
+                    cloudSync.push("pushSupplements", supps);
                     window.moduleContext.renderSupplementAdminTables();
                     showNotice("Supplement removed.", "info");
                 });
@@ -10883,39 +10892,57 @@
 
             renderSupplementAdminTables: function() {
                 const supps = ensureDefaultSupplements();
-                const invTbody = document.querySelector('#table-supp-inventory tbody');
+                // #table-supp-inventory headers (7): ID | Product Name | Last Purchase Date | Landing Price | MRP | Live Stock | Actions
+                const invTbody = document.querySelector("#table-supp-inventory tbody");
                 if (invTbody) {
-                    invTbody.innerHTML = supps.map(s => `
-                        <tr>
-                            <td><strong>${s.name}</strong><br><small style="color:var(--text-muted);">${s.id} • ${s.category || 'Supplement'}</small></td>
-                            <td>₹${Number(s.costPrice || 0).toLocaleString('en-IN')}</td>
-                            <td>₹${Number(s.mrp || 0).toLocaleString('en-IN')}</td>
-                            <td style="color:var(--accent-orange); font-weight:800;">₹${Number(s.offerPrice || s.mrp || 0).toLocaleString('en-IN')}</td>
-                            <td><span class="status-badge ${s.stock > 5 ? 'status-paid' : 'status-unpaid'}">${s.stock} Units</span></td>
-                            <td>
-                                <button type="button" class="btn secondary" style="width:auto; padding:0.35rem 0.7rem; font-size:0.75rem;" onclick="window.moduleContext.editSupplementInventory('${s.id}')">Edit</button>
-                                <button type="button" class="btn danger" style="width:auto; padding:0.35rem 0.7rem; font-size:0.75rem;" onclick="window.moduleContext.deleteSupplementProduct('${s.id}')">Delete</button>
-                            </td>
-                        </tr>
-                    `).join('');
+                    if (supps.length === 0) {
+                        invTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">No supplement products in inventory.</td></tr>`;
+                    } else {
+                        invTbody.innerHTML = supps.map(s => {
+                            const stockNum = Number(s.stock || 0);
+                            const stockPill = stockNum > 5
+                                ? `<span style="background:#dcfce7; color:#15803d; padding:3px 9px; border-radius:12px; font-weight:800; font-size:0.78rem;">${stockNum} in Stock</span>`
+                                : (stockNum > 0
+                                    ? `<span style="background:#fef3c7; color:#b45309; padding:3px 9px; border-radius:12px; font-weight:800; font-size:0.78rem;">Low: ${stockNum}</span>`
+                                    : `<span style="background:#fee2e2; color:#b91c1c; padding:3px 9px; border-radius:12px; font-weight:800; font-size:0.78rem;">Out of Stock (0)</span>`);
+                            return `
+                                <tr>
+                                    <td><strong style="color:var(--accent-orange);">${s.id}</strong></td>
+                                    <td><strong>${s.name}</strong><br><small style="color:var(--text-muted);">${s.category || "Supplement"}</small></td>
+                                    <td>${formatDateStr(s.lastPurchaseDate || "-")}</td>
+                                    <td style="font-weight:700;">₹${Number(s.costPrice || 0).toLocaleString("en-IN")}</td>
+                                    <td>₹${Number(s.mrp || 0).toLocaleString("en-IN")}</td>
+                                    <td>${stockPill}</td>
+                                    <td>
+                                        <div style="display:flex; gap:6px; align-items:center;">
+                                            <button type="button" class="btn secondary" style="width:auto; padding:0.35rem 0.7rem; font-size:0.74rem;" onclick="window.moduleContext.editSupplementInventory(\x27${s.id}\x27)">Edit</button>
+                                            <button type="button" class="btn danger" style="width:auto; padding:0.35rem 0.7rem; font-size:0.74rem;" onclick="window.moduleContext.deleteSupplementProduct(\x27${s.id}\x27)">Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join("");
+                    }
                 }
 
-                const purDb = storage.get('revive_supplement_purchases_db', []);
-                const purTbody = document.querySelector('#table-supp-purchases-admin tbody');
+                // #table-supp-purchases-admin headers (7): Purchase Date | Purchase ID | Product | Qty | Landing Price | Mode | Total Cost
+                const purDb = storage.get("revive_supplement_purchases_db", []);
+                const purTbody = document.querySelector("#table-supp-purchases-admin tbody");
                 if (purTbody) {
                     if (purDb.length === 0) {
-                        purTbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No stock purchase entries recorded yet.</td></tr>';
+                        purTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">No stock purchase entries recorded yet.</td></tr>`;
                     } else {
                         purTbody.innerHTML = purDb.slice().reverse().map(p => `
                             <tr>
-                                <td>${p.date || '-'}</td>
-                                <td><strong>${p.productName}</strong></td>
-                                <td>${p.qty}</td>
-                                <td>₹${Number(p.unitCost || 0).toLocaleString('en-IN')}</td>
-                                <td style="font-weight:800;">₹${Number(p.totalCost || 0).toLocaleString('en-IN')}</td>
-                                <td>${p.mode || 'UPI'}</td>
+                                <td>${formatDateStr(p.date || "-")}</td>
+                                <td><strong style="color:var(--accent-orange);">${p.id || "-"}</strong></td>
+                                <td><strong>${p.productName || "-"}</strong></td>
+                                <td style="font-weight:800;">${p.qty || 0}</td>
+                                <td>₹${Number(p.unitCost || 0).toLocaleString("en-IN")}</td>
+                                <td>${p.mode || "UPI"}</td>
+                                <td style="font-weight:900; color:var(--error-red);">₹${Number(p.totalCost || 0).toLocaleString("en-IN")}</td>
                             </tr>
-                        `).join('');
+                        `).join("");
                     }
                 }
             },
@@ -10928,53 +10955,92 @@
 
             renderSupplementStoreConfig: function() {
                 const supps = ensureDefaultSupplements();
-                const cfgTbody = document.querySelector('#table-supp-store-config tbody');
+                // #table-supp-store-config headers (7): Product | Stock Qty | Landing Price | MRP | Selling Price (₹) | Show on Store | Action
+                const cfgTbody = document.querySelector("#table-supp-store-config tbody");
                 if (cfgTbody) {
-                    cfgTbody.innerHTML = supps.map(s => {
-                        const margin = (Number(s.offerPrice || s.mrp || 0) - Number(s.costPrice || 0));
-                        return `
-                            <tr>
-                                <td><strong>${s.name}</strong><br><small style="color:var(--text-muted);">Stock: ${s.stock} | Cost: ₹${s.costPrice}</small></td>
-                                <td>₹${Number(s.mrp || 0).toLocaleString('en-IN')}</td>
-                                <td>
-                                    <input type="number" class="store-cfg-offer-input" data-id="${s.id}" value="${s.offerPrice || s.mrp}" min="1" max="${s.mrp}" style="max-width:120px; font-weight:800; padding:0.4rem 0.6rem;">
-                                </td>
-                                <td style="font-weight:800; color:${margin >= 0 ? 'var(--success-green)' : 'var(--error-red)'};">₹${margin.toLocaleString('en-IN')}</td>
-                                <td>
-                                    <input type="checkbox" class="store-cfg-vis-toggle" data-id="${s.id}" ${s.storeVisible !== false ? 'checked' : ''} style="width:18px; height:18px;">
-                                </td>
-                            </tr>
-                        `;
-                    }).join('');
+                    if (supps.length === 0) {
+                        cfgTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">No supplement products available. Add products in Supplement Inventory first.</td></tr>`;
+                    } else {
+                        cfgTbody.innerHTML = supps.map(s => {
+                            const sellPrice = Number(s.offerPrice || s.mrp || 0);
+                            const costPrice = Number(s.costPrice || 0);
+                            const margin = sellPrice - costPrice;
+                            return `
+                                <tr>
+                                    <td>
+                                        <strong>${s.name}</strong><br>
+                                        <small style="color:var(--text-muted);">${s.id} • ${s.category || "Supplement"}</small>
+                                    </td>
+                                    <td style="font-weight:800; color:${s.stock > 5 ? "var(--success-green)" : "var(--error-red)"};">${s.stock} Units</td>
+                                    <td style="font-weight:700; color:var(--text-muted);">₹${costPrice.toLocaleString("en-IN")}</td>
+                                    <td style="text-decoration:line-through; color:var(--text-muted);">₹${Number(s.mrp || 0).toLocaleString("en-IN")}</td>
+                                    <td>
+                                        <input type="number" class="store-cfg-offer-input" id="store-cfg-offer-${s.id}" data-id="${s.id}" value="${sellPrice}" min="1" max="${s.mrp}" style="max-width:110px; font-weight:900; padding:0.42rem 0.6rem; background:#fff;">
+                                        <div style="font-size:0.68rem; font-weight:700; margin-top:2px; color:${margin >= 0 ? "var(--success-green)" : "var(--error-red)"};">Margin: ₹${margin.toLocaleString("en-IN")}</div>
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <input type="checkbox" class="store-cfg-vis-toggle" id="store-cfg-vis-${s.id}" data-id="${s.id}" ${s.storeVisible !== false ? "checked" : ""} style="width:18px; height:18px; accent-color:var(--accent-orange); cursor:pointer;">
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn primary" style="width:auto; padding:0.4rem 0.85rem; font-size:0.74rem;" onclick="window.moduleContext.saveSingleStoreConfigRow(\x27${s.id}\x27)">Save</button>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join("");
+                    }
                 }
 
+                // #table-supp-coupons headers (4): Coupon Code | Discount | Min. Bill | Action
                 const coupons = ensureDefaultSuppCoupons();
-                const cpnTbody = document.querySelector('#table-supp-coupons tbody');
+                const cpnTbody = document.querySelector("#table-supp-coupons tbody");
                 if (cpnTbody) {
                     if (coupons.length === 0) {
-                        cpnTbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No active coupons.</td></tr>';
+                        cpnTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No active coupons configured.</td></tr>`;
                     } else {
-                        cpnTbody.innerHTML = coupons.map(c => `
-                            <tr>
-                                <td style="font-weight:900; color:var(--accent-orange);">${c.code}</td>
-                                <td>${c.type === 'PERCENT' ? 'Percentage (%)' : 'Flat (₹)'}</td>
-                                <td style="font-weight:800;">${c.type === 'PERCENT' ? `${c.value}%` : `₹${c.value}`}</td>
-                                <td>₹${Number(c.minOrder || 0).toLocaleString('en-IN')}</td>
-                                <td><button type="button" class="btn danger" style="width:auto; padding:0.3rem 0.7rem; font-size:0.75rem;" onclick="window.moduleContext.deleteSupplementCoupon('${c.id}')">Remove</button></td>
-                            </tr>
-                        `).join('');
+                        cpnTbody.innerHTML = coupons.map(c => {
+                            const discDisplay = c.type === "PERCENT"
+                                ? `<strong>${c.value}% OFF</strong> <span style="font-size:0.75rem; color:var(--text-muted);">(Percentage)</span>`
+                                : `<strong>₹${Number(c.value || 0).toLocaleString("en-IN")} OFF</strong> <span style="font-size:0.75rem; color:var(--text-muted);">(Flat)</span>`;
+                            return `
+                                <tr>
+                                    <td style="font-weight:900; color:var(--accent-orange); letter-spacing:0.5px;">${c.code}</td>
+                                    <td>${discDisplay}</td>
+                                    <td style="font-weight:700;">₹${Number(c.minOrder || 0).toLocaleString("en-IN")}</td>
+                                    <td><button type="button" class="btn danger" style="width:auto; padding:0.35rem 0.8rem; font-size:0.74rem;" onclick="window.moduleContext.deleteSupplementCoupon(\x27${c.id}\x27)">Remove</button></td>
+                                </tr>
+                            `;
+                        }).join("");
                     }
                 }
             },
 
+            saveSingleStoreConfigRow: function(prodId) {
+                let supps = ensureDefaultSupplements();
+                const idx = supps.findIndex(s => String(s.id) === String(prodId));
+                if (idx === -1) return;
+                const offerInp = document.getElementById(`store-cfg-offer-${prodId}`);
+                const visChk = document.getElementById(`store-cfg-vis-${prodId}`);
+                const rawOffer = offerInp ? parseFloat(offerInp.value) : NaN;
+                if (!isNaN(rawOffer) && rawOffer > 0) {
+                    supps[idx].offerPrice = Math.min(supps[idx].mrp, Math.round(rawOffer));
+                }
+                if (visChk) {
+                    supps[idx].storeVisible = visChk.checked;
+                }
+                storage.set("revive_supplements_db", supps);
+                cloudSync.push("pushSupplements", supps);
+                window.moduleContext.renderSupplementStoreConfig();
+                showNotice(`Saved store config for ${supps[idx].name}!`, "success");
+            },
+
             saveAllStoreConfigPrices: function() {
                 let supps = ensureDefaultSupplements();
-                const offerInputs = document.querySelectorAll('.store-cfg-offer-input');
-                const visToggles = document.querySelectorAll('.store-cfg-vis-toggle');
+                const offerInputs = document.querySelectorAll(".store-cfg-offer-input");
+                const visToggles = document.querySelectorAll(".store-cfg-vis-toggle");
                 const offerMap = {};
                 const visMap = {};
-                offerInputs.forEach(inp => { offerMap[inp.getAttribute('data-id')] = parseFloat(inp.value); });
-                visToggles.forEach(chk => { visMap[chk.getAttribute('data-id')] = chk.checked; });
+                offerInputs.forEach(inp => { offerMap[inp.getAttribute("data-id")] = parseFloat(inp.value); });
+                visToggles.forEach(chk => { visMap[chk.getAttribute("data-id")] = chk.checked; });
 
                 supps = supps.map(s => {
                     const newOffer = (!isNaN(offerMap[s.id]) && offerMap[s.id] > 0) ? Math.round(offerMap[s.id]) : s.offerPrice;
@@ -10984,8 +11050,8 @@
                         storeVisible: visMap[s.id] !== undefined ? visMap[s.id] : s.storeVisible
                     };
                 });
-                storage.set('revive_supplements_db', supps);
-                cloudSync.push('pushSupplements', supps);
+                storage.set("revive_supplements_db", supps);
+                cloudSync.push("pushSupplements", supps);
                 window.moduleContext.renderSupplementStoreConfig();
                 showNotice("Store selling prices and visibility updated!", "success");
             },
