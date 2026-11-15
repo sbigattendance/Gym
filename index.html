@@ -175,20 +175,26 @@
         #reAdmissionSection { background: var(--bg-main); padding: 1.2rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px dashed var(--accent-orange); display: none; animation: fadeIn 0.3s ease; }
         .val-group { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: stretch; margin-bottom: 0.5rem; width: 100%; }
 
-        .tariff-row { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
-        .tariff-month-name { font-weight: 800; color: var(--accent-orange); margin-bottom: 1rem; font-size: 1.1rem; text-transform: uppercase; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
-        .tariff-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+        .tariff-row { background: var(--bg-panel); border: 1.5px solid var(--border-color); border-radius: 10px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.02); box-sizing: border-box; width: 100%; overflow: hidden; }
+        .tariff-month-name { font-weight: 800; color: var(--accent-orange); margin-bottom: 0.9rem; font-size: 1.05rem; text-transform: uppercase; border-bottom: 1px solid var(--border-color); padding-bottom: 0.45rem; }
+        .tariff-inputs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.85rem; width: 100%; box-sizing: border-box; }
+        .tariff-inputs .form-group { min-width: 0; width: 100%; }
+        .tariff-inputs label { font-size: 0.7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.4rem; }
+        .tariff-inputs input { width: 100%; min-width: 0; padding: 0.7rem 0.65rem; font-size: 0.95rem; box-sizing: border-box; }
         
-        .promo-card { display:flex; justify-content:space-between; align-items:center; background:#fff5eb; border:1px solid #ffcc99; border-left:4px solid var(--accent-orange); padding:1rem; border-radius:6px; margin-bottom:10px; }
-        .promo-card h4 { margin:0 0 5px 0; color:var(--text-main); text-transform:uppercase; font-size:0.95rem; }
-        .promo-card p { margin:0; color:var(--text-muted); font-size:0.85rem; font-weight:600;}
+        .promo-card { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: #fff5eb; border: 1px solid #ffcc99; border-left: 4px solid var(--accent-orange); padding: 0.95rem 1rem; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; width: 100%; overflow: hidden; }
+        .promo-card > div { flex: 1; min-width: 180px; }
+        .promo-card h4 { margin: 0 0 4px 0; color: var(--text-main); text-transform: uppercase; font-size: 0.92rem; }
+        .promo-card p { margin: 0; color: var(--text-muted); font-size: 0.82rem; font-weight: 600; line-height: 1.4; word-break: break-word; }
 
-        .fee-summary-box { background-color: var(--bg-main); border: 2px dashed var(--accent-orange); border-radius: 12px; padding: 1.8rem; margin-bottom: 1.8rem; font-size: 1.05rem; }
-        .fee-row { display: flex; justify-content: space-between; margin-bottom: 0.85rem; align-items: center;}
-        .fee-total { font-size: 1.35rem; color: var(--accent-orange); font-weight: 900; border-top: 1px solid var(--border-color); padding-top: 1rem; margin-top: 0.5rem;}
-        .qr-wrapper { background: #fff; padding: 15px; border-radius: 12px; display: inline-block; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border-color); }
+        .fee-summary-box { background-color: var(--bg-main); border: 2px dashed var(--accent-orange); border-radius: 12px; padding: 1.4rem 1.2rem; margin-bottom: 1.5rem; font-size: 1rem; box-sizing: border-box; width: 100%; overflow: hidden; }
+        .fee-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 0.75rem; width: 100%; box-sizing: border-box; }
+        .fee-row > span:first-child { flex: 1; min-width: 0; word-break: break-word; line-height: 1.35; }
+        .fee-row > strong { flex-shrink: 0; text-align: right; white-space: nowrap; }
+        .fee-total { font-size: 1.25rem; color: var(--accent-orange); font-weight: 900; border-top: 1px solid var(--border-color); padding-top: 0.9rem; margin-top: 0.5rem; }
+        .qr-wrapper { background: #fff; padding: 15px; border-radius: 12px; display: inline-block; max-width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border-color); box-sizing: border-box; }
 
-        .staff-verify-box { background: #fff8f3; border: 2px solid var(--accent-orange); border-radius: 10px; padding: 1.2rem; margin-top: 1.2rem; }
+        .staff-verify-box { background: #fff8f3; border: 2px solid var(--accent-orange); border-radius: 10px; padding: 1.2rem; margin-top: 1.2rem; box-sizing: border-box; width: 100%; overflow: hidden; }
         .staff-verify-box label { color: var(--accent-orange); }
 
         .hr-punch-card { background: var(--bg-panel); border: 2px solid var(--accent-orange); border-radius: 14px; padding: 1.5rem; max-width: 900px; margin: 0 auto 2rem auto; box-shadow: 0 8px 25px rgba(255,102,0,0.08); }
@@ -217,8 +223,8 @@
         .hr-pill-leave { background: #eef6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
         .hr-pill-pending { background: #fef9c3; color: #a16207; border: 1px solid #fde047; }
 
-        .calendar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)); gap: 10px; margin-top: 1rem; }
-        .cal-month { padding: 14px 6px; border-radius: 8px; text-align: center; border: 2px solid transparent; cursor: pointer; color: #fff; transition: transform 0.2s; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; margin-top: 0.8rem; width: 100%; box-sizing: border-box; }
+        .cal-month { padding: 12px 6px; border-radius: 8px; text-align: center; border: 2px solid transparent; cursor: pointer; color: #fff; transition: transform 0.2s; min-width: 0; width: 100%; box-sizing: border-box; overflow: hidden; word-break: break-word; }
         .cal-month:hover { transform: scale(1.04); }
         .cal-month h4 { font-size: 0.9rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; color: #fff;}
         .cal-month p { font-size: 0.75rem; font-weight: bold; line-height: 1.4; margin: 0; }
@@ -264,15 +270,15 @@
         .contact-action-btn.call-icon { color: #007bff; }
         .contact-action-btn.wa-icon { color: var(--success-green); }
 
-        .report-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-        .kpi-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem 1rem; text-align: center; border-bottom: 3px solid var(--accent-orange); }
-        .kpi-card h4 { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.5rem; white-space: nowrap;}
-        .kpi-card .val { font-size: 1.8rem; font-weight: 900; color: var(--text-main); }
+        .report-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.85rem; margin-bottom: 1.8rem; width: 100%; box-sizing: border-box; }
+        .kpi-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.15rem 0.75rem; text-align: center; border-bottom: 3px solid var(--accent-orange); min-width: 0; width: 100%; box-sizing: border-box; overflow: hidden; }
+        .kpi-card h4 { color: var(--text-muted); font-size: 0.74rem; text-transform: uppercase; margin-bottom: 0.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .kpi-card .val { font-size: clamp(1.3rem, 3.5vw, 1.7rem); font-weight: 900; color: var(--text-main); word-break: break-word; }
         .kpi-card .sub-val { font-size: 0.8rem; color: var(--success-green); font-weight: 600; margin-top: 5px; display: block; }
         
         .report-section { margin-bottom: 3rem; }
         .report-section h3 { border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem; color: var(--accent-orange); text-transform: uppercase; font-size: 1.1rem; }
-        .table-responsive { overflow-x: auto; background: var(--bg-panel); border-radius: 8px; border: 1px solid var(--border-color); }
+        .table-responsive { width: 100%; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; background: var(--bg-panel); border-radius: 8px; border: 1px solid var(--border-color); box-sizing: border-box; }
         .data-table { width: 100%; border-collapse: collapse; min-width: 600px; font-size: 0.9rem; }
         .data-table th, .data-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
         .data-table th { background-color: var(--bg-main); color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
@@ -347,14 +353,31 @@
         .pdf-footer { margin-top: auto; border-top: 1px solid var(--accent-orange); padding-top: 10px; text-align: center; font-size: 9px; color: #555; font-weight: 600; }
 
         @media(max-width: 768px) {
-            .view-section { padding: 1.2rem; }
-            .form-row { flex-direction: column; gap: 1rem; margin-bottom: 1rem; }
-            .form-layout { padding: 1.2rem; border: none; box-shadow: none; background: transparent; }
-            .btn { padding: 0.9rem 1.2rem; }
-            .profile-top-row { align-items: center; }
-            .profile-snippet img { width: 62px; height: 62px; }
-            #hub-actions { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+            .view-section { padding: 1rem 0.85rem; }
+            .form-row { flex-direction: column; gap: 0.9rem; margin-bottom: 1rem; }
+            .form-row > .form-group { max-width: 100% !important; width: 100% !important; }
+            .form-layout { padding: 1rem 0.85rem; border: none; box-shadow: none; background: transparent; width: 100%; max-width: 100%; overflow-x: hidden; }
+            .btn { padding: 0.85rem 1rem; }
+            .tariff-row { padding: 1rem 0.85rem; }
+            .tariff-inputs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
+            .staff-kpi-row3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; }
+            .staff-kpi-card { padding: 0.85rem 0.4rem; min-width: 0; overflow: hidden; }
+            .staff-kpi-card .kpi-num { font-size: 1.45rem; }
+            .report-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem; }
+            .calendar-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+            .profile-snippet { padding: 1rem 0.95rem; }
+            .profile-top-row { align-items: center; gap: 0.75rem; }
+            .profile-snippet img { width: 58px; height: 58px; }
+            .profile-meta-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
+            .profile-meta-item { padding: 5px 3px; }
+            .profile-meta-lbl { font-size: 0.58rem; }
+            .profile-meta-val { font-size: 0.7rem; }
+            #hub-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
             #hub-actions .btn { font-size: 0.68rem; padding: 0.55rem 0.25rem; }
+            .fee-summary-box { padding: 1.1rem 0.9rem; }
+        }
+        @media(max-width: 400px) {
+            .calendar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
     </style>
 </head>
@@ -1300,7 +1323,7 @@
                         </div>
 
                         <!-- Staff Live Photo & ID Proof (Aadhaar Front & Back) Capture Grid -->
-                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:1.2rem; margin-top:1.2rem;">
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:1rem; margin-top:1.2rem; width:100%; box-sizing:border-box;">
                             <!-- 1. Staff Live Photo -->
                             <div class="verification-group" style="margin-bottom:0; padding:1.2rem; background:#fff;">
                                 <label style="color:var(--accent-orange);">1. Staff Live Photo <span class="required">*</span></label>
@@ -1741,7 +1764,7 @@
                             <div style="margin-top:1rem; padding:1rem; background:#fff8f3; border:2px solid var(--accent-orange); border-radius:10px;">
                                 <label for="adm-pay-amount-now" style="color:var(--accent-orange); font-size:0.85rem; display:block; margin-bottom:0.5rem;">Enter Paying Amount Now (₹) — Edit if Partial Payment <span class="required">*</span></label>
                                 <div style="display:flex; gap:8px; align-items:center;">
-                                    <input type="number" id="adm-pay-amount-now" min="0" style="font-size:1.25rem; font-weight:900; color:var(--text-main); background:#fff;" oninput="window.moduleContext.updateAdmissionPaymentUI()" onchange="window.moduleContext.updateAdmissionPaymentUI()" required>
+                                    <input type="number" id="adm-pay-amount-now" min="0" style="flex:1; min-width:0; font-size:1.2rem; font-weight:900; color:var(--text-main); background:#fff;" oninput="window.moduleContext.updateAdmissionPaymentUI()" onchange="window.moduleContext.updateAdmissionPaymentUI()" required>
                                     <button type="button" class="btn primary" style="width:auto; padding:0.85rem 1.2rem; font-size:0.8rem; white-space:nowrap;" onclick="window.moduleContext.updateAdmissionPaymentUI()">Update QR</button>
                                 </div>
                                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.75rem; padding-top:0.6rem; border-top:1px dashed #ffcc99; font-size:0.95rem;">
@@ -1906,7 +1929,7 @@
                         <div style="margin-top:1rem; padding:0.9rem; background:var(--bg-panel); border:1px dashed var(--accent-orange); border-radius:8px;">
                             <label for="supp-coupon-input" style="font-size:0.78rem; color:var(--text-muted); display:block; margin-bottom:0.4rem;">Have a Coupon Code?</label>
                             <div style="display:flex; gap:8px; align-items:center;">
-                                <input type="text" id="supp-coupon-input" placeholder="Enter Coupon Code" style="text-transform:uppercase; font-weight:800; padding:0.65rem 0.9rem;" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault(); window.moduleContext.applySupplementCoupon();}">
+                                <input type="text" id="supp-coupon-input" placeholder="Enter Coupon Code" style="flex:1; min-width:0; text-transform:uppercase; font-weight:800; padding:0.65rem 0.8rem;" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault(); window.moduleContext.applySupplementCoupon();}">
                                 <button type="button" class="btn secondary" style="width:auto; padding:0.65rem 1.1rem; font-size:0.8rem; border-color:var(--accent-orange); color:var(--accent-orange); white-space:nowrap;" onclick="window.moduleContext.applySupplementCoupon()">Apply</button>
                                 <button type="button" id="btn-remove-supp-coupon" class="btn danger" style="display:none; width:auto; padding:0.65rem 0.9rem; font-size:0.8rem;" onclick="window.moduleContext.removeSupplementCoupon()">✕</button>
                             </div>
@@ -1929,7 +1952,7 @@
                         <div style="margin-top:1rem; padding:1rem; background:#fff8f3; border:2px solid var(--accent-orange); border-radius:10px;">
                             <label for="supp-pay-amount-now" style="color:var(--accent-orange); font-size:0.85rem; display:block; margin-bottom:0.5rem;">Enter Paying Amount Now (₹) — Edit if Partial Payment <span class="required">*</span></label>
                             <div style="display:flex; gap:8px; align-items:center;">
-                                <input type="number" id="supp-pay-amount-now" min="0" style="font-size:1.25rem; font-weight:900; background:#fff;" oninput="window.moduleContext.updateSuppPaymentUI()" onchange="window.moduleContext.updateSuppPaymentUI()" required>
+                                <input type="number" id="supp-pay-amount-now" min="0" style="flex:1; min-width:0; font-size:1.2rem; font-weight:900; background:#fff;" oninput="window.moduleContext.updateSuppPaymentUI()" onchange="window.moduleContext.updateSuppPaymentUI()" required>
                                 <button type="button" class="btn primary" style="width:auto; padding:0.85rem 1.2rem; font-size:0.8rem; white-space:nowrap;" onclick="window.moduleContext.updateSuppPaymentUI()">Update QR</button>
                             </div>
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.75rem; padding-top:0.6rem; border-top:1px dashed #ffcc99; font-size:0.95rem;">
@@ -2158,7 +2181,7 @@
                 <div style="background:#fff8f3; border:2px solid var(--accent-orange); border-radius:10px; padding:0.9rem; margin-bottom:0.9rem;">
                     <label for="pay-amount-now" style="color:var(--accent-orange); font-size:0.8rem; display:block; margin-bottom:0.4rem;">Enter Paying Amount Now (₹) — Edit if Partial <span class="required">*</span></label>
                     <div style="display:flex; gap:8px; align-items:center;">
-                        <input type="number" id="pay-amount-now" min="0" style="font-size:1.25rem; font-weight:900; background:#fff;" oninput="window.moduleContext.updatePaymentModalUI()" onchange="window.moduleContext.updatePaymentModalUI()" required>
+                        <input type="number" id="pay-amount-now" min="0" style="flex:1; min-width:0; font-size:1.2rem; font-weight:900; background:#fff;" oninput="window.moduleContext.updatePaymentModalUI()" onchange="window.moduleContext.updatePaymentModalUI()" required>
                         <button type="button" class="btn primary" style="width:auto; padding:0.75rem 1rem; font-size:0.78rem; white-space:nowrap;" onclick="window.moduleContext.updatePaymentModalUI()">Update QR</button>
                     </div>
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.65rem; padding-top:0.55rem; border-top:1px dashed #ffcc99; font-size:0.9rem;">
@@ -2387,7 +2410,7 @@
                 <div class="form-group" style="margin-bottom:1rem;">
                     <label for="cloud-server-url-input" style="color:var(--accent-orange);">Google Apps Script Web App URL (Ends with <code>/exec</code>)</label>
                     <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                        <input type="url" id="cloud-server-url-input" placeholder="https://script.google.com/macros/s/.../exec" style="flex:1; min-width:240px; font-size:0.86rem; background:#fff;">
+                        <input type="url" id="cloud-server-url-input" placeholder="https://script.google.com/macros/s/.../exec" style="flex:1; min-width:0; width:100%; font-size:0.86rem; background:#fff;">
                         <button type="button" class="btn primary" style="width:auto; padding:0.75rem 1.2rem; font-size:0.8rem;" onclick="window.cloudSync.saveAndTestCloudUrl()">✔ Save & Connect</button>
                     </div>
                 </div>
