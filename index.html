@@ -92,8 +92,8 @@
         #cloud-toast { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%) translateY(100px); background: #222; color: #fff; padding: 10px 22px; border-radius: 30px; font-size: 0.88rem; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.25); transition: transform 0.3s ease, opacity 0.3s ease; z-index: 9500; opacity: 0; pointer-events: none; border-left: 4px solid var(--accent-orange); }
         #cloud-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-        .dashboard-header { text-align: center; margin-bottom: 2rem; }
-        .dashboard-header h1 { font-size: clamp(1.6rem, 5vw, 2.5rem); font-weight: 900; letter-spacing: 2px; margin-bottom: 0.5rem; text-transform: uppercase; }
+        .dashboard-header { text-align: center; margin-bottom: 1.15rem; }
+        .dashboard-header h1 { font-size: clamp(1.4rem, 4.5vw, 2.1rem); font-weight: 900; letter-spacing: 1.5px; margin-bottom: 0.25rem; text-transform: uppercase; }
         .dashboard-header span { color: var(--accent-orange); }
         
         .compact-grid { 
@@ -197,31 +197,41 @@
         .staff-verify-box { background: #fff8f3; border: 2px solid var(--accent-orange); border-radius: 10px; padding: 1.2rem; margin-top: 1.2rem; box-sizing: border-box; width: 100%; overflow: hidden; }
         .staff-verify-box label { color: var(--accent-orange); }
 
-        .hr-punch-card { background: var(--bg-panel); border: 2px solid var(--accent-orange); border-radius: 14px; padding: 1.5rem; max-width: 900px; margin: 0 auto 2rem auto; box-shadow: 0 8px 25px rgba(255,102,0,0.08); }
-        .hr-punch-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.2rem; }
-        .hr-status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .hr-punch-card { background: var(--bg-panel); border: 1.5px solid var(--border-color); border-top: 4px solid var(--accent-orange); border-radius: 14px; padding: 1.15rem 1.2rem; max-width: 900px; margin: 0 auto 1.2rem auto; box-shadow: 0 6px 20px rgba(0,0,0,0.04); box-sizing: border-box; width: 100%; overflow: hidden; }
+        .hr-punch-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 0.85rem; margin-bottom: 0.95rem; }
+        .hr-status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; flex-shrink: 0; }
         .hr-pill-working { background: #eefbf3; color: #1b9f4a; border: 1px solid #b7ebc9; }
         .hr-pill-holiday { background: #fff4e5; color: #d97706; border: 1px solid #fde68a; }
         .hr-pill-absent { background: #fdecea; color: var(--error-red); border: 1px solid #f5b7b1; }
-        .hr-punch-btns { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
-        .btn.checkin-btn { background-color: var(--success-green); color: #fff; }
+        .hr-pill-leave { background: #eef6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+        .hr-pill-pending { background: #fef9c3; color: #a16207; border: 1px solid #fde047; }
+        .staff-shift-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 8px; margin-bottom: 0.95rem; width: 100%; box-sizing: border-box; }
+        .staff-shift-tile { background: var(--bg-main); border: 1.5px solid var(--border-color); border-radius: 10px; padding: 8px 10px; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; gap: 3px; min-width: 0; box-sizing: border-box; }
+        .staff-shift-tile:hover { border-color: var(--accent-orange); background: #fff8f3; }
+        .staff-shift-tile.active-shift-tile { border-color: var(--accent-orange); background: #fff5eb; box-shadow: 0 3px 10px rgba(255,102,0,0.12); }
+        .staff-shift-tile-top { display: flex; justify-content: space-between; align-items: center; gap: 4px; }
+        .staff-shift-tile-name { font-size: 0.8rem; font-weight: 900; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.3px; }
+        .staff-shift-tile-time { font-size: 0.68rem; font-weight: 700; color: var(--text-muted); }
+        .staff-shift-tile-status { font-size: 0.72rem; font-weight: 800; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .staff-geo-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 0.7rem 0.9rem; border-radius: 10px; background: #f8fafc; border: 1px solid var(--border-color); margin-bottom: 0.85rem; box-sizing: border-box; width: 100%; }
+        .staff-geo-bar-text { font-size: 0.78rem; font-weight: 800; color: var(--text-muted); flex: 1; min-width: 0; line-height: 1.35; }
+        .hr-punch-btns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; width: 100%; box-sizing: border-box; }
+        .btn.checkin-btn { background-color: var(--success-green); color: #fff; padding: 0.8rem 0.6rem; font-size: 0.82rem; }
         .btn.checkin-btn:disabled, .btn.checkout-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
-        .btn.checkout-btn { background-color: var(--error-red); color: #fff; }
+        .btn.checkout-btn { background-color: var(--error-red); color: #fff; padding: 0.8rem 0.6rem; font-size: 0.82rem; }
         .geo-hidden { display: none !important; visibility: hidden !important; pointer-events: none !important; }
-        .hr-section-label { max-width: 900px; margin: 1.8rem auto 0.8rem auto; font-size: 0.88rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.2px; border-left: 4px solid var(--accent-orange); padding-left: 10px; }
-        .staff-kpi-row3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; max-width: 900px; margin: 0 auto 1.8rem auto; }
-        .staff-kpi-card { background: var(--bg-panel); border: 2px solid var(--border-color); border-radius: 12px; padding: 1.2rem 0.8rem; text-align: center; cursor: pointer; transition: all 0.22s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-        .staff-kpi-card:hover { transform: translateY(-3px); border-color: var(--accent-orange); box-shadow: 0 8px 20px rgba(255,102,0,0.12); }
-        .staff-kpi-card h4 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 0.4rem; font-weight: 800; }
-        .staff-kpi-card .kpi-num { font-size: 2rem; font-weight: 900; line-height: 1.1; }
-        .staff-kpi-card .kpi-hint { font-size: 0.72rem; color: var(--text-muted); margin-top: 5px; font-weight: 700; }
+        .hr-section-label { max-width: 900px; margin: 1.2rem auto 0.6rem auto; font-size: 0.8rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; border-left: 3.5px solid var(--accent-orange); padding-left: 8px; }
+        .staff-kpi-row3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; max-width: 900px; margin: 0 auto 1.2rem auto; width: 100%; box-sizing: border-box; }
+        .staff-kpi-card { background: var(--bg-panel); border: 1.5px solid var(--border-color); border-radius: 12px; padding: 0.95rem 0.5rem; text-align: center; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 3px 10px rgba(0,0,0,0.03); min-width: 0; overflow: hidden; }
+        .staff-kpi-card:hover { transform: translateY(-2px); border-color: var(--accent-orange); box-shadow: 0 6px 16px rgba(255,102,0,0.1); }
+        .staff-kpi-card h4 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 0.25rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .staff-kpi-card .kpi-num { font-size: 1.75rem; font-weight: 900; line-height: 1.1; }
+        .staff-kpi-card .kpi-hint { font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .hr-subpanel { display: none; animation: fadeIn 0.25s ease-in-out; }
         .hr-subpanel.active-hr-panel { display: block; }
         .shift-chip-label { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: var(--bg-panel); border: 1.5px solid var(--border-color); border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 700; color: var(--text-main); text-transform: none; margin: 0; transition: all 0.2s; }
         .shift-chip-label input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var(--accent-orange); }
         .shift-chip-label:hover { border-color: var(--accent-orange); background: #fff8f3; }
-        .hr-pill-leave { background: #eef6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
-        .hr-pill-pending { background: #fef9c3; color: #a16207; border: 1px solid #fde047; }
 
         .calendar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; margin-top: 0.8rem; width: 100%; box-sizing: border-box; }
         .cal-month { padding: 12px 6px; border-radius: 8px; text-align: center; border: 2px solid transparent; cursor: pointer; color: #fff; transition: transform 0.2s; min-width: 0; width: 100%; box-sizing: border-box; overflow: hidden; word-break: break-word; }
@@ -458,37 +468,43 @@
                 <p id="dashboard-subtitle" style="color: var(--text-muted); font-size: 0.9rem;"></p>
             </div>
 
-            <!-- Staff-Only HR Attendance Punch-In / Punch-Out Panel (Slot-Assigned + Auto-Checkout) -->
+            <!-- Staff-Only HR Attendance Punch-In / Punch-Out Panel (Streamlined & Professional) -->
             <div id="staff-hr-punch-panel" class="hr-punch-card" style="display:none;">
                 <div class="hr-punch-header">
-                    <div>
-                        <div style="font-size:0.78rem; font-weight:800; color:var(--accent-orange); text-transform:uppercase; letter-spacing:1px;">Daily Shift Attendance</div>
-                        <h3 id="staff-punch-date-title" style="font-size:1.15rem; color:var(--text-main); margin-top:3px;">Today</h3>
-                        <p id="staff-punch-substatus" style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;"></p>
+                    <div style="min-width:0;">
+                        <div style="font-size:0.7rem; font-weight:800; color:var(--accent-orange); text-transform:uppercase; letter-spacing:0.8px;">Shift Attendance</div>
+                        <h3 id="staff-punch-date-title" style="font-size:1.1rem; font-weight:900; color:var(--text-main); margin-top:2px;">Today</h3>
+                        <p id="staff-punch-substatus" style="display:none;"></p>
                     </div>
                     <div id="staff-day-type-badge"></div>
                 </div>
-                <div class="form-row" style="align-items:center; margin-bottom:1rem; background:var(--bg-main); padding:0.85rem 1rem; border-radius:10px; border:1px solid var(--border-color);">
-                    <div class="form-group" style="margin:0;">
-                        <label for="staff-punch-slot-select" style="margin-bottom:0.35rem; font-size:0.76rem; color:var(--accent-orange);">Assigned Working Shift Slot</label>
-                        <select id="staff-punch-slot-select" onchange="window.moduleContext.onStaffPunchSlotChange()" style="background:#fff; font-weight:800;"></select>
+
+                <!-- Interactive Shift Slot Tiles (Click a tile or use dropdown to switch slot) -->
+                <div id="staff-today-slots-summary" class="staff-shift-grid"></div>
+
+                <!-- Compact Shift Selector & Live Window Row -->
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:0.85rem; padding:0.65rem 0.85rem; background:var(--bg-main); border-radius:10px; border:1px solid var(--border-color);">
+                    <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:190px;">
+                        <span style="font-size:0.72rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; white-space:nowrap;">Active Shift:</span>
+                        <select id="staff-punch-slot-select" onchange="window.moduleContext.onStaffPunchSlotChange()" style="background:#fff; font-weight:800; padding:0.45rem 0.65rem; font-size:0.84rem; flex:1; min-width:0;"></select>
                     </div>
-                    <div id="staff-slot-timing-pill" style="font-size:0.82rem; font-weight:800; color:var(--text-muted); padding-top:1rem;"></div>
+                    <div id="staff-slot-timing-pill" style="display:none;"></div>
                 </div>
-                <div id="staff-today-slots-summary" style="margin-bottom:0.8rem;"></div>
-                <div id="staff-geofence-status-bar" style="margin-bottom:1rem; padding:0.75rem 1rem; border-radius:8px; background:#f8fafc; border:1.5px dashed var(--border-color); font-size:0.82rem; font-weight:700; color:var(--text-muted); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                    <span id="staff-geofence-status-text">📍 Verifying 20m Studio Geo-Fence...</span>
-                    <button type="button" class="btn secondary" style="width:auto; padding:0.35rem 0.8rem; font-size:0.74rem; border-color:var(--accent-orange); color:var(--accent-orange);" onclick="window.moduleContext.verifyStaffGeoFence(null, true)">📡 Check My Distance</button>
+
+                <!-- Single Compact Geo-Fence Verification Bar -->
+                <div id="staff-geofence-status-bar" class="staff-geo-bar">
+                    <span id="staff-geofence-status-text" class="staff-geo-bar-text">📍 Verifying 20m Studio Geo-Fence...</span>
+                    <button type="button" class="btn secondary" style="width:auto; padding:0.42rem 0.75rem; font-size:0.72rem; border-color:var(--accent-orange); color:var(--accent-orange); white-space:nowrap; flex-shrink:0;" onclick="window.moduleContext.verifyStaffGeoFence(null, true)">📡 Verify GPS</button>
                 </div>
-                <div id="staff-geofence-locked-msg" style="display:block; padding:0.9rem 1rem; border-radius:8px; background:#fdecea; border:1px solid #f5b7b1; color:var(--error-red); font-size:0.84rem; font-weight:800; text-align:center;">
-                    🔒 Check-In & Check-Out options are hidden until your location is verified within 20m of the Studio Center Point.
-                </div>
+                <div id="staff-geofence-locked-msg" style="display:none !important;"></div>
+
+                <!-- Check-In / Check-Out Action Buttons (Shown automatically when inside 20m Geo-Fence) -->
                 <div class="hr-punch-btns geo-hidden" id="staff-punch-btns-container" style="display:none !important;">
                     <button type="button" id="btn-staff-checkin" class="btn checkin-btn geo-hidden" style="display:none !important;" onclick="window.moduleContext.staffPunchIn()">
-                        ✔ Check-In (Punch In)
+                        ✔ Check-In
                     </button>
                     <button type="button" id="btn-staff-checkout" class="btn checkout-btn geo-hidden" style="display:none !important;" onclick="window.moduleContext.staffPunchOut()">
-                        ⏹ Check-Out (Punch Out)
+                        ⏹ Check-Out
                     </button>
                 </div>
             </div>
@@ -498,53 +514,50 @@
                 <div class="staff-kpi-card" style="border-bottom: 4px solid var(--success-green);" onclick="window.appContext.switchView('staff-my-attendance')">
                     <h4>Present (<span class="staff-curr-month-lbl">Month</span>)</h4>
                     <div class="kpi-num" style="color:var(--success-green);" id="staff-curr-present-count">0</div>
-                    <div class="kpi-hint">View Attendance Log →</div>
+                    <div class="kpi-hint">View Log →</div>
                 </div>
                 <div class="staff-kpi-card" style="border-bottom: 4px solid #1d4ed8;" onclick="window.moduleContext.openStaffAbsentActionPanel('LEAVE')">
                     <h4>Leave (<span class="staff-curr-month-lbl">Month</span>)</h4>
                     <div class="kpi-num" style="color:#1d4ed8;" id="staff-curr-leave-count">0</div>
-                    <div class="kpi-hint">Apply / View Leave →</div>
+                    <div class="kpi-hint">Apply Leave →</div>
                 </div>
                 <div class="staff-kpi-card" style="border-bottom: 4px solid var(--error-red);" onclick="window.moduleContext.openStaffAbsentActionPanel('ABSENT')">
                     <h4>Absent (<span class="staff-curr-month-lbl">Month</span>)</h4>
                     <div class="kpi-num" style="color:var(--error-red);" id="staff-curr-absent-count">0</div>
-                    <div class="kpi-hint" style="color:var(--accent-orange);">Click to Regularise / Leave →</div>
+                    <div class="kpi-hint" style="color:var(--accent-orange);">Regularise →</div>
                 </div>
             </div>
 
             <!-- Staff Interactive Absent Days Regularisation & Leave Application Drawer -->
-            <div id="staff-absent-action-box" class="hr-punch-card" style="display:none; border-color:var(--error-red); background:#fffdf9;">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem; border-bottom:1px solid var(--border-color); padding-bottom:0.8rem; margin-bottom:1rem;">
-                    <div>
-                        <h3 style="color:var(--accent-orange); font-size:1.08rem; text-transform:uppercase; margin:0;">Absent Days — Regularise Attendance or Apply Leave</h3>
-                        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:3px;">Select an absent day & shift slot below to raise an Attendance Regularisation (for Admin approval) or Apply Leave.</p>
-                    </div>
-                    <button type="button" class="btn secondary" style="width:auto; padding:0.45rem 0.9rem; font-size:0.78rem;" onclick="document.getElementById('staff-absent-action-box').style.display='none'">✕ Close</button>
+            <div id="staff-absent-action-box" class="hr-punch-card" style="display:none; border-top-color:var(--error-red);">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:0.8rem; border-bottom:1px solid var(--border-color); padding-bottom:0.75rem; margin-bottom:0.9rem;">
+                    <h3 style="color:var(--accent-orange); font-size:0.95rem; font-weight:900; text-transform:uppercase; margin:0;">Attendance Regularisation & Leave</h3>
+                    <button type="button" class="btn secondary" style="width:auto; padding:0.38rem 0.8rem; font-size:0.74rem;" onclick="document.getElementById('staff-absent-action-box').style.display='none'">✕ Close</button>
                 </div>
-                <div class="table-responsive" style="margin-bottom:1.2rem;">
+                <div class="table-responsive" style="margin-bottom:1rem;">
                     <table class="data-table" id="table-staff-absent-days">
-                        <thead><tr><th>Absent Date</th><th>Day</th><th>Missing Shift Slot(s)</th><th>Task Status</th><th>Select Slot & Action</th></tr></thead>
+                        <thead><tr><th>Date</th><th>Day</th><th>Missing Slot(s)</th><th>Status</th><th>Action</th></tr></thead>
                         <tbody></tbody>
                     </table>
                 </div>
-                <div style="background:var(--bg-main); padding:1rem; border-radius:8px; border:1px dashed var(--accent-orange);">
-                    <h4 style="font-size:0.85rem; color:var(--accent-orange); text-transform:uppercase; margin-bottom:0.8rem;">Quick Apply Leave / Regularisation for Any Date</h4>
-                    <div class="form-row" style="margin-bottom:0; align-items:flex-end;">
+                <div style="background:var(--bg-main); padding:0.9rem; border-radius:10px; border:1px solid var(--border-color);">
+                    <h4 style="font-size:0.78rem; color:var(--accent-orange); text-transform:uppercase; margin-bottom:0.65rem; letter-spacing:0.4px;">Apply Leave / Regularisation for Any Date</h4>
+                    <div class="form-row" style="margin-bottom:0; align-items:flex-end; gap:0.75rem;">
                         <div class="form-group">
-                            <label>Select Date</label>
-                            <input type="date" id="staff-custom-req-date">
+                            <label style="font-size:0.72rem;">Date</label>
+                            <input type="date" id="staff-custom-req-date" style="padding:0.65rem 0.75rem; font-size:0.88rem;">
                         </div>
                         <div class="form-group">
-                            <label>Select Shift Slot</label>
-                            <select id="staff-custom-req-slot"></select>
+                            <label style="font-size:0.72rem;">Shift Slot</label>
+                            <select id="staff-custom-req-slot" style="padding:0.65rem 0.75rem; font-size:0.88rem;"></select>
                         </div>
                         <div class="form-group">
-                            <label>Reason / Note</label>
-                            <input type="text" id="staff-custom-req-note" placeholder="Optional note">
+                            <label style="font-size:0.72rem;">Reason / Note</label>
+                            <input type="text" id="staff-custom-req-note" placeholder="Brief reason" style="padding:0.65rem 0.75rem; font-size:0.88rem;">
                         </div>
-                        <div style="display:flex; gap:8px;">
-                            <button type="button" class="btn primary" style="width:auto; padding:0.85rem 1rem; font-size:0.78rem; white-space:nowrap;" onclick="window.moduleContext.submitCustomStaffRequest('REGULARISATION')">Raise Regularisation</button>
-                            <button type="button" class="btn secondary" style="width:auto; padding:0.85rem 1rem; font-size:0.78rem; white-space:nowrap; border-color:#1d4ed8; color:#1d4ed8;" onclick="window.moduleContext.submitCustomStaffRequest('LEAVE')">Apply Leave</button>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; width:100%;">
+                            <button type="button" class="btn primary" style="padding:0.7rem 0.5rem; font-size:0.75rem;" onclick="window.moduleContext.submitCustomStaffRequest('REGULARISATION')">Regularise</button>
+                            <button type="button" class="btn secondary" style="padding:0.7rem 0.5rem; font-size:0.75rem; border-color:#1d4ed8; color:#1d4ed8;" onclick="window.moduleContext.submitCustomStaffRequest('LEAVE')">Apply Leave</button>
                         </div>
                     </div>
                 </div>
@@ -4640,7 +4653,7 @@
                     const st = ensureStaffObject(appContext.currentStaffObj);
                     appContext.currentStaffObj = st;
                     document.getElementById('dashboard-title').innerHTML = `WELCOME, <span>${st.name.toUpperCase()}</span>`;
-                    if (subEl) subEl.innerHTML = `Role: <strong>${st.role || 'Staff'}</strong> &nbsp;|&nbsp; Shifts: <strong>${(st.shifts || ['Morning','Evening']).join(', ')}</strong> &nbsp;|&nbsp; Joined: <strong>${formatDateStr(st.joiningDate)}</strong>`;
+                    if (subEl) subEl.innerHTML = `<span style="display:inline-flex; flex-wrap:wrap; justify-content:center; gap:6px; margin-top:4px;"><span class="profile-meta-pill">${st.role || 'Staff'}</span><span class="profile-meta-pill">Shifts: ${(st.shifts || ['Morning','Evening']).join(', ')}</span><span class="profile-meta-pill">Joined: ${formatDateStr(st.joiningDate)}</span></span>`;
                     document.getElementById('staff-hr-punch-panel').style.display = 'block';
                     if (kpiRowEl) kpiRowEl.style.display = 'grid';
                     document.getElementById('staff-hr-section-label').style.display = 'block';
@@ -6236,35 +6249,38 @@
 
             setStaffPunchButtonsVisibility: function(isInside20m, reasonMsg) {
                 window._staffInsideGeoFence = !!isInside20m;
-                const btnsContainer = document.getElementById('staff-punch-btns-container');
-                const btnIn = document.getElementById('btn-staff-checkin');
-                const btnOut = document.getElementById('btn-staff-checkout');
-                const lockedBanner = document.getElementById('staff-geofence-locked-msg');
+                const btnsContainer = document.getElementById("staff-punch-btns-container");
+                const btnIn = document.getElementById("btn-staff-checkin");
+                const btnOut = document.getElementById("btn-staff-checkout");
+                const geoBar = document.getElementById("staff-geofence-status-bar");
 
                 if (!isInside20m) {
+                    if (geoBar) {
+                        geoBar.style.background = "#fff5f5";
+                        geoBar.style.borderColor = "#f5b7b1";
+                    }
                     if (btnsContainer) {
-                        btnsContainer.classList.add('geo-hidden');
-                        btnsContainer.style.setProperty('display', 'none', 'important');
+                        btnsContainer.classList.add("geo-hidden");
+                        btnsContainer.style.setProperty("display", "none", "important");
                     }
                     if (btnIn) {
-                        btnIn.classList.add('geo-hidden');
-                        btnIn.style.setProperty('display', 'none', 'important');
+                        btnIn.classList.add("geo-hidden");
+                        btnIn.style.setProperty("display", "none", "important");
                         btnIn.disabled = true;
                     }
                     if (btnOut) {
-                        btnOut.classList.add('geo-hidden');
-                        btnOut.style.setProperty('display', 'none', 'important');
+                        btnOut.classList.add("geo-hidden");
+                        btnOut.style.setProperty("display", "none", "important");
                         btnOut.disabled = true;
                     }
-                    if (lockedBanner) {
-                        lockedBanner.style.display = 'block';
-                        if (reasonMsg) lockedBanner.innerText = reasonMsg;
-                    }
                 } else {
-                    if (lockedBanner) lockedBanner.style.display = 'none';
+                    if (geoBar) {
+                        geoBar.style.background = "#f0fdf4";
+                        geoBar.style.borderColor = "#9fe3b8";
+                    }
                     if (btnsContainer) {
-                        btnsContainer.classList.remove('geo-hidden');
-                        btnsContainer.style.setProperty('display', 'grid', 'important');
+                        btnsContainer.classList.remove("geo-hidden");
+                        btnsContainer.style.setProperty("display", "grid", "important");
                     }
                     window.moduleContext.applySlotButtonEnableState();
                 }
@@ -6409,21 +6425,36 @@
                 }
 
                 if (summaryBox) {
-                    let sHtml = '<div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">';
+                    let sHtml = "";
                     assignedShifts.forEach(sName => {
                         const sr = slotsMap[sName];
                         const tc = timings[sName] || timings.Morning;
-                        if (sr && sr.status === 'Leave') {
-                            sHtml += `<span class="hr-status-pill hr-pill-leave">${sName}: Approved Leave</span>`;
+                        const isSelected = (sName === activeSlot);
+                        const isLive = window.moduleContext.isShiftSlotLiveNow(sName, timings, now);
+                        const safeSlot = String(sName).replace(/\x27/g, "\\\x27");
+                        let stText = "○ Not Checked In";
+                        let stCol = "var(--text-muted)";
+                        if (sr && sr.status === "Leave") {
+                            stText = "🏖 Approved Leave";
+                            stCol = "#1d4ed8";
                         } else if (sr && sr.checkIn && sr.checkOut) {
-                            sHtml += `<span class="hr-status-pill hr-pill-working">✔ ${sName}: In ${sr.checkIn} | Out ${sr.checkOut}</span>`;
+                            stText = `✔ In ${sr.checkIn} • Out ${sr.checkOut}`;
+                            stCol = "var(--success-green)";
                         } else if (sr && sr.checkIn && !sr.checkOut) {
-                            sHtml += `<span class="hr-status-pill hr-pill-pending" style="border-color:var(--accent-orange);">⏳ ${sName}: In ${sr.checkIn} (Check-Out Pending)</span>`;
-                        } else {
-                            sHtml += `<span class="hr-status-pill" style="background:#f1f3f5; color:#555; border:1px solid #ddd;">○ ${sName} (${tc.start}-${tc.end}): Not Checked In</span>`;
+                            stText = `⏳ Checked In (${sr.checkIn})`;
+                            stCol = "var(--warning-yellow)";
                         }
+                        const liveBadge = isLive ? `<span style="background:#dcfce7; color:#15803d; font-size:0.58rem; padding:1px 5px; border-radius:8px; font-weight:800;">LIVE</span>` : "";
+                        sHtml += `
+                        <div class="staff-shift-tile ${isSelected ? "active-shift-tile" : ""}" onclick="const sel=document.getElementById(\x27staff-punch-slot-select\x27); if(sel){sel.value=\x27${safeSlot}\x27; window.moduleContext.onStaffPunchSlotChange();}">
+                            <div class="staff-shift-tile-top">
+                                <span class="staff-shift-tile-name">${sName}</span>
+                                ${liveBadge}
+                            </div>
+                            <div class="staff-shift-tile-time">${tc.start} – ${tc.end}</div>
+                            <div class="staff-shift-tile-status" style="color:${stCol};">${stText}</div>
+                        </div>`;
                     });
-                    sHtml += '</div>';
                     summaryBox.innerHTML = sHtml;
                 }
 
@@ -6514,14 +6545,14 @@
                         if (distMeters <= 20) {
                             if (statusTxtEl) {
                                 statusTxtEl.style.color = 'var(--success-green)';
-                                statusTxtEl.innerText = `✔ Inside 20m Studio Geo-Fence (${roundedDist}m from Studio Center)`;
+                                statusTxtEl.innerText = `✔ Within Studio Geo-Fence (${roundedDist}m)`;
                             }
                             window.moduleContext.setStaffPunchButtonsVisibility(true, "");
                         } else {
                             const outMsg = `🔒 Check-In & Check-Out Hidden: You are ${roundedDist}m away from the Studio Center Point (Allowed limit: 20m).`;
                             if (statusTxtEl) {
                                 statusTxtEl.style.color = 'var(--error-red)';
-                                statusTxtEl.innerText = `✖ Outside 20m Geo-Fence (${roundedDist}m away — Limit: 20m)`;
+                                statusTxtEl.innerText = `🔒 Outside Studio Geo-Fence (${roundedDist}m away • 20m limit)`;
                             }
                             window.moduleContext.setStaffPunchButtonsVisibility(false, outMsg);
                         }
@@ -6592,7 +6623,7 @@
                     if (distMeters <= 20) {
                         if (statusTxtEl) {
                             statusTxtEl.style.color = 'var(--success-green)';
-                            statusTxtEl.innerText = `✔ Inside 20m Studio Geo-Fence (${roundedDist}m from Studio Center)`;
+                            statusTxtEl.innerText = `✔ Within Studio Geo-Fence (${roundedDist}m)`;
                         }
                         window.moduleContext.setStaffPunchButtonsVisibility(true, "");
                         if (isManualTest) {
@@ -6607,7 +6638,7 @@
                         const outMsg = `🔒 Check-In & Check-Out Hidden: You are ${roundedDist}m away from the Studio Center Point (Allowed limit: 20m). Move within 20m and click "Check My Distance".`;
                         if (statusTxtEl) {
                             statusTxtEl.style.color = 'var(--error-red)';
-                            statusTxtEl.innerText = `✖ Outside 20m Geo-Fence (${roundedDist}m away — Limit: 20m)`;
+                            statusTxtEl.innerText = `🔒 Outside Studio Geo-Fence (${roundedDist}m away • 20m limit)`;
                         }
                         window.moduleContext.setStaffPunchButtonsVisibility(false, outMsg);
                         window._staffPunchInProgress = false;
