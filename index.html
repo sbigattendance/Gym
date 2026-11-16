@@ -8489,7 +8489,8 @@
             
             previewMemberName: function(val) {
                 const previewEl = document.getElementById('att-live-preview');
-                const cleanVal = String(val).trim();
+                if (!previewEl) return;
+                const cleanVal = String(val || '').trim();
                 if(!cleanVal) { previewEl.innerHTML = ''; return; }
                 
                 let matches = findUsersForAttendance(cleanVal);
@@ -8497,15 +8498,17 @@
                     let html = '<div style="display:grid; gap:10px; margin-top:10px; max-height: 250px; overflow-y: auto; padding: 5px;">';
                     matches.forEach(user => {
                         const photoUrl = user.photo || DEFAULT_AVATAR_SVG;
-                        const safeId = String(user.id).replace(/'/g, "\\'");
+                        const safeId = String(user.id).trim().replace(/'/g, "");
                         html += `
-                        <div style="display:flex; align-items:center; gap:12px; padding:10px; border:1px solid var(--border-color); border-radius:8px; cursor:pointer; background:var(--bg-panel); transition: transform 0.2s;" 
-                             onclick="document.getElementById('att-input').value='${safeId}'; window.moduleContext.markAttendance();">
-                            <img src="${photoUrl}" alt="${user.fullName}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-orange);">
-                            <div style="flex:1;">
+                        <div role="button" tabindex="0" style="display:flex; align-items:center; gap:12px; padding:10px; border:1.5px solid var(--border-color); border-radius:8px; cursor:pointer; background:var(--bg-panel); user-select:none; -webkit-user-select:none;" 
+                             onmousedown="event.preventDefault();"
+                             onclick="window.moduleContext.markAttendance(null, '${safeId}')">
+                            <img src="${photoUrl}" alt="${user.fullName}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-orange); pointer-events:none;">
+                            <div style="flex:1; pointer-events:none;">
                                 <div style="color:var(--text-main); font-weight:800; font-size:1rem;">${user.fullName}</div>
-                                <div style="font-size:0.8rem; color:var(--text-muted);">ID: ${user.id} | Ph: ${maskPhoneLast4(user.primaryContact)}</div>
+                                <div style="font-size:0.8rem; color:var(--text-muted);">ID: <strong>${user.id}</strong> | Ph: ${maskPhoneLast4(user.primaryContact)}</div>
                             </div>
+                            <span style="background:#fff5eb; color:var(--accent-orange); border:1px solid #fed7aa; padding:4px 9px; border-radius:6px; font-size:0.72rem; font-weight:800; pointer-events:none;">Mark In →</span>
                         </div>`;
                     });
                     html += '</div>';
@@ -8515,13 +8518,17 @@
                 }
             },
 
-            markAttendance: function(e) {
-                if(e) e.preventDefault();
-                const val = document.getElementById('att-input').value.trim();
+            markAttendance: function(e, directUserId = '') {
+                if(e && typeof e.preventDefault === 'function') e.preventDefault();
+                const attInputEl = document.getElementById('att-input');
+                if (directUserId && attInputEl) {
+                    attInputEl.value = String(directUserId).trim();
+                }
+                const val = String(directUserId || (attInputEl ? attInputEl.value : '')).trim();
                 const resBox = document.getElementById('att-result-box');
-                resBox.style.display = 'block';
+                if (resBox) resBox.style.display = 'block';
 
-                if(!val) { resBox.innerHTML = '<span style="color:var(--error-red); font-weight:bold;">Please enter a valid Phone Number, ID, or Name.</span>'; return; }
+                if(!val) { if (resBox) resBox.innerHTML = '<span style="color:var(--error-red); font-weight:bold;">Please enter a valid Phone Number, ID, or Name.</span>'; return; }
                 
                 let users = storage.get('revive_users_db', []);
                 const supersededAttIds = getSupersededUserIdsSet(users);
@@ -8531,10 +8538,18 @@
                     u && u.id &&
                     !supersededAttIds.has(String(u.id).trim().toUpperCase()) &&
                     !isUserCancelled(u) && (
-                        String(u.id).toLowerCase() === String(val).toLowerCase() ||
+                        String(u.id).trim().toLowerCase() === String(val).toLowerCase() ||
                         String(u.id).toLowerCase().replace(/[^a-z0-9]/g, "") === cleanAttAlpha
                     )
                 );
+                if (!user) {
+                    user = users.find(u =>
+                        u && u.id && !isUserCancelled(u) && (
+                            String(u.id).trim().toLowerCase() === String(val).toLowerCase() ||
+                            String(u.id).toLowerCase().replace(/[^a-z0-9]/g, "") === cleanAttAlpha
+                        )
+                    );
+                }
                 // 2. Otherwise check active matches by phone or name
                 if (!user) {
                     const matches = findUsersForAttendance(val, false);
@@ -8542,19 +8557,19 @@
                         user = matches[0];
                     } else if (matches.length > 1) {
                         window.moduleContext.previewMemberName(val);
-                        resBox.innerHTML = `<span style="color:var(--accent-orange); font-weight:bold;">👨‍👩‍👧‍👦 ${matches.length} active members share this contact/name. Please tap the specific member above to mark attendance.</span>`;
+                        if (resBox) resBox.innerHTML = `<span style="color:var(--accent-orange); font-weight:bold;">👨‍👩‍👧‍👦 ${matches.length} active members share this contact/name. Please tap the specific member above to mark attendance.</span>`;
                         return;
                     }
                 }
                 if (user) user = resolveToLatestUserRecord(user, users);
 
                 if(!user) { 
-                    resBox.innerHTML = `<span style="color:var(--error-red); font-weight:bold;">Exact active member not identified. Please click a profile from the search list above.</span>`; 
+                    if (resBox) resBox.innerHTML = `<span style="color:var(--error-red); font-weight:bold;">Exact active member not identified. Please click a profile from the search list above.</span>`; 
                     return; 
                 }
 
                 const now = new Date();
-                const dateKey = now.toISOString().split('T')[0];
+                const dateKey = toIsoDateKey(now);
                 const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
                 const monthName = now.toLocaleString('default', { month: 'long' });
 
@@ -8633,20 +8648,22 @@
                     html += `<div style="display:grid; gap:8px; max-height: 260px; overflow-y: auto; padding: 4px;">`;
                     matches.forEach(user => {
                         const photoUrl = user.photo || DEFAULT_AVATAR_SVG;
-                        const safeId = String(user.id).replace(/\x27/g, "\\\x27");
+                        const safeId = String(user.id).trim().replace(/'/g, "");
                         const dInfo = parseAdmissionDateInfo(user.date, user._month, user._fy);
                         const isCanc = isUserCancelled(user);
                         const statusPill = isCanc
                             ? `<span class="deleted-badge" style="margin-left:4px;">Cancelled</span>`
                             : `<span style="font-size:0.65rem; background:var(--success-green); color:#fff; padding:2px 6px; border-radius:4px; margin-left:4px; text-transform:uppercase; font-weight:800;">Active</span>`;
                         html += `
-                        <div style="display:flex; align-items:center; gap:12px; padding:10px; border:1px solid var(--border-color); border-radius:8px; cursor:pointer; background:var(--bg-panel); transition: transform 0.2s;" 
-                             onclick="window.moduleContext.loadProfileByPhoneOrId(\x27${safeId}\x27)">
-                            <img src="${photoUrl}" alt="${user.fullName}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-orange);">
-                            <div style="flex:1; text-align:left;">
+                        <div role="button" tabindex="0" style="display:flex; align-items:center; gap:12px; padding:10px; border:1.5px solid var(--border-color); border-radius:8px; cursor:pointer; background:var(--bg-panel); user-select:none; -webkit-user-select:none;" 
+                             onmousedown="event.preventDefault();"
+                             onclick="window.moduleContext.loadProfileByPhoneOrId('${safeId}')">
+                            <img src="${photoUrl}" alt="${user.fullName}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-orange); pointer-events:none;">
+                            <div style="flex:1; text-align:left; pointer-events:none;">
                                 <div style="color:var(--text-main); font-weight:800; font-size:0.98rem;">${user.fullName} <span style="font-size:0.72rem; background:#fff5eb; color:var(--accent-orange); padding:2px 6px; border-radius:4px; border:1px solid #ffcc99; margin-left:4px;">${user.admissionCategory || "Individual"}</span>${statusPill}</div>
                                 <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">ID: <strong>${user.id}</strong> | Ph: ${appContext.currentRole !== "admin" ? maskPhoneLast4(user.primaryContact) : user.primaryContact} | Joined: ${dInfo.formattedDate}</div>
                             </div>
+                            <span style="background:#fff5eb; color:var(--accent-orange); border:1px solid #fed7aa; padding:4px 9px; border-radius:6px; font-size:0.72rem; font-weight:800; pointer-events:none;">Open →</span>
                         </div>`;
                     });
                     html += `</div>`;
@@ -8685,6 +8702,9 @@
             },
 
             loadProfileByPhoneOrId: function(identifier) {
+                if (!currentHubMode) {
+                    currentHubMode = (appContext.currentRole === "admin") ? "details" : "fee";
+                }
                 const cleanId = String(identifier || "").trim();
                 const cleanAlpha = cleanId.toLowerCase().replace(/[^a-z0-9]/g, "");
                 const cleanPhoneNorm = normalizeTenDigitPhone(cleanId);
@@ -8859,6 +8879,11 @@
                 window.moduleContext.reconcilePtTrainersForInactiveStaff();
                 const refreshedUsersForHub = storage.get('revive_users_db', []);
                 const latestHubUser = refreshedUsersForHub.find(x => String(x.id) === String(user.id)) || user;
+                latestHubUser.selectedFY = activeFy;
+                latestHubUser.date = dInfo.formattedDate;
+                latestHubUser.dob = normalizeDobToDdMmYyyy(latestHubUser.dob);
+                latestHubUser._fy = dInfo.fy;
+                latestHubUser._month = dInfo.monthName;
                 currentActiveUser = latestHubUser;
                 const hubTrainRefresh = String(latestHubUser.trainingCategory || "Regular").replace(" Training", "") + (String(latestHubUser.trainingCategory || "").includes("Personal") && latestHubUser.assignedTrainerName ? ` (${latestHubUser.assignedTrainerName})` : "");
                 document.getElementById("hub-details").innerText = `${latestHubUser.admissionCategory || "Individual"} • ${hubTrainRefresh}`;
@@ -8929,19 +8954,22 @@
                 }
             },
             renderFeeCalendar: function(userId, fy, trainCat, adDateStr) {
-                const grid = document.getElementById('fee-calendar'); grid.innerHTML = '';
+                const grid = document.getElementById('fee-calendar'); if (!grid) return; grid.innerHTML = '';
+                const adInfo = parseAdmissionDateInfo(adDateStr, currentActiveUser ? currentActiveUser._month : null, currentActiveUser ? currentActiveUser._fy : null);
+                if (!fy || typeof fy !== 'string' || !fy.includes('-')) {
+                    fy = (currentActiveUser && currentActiveUser.selectedFY) ? currentActiveUser.selectedFY : adInfo.fy;
+                }
                 const paymentsDb = storage.get('revive_payments_db', {});
                 const userFyData = (paymentsDb[userId] && paymentsDb[userId][fy]) ? paymentsDb[userId][fy] : {};
 
                 const today = new Date();
                 const currentScore = today.getFullYear() * 100 + today.getMonth(); 
 
-                const adInfo = parseAdmissionDateInfo(adDateStr, currentActiveUser ? currentActiveUser._month : null, currentActiveUser ? currentActiveUser._fy : null);
                 const adDay = adInfo.day;
                 const adMonthIdx = adInfo.monthIdx;
                 const adYear = adInfo.year;
                 const adScore = adInfo.score; 
-                const fyStartYear = parseInt(fy.split('-')[0], 10);
+                const fyStartYear = parseInt(String(fy).split('-')[0], 10);
 
                 let renderedAny = false;
 
@@ -9165,8 +9193,9 @@
                         const safeId = String(u.id).replace(/\x27/g, "\\\x27");
                         const photoUrl = u.photo || DEFAULT_AVATAR_SVG;
                         html += `
-                        <div style="display:flex; align-items:center; gap:12px; padding:10px; border:1px solid var(--border-color); border-radius:8px; cursor:pointer; background:var(--bg-panel);"
-                             onclick="window.moduleContext.selectRefundMember(\x27${safeId}\x27)">
+                        <div role="button" tabindex="0" style="display:flex; align-items:center; gap:12px; padding:10px; border:1.5px solid var(--border-color); border-radius:8px; cursor:pointer; background:var(--bg-panel); user-select:none; -webkit-user-select:none;"
+                             onmousedown="event.preventDefault();"
+                             onclick="window.moduleContext.selectRefundMember('${safeId}')">
                             <img src="${photoUrl}" alt="${u.fullName}" style="width:45px; height:45px; border-radius:50%; object-fit:cover; border:2px solid var(--accent-orange);">
                             <div style="flex:1;">
                                 <div style="font-weight:800; color:var(--text-main);">${u.fullName} <span style="font-size:0.75rem; color:var(--text-muted);">(${u.id})</span></div>
@@ -10738,7 +10767,8 @@
                             : `<span style="background:#fff8eb; color:#c87f0a; border:1px solid #fad7a0; font-size:0.7rem; font-weight:800; padding:2px 7px; border-radius:12px;">Within 6 Months</span>`;
 
                         html += `
-                        <div style="display:flex; align-items:center; gap:12px; padding:10px; border:1px solid var(--border-color); border-radius:8px; cursor:pointer; background:var(--bg-panel); transition: transform 0.2s;" 
+                        <div role="button" tabindex="0" style="display:flex; align-items:center; gap:12px; padding:10px; border:1.5px solid var(--border-color); border-radius:8px; cursor:pointer; background:var(--bg-panel); user-select:none; -webkit-user-select:none;" 
+                             onmousedown="event.preventDefault();"
                              onclick="window.moduleContext.selectReadmissionMember('${safeId}')">
                             <img src="${photoUrl}" alt="${user.fullName}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-orange);">
                             <div style="flex:1; text-align:left;">
@@ -11121,7 +11151,8 @@
                         const photoUrl = user.photo || DEFAULT_AVATAR_SVG;
                         const safeId = String(user.id).replace(/'/g, "\'");
                         html += `
-                        <div style="display:flex; align-items:center; gap:12px; padding:10px; border:1px solid var(--border-color); border-radius:8px; cursor:pointer; background:var(--bg-panel);"
+                        <div role="button" tabindex="0" style="display:flex; align-items:center; gap:12px; padding:10px; border:1.5px solid var(--border-color); border-radius:8px; cursor:pointer; background:var(--bg-panel); user-select:none; -webkit-user-select:none;"
+                             onmousedown="event.preventDefault();"
                              onclick="window.moduleContext.selectSuppMember('${safeId}')">
                             <img src="${photoUrl}" alt="${user.fullName}" style="width:45px; height:45px; border-radius:50%; object-fit:cover; border:2px solid var(--accent-orange);">
                             <div style="flex:1;">
