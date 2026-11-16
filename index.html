@@ -597,6 +597,10 @@
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                     <h3>User Details</h3>
                 </div>
+                <div class="module-card admin-only" onclick="window.appContext.switchView('staff-pt')">
+                    <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11"></path><path d="M21 21l-1-1"></path><path d="M3 3l1 1"></path><path d="M18 22l4-4"></path><path d="M2 6l4-4"></path><path d="M3 10l7-7"></path><path d="M14 21l7-7"></path></svg>
+                    <h3>Personal Training</h3>
+                </div>
 
                 <div class="module-card admin-only" onclick="window.appContext.switchView('supplement-admin')">
                     <svg class="module-icon-svg" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
@@ -894,6 +898,11 @@
                             <span class="profile-meta-lbl">Registered By</span>
                             <span class="profile-meta-val" id="hub-registered-by">Admin</span>
                         </div>
+                    </div>
+
+                    <div id="hub-pt-trainer-bar" style="display:none; align-items:center; justify-content:space-between; gap:8px; background:#fff5eb; border:1px solid #fed7aa; border-radius:8px; padding:0.55rem 0.75rem;">
+                        <span style="font-size:0.74rem; font-weight:800; color:var(--accent-orange); text-transform:uppercase; white-space:nowrap;">🏋️ PT Trainer:</span>
+                        <select id="hub-pt-trainer-select" onchange="window.moduleContext.onHubPtTrainerChange(this.value)" style="flex:1; min-width:0; padding:0.4rem 0.6rem; font-size:0.82rem; font-weight:800; background:#fff; border-radius:6px;"></select>
                     </div>
 
                     <div id="hub-actions">
@@ -1696,7 +1705,7 @@
                                 </select>
                             </div>
                             <div class="form-group" id="pt-trainer-select-group" style="display:none;">
-                                <label for="assignedPtTrainer">Assigned PT Trainer</label>
+                                <label for="assignedPtTrainer">Assigned PT Trainer <span class="required">*</span></label>
                                 <select id="assignedPtTrainer">
                                     <option value="">-- Assign Staff Trainer --</option>
                                 </select>
@@ -5949,7 +5958,9 @@
                     storage.set('revive_staff_db', db);
                     cloudSync.push('pushStaff', db[idx]);
                     syncHrBackupToSettings();
-                    showNotice(`${db[idx].name} marked relieved with Last Working Day: ${formatDateStr(lwdVal)}.`, "info");
+                    const reassignedCount = window.moduleContext.reconcilePtTrainersForInactiveStaff();
+                    const extraMsg = reassignedCount > 0 ? ` (${reassignedCount} PT client${reassignedCount > 1 ? 's' : ''} reassigned to Admin)` : '';
+                    showNotice(`${db[idx].name} marked relieved with Last Working Day: ${formatDateStr(lwdVal)}.${extraMsg}`, "info");
                 }
                 document.getElementById('staffDeleteLwdModal').style.display = 'none';
                 window.moduleContext.renderStaffList();
@@ -5966,6 +5977,7 @@
                         cloudSync.push('deleteStaff', { id: id });
                         syncHrBackupToSettings();
                         window.moduleContext.renderStaffList();
+                        window.moduleContext.reconcilePtTrainersForInactiveStaff();
                         showNotice("Staff record removed.", "info");
                     }
                 );
@@ -7244,42 +7256,104 @@
                 }
                 return { rows, present, leave, absent, holidays, workingDays };
             },
+            reconcilePtTrainersForInactiveStaff: function() {
+                const staffList = getNormalizedStaffDb();
+                const activeStaff = staffList.filter(st => !isStaffRelieved(st));
+                const allUsers = storage.get('revive_users_db', []);
+                let changedCount = 0;
+
+                const updatedUsers = allUsers.map(u => {
+                    if (!u || isUserCancelled(u)) return u;
+                    if (!String(u.trainingCategory || '').toLowerCase().includes('personal')) return u;
+
+                    const tId = String(u.assignedTrainerId || '').trim();
+                    const tName = String(u.assignedTrainerName || '').trim();
+                    if (tId.toUpperCase() === 'ADMIN' || tName.toLowerCase() === 'admin') {
+                        return u;
+                    }
+                    if (!tId && !tName) {
+                        return u;
+                    }
+
+                    // Check if assigned trainer is still an active staff member
+                    const activeMatch = activeStaff.find(st =>
+                        (tId && String(st.id) === tId) ||
+                        (tName && String(st.name).toLowerCase() === tName.toLowerCase())
+                    );
+                    if (!activeMatch) {
+                        // Trainer resigned, relieved, or removed -> auto-assign to Admin
+                        changedCount++;
+                        const reassigned = {
+                            ...u,
+                            assignedTrainerId: 'ADMIN',
+                            assignedTrainerName: 'Admin'
+                        };
+                        cloudSync.push('pushUser', reassigned);
+                        return reassigned;
+                    }
+                    return u;
+                });
+
+                if (changedCount > 0) {
+                    storage.set('revive_users_db', updatedUsers);
+                }
+                return changedCount;
+            },
+
             populatePtTrainerDropdown: function(selectedVal = '') {
                 const sel = document.getElementById('assignedPtTrainer');
                 if (!sel) return;
                 const staffList = getNormalizedStaffDb().filter(st => !isStaffRelieved(st));
-                let htmlOpts = '<option value="">-- Assign Staff Trainer --</option>';
-                staffList.forEach(st => {
-                    const isSel = selectedVal && (String(st.id) === String(selectedVal) || String(st.name).toLowerCase() === String(selectedVal).toLowerCase());
-                    htmlOpts += `<option value="${st.id}" ${isSel ? 'selected' : ''}>${st.name}</option>`;
-                });
-                if (!selectedVal && appContext.currentRole === 'staff' && appContext.currentStaffObj) {
-                    // Default to logged-in staff when staff is doing a PT admission
-                    const selfOpt = staffList.find(st => String(st.id) === String(appContext.currentStaffObj.id));
-                    if (selfOpt) {
-                        htmlOpts = '<option value="">-- Assign Staff Trainer --</option>' + staffList.map(st => `<option value="${st.id}" ${String(st.id) === String(selfOpt.id) ? 'selected' : ''}>${st.name}</option>`).join('');
-                    }
+                let resolvedVal = String(selectedVal || '').trim();
+                // If previously assigned trainer is no longer active, fallback to Admin
+                if (resolvedVal && resolvedVal.toUpperCase() !== 'ADMIN' && resolvedVal.toLowerCase() !== 'admin') {
+                    const stillActive = staffList.some(st => String(st.id) === resolvedVal || String(st.name).toLowerCase() === resolvedVal.toLowerCase());
+                    if (!stillActive) resolvedVal = 'ADMIN';
                 }
+
+                let htmlOpts = '<option value="">-- Select Active Trainer --</option>';
+                staffList.forEach(st => {
+                    const isSel = resolvedVal && (String(st.id) === resolvedVal || String(st.name).toLowerCase() === resolvedVal.toLowerCase());
+                    htmlOpts += `<option value="${st.id}" ${isSel ? 'selected' : ''}>${st.name} (${st.role || 'Staff'})</option>`;
+                });
+                const isAdminSel = (resolvedVal.toUpperCase() === 'ADMIN' || resolvedVal.toLowerCase() === 'admin');
+                htmlOpts += `<option value="ADMIN" ${isAdminSel ? 'selected' : ''}>Admin</option>`;
                 sel.innerHTML = htmlOpts;
             },
 
             onTrainingCategoryChange: function() {
                 const catEl = document.getElementById('trainingCategory');
                 const grp = document.getElementById('pt-trainer-select-group');
+                const sel = document.getElementById('assignedPtTrainer');
                 if (!catEl || !grp) return;
                 if (catEl.value === 'Personal Training') {
                     grp.style.display = 'flex';
-                    const sel = document.getElementById('assignedPtTrainer');
-                    if (sel && sel.options.length <= 1) {
-                        window.moduleContext.populatePtTrainerDropdown('');
+                    if (sel) {
+                        sel.required = true;
+                        if (sel.options.length <= 1) {
+                            window.moduleContext.populatePtTrainerDropdown('');
+                        }
                     }
                 } else {
                     grp.style.display = 'none';
+                    if (sel) {
+                        sel.required = false;
+                        sel.value = '';
+                    }
                 }
             },
 
+            onHubPtTrainerChange: function(trainerId) {
+                if (!currentActiveUser || appContext.currentRole !== 'admin') return;
+                if (!trainerId) {
+                    showNotice("Please select an active Trainer or Admin.", "error");
+                    return;
+                }
+                window.moduleContext.assignPtClientTrainer(currentActiveUser.id, trainerId, true);
+            },
+
             initStaffPtView: function() {
-                window._staffPtFilterMode = window._staffPtFilterMode || 'MY';
+                window._staffPtFilterMode = (appContext.currentRole === 'admin') ? 'ALL' : 'MY';
                 const searchEl = document.getElementById('staff-pt-search-input');
                 if (searchEl) searchEl.value = '';
                 window.moduleContext.setStaffPtFilter(window._staffPtFilterMode);
@@ -7294,18 +7368,31 @@
                 window.moduleContext.renderStaffPtClients();
             },
 
-            assignPtClientTrainer: function(userId, trainerId) {
+            assignPtClientTrainer: function(userId, trainerId, fromHub = false) {
                 let usersDb = storage.get('revive_users_db', []);
                 const idx = usersDb.findIndex(u => u && String(u.id) === String(userId));
                 if (idx === -1) return;
-                const staffList = getNormalizedStaffDb();
-                const st = staffList.find(s => String(s.id) === String(trainerId));
-                usersDb[idx].assignedTrainerId = st ? st.id : '';
-                usersDb[idx].assignedTrainerName = st ? st.name : '';
+                const isAdminAssign = (String(trainerId).toUpperCase() === 'ADMIN');
+                const staffList = getNormalizedStaffDb().filter(s => !isStaffRelieved(s));
+                const st = isAdminAssign ? null : staffList.find(s => String(s.id) === String(trainerId));
+                if (!isAdminAssign && !st) {
+                    showNotice("Please choose an active Trainer or Admin.", "error");
+                    return;
+                }
+                usersDb[idx].assignedTrainerId = isAdminAssign ? 'ADMIN' : st.id;
+                usersDb[idx].assignedTrainerName = isAdminAssign ? 'Admin' : st.name;
                 storage.set('revive_users_db', usersDb);
                 cloudSync.push('pushUser', usersDb[idx]);
-                showNotice(st ? `${usersDb[idx].fullName} assigned to ${st.name}.` : `Trainer unassigned for ${usersDb[idx].fullName}.`, 'success');
-                window.moduleContext.renderStaffPtClients();
+                if (currentActiveUser && String(currentActiveUser.id) === String(userId)) {
+                    currentActiveUser = usersDb[idx];
+                    const cleanTrain = String(currentActiveUser.trainingCategory || "Regular").replace(" Training", "") + (String(currentActiveUser.trainingCategory || "").includes("Personal") && currentActiveUser.assignedTrainerName ? ` (${currentActiveUser.assignedTrainerName})` : "");
+                    const detEl = document.getElementById("hub-details");
+                    if (detEl) detEl.innerText = `${currentActiveUser.admissionCategory || "Individual"} • ${cleanTrain}`;
+                }
+                showNotice(`${usersDb[idx].fullName} assigned to ${usersDb[idx].assignedTrainerName}.`, 'success');
+                if (!fromHub) {
+                    window.moduleContext.renderStaffPtClients();
+                }
             },
 
             markPtClientAttendance: function(userId) {
@@ -7362,7 +7449,9 @@
                 const container = document.getElementById('staff-pt-clients-container');
                 if (!container) return;
 
-                const st = window.moduleContext.resolveActiveStaff();
+                window.moduleContext.reconcilePtTrainersForInactiveStaff();
+                const isAdmin = (appContext.currentRole === 'admin');
+                const st = isAdmin ? null : window.moduleContext.resolveActiveStaff();
                 const now = new Date();
                 const todayKey = toIsoDateKey(now);
                 const todayPretty = now.toLocaleDateString('en-IN', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
@@ -7374,8 +7463,10 @@
 
                 const headerMeta = document.getElementById('staff-pt-header-meta');
                 if (headerMeta) {
-                    headerMeta.innerHTML = `Trainer: <strong style="color:var(--accent-orange);">${st ? st.name : 'Staff'}</strong> &nbsp;•&nbsp; ${todayPretty}`;
+                    headerMeta.innerHTML = `${isAdmin ? 'Admin PT Manager' : 'Trainer: <strong style="color:var(--accent-orange);">' + (st ? st.name : 'Staff') + '</strong>'} &nbsp;•&nbsp; ${todayPretty}`;
                 }
+                const tabMyBtn = document.getElementById('pt-tab-my');
+                if (tabMyBtn) tabMyBtn.innerText = isAdmin ? 'Admin Assigned' : 'My Clients';
 
                 const allUsers = storage.get('revive_users_db', []);
                 const supersededIds = getSupersededUserIdsSet(allUsers);
@@ -7387,9 +7478,12 @@
                 );
 
                 const isAssignedToMe = function(u) {
-                    if (!st) return true;
                     const tId = String(u.assignedTrainerId || '').trim().toLowerCase();
                     const tName = String(u.assignedTrainerName || '').trim().toLowerCase();
+                    if (isAdmin) {
+                        return (tId === 'admin' || tName === 'admin' || (!tId && !tName));
+                    }
+                    if (!st) return false;
                     const myId = String(st.id || '').trim().toLowerCase();
                     const myName = String(st.name || '').trim().toLowerCase();
                     if (tId && tId === myId) return true;
@@ -7398,13 +7492,8 @@
                 };
 
                 const myAssignedPt = activePtUsers.filter(u => isAssignedToMe(u));
-                const unassignedPt = activePtUsers.filter(u => !u.assignedTrainerId && !u.assignedTrainerName);
-
-                // If viewing "MY" tab: show clients assigned to this staff + any unassigned PT clients so none are missed
-                const mode = window._staffPtFilterMode || 'MY';
-                let displayList = (mode === 'MY')
-                    ? [...myAssignedPt, ...unassignedPt.filter(u => !myAssignedPt.some(m => m.id === u.id))]
-                    : [...activePtUsers];
+                const mode = window._staffPtFilterMode || (isAdmin ? 'ALL' : 'MY');
+                let displayList = (mode === 'MY') ? [...myAssignedPt] : [...activePtUsers];
 
                 const attDb = storage.get('revive_attendance_db', {});
                 const todayLogs = attDb[todayKey] || [];
@@ -7451,10 +7540,14 @@
                         : (u.primaryContact || '-');
                     const todayRec = todayLogs.find(a => String(a.userId) === String(u.id));
                     const monthAttCount = window.moduleContext.getUserMonthAttendanceCount(u.id, currMonthName, currFy);
-                    const trainerOpts = `<option value="">Unassigned</option>` + staffList.map(s => {
+                    const isAdminAssigned = (String(u.assignedTrainerId || '').toUpperCase() === 'ADMIN' || String(u.assignedTrainerName || '').toLowerCase() === 'admin');
+                    const trainerOpts = staffList.map(s => {
                         const sel = (String(u.assignedTrainerId || '') === String(s.id) || String(u.assignedTrainerName || '').toLowerCase() === String(s.name).toLowerCase());
                         return `<option value="${s.id}" ${sel ? 'selected' : ''}>Trainer: ${s.name}</option>`;
-                    }).join('');
+                    }).join('') + `<option value="ADMIN" ${isAdminAssigned ? 'selected' : ''}>Trainer: Admin</option>`;
+                    const trainerControlHtml = isAdmin
+                        ? `<select onchange="window.moduleContext.assignPtClientTrainer('${safeId}', this.value)" style="width:auto; padding:4px 8px; font-size:0.72rem; font-weight:800; border-radius:6px; background:var(--bg-main); height:auto;">${trainerOpts}</select>`
+                        : `<span style="color:var(--accent-orange); background:#fff5eb; padding:4px 8px; border-radius:6px; border:1px solid #fed7aa;">🏋️ ${u.assignedTrainerName || 'Admin'}</span>`;
 
                     const actionBtnHtml = todayRec
                         ? `<div style="display:flex; align-items:center; justify-content:center; gap:6px; width:100%; padding:0.62rem 0.8rem; border-radius:8px; background:#f0fdf4; border:1.5px solid #86efac; color:#15803d; font-size:0.78rem; font-weight:900; text-transform:uppercase;">
@@ -7478,9 +7571,7 @@
                         </div>
                         <div class="pt-client-meta-row">
                             <span style="color:var(--text-main); background:var(--bg-main); padding:4px 8px; border-radius:6px; border:1px solid var(--border-color);">📅 ${currMonthShort} Att: <strong style="color:var(--accent-orange);">${monthAttCount} Days</strong></span>
-                            <select onchange="window.moduleContext.assignPtClientTrainer('${safeId}', this.value)" style="width:auto; padding:4px 8px; font-size:0.72rem; font-weight:800; border-radius:6px; background:var(--bg-main); height:auto;">
-                                ${trainerOpts}
-                            </select>
+                            ${trainerControlHtml}
                         </div>
                         ${actionBtnHtml}
                     </div>`;
@@ -8216,6 +8307,28 @@
                     }
                 }
                 
+                window.moduleContext.reconcilePtTrainersForInactiveStaff();
+                const refreshedUsersForHub = storage.get('revive_users_db', []);
+                const latestHubUser = refreshedUsersForHub.find(x => String(x.id) === String(user.id)) || user;
+                currentActiveUser = latestHubUser;
+                const hubTrainRefresh = String(latestHubUser.trainingCategory || "Regular").replace(" Training", "") + (String(latestHubUser.trainingCategory || "").includes("Personal") && latestHubUser.assignedTrainerName ? ` (${latestHubUser.assignedTrainerName})` : "");
+                document.getElementById("hub-details").innerText = `${latestHubUser.admissionCategory || "Individual"} • ${hubTrainRefresh}`;
+
+                const ptBar = document.getElementById("hub-pt-trainer-bar");
+                const ptBarSel = document.getElementById("hub-pt-trainer-select");
+                if (ptBar && ptBarSel) {
+                    if (appContext.currentRole === "admin" && !isCanc && String(latestHubUser.trainingCategory || "").toLowerCase().includes("personal")) {
+                        const activeStaffList = getNormalizedStaffDb().filter(s => !isStaffRelieved(s));
+                        const isAdmT = (String(latestHubUser.assignedTrainerId || "").toUpperCase() === "ADMIN" || String(latestHubUser.assignedTrainerName || "").toLowerCase() === "admin" || (!latestHubUser.assignedTrainerId && !latestHubUser.assignedTrainerName));
+                        ptBarSel.innerHTML = activeStaffList.map(s => {
+                            const isSel = (String(latestHubUser.assignedTrainerId || "") === String(s.id) || String(latestHubUser.assignedTrainerName || "").toLowerCase() === String(s.name).toLowerCase());
+                            return `<option value="${s.id}" ${isSel ? 'selected' : ''}>${s.name} (${s.role || 'Staff'})</option>`;
+                        }).join('') + `<option value="ADMIN" ${isAdmT ? 'selected' : ''}>Admin</option>`;
+                        ptBar.style.display = "flex";
+                    } else {
+                        ptBar.style.display = "none";
+                    }
+                }
                 window.moduleContext.renderHubWalletSection(user.id);
                 window.moduleContext.renderFeeCalendar(user.id, currentActiveUser.selectedFY, user.trainingCategory, dInfo.formattedDate);
                 window.appContext.switchView("user-hub");
@@ -11840,10 +11953,20 @@
                 const ptSelEl = document.getElementById('assignedPtTrainer');
                 let selTrainerId = '';
                 let selTrainerName = '';
-                if (selTrainCat === 'Personal Training' && ptSelEl && ptSelEl.value) {
+                if (selTrainCat === 'Personal Training') {
+                    if (!ptSelEl || !ptSelEl.value) {
+                        showNotice("Please select an active Personal Trainer before proceeding.", "error");
+                        if (ptSelEl) ptSelEl.focus();
+                        return;
+                    }
                     selTrainerId = ptSelEl.value;
-                    const stMatch = getNormalizedStaffDb().find(s => String(s.id) === String(selTrainerId) || String(s.name).toLowerCase() === String(selTrainerId).toLowerCase());
-                    selTrainerName = stMatch ? stMatch.name : (ptSelEl.options[ptSelEl.selectedIndex] ? ptSelEl.options[ptSelEl.selectedIndex].text : '');
+                    if (String(selTrainerId).toUpperCase() === 'ADMIN') {
+                        selTrainerId = 'ADMIN';
+                        selTrainerName = 'Admin';
+                    } else {
+                        const stMatch = getNormalizedStaffDb().find(s => String(s.id) === String(selTrainerId) || String(s.name).toLowerCase() === String(selTrainerId).toLowerCase());
+                        selTrainerName = stMatch ? stMatch.name : (ptSelEl.options[ptSelEl.selectedIndex] ? ptSelEl.options[ptSelEl.selectedIndex].text : '');
+                    }
                 }
                 currentMemberDetails = {
                     date: dtVal,
