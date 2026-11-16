@@ -1474,13 +1474,12 @@
                     <h2 class="module-title">Personal Training</h2>
                 </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:0.9rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:0.85rem;">
                     <div id="staff-pt-header-meta" style="font-size:0.84rem; font-weight:800; color:var(--text-muted);"></div>
-                    <div class="pt-filter-tabs" id="pt-filter-tabs-wrap" style="display:none;">
-                        <button type="button" id="pt-tab-all" class="pt-filter-btn active" onclick="window.moduleContext.setStaffPtFilter('ALL')">All PT Clients</button>
-                        <button type="button" id="pt-tab-my" class="pt-filter-btn" onclick="window.moduleContext.setStaffPtFilter('MY')">Admin Assigned</button>
-                    </div>
+                    <select id="admin-pt-trainer-filter" onchange="window.moduleContext.renderStaffPtClients()" style="display:none; width:auto; min-width:190px; padding:0.45rem 0.75rem; font-size:0.8rem; font-weight:800; border-radius:8px; background:var(--bg-panel); border:1.5px solid var(--border-color);"></select>
                 </div>
+
+                <div id="staff-pt-due-banner" style="display:none; background:#fff5f5; border:1.5px solid #feb2b2; border-left:4px solid var(--error-red); border-radius:10px; padding:0.75rem 0.95rem; margin-bottom:0.9rem; font-size:0.8rem; font-weight:800; color:var(--error-red); line-height:1.4;"></div>
 
                 <div class="staff-kpi-row3" style="margin-bottom:1rem;">
                     <div class="staff-kpi-card" style="border-bottom: 3px solid var(--accent-orange); cursor:default;">
@@ -1491,9 +1490,9 @@
                         <h4>Present Today</h4>
                         <div class="kpi-num" style="color:var(--success-green);" id="pt-kpi-present-today">0</div>
                     </div>
-                    <div class="staff-kpi-card" style="border-bottom: 3px solid #1d4ed8; cursor:default;">
-                        <h4 id="pt-kpi-third-lbl">Pending Today</h4>
-                        <div class="kpi-num" style="color:#1d4ed8;" id="pt-kpi-total-pt">0</div>
+                    <div class="staff-kpi-card" style="border-bottom: 3px solid var(--error-red); cursor:default;">
+                        <h4 id="pt-kpi-third-lbl">30-Session Fee Due</h4>
+                        <div class="kpi-num" style="color:var(--error-red);" id="pt-kpi-total-pt">0</div>
                     </div>
                 </div>
 
@@ -3587,7 +3586,7 @@
             }
             return null;
         }
-        var EMBEDDED_APPS_SCRIPT_CODE = "/**\n * ============================================================================\n * REVIVE FITNESS STUDIO \u2014 MASTER GOOGLE SHEET DATA SERVER (Code.gs)\n * ============================================================================\n * HOW TO DEPLOY THIS SCRIPT IN YOUR GOOGLE SHEET:\n * 1. Open your Google Sheet -> Click \"Extensions\" -> \"Apps Script\".\n * 2. Delete any old code in Code.gs and paste this ENTIRE script.\n * 3. Click the Save icon (\ud83d\udcbe), then select \"setupDatabaseSheets\" from the\n *    top function dropdown and click \"Run\" once (grant permissions when asked).\n *    -> This automatically creates/updates all 16 tabs & headers!\n * 4. Click \"Deploy\" (top right) -> \"New deployment\" (or \"Manage deployments\" -> Edit -> \"New version\"):\n *    - Select type: \"Web app\"\n *    - Execute as: \"Me\"\n *    - Who has access: \"Anyone\" (CRITICAL: Must be \"Anyone\" so the portal can connect!)\n * 5. Click \"Deploy\", copy the \"Web app URL\" (ends with /exec), and paste it into\n *    the Revive Portal -> Cloud Data Server (\u2601) settings!\n * ============================================================================\n */\n\nvar SCHEMA = {\n  Users: [\n    'id', 'date', 'admissionType', 'admissionCategory', 'trainingCategory',\n    'firstName', 'lastName', 'fullName', 'primaryContact', 'alternateContact',\n    'dob', 'age', 'address', '_fy', '_month', 'admFeeExpected', 'admFeePaid',\n    'initialTotalDue', 'initialAmountPaid', 'collectedBy', 'status', 'isDeleted',\n    'assignedTrainerId', 'assignedTrainerName', 'admissionTimestamp', 'location', 'photo', 'signature', 'updatedAt'\n  ],\n  ArchivedUsers: [\n    'id', 'fullName', 'primaryContact', 'date', '_fy', '_month',\n    'admissionCategory', 'trainingCategory', 'admFeePaid', 'collectedBy',\n    'isDeleted', 'archivedAt'\n  ],\n  Payments: [\n    'userId', 'fullName', 'primaryContact', 'fy', 'month',\n    'totalDue', 'amountPaid', 'balanceDue', 'lastPaidAmount', 'admFeeIncluded',\n    'status', 'method', 'collectedBy', 'lastDate'\n  ],\n  Attendance: [\n    'dateKey', 'userId', 'fullName', 'timestamp', 'month'\n  ],\n  Expenses: [\n    'id', 'date', 'amount', 'category', 'mode', 'desc', 'month', 'fy', 'timestamp'\n  ],\n  Tariffs: [\n    'fy', 'month', 'admFee', 'regFee', 'ptFee'\n  ],\n  SpecialTariffs: [\n    'id', 'name', 'startDate', 'endDate', 'admFee', 'regFee', 'ptFee'\n  ],\n  Staff: [\n    'id', 'name', 'contact', 'emergencyContact', 'address', 'joiningDate',\n    'role', 'shifts', 'pin', 'photo', 'aadhaarFront', 'aadhaarBack',\n    'lastWorkingDay', 'isRelieved'\n  ],\n  StaffAttendance: [\n    'id', 'staffId', 'staffName', 'staffPin', 'dateKey', 'slot',\n    'checkIn', 'checkInIso', 'checkOut', 'checkOutIso', 'duration',\n    'status', 'slotsJson', 'updatedAt'\n  ],\n  Holidays: [\n    'id', 'date', 'name', 'desc'\n  ],\n  HrTasks: [\n    'id', 'staffId', 'staffName', 'staffPin', 'dateKey', 'slot',\n    'requestType', 'note', 'status', 'createdAt', 'resolvedAt'\n  ],\n  Supplements: [\n    'id', 'name', 'category', 'costPrice', 'mrp', 'offerPrice',\n    'stock', 'storeVisible', 'lastPurchaseDate'\n  ],\n  SupplementSales: [\n    'id', 'date', 'isoDate', 'fy', 'month', 'userId', 'fullName',\n    'phone', 'address', 'itemsJson', 'totalMrp', 'baseSellingAmount',\n    'couponCode', 'couponDiscount', 'couponDetails', 'totalAmount',\n    'amountPaid', 'balanceDue', 'status', 'totalCost', 'method',\n    'soldBy', 'lastClearedDate'\n  ],\n  SupplementPurchases: [\n    'id', 'date', 'fy', 'month', 'productId', 'productName',\n    'qty', 'unitCost', 'totalCost', 'mode', 'timestamp'\n  ],\n  SupplementCoupons: [\n    'id', 'code', 'type', 'value', 'minOrder'\n  ],\n  Settings: [\n    'key', 'value', 'updatedAt'\n  ]\n};\n\n/**\n * Run this function once from the Apps Script editor (or it runs automatically)\n * to create and upgrade all 16 sheets and headers without losing any data.\n */\nfunction setupDatabaseSheets() {\n  var ss = SpreadsheetApp.getActiveSpreadsheet();\n  ensureAllSheetsAndHeaders(ss);\n  return 'All 16 Revive Fitness Studio database tabs are ready!';\n}\n\nfunction ensureAllSheetsAndHeaders(ss) {\n  if (!ss) ss = SpreadsheetApp.getActiveSpreadsheet();\n  var sheetNames = Object.keys(SCHEMA);\n  for (var i = 0; i < sheetNames.length; i++) {\n    var name = sheetNames[i];\n    var expectedHeaders = SCHEMA[name];\n    var sheet = ss.getSheetByName(name);\n    if (!sheet) {\n      sheet = ss.insertSheet(name);\n      sheet.getRange(1, 1, 1, expectedHeaders.length).setValues([expectedHeaders]);\n      styleHeaderRow(sheet, expectedHeaders.length);\n    } else {\n      var lastCol = sheet.getLastColumn();\n      if (lastCol === 0) {\n        sheet.getRange(1, 1, 1, expectedHeaders.length).setValues([expectedHeaders]);\n        styleHeaderRow(sheet, expectedHeaders.length);\n      } else {\n        var currentHeaders = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(function(h) {\n          return String(h || '').trim();\n        });\n        var addedAny = false;\n        for (var j = 0; j < expectedHeaders.length; j++) {\n          var eh = expectedHeaders[j];\n          var exists = currentHeaders.some(function(ch) {\n            return ch.toLowerCase() === eh.toLowerCase();\n          });\n          if (!exists) {\n            currentHeaders.push(eh);\n            addedAny = true;\n          }\n        }\n        if (addedAny) {\n          sheet.getRange(1, 1, 1, currentHeaders.length).setValues([currentHeaders]);\n          styleHeaderRow(sheet, currentHeaders.length);\n        }\n      }\n    }\n  }\n}\n\nfunction styleHeaderRow(sheet, numCols) {\n  try {\n    var range = sheet.getRange(1, 1, 1, numCols);\n    range.setBackground('#ff6600')\n         .setFontColor('#ffffff')\n         .setFontWeight('bold');\n    sheet.setFrozenRows(1);\n  } catch (err) {}\n}\n\n/**\n * Helper to return JSON or JSONP (supports opaque iframe & cross-origin recall)\n */\nfunction createApiOutput(dataObj, e) {\n  var jsonStr = JSON.stringify(dataObj);\n  var callback = (e && e.parameter && e.parameter.callback) ? String(e.parameter.callback).trim() : '';\n  if (callback) {\n    return ContentService.createTextOutput(callback + '(' + jsonStr + ');')\n      .setMimeType(ContentService.MimeType.JAVASCRIPT);\n  }\n  return ContentService.createTextOutput(jsonStr)\n    .setMimeType(ContentService.MimeType.JSON);\n}\n\n/**\n * GET Endpoint: Recalls all records from Google Sheet tabs back to the Portal\n */\nfunction doGet(e) {\n  try {\n    var ss = SpreadsheetApp.getActiveSpreadsheet();\n    ensureAllSheetsAndHeaders(ss);\n\n    var action = (e && e.parameter && e.parameter.action) ? String(e.parameter.action) : 'pull';\n\n    if (action === 'ping') {\n      return createApiOutput({\n        status: 'ok',\n        server: 'Revive Fitness Studio Google Sheet Data Server',\n        spreadsheetName: ss.getName(),\n        timestamp: new Date().toISOString()\n      }, e);\n    }\n\n    var responsePayload = buildFullPullPayload(ss);\n    return createApiOutput(responsePayload, e);\n  } catch (err) {\n    return createApiOutput({\n      status: 'error',\n      message: String(err && err.message ? err.message : err)\n    }, e);\n  }\n}\n\n/**\n * POST Endpoint: Captures single actions and full-database syncs from the Portal\n */\nfunction doPost(e) {\n  var lock = LockService.getScriptLock();\n  lock.tryLock(15000);\n  try {\n    var ss = SpreadsheetApp.getActiveSpreadsheet();\n    ensureAllSheetsAndHeaders(ss);\n\n    var body = parseIncomingPostData(e);\n    if (!body || !body.action) {\n      return createApiOutput({ status: 'error', message: 'Missing action in POST payload' }, e);\n    }\n\n    var result = processServerAction(ss, body.action, body.payload);\n    SpreadsheetApp.flush();\n    return createApiOutput({\n      status: 'success',\n      action: body.action,\n      result: result,\n      timestamp: new Date().toISOString()\n    }, e);\n  } catch (err) {\n    return createApiOutput({\n      status: 'error',\n      message: String(err && err.message ? err.message : err)\n    }, e);\n  } finally {\n    try { lock.releaseLock(); } catch (ignore) {}\n  }\n}\n\n/**\n * Universal parser for POST requests (supports URL-encoded data=, raw JSON, or query params)\n */\nfunction parseIncomingPostData(e) {\n  if (!e) return null;\n  if (e.parameter && e.parameter.data) {\n    try { return JSON.parse(e.parameter.data); } catch (err1) {}\n  }\n  if (e.postData && e.postData.contents) {\n    var raw = String(e.postData.contents).trim();\n    if (raw.charAt(0) === '{') {\n      try { return JSON.parse(raw); } catch (err2) {}\n    }\n    if (raw.indexOf('data=') === 0) {\n      try {\n        var decoded = decodeURIComponent(raw.substring(5).replace(/\\+/g, ' '));\n        return JSON.parse(decoded);\n      } catch (err3) {}\n    }\n  }\n  if (e.parameter && e.parameter.action) {\n    var p = e.parameter.payload ? JSON.parse(e.parameter.payload) : {};\n    return { action: e.parameter.action, payload: p };\n  }\n  return null;\n}\n\n/**\n * Reads all rows from a sheet as an array of objects keyed by header name\n */\nfunction readSheetObjects(ss, sheetName) {\n  var sheet = ss.getSheetByName(sheetName);\n  if (!sheet) return [];\n  var lastRow = sheet.getLastRow();\n  var lastCol = sheet.getLastColumn();\n  if (lastRow <= 1 || lastCol === 0) return [];\n\n  var data = sheet.getRange(1, 1, lastRow, lastCol).getValues();\n  var headers = data[0].map(function(h) { return String(h || '').trim(); });\n  var rows = [];\n\n  for (var r = 1; r < data.length; r++) {\n    var rowVals = data[r];\n    var isEmpty = true;\n    var obj = {};\n    for (var c = 0; c < headers.length; c++) {\n      var key = headers[c];\n      if (!key) continue;\n      var val = rowVals[c];\n      if (val !== '' && val !== null && val !== undefined) isEmpty = false;\n      if (val instanceof Date) {\n        var safeDate = new Date(val.getTime() + (12 * 60 * 60 * 1000));\n        if (key === 'date' || key === 'dob') {\n          val = Utilities.formatDate(safeDate, 'Asia/Kolkata', 'dd-MM-yyyy');\n        } else {\n          val = Utilities.formatDate(safeDate, 'Asia/Kolkata', 'yyyy-MM-dd');\n        }\n      }\n      obj[key] = val;\n    }\n    if (!isEmpty) rows.push(obj);\n  }\n  return rows;\n}\n\n/**\n * Upserts a row into a sheet by matching keyColumn(s)\n */\nfunction upsertSheetRow(ss, sheetName, keyCols, recordObj) {\n  var sheet = ss.getSheetByName(sheetName);\n  var headers = getSheetHeaders(sheet, SCHEMA[sheetName]);\n  var lastRow = sheet.getLastRow();\n  var rowValues = headers.map(function(h) {\n    var v = recordObj[h];\n    if (v === undefined || v === null) return '';\n    if (typeof v === 'object') return JSON.stringify(v);\n    return v;\n  });\n\n  if (lastRow <= 1) {\n    sheet.appendRow(rowValues);\n    return 'inserted';\n  }\n\n  var existingData = sheet.getRange(2, 1, lastRow - 1, headers.length).getValues();\n  var keyIndices = keyCols.map(function(k) { return headers.indexOf(k); });\n\n  for (var i = 0; i < existingData.length; i++) {\n    var match = true;\n    for (var kIdx = 0; kIdx < keyIndices.length; kIdx++) {\n      var colIndex = keyIndices[kIdx];\n      var keyName = keyCols[kIdx];\n      if (colIndex === -1) continue;\n      var sheetVal = String(existingData[i][colIndex] || '').trim().toLowerCase();\n      var targetVal = String(recordObj[keyName] || '').trim().toLowerCase();\n      if (sheetVal !== targetVal) {\n        match = false;\n        break;\n      }\n    }\n    if (match) {\n      sheet.getRange(i + 2, 1, 1, rowValues.length).setValues([rowValues]);\n      return 'updated';\n    }\n  }\n\n  sheet.appendRow(rowValues);\n  return 'inserted';\n}\n\n/**\n * Deletes row(s) matching keyCol == targetVal\n */\nfunction deleteSheetRowByKey(ss, sheetName, keyCol, targetVal) {\n  var sheet = ss.getSheetByName(sheetName);\n  if (!sheet || sheet.getLastRow() <= 1) return 0;\n  var headers = getSheetHeaders(sheet, SCHEMA[sheetName]);\n  var colIdx = headers.indexOf(keyCol);\n  if (colIdx === -1) return 0;\n\n  var data = sheet.getRange(2, 1, sheet.getLastRow() - 1, headers.length).getValues();\n  var deleted = 0;\n  for (var i = data.length - 1; i >= 0; i--) {\n    if (String(data[i][colIdx] || '').trim().toLowerCase() === String(targetVal || '').trim().toLowerCase()) {\n      sheet.deleteRow(i + 2);\n      deleted++;\n    }\n  }\n  return deleted;\n}\n\n/**\n * Replaces all data rows in a sheet with an array of objects\n */\nfunction replaceAllSheetRows(ss, sheetName, recordsArray) {\n  var sheet = ss.getSheetByName(sheetName);\n  var headers = getSheetHeaders(sheet, SCHEMA[sheetName]);\n  var lastRow = sheet.getLastRow();\n  if (lastRow > 1) {\n    sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).clearContent();\n  }\n  if (!recordsArray || !recordsArray.length) return 0;\n\n  var matrix = recordsArray.map(function(rec) {\n    return headers.map(function(h) {\n      var v = rec[h];\n      if (v === undefined || v === null) return '';\n      if (typeof v === 'object') return JSON.stringify(v);\n      return v;\n    });\n  });\n  sheet.getRange(2, 1, matrix.length, headers.length).setValues(matrix);\n  return matrix.length;\n}\n\nfunction getSheetHeaders(sheet, fallbackHeaders) {\n  var lastCol = sheet.getLastColumn();\n  if (lastCol === 0) {\n    sheet.getRange(1, 1, 1, fallbackHeaders.length).setValues([fallbackHeaders]);\n    return fallbackHeaders;\n  }\n  return sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(function(h) {\n    return String(h || '').trim();\n  });\n}\n\n/**\n * Processes every single Portal action and bulk sync\n */\nfunction processServerAction(ss, action, payload) {\n  if (!payload) return 'empty_payload';\n\n  switch (action) {\n    case 'pushUser': {\n      var u = normalizeUserForSheet(payload);\n      return upsertSheetRow(ss, 'Users', ['id'], u);\n    }\n\n    case 'cancelUser':\n    case 'deleteUser': {\n      var delId = payload.id;\n      // Keep the row untouched in Users sheet and mark status as 'Cancelled' (never delete row)\n      var currentUsers = readSheetObjects(ss, 'Users');\n      for (var i = 0; i < currentUsers.length; i++) {\n        if (String(currentUsers[i].id).toLowerCase() === String(delId).toLowerCase()) {\n          var uRow = currentUsers[i];\n          uRow.status = 'Cancelled';\n          uRow.isDeleted = 'Cancelled';\n          uRow.updatedAt = new Date().toISOString();\n          return upsertSheetRow(ss, 'Users', ['id'], uRow);\n        }\n      }\n      var fallbackUser = normalizeUserForSheet(payload);\n      fallbackUser.status = 'Cancelled';\n      fallbackUser.isDeleted = 'Cancelled';\n      return upsertSheetRow(ss, 'Users', ['id'], fallbackUser);\n    }\n\n    case 'pushPayment': {\n      return upsertSheetRow(ss, 'Payments', ['userId', 'fy', 'month'], payload);\n    }\n\n    case 'pushAttendance': {\n      return upsertSheetRow(ss, 'Attendance', ['dateKey', 'userId'], payload);\n    }\n\n    case 'pushExpense': {\n      return upsertSheetRow(ss, 'Expenses', ['id'], payload);\n    }\n\n    case 'pushTariffs': {\n      var tariffRows = [];\n      Object.keys(payload).forEach(function(fy) {\n        var monthsObj = payload[fy] || {};\n        Object.keys(monthsObj).forEach(function(mName) {\n          var t = monthsObj[mName] || {};\n          tariffRows.push({\n            fy: fy,\n            month: mName,\n            admFee: t.admFee,\n            regFee: t.regFee,\n            ptFee: t.ptFee\n          });\n        });\n      });\n      return replaceAllSheetRows(ss, 'Tariffs', tariffRows);\n    }\n\n    case 'pushSpecialTariff': {\n      return upsertSheetRow(ss, 'SpecialTariffs', ['id'], payload);\n    }\n\n    case 'deleteSpecialTariff': {\n      return deleteSheetRowByKey(ss, 'SpecialTariffs', 'id', payload.id);\n    }\n\n    case 'pushStaff': {\n      var st = normalizeStaffForSheet(payload);\n      return upsertSheetRow(ss, 'Staff', ['id'], st);\n    }\n\n    case 'deleteStaff': {\n      return deleteSheetRowByKey(ss, 'Staff', 'id', payload.id);\n    }\n\n    case 'pushStaffAttendance': {\n      var sa = normalizeStaffAttForSheet(payload);\n      return upsertSheetRow(ss, 'StaffAttendance', ['staffId', 'dateKey'], sa);\n    }\n\n    case 'pushHoliday': {\n      return upsertSheetRow(ss, 'Holidays', ['date'], payload);\n    }\n\n    case 'deleteHoliday': {\n      return deleteSheetRowByKey(ss, 'Holidays', 'id', payload.id);\n    }\n\n    case 'pushHrTask': {\n      return upsertSheetRow(ss, 'HrTasks', ['id'], payload);\n    }\n\n    case 'pushSupplements': {\n      if (Array.isArray(payload)) {\n        return replaceAllSheetRows(ss, 'Supplements', payload);\n      }\n      return upsertSheetRow(ss, 'Supplements', ['id'], payload);\n    }\n\n    case 'pushSupplementSale': {\n      var sale = normalizeSuppSaleForSheet(payload);\n      return upsertSheetRow(ss, 'SupplementSales', ['id'], sale);\n    }\n\n    case 'pushSupplementPurchase': {\n      return upsertSheetRow(ss, 'SupplementPurchases', ['id'], payload);\n    }\n\n    case 'pushSupplementCoupons': {\n      if (Array.isArray(payload)) {\n        return replaceAllSheetRows(ss, 'SupplementCoupons', payload);\n      }\n      return upsertSheetRow(ss, 'SupplementCoupons', ['code'], payload);\n    }\n\n    case 'pushSettings': {\n      return saveSettingsObject(ss, payload);\n    }\n\n    case 'pushAll': {\n      // Full bidirectional synchronization of all collections from Portal to Google Sheet\n      var counts = {};\n      if (Array.isArray(payload.users)) {\n        payload.users.forEach(function(u) {\n          upsertSheetRow(ss, 'Users', ['id'], normalizeUserForSheet(u));\n        });\n        counts.users = payload.users.length;\n      }\n      if (Array.isArray(payload.archivedUsers)) {\n        payload.archivedUsers.forEach(function(au) {\n          upsertSheetRow(ss, 'ArchivedUsers', ['id'], au);\n        });\n        counts.archivedUsers = payload.archivedUsers.length;\n      }\n      if (Array.isArray(payload.payments)) {\n        payload.payments.forEach(function(p) {\n          upsertSheetRow(ss, 'Payments', ['userId', 'fy', 'month'], p);\n        });\n        counts.payments = payload.payments.length;\n      }\n      if (Array.isArray(payload.attendance)) {\n        payload.attendance.forEach(function(a) {\n          upsertSheetRow(ss, 'Attendance', ['dateKey', 'userId'], a);\n        });\n        counts.attendance = payload.attendance.length;\n      }\n      if (Array.isArray(payload.expenses)) {\n        payload.expenses.forEach(function(ex) {\n          upsertSheetRow(ss, 'Expenses', ['id'], ex);\n        });\n        counts.expenses = payload.expenses.length;\n      }\n      if (payload.tariffs && typeof payload.tariffs === 'object') {\n        processServerAction(ss, 'pushTariffs', payload.tariffs);\n      }\n      if (Array.isArray(payload.specialTariffs)) {\n        replaceAllSheetRows(ss, 'SpecialTariffs', payload.specialTariffs);\n      }\n      if (Array.isArray(payload.staff)) {\n        payload.staff.forEach(function(st) {\n          upsertSheetRow(ss, 'Staff', ['id'], normalizeStaffForSheet(st));\n        });\n        counts.staff = payload.staff.length;\n      }\n      if (Array.isArray(payload.staffAttendance)) {\n        payload.staffAttendance.forEach(function(sa) {\n          upsertSheetRow(ss, 'StaffAttendance', ['staffId', 'dateKey'], normalizeStaffAttForSheet(sa));\n        });\n        counts.staffAttendance = payload.staffAttendance.length;\n      }\n      if (Array.isArray(payload.holidays)) {\n        replaceAllSheetRows(ss, 'Holidays', payload.holidays);\n      }\n      if (Array.isArray(payload.hrTasks)) {\n        payload.hrTasks.forEach(function(t) {\n          upsertSheetRow(ss, 'HrTasks', ['id'], t);\n        });\n      }\n      if (Array.isArray(payload.supplements)) {\n        replaceAllSheetRows(ss, 'Supplements', payload.supplements);\n      }\n      if (Array.isArray(payload.supplementSales)) {\n        payload.supplementSales.forEach(function(s) {\n          upsertSheetRow(ss, 'SupplementSales', ['id'], normalizeSuppSaleForSheet(s));\n        });\n      }\n      if (Array.isArray(payload.supplementPurchases)) {\n        payload.supplementPurchases.forEach(function(pur) {\n          upsertSheetRow(ss, 'SupplementPurchases', ['id'], pur);\n        });\n      }\n      if (Array.isArray(payload.suppCoupons)) {\n        replaceAllSheetRows(ss, 'SupplementCoupons', payload.suppCoupons);\n      }\n      if (payload.settings && typeof payload.settings === 'object') {\n        saveSettingsObject(ss, payload.settings);\n      }\n      return counts;\n    }\n\n    default:\n      return 'unknown_action: ' + action;\n  }\n}\n\nfunction normalizeUserForSheet(u) {\n  var copy = {};\n  Object.keys(u || {}).forEach(function(k) { copy[k] = u[k]; });\n  var isCanc = (\n    String(copy.status || '').toLowerCase() === 'cancelled' ||\n    String(copy.isDeleted || '').toLowerCase() === 'cancelled' ||\n    copy.isCancelled === true ||\n    copy.isDeleted === true ||\n    String(copy.isDeleted || '').toLowerCase() === 'true'\n  );\n  copy.status = isCanc ? 'Cancelled' : 'Active';\n  copy.isDeleted = isCanc ? 'Cancelled' : 'Active';\n  copy.updatedAt = new Date().toISOString();\n  return copy;\n}\n\nfunction normalizeStaffForSheet(st) {\n  var copy = {};\n  Object.keys(st || {}).forEach(function(k) { copy[k] = st[k]; });\n  if (Array.isArray(copy.shifts)) {\n    copy.shifts = copy.shifts.join(', ');\n  }\n  return copy;\n}\n\nfunction normalizeStaffAttForSheet(sa) {\n  var copy = {};\n  Object.keys(sa || {}).forEach(function(k) { copy[k] = sa[k]; });\n  if (copy.slots && typeof copy.slots === 'object') {\n    copy.slotsJson = JSON.stringify(copy.slots);\n  } else if (!copy.slotsJson) {\n    copy.slotsJson = '{}';\n  }\n  copy.updatedAt = copy.updatedAt || new Date().toISOString();\n  return copy;\n}\n\nfunction normalizeSuppSaleForSheet(sale) {\n  var copy = {};\n  Object.keys(sale || {}).forEach(function(k) { copy[k] = sale[k]; });\n  if (Array.isArray(copy.items)) {\n    copy.itemsJson = JSON.stringify(copy.items);\n  } else if (!copy.itemsJson) {\n    copy.itemsJson = '[]';\n  }\n  return copy;\n}\n\nfunction saveSettingsObject(ss, settingsObj) {\n  var nowIso = new Date().toISOString();\n  Object.keys(settingsObj || {}).forEach(function(k) {\n    var val = settingsObj[k];\n    var serialized = (typeof val === 'object' && val !== null) ? JSON.stringify(val) : String(val);\n    upsertSheetRow(ss, 'Settings', ['key'], {\n      key: k,\n      value: serialized,\n      updatedAt: nowIso\n    });\n  });\n  return 'settings_saved';\n}\n\n/**\n * Builds the complete recall payload for doGet(?action=pull)\n */\nfunction buildFullPullPayload(ss) {\n  var users = readSheetObjects(ss, 'Users').map(function(u) {\n    var isCanc = (\n      String(u.status || '').toLowerCase() === 'cancelled' ||\n      String(u.isDeleted || '').toLowerCase() === 'cancelled' ||\n      u.isDeleted === true ||\n      String(u.isDeleted || '').toLowerCase() === 'true'\n    );\n    u.status = isCanc ? 'Cancelled' : 'Active';\n    u.isCancelled = isCanc;\n    u.isDeleted = isCanc;\n    return u;\n  });\n\n  var archivedUsers = readSheetObjects(ss, 'ArchivedUsers').map(function(u) {\n    u.isDeleted = true;\n    return u;\n  });\n\n  var payments = readSheetObjects(ss, 'Payments');\n  var attendance = readSheetObjects(ss, 'Attendance');\n  var expenses = readSheetObjects(ss, 'Expenses');\n  var specialTariffs = readSheetObjects(ss, 'SpecialTariffs');\n  var holidays = readSheetObjects(ss, 'Holidays');\n  var hrTasks = readSheetObjects(ss, 'HrTasks');\n  var supplementPurchases = readSheetObjects(ss, 'SupplementPurchases');\n  var suppCoupons = readSheetObjects(ss, 'SupplementCoupons');\n\n  // Reconstruct nested Tariffs map { [fy]: { [month]: { admFee, regFee, ptFee } } }\n  var rawTariffs = readSheetObjects(ss, 'Tariffs');\n  var tariffsMap = {};\n  rawTariffs.forEach(function(r) {\n    if (!r.fy || !r.month) return;\n    if (!tariffsMap[r.fy]) tariffsMap[r.fy] = {};\n    tariffsMap[r.fy][r.month] = {\n      admFee: r.admFee,\n      regFee: r.regFee,\n      ptFee: r.ptFee\n    };\n  });\n\n  // Reconstruct Staff array with shifts array\n  var staff = readSheetObjects(ss, 'Staff').map(function(st) {\n    if (typeof st.shifts === 'string' && st.shifts.trim() !== '') {\n      if (st.shifts.trim().charAt(0) === '[') {\n        try { st.shifts = JSON.parse(st.shifts); } catch (e) { st.shifts = st.shifts.split(',').map(function(s) { return s.trim(); }); }\n      } else {\n        st.shifts = st.shifts.split(',').map(function(s) { return s.trim(); }).filter(Boolean);\n      }\n    } else if (!Array.isArray(st.shifts)) {\n      st.shifts = ['Morning', 'Evening'];\n    }\n    st.isRelieved = (st.isRelieved === true || String(st.isRelieved).toLowerCase() === 'true' || !!st.lastWorkingDay);\n    return st;\n  });\n\n  // Reconstruct StaffAttendance with parsed slotsJson\n  var staffAttendance = readSheetObjects(ss, 'StaffAttendance').map(function(sa) {\n    if (sa.slotsJson && typeof sa.slotsJson === 'string') {\n      try { sa.slots = JSON.parse(sa.slotsJson); } catch (e) { sa.slots = {}; }\n    } else if (!sa.slots || typeof sa.slots !== 'object') {\n      sa.slots = {};\n    }\n    return sa;\n  });\n\n  // Reconstruct Supplements with boolean storeVisible\n  var supplements = readSheetObjects(ss, 'Supplements').map(function(item) {\n    item.storeVisible = !(item.storeVisible === false || String(item.storeVisible).toLowerCase() === 'false');\n    return item;\n  });\n\n  // Reconstruct SupplementSales with parsed itemsJson\n  var supplementSales = readSheetObjects(ss, 'SupplementSales').map(function(sale) {\n    if (sale.itemsJson && typeof sale.itemsJson === 'string') {\n      try { sale.items = JSON.parse(sale.itemsJson); } catch (e) { sale.items = []; }\n    } else if (!Array.isArray(sale.items)) {\n      sale.items = [];\n    }\n    return sale;\n  });\n\n  // Reconstruct Settings object\n  var rawSettings = readSheetObjects(ss, 'Settings');\n  var settingsObj = {};\n  rawSettings.forEach(function(row) {\n    if (!row.key) return;\n    var val = row.value;\n    if (typeof val === 'string' && (val.charAt(0) === '{' || val.charAt(0) === '[')) {\n      try { val = JSON.parse(val); } catch (e) {}\n    }\n    settingsObj[row.key] = val;\n  });\n\n  return {\n    status: 'ok',\n    users: users,\n    archivedUsers: archivedUsers,\n    payments: payments,\n    attendance: attendance,\n    expenses: expenses,\n    tariffs: tariffsMap,\n    specialTariffs: specialTariffs,\n    staff: staff,\n    staffAttendance: staffAttendance,\n    holidays: holidays,\n    hrTasks: hrTasks,\n    supplements: supplements,\n    supplementSales: supplementSales,\n    supplementPurchases: supplementPurchases,\n    suppCoupons: suppCoupons,\n    settings: settingsObj\n  };\n}\n";
+        var EMBEDDED_APPS_SCRIPT_CODE = "/**\n * ============================================================================\n * REVIVE FITNESS STUDIO \u2014 MASTER GOOGLE SHEET DATA SERVER (Code.gs)\n * ============================================================================\n * HOW TO DEPLOY THIS SCRIPT IN YOUR GOOGLE SHEET:\n * 1. Open your Google Sheet -> Click \"Extensions\" -> \"Apps Script\".\n * 2. Delete any old code in Code.gs and paste this ENTIRE script.\n * 3. Click the Save icon (\ud83d\udcbe), then select \"setupDatabaseSheets\" from the\n *    top function dropdown and click \"Run\" once (grant permissions when asked).\n *    -> This automatically creates/updates all 16 tabs & headers!\n * 4. Click \"Deploy\" (top right) -> \"New deployment\" (or \"Manage deployments\" -> Edit -> \"New version\"):\n *    - Select type: \"Web app\"\n *    - Execute as: \"Me\"\n *    - Who has access: \"Anyone\" (CRITICAL: Must be \"Anyone\" so the portal can connect!)\n * 5. Click \"Deploy\", copy the \"Web app URL\" (ends with /exec), and paste it into\n *    the Revive Portal -> Cloud Data Server (\u2601) settings!\n * ============================================================================\n */\n\nvar SCHEMA = {\n  Users: [\n    'id', 'date', 'admissionType', 'admissionCategory', 'trainingCategory',\n    'firstName', 'lastName', 'fullName', 'primaryContact', 'alternateContact',\n    'dob', 'age', 'address', '_fy', '_month', 'admFeeExpected', 'admFeePaid',\n    'initialTotalDue', 'initialAmountPaid', 'collectedBy', 'status', 'isDeleted',\n    'assignedTrainerId', 'assignedTrainerName', 'ptBaselineAttCount', 'ptCycleCount', 'lastPtRenewalDate', 'admissionTimestamp', 'location', 'photo', 'signature', 'updatedAt'\n  ],\n  ArchivedUsers: [\n    'id', 'fullName', 'primaryContact', 'date', '_fy', '_month',\n    'admissionCategory', 'trainingCategory', 'admFeePaid', 'collectedBy',\n    'isDeleted', 'archivedAt'\n  ],\n  Payments: [\n    'userId', 'fullName', 'primaryContact', 'fy', 'month',\n    'totalDue', 'amountPaid', 'balanceDue', 'lastPaidAmount', 'admFeeIncluded',\n    'status', 'method', 'collectedBy', 'lastDate'\n  ],\n  Attendance: [\n    'dateKey', 'userId', 'fullName', 'timestamp', 'month'\n  ],\n  Expenses: [\n    'id', 'date', 'amount', 'category', 'mode', 'desc', 'month', 'fy', 'timestamp'\n  ],\n  Tariffs: [\n    'fy', 'month', 'admFee', 'regFee', 'ptFee'\n  ],\n  SpecialTariffs: [\n    'id', 'name', 'startDate', 'endDate', 'admFee', 'regFee', 'ptFee'\n  ],\n  Staff: [\n    'id', 'name', 'contact', 'emergencyContact', 'address', 'joiningDate',\n    'role', 'shifts', 'pin', 'photo', 'aadhaarFront', 'aadhaarBack',\n    'lastWorkingDay', 'isRelieved'\n  ],\n  StaffAttendance: [\n    'id', 'staffId', 'staffName', 'staffPin', 'dateKey', 'slot',\n    'checkIn', 'checkInIso', 'checkOut', 'checkOutIso', 'duration',\n    'status', 'slotsJson', 'updatedAt'\n  ],\n  Holidays: [\n    'id', 'date', 'name', 'desc'\n  ],\n  HrTasks: [\n    'id', 'staffId', 'staffName', 'staffPin', 'dateKey', 'slot',\n    'requestType', 'note', 'status', 'createdAt', 'resolvedAt'\n  ],\n  Supplements: [\n    'id', 'name', 'category', 'costPrice', 'mrp', 'offerPrice',\n    'stock', 'storeVisible', 'lastPurchaseDate'\n  ],\n  SupplementSales: [\n    'id', 'date', 'isoDate', 'fy', 'month', 'userId', 'fullName',\n    'phone', 'address', 'itemsJson', 'totalMrp', 'baseSellingAmount',\n    'couponCode', 'couponDiscount', 'couponDetails', 'totalAmount',\n    'amountPaid', 'balanceDue', 'status', 'totalCost', 'method',\n    'soldBy', 'lastClearedDate'\n  ],\n  SupplementPurchases: [\n    'id', 'date', 'fy', 'month', 'productId', 'productName',\n    'qty', 'unitCost', 'totalCost', 'mode', 'timestamp'\n  ],\n  SupplementCoupons: [\n    'id', 'code', 'type', 'value', 'minOrder'\n  ],\n  Settings: [\n    'key', 'value', 'updatedAt'\n  ]\n};\n\n/**\n * Run this function once from the Apps Script editor (or it runs automatically)\n * to create and upgrade all 16 sheets and headers without losing any data.\n */\nfunction setupDatabaseSheets() {\n  var ss = SpreadsheetApp.getActiveSpreadsheet();\n  ensureAllSheetsAndHeaders(ss);\n  return 'All 16 Revive Fitness Studio database tabs are ready!';\n}\n\nfunction ensureAllSheetsAndHeaders(ss) {\n  if (!ss) ss = SpreadsheetApp.getActiveSpreadsheet();\n  var sheetNames = Object.keys(SCHEMA);\n  for (var i = 0; i < sheetNames.length; i++) {\n    var name = sheetNames[i];\n    var expectedHeaders = SCHEMA[name];\n    var sheet = ss.getSheetByName(name);\n    if (!sheet) {\n      sheet = ss.insertSheet(name);\n      sheet.getRange(1, 1, 1, expectedHeaders.length).setValues([expectedHeaders]);\n      styleHeaderRow(sheet, expectedHeaders.length);\n    } else {\n      var lastCol = sheet.getLastColumn();\n      if (lastCol === 0) {\n        sheet.getRange(1, 1, 1, expectedHeaders.length).setValues([expectedHeaders]);\n        styleHeaderRow(sheet, expectedHeaders.length);\n      } else {\n        var currentHeaders = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(function(h) {\n          return String(h || '').trim();\n        });\n        var addedAny = false;\n        for (var j = 0; j < expectedHeaders.length; j++) {\n          var eh = expectedHeaders[j];\n          var exists = currentHeaders.some(function(ch) {\n            return ch.toLowerCase() === eh.toLowerCase();\n          });\n          if (!exists) {\n            currentHeaders.push(eh);\n            addedAny = true;\n          }\n        }\n        if (addedAny) {\n          sheet.getRange(1, 1, 1, currentHeaders.length).setValues([currentHeaders]);\n          styleHeaderRow(sheet, currentHeaders.length);\n        }\n      }\n    }\n  }\n}\n\nfunction styleHeaderRow(sheet, numCols) {\n  try {\n    var range = sheet.getRange(1, 1, 1, numCols);\n    range.setBackground('#ff6600')\n         .setFontColor('#ffffff')\n         .setFontWeight('bold');\n    sheet.setFrozenRows(1);\n  } catch (err) {}\n}\n\n/**\n * Helper to return JSON or JSONP (supports opaque iframe & cross-origin recall)\n */\nfunction createApiOutput(dataObj, e) {\n  var jsonStr = JSON.stringify(dataObj);\n  var callback = (e && e.parameter && e.parameter.callback) ? String(e.parameter.callback).trim() : '';\n  if (callback) {\n    return ContentService.createTextOutput(callback + '(' + jsonStr + ');')\n      .setMimeType(ContentService.MimeType.JAVASCRIPT);\n  }\n  return ContentService.createTextOutput(jsonStr)\n    .setMimeType(ContentService.MimeType.JSON);\n}\n\n/**\n * GET Endpoint: Recalls all records from Google Sheet tabs back to the Portal\n */\nfunction doGet(e) {\n  try {\n    var ss = SpreadsheetApp.getActiveSpreadsheet();\n    ensureAllSheetsAndHeaders(ss);\n\n    var action = (e && e.parameter && e.parameter.action) ? String(e.parameter.action) : 'pull';\n\n    if (action === 'ping') {\n      return createApiOutput({\n        status: 'ok',\n        server: 'Revive Fitness Studio Google Sheet Data Server',\n        spreadsheetName: ss.getName(),\n        timestamp: new Date().toISOString()\n      }, e);\n    }\n\n    var responsePayload = buildFullPullPayload(ss);\n    return createApiOutput(responsePayload, e);\n  } catch (err) {\n    return createApiOutput({\n      status: 'error',\n      message: String(err && err.message ? err.message : err)\n    }, e);\n  }\n}\n\n/**\n * POST Endpoint: Captures single actions and full-database syncs from the Portal\n */\nfunction doPost(e) {\n  var lock = LockService.getScriptLock();\n  lock.tryLock(15000);\n  try {\n    var ss = SpreadsheetApp.getActiveSpreadsheet();\n    ensureAllSheetsAndHeaders(ss);\n\n    var body = parseIncomingPostData(e);\n    if (!body || !body.action) {\n      return createApiOutput({ status: 'error', message: 'Missing action in POST payload' }, e);\n    }\n\n    var result = processServerAction(ss, body.action, body.payload);\n    SpreadsheetApp.flush();\n    return createApiOutput({\n      status: 'success',\n      action: body.action,\n      result: result,\n      timestamp: new Date().toISOString()\n    }, e);\n  } catch (err) {\n    return createApiOutput({\n      status: 'error',\n      message: String(err && err.message ? err.message : err)\n    }, e);\n  } finally {\n    try { lock.releaseLock(); } catch (ignore) {}\n  }\n}\n\n/**\n * Universal parser for POST requests (supports URL-encoded data=, raw JSON, or query params)\n */\nfunction parseIncomingPostData(e) {\n  if (!e) return null;\n  if (e.parameter && e.parameter.data) {\n    try { return JSON.parse(e.parameter.data); } catch (err1) {}\n  }\n  if (e.postData && e.postData.contents) {\n    var raw = String(e.postData.contents).trim();\n    if (raw.charAt(0) === '{') {\n      try { return JSON.parse(raw); } catch (err2) {}\n    }\n    if (raw.indexOf('data=') === 0) {\n      try {\n        var decoded = decodeURIComponent(raw.substring(5).replace(/\\+/g, ' '));\n        return JSON.parse(decoded);\n      } catch (err3) {}\n    }\n  }\n  if (e.parameter && e.parameter.action) {\n    var p = e.parameter.payload ? JSON.parse(e.parameter.payload) : {};\n    return { action: e.parameter.action, payload: p };\n  }\n  return null;\n}\n\n/**\n * Reads all rows from a sheet as an array of objects keyed by header name\n */\nfunction readSheetObjects(ss, sheetName) {\n  var sheet = ss.getSheetByName(sheetName);\n  if (!sheet) return [];\n  var lastRow = sheet.getLastRow();\n  var lastCol = sheet.getLastColumn();\n  if (lastRow <= 1 || lastCol === 0) return [];\n\n  var data = sheet.getRange(1, 1, lastRow, lastCol).getValues();\n  var headers = data[0].map(function(h) { return String(h || '').trim(); });\n  var rows = [];\n\n  for (var r = 1; r < data.length; r++) {\n    var rowVals = data[r];\n    var isEmpty = true;\n    var obj = {};\n    for (var c = 0; c < headers.length; c++) {\n      var key = headers[c];\n      if (!key) continue;\n      var val = rowVals[c];\n      if (val !== '' && val !== null && val !== undefined) isEmpty = false;\n      if (val instanceof Date) {\n        var safeDate = new Date(val.getTime() + (12 * 60 * 60 * 1000));\n        if (key === 'date' || key === 'dob') {\n          val = Utilities.formatDate(safeDate, 'Asia/Kolkata', 'dd-MM-yyyy');\n        } else {\n          val = Utilities.formatDate(safeDate, 'Asia/Kolkata', 'yyyy-MM-dd');\n        }\n      }\n      obj[key] = val;\n    }\n    if (!isEmpty) rows.push(obj);\n  }\n  return rows;\n}\n\n/**\n * Upserts a row into a sheet by matching keyColumn(s)\n */\nfunction upsertSheetRow(ss, sheetName, keyCols, recordObj) {\n  var sheet = ss.getSheetByName(sheetName);\n  var headers = getSheetHeaders(sheet, SCHEMA[sheetName]);\n  var lastRow = sheet.getLastRow();\n  var rowValues = headers.map(function(h) {\n    var v = recordObj[h];\n    if (v === undefined || v === null) return '';\n    if (typeof v === 'object') return JSON.stringify(v);\n    return v;\n  });\n\n  if (lastRow <= 1) {\n    sheet.appendRow(rowValues);\n    return 'inserted';\n  }\n\n  var existingData = sheet.getRange(2, 1, lastRow - 1, headers.length).getValues();\n  var keyIndices = keyCols.map(function(k) { return headers.indexOf(k); });\n\n  for (var i = 0; i < existingData.length; i++) {\n    var match = true;\n    for (var kIdx = 0; kIdx < keyIndices.length; kIdx++) {\n      var colIndex = keyIndices[kIdx];\n      var keyName = keyCols[kIdx];\n      if (colIndex === -1) continue;\n      var sheetVal = String(existingData[i][colIndex] || '').trim().toLowerCase();\n      var targetVal = String(recordObj[keyName] || '').trim().toLowerCase();\n      if (sheetVal !== targetVal) {\n        match = false;\n        break;\n      }\n    }\n    if (match) {\n      sheet.getRange(i + 2, 1, 1, rowValues.length).setValues([rowValues]);\n      return 'updated';\n    }\n  }\n\n  sheet.appendRow(rowValues);\n  return 'inserted';\n}\n\n/**\n * Deletes row(s) matching keyCol == targetVal\n */\nfunction deleteSheetRowByKey(ss, sheetName, keyCol, targetVal) {\n  var sheet = ss.getSheetByName(sheetName);\n  if (!sheet || sheet.getLastRow() <= 1) return 0;\n  var headers = getSheetHeaders(sheet, SCHEMA[sheetName]);\n  var colIdx = headers.indexOf(keyCol);\n  if (colIdx === -1) return 0;\n\n  var data = sheet.getRange(2, 1, sheet.getLastRow() - 1, headers.length).getValues();\n  var deleted = 0;\n  for (var i = data.length - 1; i >= 0; i--) {\n    if (String(data[i][colIdx] || '').trim().toLowerCase() === String(targetVal || '').trim().toLowerCase()) {\n      sheet.deleteRow(i + 2);\n      deleted++;\n    }\n  }\n  return deleted;\n}\n\n/**\n * Replaces all data rows in a sheet with an array of objects\n */\nfunction replaceAllSheetRows(ss, sheetName, recordsArray) {\n  var sheet = ss.getSheetByName(sheetName);\n  var headers = getSheetHeaders(sheet, SCHEMA[sheetName]);\n  var lastRow = sheet.getLastRow();\n  if (lastRow > 1) {\n    sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).clearContent();\n  }\n  if (!recordsArray || !recordsArray.length) return 0;\n\n  var matrix = recordsArray.map(function(rec) {\n    return headers.map(function(h) {\n      var v = rec[h];\n      if (v === undefined || v === null) return '';\n      if (typeof v === 'object') return JSON.stringify(v);\n      return v;\n    });\n  });\n  sheet.getRange(2, 1, matrix.length, headers.length).setValues(matrix);\n  return matrix.length;\n}\n\nfunction getSheetHeaders(sheet, fallbackHeaders) {\n  var lastCol = sheet.getLastColumn();\n  if (lastCol === 0) {\n    sheet.getRange(1, 1, 1, fallbackHeaders.length).setValues([fallbackHeaders]);\n    return fallbackHeaders;\n  }\n  return sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(function(h) {\n    return String(h || '').trim();\n  });\n}\n\n/**\n * Processes every single Portal action and bulk sync\n */\nfunction processServerAction(ss, action, payload) {\n  if (!payload) return 'empty_payload';\n\n  switch (action) {\n    case 'pushUser': {\n      var u = normalizeUserForSheet(payload);\n      return upsertSheetRow(ss, 'Users', ['id'], u);\n    }\n\n    case 'cancelUser':\n    case 'deleteUser': {\n      var delId = payload.id;\n      // Keep the row untouched in Users sheet and mark status as 'Cancelled' (never delete row)\n      var currentUsers = readSheetObjects(ss, 'Users');\n      for (var i = 0; i < currentUsers.length; i++) {\n        if (String(currentUsers[i].id).toLowerCase() === String(delId).toLowerCase()) {\n          var uRow = currentUsers[i];\n          uRow.status = 'Cancelled';\n          uRow.isDeleted = 'Cancelled';\n          uRow.updatedAt = new Date().toISOString();\n          return upsertSheetRow(ss, 'Users', ['id'], uRow);\n        }\n      }\n      var fallbackUser = normalizeUserForSheet(payload);\n      fallbackUser.status = 'Cancelled';\n      fallbackUser.isDeleted = 'Cancelled';\n      return upsertSheetRow(ss, 'Users', ['id'], fallbackUser);\n    }\n\n    case 'pushPayment': {\n      return upsertSheetRow(ss, 'Payments', ['userId', 'fy', 'month'], payload);\n    }\n\n    case 'pushAttendance': {\n      return upsertSheetRow(ss, 'Attendance', ['dateKey', 'userId'], payload);\n    }\n\n    case 'pushExpense': {\n      return upsertSheetRow(ss, 'Expenses', ['id'], payload);\n    }\n\n    case 'pushTariffs': {\n      var tariffRows = [];\n      Object.keys(payload).forEach(function(fy) {\n        var monthsObj = payload[fy] || {};\n        Object.keys(monthsObj).forEach(function(mName) {\n          var t = monthsObj[mName] || {};\n          tariffRows.push({\n            fy: fy,\n            month: mName,\n            admFee: t.admFee,\n            regFee: t.regFee,\n            ptFee: t.ptFee\n          });\n        });\n      });\n      return replaceAllSheetRows(ss, 'Tariffs', tariffRows);\n    }\n\n    case 'pushSpecialTariff': {\n      return upsertSheetRow(ss, 'SpecialTariffs', ['id'], payload);\n    }\n\n    case 'deleteSpecialTariff': {\n      return deleteSheetRowByKey(ss, 'SpecialTariffs', 'id', payload.id);\n    }\n\n    case 'pushStaff': {\n      var st = normalizeStaffForSheet(payload);\n      return upsertSheetRow(ss, 'Staff', ['id'], st);\n    }\n\n    case 'deleteStaff': {\n      return deleteSheetRowByKey(ss, 'Staff', 'id', payload.id);\n    }\n\n    case 'pushStaffAttendance': {\n      var sa = normalizeStaffAttForSheet(payload);\n      return upsertSheetRow(ss, 'StaffAttendance', ['staffId', 'dateKey'], sa);\n    }\n\n    case 'pushHoliday': {\n      return upsertSheetRow(ss, 'Holidays', ['date'], payload);\n    }\n\n    case 'deleteHoliday': {\n      return deleteSheetRowByKey(ss, 'Holidays', 'id', payload.id);\n    }\n\n    case 'pushHrTask': {\n      return upsertSheetRow(ss, 'HrTasks', ['id'], payload);\n    }\n\n    case 'pushSupplements': {\n      if (Array.isArray(payload)) {\n        return replaceAllSheetRows(ss, 'Supplements', payload);\n      }\n      return upsertSheetRow(ss, 'Supplements', ['id'], payload);\n    }\n\n    case 'pushSupplementSale': {\n      var sale = normalizeSuppSaleForSheet(payload);\n      return upsertSheetRow(ss, 'SupplementSales', ['id'], sale);\n    }\n\n    case 'pushSupplementPurchase': {\n      return upsertSheetRow(ss, 'SupplementPurchases', ['id'], payload);\n    }\n\n    case 'pushSupplementCoupons': {\n      if (Array.isArray(payload)) {\n        return replaceAllSheetRows(ss, 'SupplementCoupons', payload);\n      }\n      return upsertSheetRow(ss, 'SupplementCoupons', ['code'], payload);\n    }\n\n    case 'pushSettings': {\n      return saveSettingsObject(ss, payload);\n    }\n\n    case 'pushAll': {\n      // Full bidirectional synchronization of all collections from Portal to Google Sheet\n      var counts = {};\n      if (Array.isArray(payload.users)) {\n        payload.users.forEach(function(u) {\n          upsertSheetRow(ss, 'Users', ['id'], normalizeUserForSheet(u));\n        });\n        counts.users = payload.users.length;\n      }\n      if (Array.isArray(payload.archivedUsers)) {\n        payload.archivedUsers.forEach(function(au) {\n          upsertSheetRow(ss, 'ArchivedUsers', ['id'], au);\n        });\n        counts.archivedUsers = payload.archivedUsers.length;\n      }\n      if (Array.isArray(payload.payments)) {\n        payload.payments.forEach(function(p) {\n          upsertSheetRow(ss, 'Payments', ['userId', 'fy', 'month'], p);\n        });\n        counts.payments = payload.payments.length;\n      }\n      if (Array.isArray(payload.attendance)) {\n        payload.attendance.forEach(function(a) {\n          upsertSheetRow(ss, 'Attendance', ['dateKey', 'userId'], a);\n        });\n        counts.attendance = payload.attendance.length;\n      }\n      if (Array.isArray(payload.expenses)) {\n        payload.expenses.forEach(function(ex) {\n          upsertSheetRow(ss, 'Expenses', ['id'], ex);\n        });\n        counts.expenses = payload.expenses.length;\n      }\n      if (payload.tariffs && typeof payload.tariffs === 'object') {\n        processServerAction(ss, 'pushTariffs', payload.tariffs);\n      }\n      if (Array.isArray(payload.specialTariffs)) {\n        replaceAllSheetRows(ss, 'SpecialTariffs', payload.specialTariffs);\n      }\n      if (Array.isArray(payload.staff)) {\n        payload.staff.forEach(function(st) {\n          upsertSheetRow(ss, 'Staff', ['id'], normalizeStaffForSheet(st));\n        });\n        counts.staff = payload.staff.length;\n      }\n      if (Array.isArray(payload.staffAttendance)) {\n        payload.staffAttendance.forEach(function(sa) {\n          upsertSheetRow(ss, 'StaffAttendance', ['staffId', 'dateKey'], normalizeStaffAttForSheet(sa));\n        });\n        counts.staffAttendance = payload.staffAttendance.length;\n      }\n      if (Array.isArray(payload.holidays)) {\n        replaceAllSheetRows(ss, 'Holidays', payload.holidays);\n      }\n      if (Array.isArray(payload.hrTasks)) {\n        payload.hrTasks.forEach(function(t) {\n          upsertSheetRow(ss, 'HrTasks', ['id'], t);\n        });\n      }\n      if (Array.isArray(payload.supplements)) {\n        replaceAllSheetRows(ss, 'Supplements', payload.supplements);\n      }\n      if (Array.isArray(payload.supplementSales)) {\n        payload.supplementSales.forEach(function(s) {\n          upsertSheetRow(ss, 'SupplementSales', ['id'], normalizeSuppSaleForSheet(s));\n        });\n      }\n      if (Array.isArray(payload.supplementPurchases)) {\n        payload.supplementPurchases.forEach(function(pur) {\n          upsertSheetRow(ss, 'SupplementPurchases', ['id'], pur);\n        });\n      }\n      if (Array.isArray(payload.suppCoupons)) {\n        replaceAllSheetRows(ss, 'SupplementCoupons', payload.suppCoupons);\n      }\n      if (payload.settings && typeof payload.settings === 'object') {\n        saveSettingsObject(ss, payload.settings);\n      }\n      return counts;\n    }\n\n    default:\n      return 'unknown_action: ' + action;\n  }\n}\n\nfunction normalizeUserForSheet(u) {\n  var copy = {};\n  Object.keys(u || {}).forEach(function(k) { copy[k] = u[k]; });\n  var isCanc = (\n    String(copy.status || '').toLowerCase() === 'cancelled' ||\n    String(copy.isDeleted || '').toLowerCase() === 'cancelled' ||\n    copy.isCancelled === true ||\n    copy.isDeleted === true ||\n    String(copy.isDeleted || '').toLowerCase() === 'true'\n  );\n  copy.status = isCanc ? 'Cancelled' : 'Active';\n  copy.isDeleted = isCanc ? 'Cancelled' : 'Active';\n  copy.updatedAt = new Date().toISOString();\n  return copy;\n}\n\nfunction normalizeStaffForSheet(st) {\n  var copy = {};\n  Object.keys(st || {}).forEach(function(k) { copy[k] = st[k]; });\n  if (Array.isArray(copy.shifts)) {\n    copy.shifts = copy.shifts.join(', ');\n  }\n  return copy;\n}\n\nfunction normalizeStaffAttForSheet(sa) {\n  var copy = {};\n  Object.keys(sa || {}).forEach(function(k) { copy[k] = sa[k]; });\n  if (copy.slots && typeof copy.slots === 'object') {\n    copy.slotsJson = JSON.stringify(copy.slots);\n  } else if (!copy.slotsJson) {\n    copy.slotsJson = '{}';\n  }\n  copy.updatedAt = copy.updatedAt || new Date().toISOString();\n  return copy;\n}\n\nfunction normalizeSuppSaleForSheet(sale) {\n  var copy = {};\n  Object.keys(sale || {}).forEach(function(k) { copy[k] = sale[k]; });\n  if (Array.isArray(copy.items)) {\n    copy.itemsJson = JSON.stringify(copy.items);\n  } else if (!copy.itemsJson) {\n    copy.itemsJson = '[]';\n  }\n  return copy;\n}\n\nfunction saveSettingsObject(ss, settingsObj) {\n  var nowIso = new Date().toISOString();\n  Object.keys(settingsObj || {}).forEach(function(k) {\n    var val = settingsObj[k];\n    var serialized = (typeof val === 'object' && val !== null) ? JSON.stringify(val) : String(val);\n    upsertSheetRow(ss, 'Settings', ['key'], {\n      key: k,\n      value: serialized,\n      updatedAt: nowIso\n    });\n  });\n  return 'settings_saved';\n}\n\n/**\n * Builds the complete recall payload for doGet(?action=pull)\n */\nfunction buildFullPullPayload(ss) {\n  var users = readSheetObjects(ss, 'Users').map(function(u) {\n    var isCanc = (\n      String(u.status || '').toLowerCase() === 'cancelled' ||\n      String(u.isDeleted || '').toLowerCase() === 'cancelled' ||\n      u.isDeleted === true ||\n      String(u.isDeleted || '').toLowerCase() === 'true'\n    );\n    u.status = isCanc ? 'Cancelled' : 'Active';\n    u.isCancelled = isCanc;\n    u.isDeleted = isCanc;\n    return u;\n  });\n\n  var archivedUsers = readSheetObjects(ss, 'ArchivedUsers').map(function(u) {\n    u.isDeleted = true;\n    return u;\n  });\n\n  var payments = readSheetObjects(ss, 'Payments');\n  var attendance = readSheetObjects(ss, 'Attendance');\n  var expenses = readSheetObjects(ss, 'Expenses');\n  var specialTariffs = readSheetObjects(ss, 'SpecialTariffs');\n  var holidays = readSheetObjects(ss, 'Holidays');\n  var hrTasks = readSheetObjects(ss, 'HrTasks');\n  var supplementPurchases = readSheetObjects(ss, 'SupplementPurchases');\n  var suppCoupons = readSheetObjects(ss, 'SupplementCoupons');\n\n  // Reconstruct nested Tariffs map { [fy]: { [month]: { admFee, regFee, ptFee } } }\n  var rawTariffs = readSheetObjects(ss, 'Tariffs');\n  var tariffsMap = {};\n  rawTariffs.forEach(function(r) {\n    if (!r.fy || !r.month) return;\n    if (!tariffsMap[r.fy]) tariffsMap[r.fy] = {};\n    tariffsMap[r.fy][r.month] = {\n      admFee: r.admFee,\n      regFee: r.regFee,\n      ptFee: r.ptFee\n    };\n  });\n\n  // Reconstruct Staff array with shifts array\n  var staff = readSheetObjects(ss, 'Staff').map(function(st) {\n    if (typeof st.shifts === 'string' && st.shifts.trim() !== '') {\n      if (st.shifts.trim().charAt(0) === '[') {\n        try { st.shifts = JSON.parse(st.shifts); } catch (e) { st.shifts = st.shifts.split(',').map(function(s) { return s.trim(); }); }\n      } else {\n        st.shifts = st.shifts.split(',').map(function(s) { return s.trim(); }).filter(Boolean);\n      }\n    } else if (!Array.isArray(st.shifts)) {\n      st.shifts = ['Morning', 'Evening'];\n    }\n    st.isRelieved = (st.isRelieved === true || String(st.isRelieved).toLowerCase() === 'true' || !!st.lastWorkingDay);\n    return st;\n  });\n\n  // Reconstruct StaffAttendance with parsed slotsJson\n  var staffAttendance = readSheetObjects(ss, 'StaffAttendance').map(function(sa) {\n    if (sa.slotsJson && typeof sa.slotsJson === 'string') {\n      try { sa.slots = JSON.parse(sa.slotsJson); } catch (e) { sa.slots = {}; }\n    } else if (!sa.slots || typeof sa.slots !== 'object') {\n      sa.slots = {};\n    }\n    return sa;\n  });\n\n  // Reconstruct Supplements with boolean storeVisible\n  var supplements = readSheetObjects(ss, 'Supplements').map(function(item) {\n    item.storeVisible = !(item.storeVisible === false || String(item.storeVisible).toLowerCase() === 'false');\n    return item;\n  });\n\n  // Reconstruct SupplementSales with parsed itemsJson\n  var supplementSales = readSheetObjects(ss, 'SupplementSales').map(function(sale) {\n    if (sale.itemsJson && typeof sale.itemsJson === 'string') {\n      try { sale.items = JSON.parse(sale.itemsJson); } catch (e) { sale.items = []; }\n    } else if (!Array.isArray(sale.items)) {\n      sale.items = [];\n    }\n    return sale;\n  });\n\n  // Reconstruct Settings object\n  var rawSettings = readSheetObjects(ss, 'Settings');\n  var settingsObj = {};\n  rawSettings.forEach(function(row) {\n    if (!row.key) return;\n    var val = row.value;\n    if (typeof val === 'string' && (val.charAt(0) === '{' || val.charAt(0) === '[')) {\n      try { val = JSON.parse(val); } catch (e) {}\n    }\n    settingsObj[row.key] = val;\n  });\n\n  return {\n    status: 'ok',\n    users: users,\n    archivedUsers: archivedUsers,\n    payments: payments,\n    attendance: attendance,\n    expenses: expenses,\n    tariffs: tariffsMap,\n    specialTariffs: specialTariffs,\n    staff: staff,\n    staffAttendance: staffAttendance,\n    holidays: holidays,\n    hrTasks: hrTasks,\n    supplements: supplements,\n    supplementSales: supplementSales,\n    supplementPurchases: supplementPurchases,\n    suppCoupons: suppCoupons,\n    settings: settingsObj\n  };\n}\n";
 
         var cloudSync = {
             queue: storage.get('revive_cloud_sync_queue', []),
@@ -4542,6 +4541,46 @@
             return isPT
                 ? (Number(monthTariff.ptFee) || Number(APP_CONFIG.basePTFee) || 1500)
                 : (Number(monthTariff.regFee) || Number(APP_CONFIG.baseMonthlyFee) || 800);
+        }
+
+        // Calculate 30-Session Personal Training progress and renewal fee status for a PT member
+        function getPtClientSessionStats(user) {
+            if (!user || !user.id) {
+                return { totalAttDays: 0, baseline: 0, usedInCycle: 0, remainingInCycle: 30, cycleNumber: 1, isRenewalDue: false, renewalFeeAmount: 1500 };
+            }
+            const attDb = storage.get('revive_attendance_db', {});
+            let totalAttDays = 0;
+            for (const dKey in attDb) {
+                const dayArr = attDb[dKey];
+                if (Array.isArray(dayArr) && dayArr.some(a => String(a.userId) === String(user.id))) {
+                    totalAttDays++;
+                }
+            }
+            const baseline = Math.max(0, parseInt(user.ptBaselineAttCount || 0, 10) || 0);
+            const cycleNumber = Math.max(1, parseInt(user.ptCycleCount || 1, 10) || 1);
+            const usedInCycle = Math.max(0, totalAttDays - baseline);
+            const remainingInCycle = Math.max(0, 30 - usedInCycle);
+            const isRenewalDue = (usedInCycle >= 30);
+
+            const now = new Date();
+            const currMonthName = now.toLocaleString('default', { month: 'long' });
+            const y = now.getFullYear();
+            const m = now.getMonth();
+            const currFy = m >= 3 ? `${y}-${y+1}` : `${y-1}-${y}`;
+            const mTariff = (window.moduleContext && typeof window.moduleContext.getApplicableTariff === 'function')
+                ? window.moduleContext.getApplicableTariff(now, currMonthName, currFy)
+                : { ptFee: 1500 };
+            const renewalFeeAmount = Number(mTariff.ptFee) || Number(APP_CONFIG.basePTFee) || 1500;
+
+            return {
+                totalAttDays,
+                baseline,
+                usedInCycle,
+                remainingInCycle,
+                cycleNumber,
+                isRenewalDue,
+                renewalFeeAmount
+            };
         }
 
         // Get all pending Supplement invoices for a member (across their admission chain)
@@ -7287,19 +7326,20 @@
                     const tId = String(u.assignedTrainerId || '').trim();
                     const tName = String(u.assignedTrainerName || '').trim();
                     if (tId.toUpperCase() === 'ADMIN' || tName.toLowerCase() === 'admin') {
-                        return u;
-                    }
-                    if (!tId && !tName) {
+                        if (u.assignedTrainerId !== 'ADMIN' || u.assignedTrainerName !== 'Admin') {
+                            changedCount++;
+                            return { ...u, assignedTrainerId: 'ADMIN', assignedTrainerName: 'Admin' };
+                        }
                         return u;
                     }
 
-                    // Check if assigned trainer is still an active staff member
+                    // Check if assigned trainer is an active staff member
                     const activeMatch = activeStaff.find(st =>
                         (tId && String(st.id) === tId) ||
                         (tName && String(st.name).toLowerCase() === tName.toLowerCase())
                     );
                     if (!activeMatch) {
-                        // Trainer resigned, relieved, or removed -> auto-assign to Admin
+                        // Unassigned or Trainer resigned/relieved/inactive -> auto-assign to Admin
                         changedCount++;
                         const reassigned = {
                             ...u,
@@ -7308,6 +7348,11 @@
                         };
                         cloudSync.push('pushUser', reassigned);
                         return reassigned;
+                    }
+                    // Ensure both ID and Name are normalized to the active staff member
+                    if (u.assignedTrainerId !== activeMatch.id || u.assignedTrainerName !== activeMatch.name) {
+                        changedCount++;
+                        return { ...u, assignedTrainerId: activeMatch.id, assignedTrainerName: activeMatch.name };
                     }
                     return u;
                 });
@@ -7419,21 +7464,16 @@
             },
 
             initStaffPtView: function() {
-                const isAdmin = (appContext.currentRole === 'admin');
-                window._staffPtFilterMode = isAdmin ? 'ALL' : 'MY';
                 const searchEl = document.getElementById('staff-pt-search-input');
                 if (searchEl) searchEl.value = '';
-                window.moduleContext.setStaffPtFilter(window._staffPtFilterMode);
+                const filterSel = document.getElementById('admin-pt-trainer-filter');
+                if (filterSel) filterSel.value = 'ALL';
+                window.moduleContext.renderStaffPtClients();
             },
 
             setStaffPtFilter: function(mode) {
-                const isAdmin = (appContext.currentRole === 'admin');
-                // Staff can ONLY view their own assigned PT clients ('MY')
-                window._staffPtFilterMode = (!isAdmin) ? 'MY' : ((mode === 'MY') ? 'MY' : 'ALL');
-                const tabMy = document.getElementById('pt-tab-my');
-                const tabAll = document.getElementById('pt-tab-all');
-                if (tabMy) tabMy.classList.toggle('active', window._staffPtFilterMode === 'MY');
-                if (tabAll) tabAll.classList.toggle('active', window._staffPtFilterMode === 'ALL');
+                const filterSel = document.getElementById('admin-pt-trainer-filter');
+                if (filterSel) filterSel.value = mode || 'ALL';
                 window.moduleContext.renderStaffPtClients();
             },
 
@@ -7464,6 +7504,122 @@
                 }
             },
 
+            openPtRenewalPaymentModal: function(userId) {
+                const users = storage.get('revive_users_db', []);
+                const user = users.find(u => u && String(u.id) === String(userId) && !isUserCancelled(u));
+                if (!user) {
+                    showNotice("Active PT client not found.", "error");
+                    return;
+                }
+                currentActiveUser = user;
+                const ptStats = getPtClientSessionStats(user);
+                const now = new Date();
+                const month = now.toLocaleString('default', { month: 'long' });
+                const y = now.getFullYear();
+                const mIdx = now.getMonth();
+                const fy = mIdx >= 3 ? `${y}-${y+1}` : `${y-1}-${y}`;
+                const mYear = y;
+                const mScore = mYear * 100 + mIdx;
+
+                const nextCycleNum = ptStats.cycleNumber + 1;
+                const cycleTotalDue = ptStats.renewalFeeAmount;
+                const cycleAlreadyPaid = 0;
+                const cycleBalance = cycleTotalDue;
+
+                // Include any prior unpaid gym fee or supplement arrears automatically
+                const priorFeeDues = getMemberPendingFeeMonths(user, mScore);
+                const priorSuppDues = getMemberPendingSupplementSales(user.id, "");
+                const priorFeeSum = priorFeeDues.reduce((sum, x) => sum + x.balance, 0);
+                const priorSuppSum = priorSuppDues.reduce((sum, x) => sum + x.balance, 0);
+                const carryForwardTotal = priorFeeSum + priorSuppSum;
+
+                const combinedTotalDue = cycleTotalDue + carryForwardTotal;
+                const combinedBalance = cycleBalance + carryForwardTotal;
+
+                activePaymentConfig = {
+                    paymentType: "pt_session_renewal",
+                    targetUserId: user.id,
+                    ptTotalAttDaysAtRenewal: ptStats.totalAttDays,
+                    ptNextCycleNumber: nextCycleNum,
+                    month: `PT 30-Session Renewal (Cycle #${nextCycleNum})`,
+                    fy: fy,
+                    rawMonthName: month,
+                    mYear,
+                    mIdx,
+                    mScore,
+                    cycleTotalDue,
+                    cycleAlreadyPaid,
+                    cycleBalance,
+                    priorFeeDues,
+                    priorSuppDues,
+                    carryForwardTotal,
+                    totalDue: combinedTotalDue,
+                    alreadyPaid: 0,
+                    balance: combinedBalance
+                };
+
+                document.getElementById("pay-promo-badge").innerHTML = `<span class="promo-badge" style="background:#fff5eb; color:var(--accent-orange); border:1px solid #fed7aa;">🏋️ 30 PT SESSIONS COMPLETED (${ptStats.usedInCycle}/30) — RENEWAL</span>`;
+                document.getElementById("pay-month").innerText = `PT Renewal (30 Sessions • Cycle #${nextCycleNum})`;
+                document.getElementById("pay-fy-display").innerText = `${user.fullName} (${user.id})`;
+                const currCycleEl = document.getElementById("pay-current-cycle-fee");
+                if (currCycleEl) currCycleEl.innerText = cycleTotalDue;
+                document.getElementById("pay-total-due").innerText = combinedTotalDue;
+                document.getElementById("pay-already-paid").innerText = 0;
+                document.getElementById("pay-balance").innerText = combinedBalance;
+
+                const cfBox = document.getElementById("pay-carryforward-box");
+                const cfTotEl = document.getElementById("pay-carryforward-total");
+                const cfDetEl = document.getElementById("pay-carryforward-details");
+                if (cfBox) {
+                    if (carryForwardTotal > 0) {
+                        cfBox.style.display = "block";
+                        if (cfTotEl) cfTotEl.innerText = carryForwardTotal;
+                        const detailParts = [];
+                        priorFeeDues.forEach(pf => {
+                            detailParts.push(`• ${pf.month} (${pf.fy}) Fee Pending: <strong>₹${pf.balance}</strong>`);
+                        });
+                        priorSuppDues.forEach(ps => {
+                            detailParts.push(`• Supplement ${ps.id} Pending: <strong>₹${ps.balance}</strong>`);
+                        });
+                        if (cfDetEl) cfDetEl.innerHTML = detailParts.join("<br>");
+                    } else {
+                        cfBox.style.display = "none";
+                        if (cfDetEl) cfDetEl.innerHTML = "";
+                    }
+                }
+
+                const viewRcptBtn = document.getElementById("btn-paymodal-view-rcpt");
+                if (viewRcptBtn) viewRcptBtn.style.display = "none";
+
+                const availWallet = getMemberWalletBalance(user.id);
+                activePaymentConfig.availWallet = availWallet;
+                const wSec = document.getElementById("pay-wallet-redeem-section");
+                const wAvailEl = document.getElementById("pay-wallet-avail");
+                const wInput = document.getElementById("pay-wallet-redeem-input");
+                if (wSec && wInput) {
+                    if (availWallet > 0 && combinedBalance > 0) {
+                        wSec.style.display = "block";
+                        if (wAvailEl) wAvailEl.innerText = availWallet;
+                        wInput.value = 0;
+                        wInput.max = Math.min(availWallet, combinedBalance);
+                    } else {
+                        wSec.style.display = "none";
+                        wInput.value = 0;
+                    }
+                }
+                const netAfterEl = document.getElementById("pay-net-after-wallet");
+                if (netAfterEl) netAfterEl.innerText = combinedBalance;
+
+                const inputAmt = document.getElementById("pay-amount-now");
+                inputAmt.value = combinedBalance;
+                inputAmt.max = combinedBalance;
+                document.getElementById("pay-method").value = "UPI";
+                document.getElementById("pay-staff-pin").value = "";
+                document.getElementById("pay-pin-identity").innerText = "";
+                window.moduleContext.updatePaymentModalUI();
+                document.getElementById("paymentProcessModal").style.display = "flex";
+            },
+
             markPtClientAttendance: function(userId) {
                 let users = storage.get('revive_users_db', []);
                 const user = users.find(u => u && String(u.id) === String(userId) && !isUserCancelled(u));
@@ -7471,6 +7627,14 @@
                     showNotice("Active PT client not found.", "error");
                     return;
                 }
+
+                const ptStats = getPtClientSessionStats(user);
+                if (ptStats.isRenewalDue) {
+                    showNotice(`⚠ ${user.fullName} has completed 30 PT Sessions (${ptStats.usedInCycle}/30)! Please collect the PT Renewal Fee (₹${ptStats.renewalFeeAmount}) to continue attendance.`, "error");
+                    window.moduleContext.openPtRenewalPaymentModal(user.id);
+                    return;
+                }
+
                 const st = window.moduleContext.resolveActiveStaff();
                 const now = new Date();
                 const dateKey = toIsoDateKey(now);
@@ -7480,22 +7644,18 @@
                 let attDb = storage.get('revive_attendance_db', {});
                 if (!attDb[dateKey]) attDb[dateKey] = [];
 
+                if (String(user.trainingCategory || '').toLowerCase().includes('personal')) {
+                    const ptSt = getPtClientSessionStats(user);
+                    if (ptSt.isRenewalDue) {
+                        resBox.innerHTML = `<span style="color:var(--error-red); font-weight:bold;">⚠ 30 PT Sessions Completed (${ptSt.usedInCycle}/30) for ${user.fullName} (${user.id})!</span><br><span style="font-size:0.85rem;">Assigned Trainer (${user.assignedTrainerName || 'Admin'}) must collect the PT Renewal Fee (₹${ptSt.renewalFeeAmount}) to start the next 30 sessions.</span><br><button type="button" class="btn danger" style="margin-top:8px; width:auto; padding:0.5rem 1rem; font-size:0.78rem;" onclick="window.moduleContext.openPtRenewalPaymentModal('${user.id}')">💳 Collect PT Fee Now (₹${ptSt.renewalFeeAmount})</button>`;
+                        return;
+                    }
+                }
                 const alreadyMarked = attDb[dateKey].some(a => String(a.userId) === String(user.id));
                 if (alreadyMarked) {
                     showNotice(`Attendance already marked today for ${user.fullName} (${user.id}).`, "warning");
                     window.moduleContext.renderStaffPtClients();
                     return;
-                }
-
-                // If PT client had no trainer assigned yet and a staff member marks their PT attendance, auto-tag them to this staff member
-                if (!user.assignedTrainerId && !user.assignedTrainerName && st) {
-                    const uIdx = users.findIndex(u => u && String(u.id) === String(user.id));
-                    if (uIdx !== -1) {
-                        users[uIdx].assignedTrainerId = st.id;
-                        users[uIdx].assignedTrainerName = st.name;
-                        storage.set('revive_users_db', users);
-                        cloudSync.push('pushUser', users[uIdx]);
-                    }
                 }
 
                 const newAtt = {
@@ -7510,7 +7670,12 @@
                 storage.set('revive_attendance_db', attDb);
                 cloudSync.push('pushAttendance', newAtt);
 
-                showNotice(`✔ PT Attendance marked for ${user.fullName} (${timeStr})!`, "success");
+                const newUsed = ptStats.usedInCycle + 1;
+                if (newUsed >= 30) {
+                    showNotice(`✔ Session 30/30 completed for ${user.fullName}! Next PT Renewal Fee (₹${ptStats.renewalFeeAmount}) is now due.`, "warning");
+                } else {
+                    showNotice(`✔ PT Attendance marked for ${user.fullName} (Session ${newUsed}/30)!`, "success");
+                }
                 window.moduleContext.renderStaffPtClients();
             },
 
@@ -7532,13 +7697,10 @@
 
                 const headerMeta = document.getElementById('staff-pt-header-meta');
                 if (headerMeta) {
-                    headerMeta.innerHTML = `${isAdmin ? 'Admin PT Manager' : 'Trainer: <strong style="color:var(--accent-orange);">' + (st ? st.name : 'Staff') + '</strong>'} &nbsp;•&nbsp; ${todayPretty}`;
-                }
-                const filterTabsWrap = document.getElementById('pt-filter-tabs-wrap');
-                if (filterTabsWrap) {
-                    filterTabsWrap.style.display = isAdmin ? 'inline-flex' : 'none';
+                    headerMeta.innerHTML = `${isAdmin ? 'Admin PT Overview' : 'Trainer: <strong style="color:var(--accent-orange);">' + (st ? st.name : 'Staff') + '</strong>'} &nbsp;•&nbsp; ${todayPretty}`;
                 }
 
+                const staffList = getNormalizedStaffDb().filter(s => !isStaffRelieved(s));
                 const allUsers = storage.get('revive_users_db', []);
                 const supersededIds = getSupersededUserIdsSet(allUsers);
                 const activePtUsers = allUsers.filter(u =>
@@ -7548,53 +7710,83 @@
                     String(u.trainingCategory || '').toLowerCase().includes('personal')
                 );
 
-                const isAssignedToMe = function(u) {
+                // Populate Admin Trainer filter dropdown (hidden for Staff)
+                const adminFilterSel = document.getElementById('admin-pt-trainer-filter');
+                if (adminFilterSel) {
+                    if (isAdmin) {
+                        const prevFilterVal = adminFilterSel.value || 'ALL';
+                        let filterOpts = `<option value="ALL">All Trainers (${activePtUsers.length})</option>`;
+                        const adminAssignedCount = activePtUsers.filter(u => String(u.assignedTrainerId || '').toUpperCase() === 'ADMIN' || String(u.assignedTrainerName || '').toLowerCase() === 'admin').length;
+                        filterOpts += `<option value="ADMIN" ${prevFilterVal === 'ADMIN' ? 'selected' : ''}>Trainer: Admin (${adminAssignedCount})</option>`;
+                        staffList.forEach(s => {
+                            const cnt = activePtUsers.filter(u => String(u.assignedTrainerId || '') === String(s.id) || String(u.assignedTrainerName || '').toLowerCase() === String(s.name).toLowerCase()).length;
+                            filterOpts += `<option value="${s.id}" ${prevFilterVal === String(s.id) ? 'selected' : ''}>Trainer: ${s.name} (${cnt})</option>`;
+                        });
+                        adminFilterSel.innerHTML = filterOpts;
+                        adminFilterSel.style.display = 'block';
+                    } else {
+                        adminFilterSel.style.display = 'none';
+                    }
+                }
+
+                const isAssignedToStaff = function(u, targetStaff) {
+                    if (!targetStaff) return false;
                     const tId = String(u.assignedTrainerId || '').trim().toLowerCase();
                     const tName = String(u.assignedTrainerName || '').trim().toLowerCase();
-                    if (isAdmin) {
-                        return (tId === 'admin' || tName === 'admin' || (!tId && !tName));
-                    }
-                    if (!st) return false;
-                    const myId = String(st.id || '').trim().toLowerCase();
-                    const myName = String(st.name || '').trim().toLowerCase();
+                    const myId = String(targetStaff.id || '').trim().toLowerCase();
+                    const myName = String(targetStaff.name || '').trim().toLowerCase();
                     if (tId && tId === myId) return true;
                     if (tName && tName === myName) return true;
                     return false;
                 };
 
-                const myAssignedPt = activePtUsers.filter(u => isAssignedToMe(u));
-                // Staff strictly sees ONLY their own PT clients
-                const mode = (!isAdmin) ? 'MY' : (window._staffPtFilterMode || 'ALL');
-                let displayList = (mode === 'MY') ? [...myAssignedPt] : [...activePtUsers];
+                // Staff strictly sees ONLY their own assigned PT clients
+                let baseScopeList = [];
+                if (!isAdmin) {
+                    baseScopeList = activePtUsers.filter(u => isAssignedToStaff(u, st));
+                } else {
+                    const fVal = adminFilterSel ? (adminFilterSel.value || 'ALL') : 'ALL';
+                    if (fVal === 'ALL') {
+                        baseScopeList = [...activePtUsers];
+                    } else if (fVal === 'ADMIN') {
+                        baseScopeList = activePtUsers.filter(u => String(u.assignedTrainerId || '').toUpperCase() === 'ADMIN' || String(u.assignedTrainerName || '').toLowerCase() === 'admin');
+                    } else {
+                        const targetSt = staffList.find(s => String(s.id) === String(fVal));
+                        baseScopeList = activePtUsers.filter(u => isAssignedToStaff(u, targetSt));
+                    }
+                }
 
                 const attDb = storage.get('revive_attendance_db', {});
                 const todayLogs = attDb[todayKey] || [];
                 const presentTodaySet = new Set(todayLogs.map(a => String(a.userId)));
 
-                // Update KPI counters & labels for Staff vs Admin
+                const renewalDueUsers = baseScopeList.filter(u => getPtClientSessionStats(u).isRenewalDue);
+                const dueBannerEl = document.getElementById('staff-pt-due-banner');
+                if (dueBannerEl) {
+                    if (renewalDueUsers.length > 0) {
+                        const namesStr = renewalDueUsers.map(u => `${u.fullName} (${u.id})`).join(', ');
+                        dueBannerEl.style.display = 'block';
+                        dueBannerEl.innerHTML = `⚠ <strong>30-Session PT Renewal Due (${renewalDueUsers.length}):</strong> ${namesStr} completed 30 sessions. Please collect their PT Renewal Fee to continue sessions.`;
+                    } else {
+                        dueBannerEl.style.display = 'none';
+                    }
+                }
+
+                // Update 3 KPI cards
                 const firstLblEl = document.getElementById('pt-kpi-first-lbl');
                 const thirdLblEl = document.getElementById('pt-kpi-third-lbl');
                 const myCountEl = document.getElementById('pt-kpi-my-count');
                 const presCountEl = document.getElementById('pt-kpi-present-today');
                 const totalPtEl = document.getElementById('pt-kpi-total-pt');
 
-                if (isAdmin) {
-                    if (firstLblEl) firstLblEl.innerText = 'Admin Assigned';
-                    if (thirdLblEl) thirdLblEl.innerText = 'All Active PT';
-                    if (myCountEl) myCountEl.innerText = myAssignedPt.length;
-                    if (presCountEl) presCountEl.innerText = displayList.filter(u => presentTodaySet.has(String(u.id))).length;
-                    if (totalPtEl) totalPtEl.innerText = activePtUsers.length;
-                } else {
-                    const myPresentCount = myAssignedPt.filter(u => presentTodaySet.has(String(u.id))).length;
-                    const myPendingCount = Math.max(0, myAssignedPt.length - myPresentCount);
-                    if (firstLblEl) firstLblEl.innerText = 'My PT Clients';
-                    if (thirdLblEl) thirdLblEl.innerText = 'Pending Today';
-                    if (myCountEl) myCountEl.innerText = myAssignedPt.length;
-                    if (presCountEl) presCountEl.innerText = myPresentCount;
-                    if (totalPtEl) totalPtEl.innerText = myPendingCount;
-                }
+                if (firstLblEl) firstLblEl.innerText = isAdmin ? 'Active PT Clients' : 'My PT Clients';
+                if (thirdLblEl) thirdLblEl.innerText = '30-Session Fee Due';
+                if (myCountEl) myCountEl.innerText = baseScopeList.length;
+                if (presCountEl) presCountEl.innerText = baseScopeList.filter(u => presentTodaySet.has(String(u.id))).length;
+                if (totalPtEl) totalPtEl.innerText = renewalDueUsers.length;
 
                 // Apply search filter
+                let displayList = [...baseScopeList];
                 const searchEl = document.getElementById('staff-pt-search-input');
                 const q = searchEl ? String(searchEl.value || '').trim().toLowerCase() : '';
                 if (q) {
@@ -7614,8 +7806,6 @@
                     return;
                 }
 
-                const staffList = getNormalizedStaffDb().filter(s => !isStaffRelieved(s));
-
                 container.innerHTML = displayList.map(u => {
                     const photoUrl = u.photo || DEFAULT_AVATAR_SVG;
                     const safeId = String(u.id).replace(/'/g, "\'");
@@ -7624,25 +7814,51 @@
                         : (u.primaryContact || '-');
                     const todayRec = todayLogs.find(a => String(a.userId) === String(u.id));
                     const monthAttCount = window.moduleContext.getUserMonthAttendanceCount(u.id, currMonthName, currFy);
+                    const ptStats = getPtClientSessionStats(u);
+
                     const isAdminAssigned = (String(u.assignedTrainerId || '').toUpperCase() === 'ADMIN' || String(u.assignedTrainerName || '').toLowerCase() === 'admin');
-                    const trainerOpts = staffList.map(s => {
-                        const sel = (String(u.assignedTrainerId || '') === String(s.id) || String(u.assignedTrainerName || '').toLowerCase() === String(s.name).toLowerCase());
+                    const trainerOpts = `<option value="ADMIN" ${isAdminAssigned ? 'selected' : ''}>Trainer: Admin</option>` + staffList.map(s => {
+                        const sel = (!isAdminAssigned && (String(u.assignedTrainerId || '') === String(s.id) || String(u.assignedTrainerName || '').toLowerCase() === String(s.name).toLowerCase()));
                         return `<option value="${s.id}" ${sel ? 'selected' : ''}>Trainer: ${s.name}</option>`;
-                    }).join('') + `<option value="ADMIN" ${isAdminAssigned ? 'selected' : ''}>Trainer: Admin</option>`;
+                    }).join('');
+
                     const trainerControlHtml = isAdmin
                         ? `<select onchange="window.moduleContext.assignPtClientTrainer('${safeId}', this.value)" style="width:auto; padding:4px 8px; font-size:0.72rem; font-weight:800; border-radius:6px; background:var(--bg-main); height:auto;">${trainerOpts}</select>`
                         : `<span style="color:var(--accent-orange); background:#fff5eb; padding:4px 8px; border-radius:6px; border:1px solid #fed7aa;">🏋️ ${u.assignedTrainerName || 'Admin'}</span>`;
 
-                    const actionBtnHtml = todayRec
-                        ? `<div style="display:flex; align-items:center; justify-content:center; gap:6px; width:100%; padding:0.62rem 0.8rem; border-radius:8px; background:#f0fdf4; border:1.5px solid #86efac; color:#15803d; font-size:0.78rem; font-weight:900; text-transform:uppercase;">
-                               ✔ Present Today (${todayRec.timestamp})
-                           </div>`
-                        : `<button type="button" class="btn primary" style="padding:0.65rem 0.8rem; font-size:0.78rem; border-radius:8px;" onclick="window.moduleContext.markPtClientAttendance('${safeId}')">
-                               ✔ Mark Attendance
-                           </button>`;
+                    const pct = Math.min(100, Math.round((ptStats.usedInCycle / 30) * 100));
+                    const barColor = ptStats.isRenewalDue ? 'var(--error-red)' : (ptStats.usedInCycle >= 25 ? 'var(--warning-yellow)' : 'var(--success-green)');
+                    const sessionProgressHtml = `
+                    <div style="background:var(--bg-main); border:1px solid ${ptStats.isRenewalDue ? '#feb2b2' : 'var(--border-color)'}; border-radius:8px; padding:0.55rem 0.7rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.73rem; font-weight:800; margin-bottom:5px;">
+                            <span style="color:var(--text-main);">🏋️ Cycle #${ptStats.cycleNumber} Sessions: <strong style="color:${barColor};">${ptStats.usedInCycle} / 30</strong></span>
+                            <span style="color:${ptStats.isRenewalDue ? 'var(--error-red)' : 'var(--text-muted)'};">${ptStats.isRenewalDue ? '⚠ FEE DUE (₹' + ptStats.renewalFeeAmount + ')' : ptStats.remainingInCycle + ' Left'}</span>
+                        </div>
+                        <div style="width:100%; height:6px; background:#e2e8f0; border-radius:4px; overflow:hidden;">
+                            <div style="width:${pct}%; height:100%; background:${barColor}; border-radius:4px; transition:width 0.25s;"></div>
+                        </div>
+                    </div>`;
+
+                    let actionBtnHtml = '';
+                    if (ptStats.isRenewalDue) {
+                        actionBtnHtml = `
+                        <button type="button" class="btn danger" style="padding:0.68rem 0.8rem; font-size:0.76rem; border-radius:8px; background:var(--error-red); color:#fff; border:none;" onclick="window.moduleContext.openPtRenewalPaymentModal('${safeId}')">
+                            💳 30 Sessions Done — Collect PT Fee (₹${ptStats.renewalFeeAmount})
+                        </button>`;
+                    } else if (todayRec) {
+                        actionBtnHtml = `
+                        <div style="display:flex; align-items:center; justify-content:center; gap:6px; width:100%; padding:0.62rem 0.8rem; border-radius:8px; background:#f0fdf4; border:1.5px solid #86efac; color:#15803d; font-size:0.78rem; font-weight:900; text-transform:uppercase;">
+                            ✔ Present Today (${todayRec.timestamp})
+                        </div>`;
+                    } else {
+                        actionBtnHtml = `
+                        <button type="button" class="btn primary" style="padding:0.65rem 0.8rem; font-size:0.78rem; border-radius:8px;" onclick="window.moduleContext.markPtClientAttendance('${safeId}')">
+                            ✔ Mark Attendance
+                        </button>`;
+                    }
 
                     return `
-                    <div class="pt-client-card">
+                    <div class="pt-client-card" style="${ptStats.isRenewalDue ? 'border-color:var(--error-red); background:#fffafa;' : ''}">
                         <div class="pt-client-top">
                             <img src="${photoUrl}" alt="${u.fullName}">
                             <div class="pt-client-info">
@@ -7653,6 +7869,7 @@
                                 <p>${maskedPh} • ${u.admissionCategory || 'Individual'} • Joined ${formatDateStr(u.date)}</p>
                             </div>
                         </div>
+                        ${sessionProgressHtml}
                         <div class="pt-client-meta-row">
                             <span style="color:var(--text-main); background:var(--bg-main); padding:4px 8px; border-radius:6px; border:1px solid var(--border-color);">📅 ${currMonthShort} Att: <strong style="color:var(--accent-orange);">${monthAttCount} Days</strong></span>
                             ${trainerControlHtml}
@@ -9228,6 +9445,65 @@
                         updatedAnySupp = true;
                     }
                 };
+
+                if (activePaymentConfig.paymentType === "pt_session_renewal") {
+                    (activePaymentConfig.priorFeeDues || []).forEach(settleFeeMonthFromPool);
+                    (activePaymentConfig.priorSuppDues || []).forEach(settleSuppInvoiceFromPool);
+                    const cycleAlloc = Math.min(remainingPool, activePaymentConfig.cycleBalance);
+                    if (cycleAlloc < activePaymentConfig.cycleBalance) {
+                        showNotice(`Full PT 30-Session Renewal Fee (₹${activePaymentConfig.cycleBalance}) is required to activate the next 30-session package.`, "error");
+                        return;
+                    }
+                    let usersDb = storage.get("revive_users_db", []);
+                    const uIdx = usersDb.findIndex(u => u && String(u.id) === String(activePaymentConfig.targetUserId));
+                    if (uIdx !== -1) {
+                        usersDb[uIdx].ptBaselineAttCount = activePaymentConfig.ptTotalAttDaysAtRenewal;
+                        usersDb[uIdx].ptCycleCount = activePaymentConfig.ptNextCycleNumber;
+                        usersDb[uIdx].lastPtRenewalDate = formatDateStr(nowIso.split('T')[0]);
+                        currentActiveUser = usersDb[uIdx];
+                        storage.set("revive_users_db", usersDb);
+                        cloudSync.push("pushUser", usersDb[uIdx]);
+                    }
+
+                    // Also record in paymentsDb so Revenue Reports & Member Receipt include the PT Renewal payment
+                    const rawM = activePaymentConfig.rawMonthName || new Date().toLocaleString('default', { month: 'long' });
+                    const fyKey = activePaymentConfig.fy;
+                    if (!paymentsDb[currentActiveUser.id]) paymentsDb[currentActiveUser.id] = {};
+                    if (!paymentsDb[currentActiveUser.id][fyKey]) paymentsDb[currentActiveUser.id][fyKey] = {};
+                    const existingMonthRec = paymentsDb[currentActiveUser.id][fyKey][rawM];
+                    const prevTotalDue = existingMonthRec ? (parseInt(existingMonthRec.totalDue, 10) || 0) : 0;
+                    const prevPaid = existingMonthRec ? (parseInt(existingMonthRec.amountPaid, 10) || 0) : 0;
+                    const newMonthTotal = prevTotalDue + activePaymentConfig.cycleTotalDue;
+                    const newMonthPaid = prevPaid + cycleAlloc;
+                    const newMonthBal = Math.max(0, newMonthTotal - newMonthPaid);
+
+                    const ptPayRec = {
+                        userId: currentActiveUser.id,
+                        fullName: currentActiveUser.fullName,
+                        primaryContact: currentActiveUser.primaryContact,
+                        fy: fyKey,
+                        month: rawM,
+                        totalDue: newMonthTotal,
+                        amountPaid: newMonthPaid,
+                        balanceDue: newMonthBal,
+                        lastPaidAmount: payAmt,
+                        walletRedeemed: wRedeem,
+                        status: newMonthBal === 0 ? "Paid" : "Partial",
+                        method: method,
+                        collectedBy: collectorIdentity,
+                        lastDate: nowIso
+                    };
+                    paymentsDb[currentActiveUser.id][fyKey][rawM] = ptPayRec;
+                    storage.set("revive_payments_db", paymentsDb);
+                    if (updatedAnySupp) storage.set("revive_supplement_sales_db", salesDb);
+                    cloudSync.push("pushPayment", ptPayRec);
+
+                    document.getElementById("paymentProcessModal").style.display = "none";
+                    window.moduleContext.renderStaffPtClients();
+                    showNotice(`✔ PT 30-Session Renewal (₹${cycleAlloc}) collected by ${collectorIdentity}! Cycle #${activePaymentConfig.ptNextCycleNumber} (0/30 Sessions) is now active.`, "success");
+                    window.moduleContext.generateReceiptImage(payAmt, 0, method, collectorIdentity, "success", null, activePaymentConfig.totalDue);
+                    return;
+                }
 
                 if (activePaymentConfig.paymentType === "supplement_due") {
                     (activePaymentConfig.priorSuppDues || []).forEach(settleSuppInvoiceFromPool);
