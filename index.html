@@ -901,6 +901,7 @@
                     </div>
 
                     <div id="hub-pt-trainer-bar" style="display:none; flex-direction:column; gap:8px; background:#fff5eb; border:1px solid #fed7aa; border-radius:10px; padding:0.65rem 0.8rem;">
+                        <div id="hub-pt-sessions-pill" style="display:none; justify-content:space-between; align-items:center; gap:8px; background:#ffffff; border:1px solid #fed7aa; border-radius:8px; padding:0.5rem 0.7rem; cursor:pointer;" onclick="if(window.currentActiveUserRef) window.moduleContext.openPtAttendanceHistoryModal(window.currentActiveUserRef.id, 'CYCLE')"></div>
                         <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
                             <span style="font-size:0.72rem; font-weight:800; color:var(--accent-orange); text-transform:uppercase; white-space:nowrap;">🏋️ Training Plan & Trainer</span>
                             <div style="display:flex; align-items:center; gap:6px; flex:1; justify-content:flex-end; min-width:200px;">
@@ -2359,6 +2360,46 @@
             </div>
         </div>
 
+        <div id="ptAttendanceHistoryModal" class="modal">
+            <div class="modal-content" style="max-width: 540px; text-align: left; padding: 1.4rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; border-bottom:2px solid var(--accent-orange); padding-bottom:0.7rem; margin-bottom:0.85rem;">
+                    <div>
+                        <h3 style="margin:0; color:var(--accent-orange); font-size:1.05rem; font-weight:900; text-transform:uppercase;">🏋️ PT Attended Days & Sessions</h3>
+                        <div id="pt-hist-member-sub" style="font-size:0.78rem; font-weight:800; color:var(--text-muted); margin-top:2px;"></div>
+                    </div>
+                    <button type="button" class="btn secondary" style="width:auto; padding:0.35rem 0.75rem; font-size:0.74rem;" onclick="document.getElementById('ptAttendanceHistoryModal').style.display='none'">✕ Close</button>
+                </div>
+
+                <div id="pt-hist-summary-strip" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-bottom:0.85rem; text-align:center;"></div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-bottom:0.75rem; flex-wrap:wrap;">
+                    <div class="pt-filter-tabs">
+                        <button type="button" id="pt-hist-tab-cycle" class="pt-filter-btn active" onclick="window.moduleContext.renderPtAttendanceHistoryTable('CYCLE')">Current Cycle (30)</button>
+                        <button type="button" id="pt-hist-tab-all" class="pt-filter-btn" onclick="window.moduleContext.renderPtAttendanceHistoryTable('ALL')">All PT Days</button>
+                        <button type="button" id="pt-hist-tab-gym" class="pt-filter-btn" onclick="window.moduleContext.renderPtAttendanceHistoryTable('GYM')">Normal Gym Att</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive" style="max-height: 320px; overflow-y: auto; margin-bottom: 0.9rem;">
+                    <table class="data-table" id="table-pt-history-days" style="min-width: 100%; font-size: 0.8rem;">
+                        <thead>
+                            <tr>
+                                <th style="padding:8px 10px;">#</th>
+                                <th style="padding:8px 10px;">Date & Day</th>
+                                <th style="padding:8px 10px;">Time</th>
+                                <th style="padding:8px 10px;">Marked By</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div style="display:flex; justify-content:flex-end;">
+                    <button type="button" class="btn secondary" style="width:auto; padding:0.55rem 1.2rem; font-size:0.8rem;" onclick="document.getElementById('ptAttendanceHistoryModal').style.display='none'">Done</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Supplement Sale Complete & Invoice Modal -->
         <div id="suppSaleSuccessModal" class="modal">
             <div class="modal-content" style="max-width: 480px;">
@@ -3297,6 +3338,7 @@
             const s = storage.get('revive_settings_db', {});
             s.holidaysBackup = storage.get('revive_holidays_db', []);
             s.staffAttendanceBackup = storage.get('revive_staff_attendance_db', {});
+            s.ptAttendanceBackup = storage.get('revive_pt_attendance_db', {});
             s.staffBackup = storage.get('revive_staff_db', []);
             s.hrTimingsBackup = storage.get('revive_hr_timings_db', getWorkingTimingsConfig());
             s.hrWeekdaysBackup = storage.get('revive_hr_weekdays_db', getWorkingDaysConfig());
@@ -3973,8 +4015,33 @@
                     if(data.attendance && Array.isArray(data.attendance)) {
                         const aObj = {};
                         let saCurrent = storage.get('revive_staff_attendance_db', {});
+                        let ptAttCurrent = storage.get('revive_pt_attendance_db', {});
+                        if (data.settings && data.settings.ptAttendanceBackup && typeof data.settings.ptAttendanceBackup === 'object') {
+                            ptAttCurrent = { ...data.settings.ptAttendanceBackup, ...ptAttCurrent };
+                        }
                         data.attendance.forEach(a => {
                             if (!a || !a.dateKey) return;
+                            if (String(a.userId || '').startsWith('__PT_ATT__:')) {
+                                const realUid = String(a.userId).substring('__PT_ATT__:'.length);
+                                const cleanDk = String(a.dateKey).split('T')[0];
+                                if (!ptAttCurrent[cleanDk]) ptAttCurrent[cleanDk] = [];
+                                let parsedMeta = { timestamp: a.timestamp, markedBy: 'Trainer', cycleNumber: 1 };
+                                if (String(a.timestamp || '').trim().startsWith('{')) {
+                                    try { parsedMeta = JSON.parse(a.timestamp); } catch (e) {}
+                                }
+                                if (!ptAttCurrent[cleanDk].some(x => String(x.userId) === String(realUid))) {
+                                    ptAttCurrent[cleanDk].push({
+                                        dateKey: cleanDk,
+                                        userId: realUid,
+                                        fullName: a.fullName || '',
+                                        timestamp: parsedMeta.timestamp || a.timestamp || '',
+                                        month: a.month || '',
+                                        markedBy: parsedMeta.markedBy || 'Trainer',
+                                        cycleNumber: parsedMeta.cycleNumber || 1
+                                    });
+                                }
+                                return;
+                            }
                             if (String(a.userId || '').startsWith('__STAFF_ATT__')) {
                                 try {
                                     const parts = String(a.userId).split(':');
@@ -4023,6 +4090,7 @@
                         });
                         storage.set('revive_attendance_db', aObj);
                         storage.set('revive_staff_attendance_db', saCurrent);
+                        storage.set('revive_pt_attendance_db', ptAttCurrent);
                     }
 
                     syncAdmissionCounter();
@@ -4543,21 +4611,56 @@
                 : (Number(monthTariff.regFee) || Number(APP_CONFIG.baseMonthlyFee) || 800);
         }
 
-        // Calculate 30-Session Personal Training progress and renewal fee status for a PT member
+        // Get chronologically sorted PT attendance records for a member from revive_pt_attendance_db
+        function getMemberPtAttendanceRecords(userId) {
+            if (!userId) return [];
+            const ptAttDb = storage.get('revive_pt_attendance_db', {});
+            const records = [];
+            Object.keys(ptAttDb || {}).sort().forEach(dKey => {
+                const dayArr = ptAttDb[dKey];
+                if (Array.isArray(dayArr)) {
+                    const found = dayArr.find(a => a && String(a.userId) === String(userId));
+                    if (found) {
+                        records.push({
+                            ...found,
+                            dateKey: dKey
+                        });
+                    }
+                }
+            });
+            return records;
+        }
+
+        // Get chronologically sorted Normal Gym attendance records for a member from revive_attendance_db
+        function getMemberNormalGymAttendanceRecords(userId) {
+            if (!userId) return [];
+            const attDb = storage.get('revive_attendance_db', {});
+            const records = [];
+            Object.keys(attDb || {}).sort().forEach(dKey => {
+                const dayArr = attDb[dKey];
+                if (Array.isArray(dayArr)) {
+                    const found = dayArr.find(a => a && String(a.userId) === String(userId));
+                    if (found) {
+                        records.push({
+                            ...found,
+                            dateKey: dKey
+                        });
+                    }
+                }
+            });
+            return records;
+        }
+
+        // Calculate 30-Session Personal Training progress and renewal fee status for a PT member (Strictly from PT Attendance!)
         function getPtClientSessionStats(user) {
             if (!user || !user.id) {
-                return { totalAttDays: 0, baseline: 0, usedInCycle: 0, remainingInCycle: 30, cycleNumber: 1, isRenewalDue: false, renewalFeeAmount: 1500 };
+                return { totalAttDays: 0, baseline: 0, usedInCycle: 0, remainingInCycle: 30, cycleNumber: 1, isRenewalDue: false, renewalFeeAmount: 1500, allPtRecords: [], cyclePtRecords: [] };
             }
-            const attDb = storage.get('revive_attendance_db', {});
-            let totalAttDays = 0;
-            for (const dKey in attDb) {
-                const dayArr = attDb[dKey];
-                if (Array.isArray(dayArr) && dayArr.some(a => String(a.userId) === String(user.id))) {
-                    totalAttDays++;
-                }
-            }
+            const allPtRecords = getMemberPtAttendanceRecords(user.id);
+            const totalAttDays = allPtRecords.length;
             const baseline = Math.max(0, parseInt(user.ptBaselineAttCount || 0, 10) || 0);
             const cycleNumber = Math.max(1, parseInt(user.ptCycleCount || 1, 10) || 1);
+            const cyclePtRecords = allPtRecords.slice(baseline);
             const usedInCycle = Math.max(0, totalAttDays - baseline);
             const remainingInCycle = Math.max(0, 30 - usedInCycle);
             const isRenewalDue = (usedInCycle >= 30);
@@ -4579,7 +4682,9 @@
                 remainingInCycle,
                 cycleNumber,
                 isRenewalDue,
-                renewalFeeAmount
+                renewalFeeAmount,
+                allPtRecords,
+                cyclePtRecords
             };
         }
 
@@ -7620,6 +7725,130 @@
                 document.getElementById("paymentProcessModal").style.display = "flex";
             },
 
+            getUserMonthPtAttendanceCount: function(userId, monthName, fy) {
+                const ptAttDb = storage.get('revive_pt_attendance_db', {});
+                let count = 0;
+                for (const dateStr in ptAttDb) {
+                    const d = new Date(dateStr);
+                    const mName = d.toLocaleString('default', { month: 'long' });
+                    const y = d.getFullYear();
+                    const m = d.getMonth();
+                    const recordFy = m >= 3 ? `${y}-${y+1}` : `${y-1}-${y}`;
+                    if (recordFy === fy && mName === monthName) {
+                        if (Array.isArray(ptAttDb[dateStr]) && ptAttDb[dateStr].some(a => String(a.userId) === String(userId))) {
+                            count++;
+                        }
+                    }
+                }
+                return count;
+            },
+
+            openPtAttendanceHistoryModal: function(userId, defaultTab = 'CYCLE') {
+                const users = storage.get('revive_users_db', []);
+                const user = users.find(u => u && String(u.id) === String(userId));
+                if (!user) return;
+                window._ptHistTargetUserId = user.id;
+                window._ptHistMode = defaultTab || 'CYCLE';
+
+                const subEl = document.getElementById('pt-hist-member-sub');
+                if (subEl) {
+                    subEl.innerText = `${user.fullName} (${user.id}) • Trainer: ${user.assignedTrainerName || 'Admin'}`;
+                }
+                window.moduleContext.renderPtAttendanceHistoryTable(window._ptHistMode);
+                const modal = document.getElementById('ptAttendanceHistoryModal');
+                if (modal) modal.style.display = 'flex';
+            },
+
+            renderPtAttendanceHistoryTable: function(mode = 'CYCLE') {
+                window._ptHistMode = mode;
+                const userId = window._ptHistTargetUserId;
+                const users = storage.get('revive_users_db', []);
+                const user = users.find(u => u && String(u.id) === String(userId));
+                if (!user) return;
+
+                const tabCycle = document.getElementById('pt-hist-tab-cycle');
+                const tabAll = document.getElementById('pt-hist-tab-all');
+                const tabGym = document.getElementById('pt-hist-tab-gym');
+                if (tabCycle) tabCycle.classList.toggle('active', mode === 'CYCLE');
+                if (tabAll) tabAll.classList.toggle('active', mode === 'ALL');
+                if (tabGym) tabGym.classList.toggle('active', mode === 'GYM');
+
+                const ptStats = getPtClientSessionStats(user);
+                const gymRecords = getMemberNormalGymAttendanceRecords(user.id);
+
+                if (tabCycle) tabCycle.innerText = `Cycle #${ptStats.cycleNumber} (${ptStats.usedInCycle}/30)`;
+                if (tabAll) tabAll.innerText = `All PT (${ptStats.totalAttDays})`;
+                if (tabGym) tabGym.innerText = `Gym Att (${gymRecords.length})`;
+
+                const stripEl = document.getElementById('pt-hist-summary-strip');
+                if (stripEl) {
+                    stripEl.innerHTML = `
+                    <div style="background:var(--bg-main); border:1px solid var(--border-color); border-radius:8px; padding:6px 4px;">
+                        <div style="font-size:0.62rem; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Cycle #${ptStats.cycleNumber} Used</div>
+                        <div style="font-size:0.95rem; font-weight:900; color:var(--accent-orange);">${ptStats.usedInCycle} / 30</div>
+                    </div>
+                    <div style="background:var(--bg-main); border:1px solid var(--border-color); border-radius:8px; padding:6px 4px;">
+                        <div style="font-size:0.62rem; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Remaining PT</div>
+                        <div style="font-size:0.95rem; font-weight:900; color:${ptStats.isRenewalDue ? 'var(--error-red)' : 'var(--success-green)'};">${ptStats.remainingInCycle} Days</div>
+                    </div>
+                    <div style="background:var(--bg-main); border:1px solid var(--border-color); border-radius:8px; padding:6px 4px;">
+                        <div style="font-size:0.62rem; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Normal Gym Att</div>
+                        <div style="font-size:0.95rem; font-weight:900; color:#1d4ed8;">${gymRecords.length} Days</div>
+                    </div>`;
+                }
+
+                const tbody = document.querySelector('#table-pt-history-days tbody');
+                if (!tbody) return;
+
+                let list = [];
+                if (mode === 'CYCLE') {
+                    list = ptStats.cyclePtRecords.map((r, idx) => ({
+                        num: `PT #${idx + 1}`,
+                        dateKey: r.dateKey,
+                        timestamp: r.timestamp || '-',
+                        markedBy: r.markedBy || user.assignedTrainerName || 'Trainer'
+                    }));
+                } else if (mode === 'ALL') {
+                    list = ptStats.allPtRecords.map((r, idx) => ({
+                        num: `PT #${idx + 1}`,
+                        dateKey: r.dateKey,
+                        timestamp: r.timestamp || '-',
+                        markedBy: `${r.markedBy || user.assignedTrainerName || 'Trainer'} (Cycle #${r.cycleNumber || Math.floor(idx / 30) + 1})`
+                    }));
+                } else {
+                    list = gymRecords.map((r, idx) => ({
+                        num: `Gym #${idx + 1}`,
+                        dateKey: r.dateKey,
+                        timestamp: r.timestamp || '-',
+                        markedBy: 'Client Attendance'
+                    }));
+                }
+
+                if (list.length === 0) {
+                    const emptyMsg = mode === 'GYM'
+                        ? 'No normal gym attendance recorded yet.'
+                        : 'No PT sessions attended in this view yet.';
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:1.4rem; color:var(--text-muted); font-weight:700;">${emptyMsg}</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = [...list].reverse().map(item => {
+                    const parts = String(item.dateKey).split('-');
+                    let dayShort = '';
+                    if (parts.length === 3) {
+                        const dObj = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+                        dayShort = dObj.toLocaleDateString('en-IN', { weekday: 'short' });
+                    }
+                    return `
+                    <tr>
+                        <td style="padding:8px 10px;"><strong style="color:var(--accent-orange);">${item.num}</strong></td>
+                        <td style="padding:8px 10px; font-weight:800;">${formatDateStr(item.dateKey)} ${dayShort ? `<span style="color:var(--text-muted); font-weight:700;">(${dayShort})</span>` : ''}</td>
+                        <td style="padding:8px 10px;">${item.timestamp}</td>
+                        <td style="padding:8px 10px; font-weight:700; color:var(--success-green);">${item.markedBy}</td>
+                    </tr>`;
+                }).join('');
+            },
+
             markPtClientAttendance: function(userId) {
                 let users = storage.get('revive_users_db', []);
                 const user = users.find(u => u && String(u.id) === String(userId) && !isUserCancelled(u));
@@ -7628,53 +7857,68 @@
                     return;
                 }
 
+                const isAdmin = (appContext.currentRole === 'admin');
+                const st = isAdmin ? null : window.moduleContext.resolveActiveStaff();
+                // Verify that only Admin or the Assigned Staff can mark PT attendance
+                if (!isAdmin) {
+                    const myId = st ? String(st.id || '').trim().toLowerCase() : '';
+                    const myName = st ? String(st.name || '').trim().toLowerCase() : '';
+                    const tId = String(user.assignedTrainerId || '').trim().toLowerCase();
+                    const tName = String(user.assignedTrainerName || '').trim().toLowerCase();
+                    if ((!myId || tId !== myId) && (!myName || tName !== myName)) {
+                        showNotice("Only Admin or the assigned PT Trainer can mark PT attendance for this client.", "error");
+                        return;
+                    }
+                }
+
                 const ptStats = getPtClientSessionStats(user);
                 if (ptStats.isRenewalDue) {
-                    showNotice(`⚠ ${user.fullName} has completed 30 PT Sessions (${ptStats.usedInCycle}/30)! Please collect the PT Renewal Fee (₹${ptStats.renewalFeeAmount}) to continue attendance.`, "error");
+                    showNotice(`⚠ ${user.fullName} has completed 30 PT Sessions (${ptStats.usedInCycle}/30)! Please collect the PT Renewal Fee (₹${ptStats.renewalFeeAmount}) to continue PT attendance.`, "error");
                     window.moduleContext.openPtRenewalPaymentModal(user.id);
                     return;
                 }
 
-                const st = window.moduleContext.resolveActiveStaff();
                 const now = new Date();
                 const dateKey = toIsoDateKey(now);
                 const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
                 const monthName = now.toLocaleString('default', { month: 'long' });
 
-                let attDb = storage.get('revive_attendance_db', {});
-                if (!attDb[dateKey]) attDb[dateKey] = [];
+                let ptAttDb = storage.get('revive_pt_attendance_db', {});
+                if (!ptAttDb[dateKey]) ptAttDb[dateKey] = [];
 
-                if (String(user.trainingCategory || '').toLowerCase().includes('personal')) {
-                    const ptSt = getPtClientSessionStats(user);
-                    if (ptSt.isRenewalDue) {
-                        resBox.innerHTML = `<span style="color:var(--error-red); font-weight:bold;">⚠ 30 PT Sessions Completed (${ptSt.usedInCycle}/30) for ${user.fullName} (${user.id})!</span><br><span style="font-size:0.85rem;">Assigned Trainer (${user.assignedTrainerName || 'Admin'}) must collect the PT Renewal Fee (₹${ptSt.renewalFeeAmount}) to start the next 30 sessions.</span><br><button type="button" class="btn danger" style="margin-top:8px; width:auto; padding:0.5rem 1rem; font-size:0.78rem;" onclick="window.moduleContext.openPtRenewalPaymentModal('${user.id}')">💳 Collect PT Fee Now (₹${ptSt.renewalFeeAmount})</button>`;
-                        return;
-                    }
-                }
-                const alreadyMarked = attDb[dateKey].some(a => String(a.userId) === String(user.id));
-                if (alreadyMarked) {
-                    showNotice(`Attendance already marked today for ${user.fullName} (${user.id}).`, "warning");
+                const alreadyMarkedPt = ptAttDb[dateKey].some(a => String(a.userId) === String(user.id));
+                if (alreadyMarkedPt) {
+                    showNotice(`PT Attendance already marked today for ${user.fullName} (${user.id}).`, "warning");
                     window.moduleContext.renderStaffPtClients();
                     return;
                 }
 
-                const newAtt = {
+                const trainerName = isAdmin ? 'Admin' : (st ? st.name : (user.assignedTrainerName || 'Trainer'));
+                const newPtAtt = {
                     dateKey: dateKey,
                     userId: user.id,
                     fullName: user.fullName,
                     timestamp: timeStr,
                     month: monthName,
-                    markedBy: st ? st.name : (appContext.currentRole === 'admin' ? 'Admin' : 'Staff')
+                    markedBy: trainerName,
+                    cycleNumber: ptStats.cycleNumber
                 };
-                attDb[dateKey].push(newAtt);
-                storage.set('revive_attendance_db', attDb);
-                cloudSync.push('pushAttendance', newAtt);
+                ptAttDb[dateKey].push(newPtAtt);
+                storage.set('revive_pt_attendance_db', ptAttDb);
+                syncHrBackupToSettings();
+                cloudSync.push('pushAttendance', {
+                    dateKey: dateKey,
+                    userId: `__PT_ATT__:${user.id}`,
+                    fullName: user.fullName,
+                    timestamp: JSON.stringify({ timestamp: timeStr, markedBy: trainerName, cycleNumber: ptStats.cycleNumber }),
+                    month: monthName
+                });
 
                 const newUsed = ptStats.usedInCycle + 1;
                 if (newUsed >= 30) {
-                    showNotice(`✔ Session 30/30 completed for ${user.fullName}! Next PT Renewal Fee (₹${ptStats.renewalFeeAmount}) is now due.`, "warning");
+                    showNotice(`✔ PT Session 30/30 completed for ${user.fullName}! Next PT Renewal Fee (₹${ptStats.renewalFeeAmount}) is now due.`, "warning");
                 } else {
-                    showNotice(`✔ PT Attendance marked for ${user.fullName} (Session ${newUsed}/30)!`, "success");
+                    showNotice(`✔ PT Attendance marked for ${user.fullName} (PT Session ${newUsed}/30)!`, "success");
                 }
                 window.moduleContext.renderStaffPtClients();
             },
@@ -7756,8 +8000,8 @@
                     }
                 }
 
-                const attDb = storage.get('revive_attendance_db', {});
-                const todayLogs = attDb[todayKey] || [];
+                const ptAttDb = storage.get('revive_pt_attendance_db', {});
+                const todayLogs = ptAttDb[todayKey] || [];
                 const presentTodaySet = new Set(todayLogs.map(a => String(a.userId)));
 
                 const renewalDueUsers = baseScopeList.filter(u => getPtClientSessionStats(u).isRenewalDue);
@@ -7813,7 +8057,8 @@
                         ? ('******' + String(u.primaryContact || '').slice(-4))
                         : (u.primaryContact || '-');
                     const todayRec = todayLogs.find(a => String(a.userId) === String(u.id));
-                    const monthAttCount = window.moduleContext.getUserMonthAttendanceCount(u.id, currMonthName, currFy);
+                    const monthPtAttCount = window.moduleContext.getUserMonthPtAttendanceCount(u.id, currMonthName, currFy);
+                    const monthGymAttCount = window.moduleContext.getUserMonthAttendanceCount(u.id, currMonthName, currFy);
                     const ptStats = getPtClientSessionStats(u);
 
                     const isAdminAssigned = (String(u.assignedTrainerId || '').toUpperCase() === 'ADMIN' || String(u.assignedTrainerName || '').toLowerCase() === 'admin');
@@ -7829,10 +8074,10 @@
                     const pct = Math.min(100, Math.round((ptStats.usedInCycle / 30) * 100));
                     const barColor = ptStats.isRenewalDue ? 'var(--error-red)' : (ptStats.usedInCycle >= 25 ? 'var(--warning-yellow)' : 'var(--success-green)');
                     const sessionProgressHtml = `
-                    <div style="background:var(--bg-main); border:1px solid ${ptStats.isRenewalDue ? '#feb2b2' : 'var(--border-color)'}; border-radius:8px; padding:0.55rem 0.7rem;">
+                    <div onclick="window.moduleContext.openPtAttendanceHistoryModal('${safeId}', 'CYCLE')" title="Click to view PT attended days" style="background:var(--bg-main); border:1px solid ${ptStats.isRenewalDue ? '#feb2b2' : 'var(--border-color)'}; border-radius:8px; padding:0.55rem 0.7rem; cursor:pointer; transition:border-color 0.2s;">
                         <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.73rem; font-weight:800; margin-bottom:5px;">
-                            <span style="color:var(--text-main);">🏋️ Cycle #${ptStats.cycleNumber} Sessions: <strong style="color:${barColor};">${ptStats.usedInCycle} / 30</strong></span>
-                            <span style="color:${ptStats.isRenewalDue ? 'var(--error-red)' : 'var(--text-muted)'};">${ptStats.isRenewalDue ? '⚠ FEE DUE (₹' + ptStats.renewalFeeAmount + ')' : ptStats.remainingInCycle + ' Left'}</span>
+                            <span style="color:var(--text-main);">🏋️ PT Sessions (Cycle #${ptStats.cycleNumber}): <strong style="color:${barColor}; text-decoration:underline;">${ptStats.usedInCycle} / 30</strong></span>
+                            <span style="color:${ptStats.isRenewalDue ? 'var(--error-red)' : 'var(--accent-orange)'};">${ptStats.isRenewalDue ? '⚠ FEE DUE (₹' + ptStats.renewalFeeAmount + ')' : ptStats.remainingInCycle + ' Left • View Days →'}</span>
                         </div>
                         <div style="width:100%; height:6px; background:#e2e8f0; border-radius:4px; overflow:hidden;">
                             <div style="width:${pct}%; height:100%; background:${barColor}; border-radius:4px; transition:width 0.25s;"></div>
@@ -7843,17 +8088,17 @@
                     if (ptStats.isRenewalDue) {
                         actionBtnHtml = `
                         <button type="button" class="btn danger" style="padding:0.68rem 0.8rem; font-size:0.76rem; border-radius:8px; background:var(--error-red); color:#fff; border:none;" onclick="window.moduleContext.openPtRenewalPaymentModal('${safeId}')">
-                            💳 30 Sessions Done — Collect PT Fee (₹${ptStats.renewalFeeAmount})
+                            💳 30 PT Sessions Done — Collect PT Fee (₹${ptStats.renewalFeeAmount})
                         </button>`;
                     } else if (todayRec) {
                         actionBtnHtml = `
-                        <div style="display:flex; align-items:center; justify-content:center; gap:6px; width:100%; padding:0.62rem 0.8rem; border-radius:8px; background:#f0fdf4; border:1.5px solid #86efac; color:#15803d; font-size:0.78rem; font-weight:900; text-transform:uppercase;">
-                            ✔ Present Today (${todayRec.timestamp})
+                        <div onclick="window.moduleContext.openPtAttendanceHistoryModal('${safeId}', 'CYCLE')" style="cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; width:100%; padding:0.62rem 0.8rem; border-radius:8px; background:#f0fdf4; border:1.5px solid #86efac; color:#15803d; font-size:0.78rem; font-weight:900; text-transform:uppercase;">
+                            ✔ PT Marked Today (${todayRec.timestamp})
                         </div>`;
                     } else {
                         actionBtnHtml = `
                         <button type="button" class="btn primary" style="padding:0.65rem 0.8rem; font-size:0.78rem; border-radius:8px;" onclick="window.moduleContext.markPtClientAttendance('${safeId}')">
-                            ✔ Mark Attendance
+                            ✔ Mark PT Attendance
                         </button>`;
                     }
 
@@ -7871,7 +8116,10 @@
                         </div>
                         ${sessionProgressHtml}
                         <div class="pt-client-meta-row">
-                            <span style="color:var(--text-main); background:var(--bg-main); padding:4px 8px; border-radius:6px; border:1px solid var(--border-color);">📅 ${currMonthShort} Att: <strong style="color:var(--accent-orange);">${monthAttCount} Days</strong></span>
+                            <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap;">
+                                <span onclick="window.moduleContext.openPtAttendanceHistoryModal('${safeId}', 'CYCLE')" title="Click to view PT attended days" style="cursor:pointer; color:var(--text-main); background:var(--bg-main); padding:4px 8px; border-radius:6px; border:1px solid var(--border-color);">📅 ${currMonthShort} PT: <strong style="color:var(--accent-orange); text-decoration:underline;">${monthPtAttCount}d</strong></span>
+                                <span onclick="window.moduleContext.openPtAttendanceHistoryModal('${safeId}', 'GYM')" title="Click to view Normal Gym attended days" style="cursor:pointer; color:var(--text-muted); background:var(--bg-main); padding:4px 8px; border-radius:6px; border:1px solid var(--border-color);">🏃 Gym: <strong>${monthGymAttCount}d</strong></span>
+                            </div>
                             ${trainerControlHtml}
                         </div>
                         ${actionBtnHtml}
@@ -8615,12 +8863,23 @@
                 const hubTrainRefresh = String(latestHubUser.trainingCategory || "Regular").replace(" Training", "") + (String(latestHubUser.trainingCategory || "").includes("Personal") && latestHubUser.assignedTrainerName ? ` (${latestHubUser.assignedTrainerName})` : "");
                 document.getElementById("hub-details").innerText = `${latestHubUser.admissionCategory || "Individual"} • ${hubTrainRefresh}`;
 
+                window.currentActiveUserRef = latestHubUser;
                 const ptBar = document.getElementById("hub-pt-trainer-bar");
                 const ptPlanSel = document.getElementById("hub-plan-switch-select");
                 const ptBarSel = document.getElementById("hub-pt-trainer-select");
+                const ptSessPill = document.getElementById("hub-pt-sessions-pill");
                 if (ptBar && ptPlanSel && ptBarSel) {
                     if (!isCanc && currentHubMode !== "fee") {
                         const isCurrPt = String(latestHubUser.trainingCategory || "").toLowerCase().includes("personal");
+                        if (ptSessPill) {
+                            if (isCurrPt) {
+                                const pSt = getPtClientSessionStats(latestHubUser);
+                                ptSessPill.style.display = "flex";
+                                ptSessPill.innerHTML = `<span style="font-size:0.75rem; font-weight:800; color:var(--text-main);">🏋️ Cycle #${pSt.cycleNumber} PT Sessions: <strong style="color:${pSt.isRenewalDue ? 'var(--error-red)' : 'var(--accent-orange)'}; text-decoration:underline;">${pSt.usedInCycle} / 30</strong> (${pSt.remainingInCycle} Left)</span><span style="font-size:0.7rem; font-weight:800; color:var(--accent-orange);">📅 View PT Days →</span>`;
+                            } else {
+                                ptSessPill.style.display = "none";
+                            }
+                        }
                         ptPlanSel.value = isCurrPt ? "Personal Training" : "Regular";
                         const activeStaffList = getNormalizedStaffDb().filter(s => !isStaffRelieved(s));
                         const hasAssigned = !!(latestHubUser.assignedTrainerId || latestHubUser.assignedTrainerName);
