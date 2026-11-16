@@ -900,9 +900,18 @@
                         </div>
                     </div>
 
-                    <div id="hub-pt-trainer-bar" style="display:none; align-items:center; justify-content:space-between; gap:8px; background:#fff5eb; border:1px solid #fed7aa; border-radius:8px; padding:0.55rem 0.75rem;">
-                        <span style="font-size:0.74rem; font-weight:800; color:var(--accent-orange); text-transform:uppercase; white-space:nowrap;">🏋️ PT Trainer:</span>
-                        <select id="hub-pt-trainer-select" onchange="window.moduleContext.onHubPtTrainerChange(this.value)" style="flex:1; min-width:0; padding:0.4rem 0.6rem; font-size:0.82rem; font-weight:800; background:#fff; border-radius:6px;"></select>
+                    <div id="hub-pt-trainer-bar" style="display:none; flex-direction:column; gap:8px; background:#fff5eb; border:1px solid #fed7aa; border-radius:10px; padding:0.65rem 0.8rem;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
+                            <span style="font-size:0.72rem; font-weight:800; color:var(--accent-orange); text-transform:uppercase; white-space:nowrap;">🏋️ Training Plan & Trainer</span>
+                            <div style="display:flex; align-items:center; gap:6px; flex:1; justify-content:flex-end; min-width:200px;">
+                                <select id="hub-plan-switch-select" onchange="window.moduleContext.onHubPlanSwitchToggle()" style="width:auto; flex:1; padding:0.38rem 0.55rem; font-size:0.78rem; font-weight:800; background:#fff; border-radius:6px;">
+                                    <option value="Regular">Regular</option>
+                                    <option value="Personal Training">Personal Training</option>
+                                </select>
+                                <select id="hub-pt-trainer-select" style="display:none; width:auto; flex:1.2; padding:0.38rem 0.55rem; font-size:0.78rem; font-weight:800; background:#fff; border-radius:6px;"></select>
+                                <button type="button" id="hub-pt-save-btn" class="btn primary" style="width:auto; padding:0.4rem 0.75rem; font-size:0.72rem; border-radius:6px; white-space:nowrap;" onclick="window.moduleContext.saveHubPlanAndTrainer()">Save</button>
+                            </div>
+                        </div>
                     </div>
 
                     <div id="hub-actions">
@@ -1467,15 +1476,15 @@
 
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:0.9rem;">
                     <div id="staff-pt-header-meta" style="font-size:0.84rem; font-weight:800; color:var(--text-muted);"></div>
-                    <div class="pt-filter-tabs">
-                        <button type="button" id="pt-tab-my" class="pt-filter-btn active" onclick="window.moduleContext.setStaffPtFilter('MY')">My Clients</button>
-                        <button type="button" id="pt-tab-all" class="pt-filter-btn" onclick="window.moduleContext.setStaffPtFilter('ALL')">All PT Clients</button>
+                    <div class="pt-filter-tabs" id="pt-filter-tabs-wrap" style="display:none;">
+                        <button type="button" id="pt-tab-all" class="pt-filter-btn active" onclick="window.moduleContext.setStaffPtFilter('ALL')">All PT Clients</button>
+                        <button type="button" id="pt-tab-my" class="pt-filter-btn" onclick="window.moduleContext.setStaffPtFilter('MY')">Admin Assigned</button>
                     </div>
                 </div>
 
                 <div class="staff-kpi-row3" style="margin-bottom:1rem;">
                     <div class="staff-kpi-card" style="border-bottom: 3px solid var(--accent-orange); cursor:default;">
-                        <h4>My PT Clients</h4>
+                        <h4 id="pt-kpi-first-lbl">My PT Clients</h4>
                         <div class="kpi-num" style="color:var(--accent-orange);" id="pt-kpi-my-count">0</div>
                     </div>
                     <div class="staff-kpi-card" style="border-bottom: 3px solid var(--success-green); cursor:default;">
@@ -1483,7 +1492,7 @@
                         <div class="kpi-num" style="color:var(--success-green);" id="pt-kpi-present-today">0</div>
                     </div>
                     <div class="staff-kpi-card" style="border-bottom: 3px solid #1d4ed8; cursor:default;">
-                        <h4>All Active PT</h4>
+                        <h4 id="pt-kpi-third-lbl">Pending Today</h4>
                         <div class="kpi-num" style="color:#1d4ed8;" id="pt-kpi-total-pt">0</div>
                     </div>
                 </div>
@@ -3250,6 +3259,15 @@
                 lastWorkingDay: cleanLwd,
                 isRelieved: !!st.isRelieved || !!cleanLwd
             };
+        }
+
+        function isStaffRelieved(st) {
+            if (!st) return true;
+            if (st.isRelieved === true || String(st.isRelieved).toLowerCase() === 'true') return true;
+            if (st.lastWorkingDay && String(st.lastWorkingDay).trim() !== '') return true;
+            const stStatus = String(st.status || '').trim().toLowerCase();
+            if (stStatus === 'inactive' || stStatus === 'relieved' || stStatus === 'resigned') return true;
+            return false;
         }
 
         function getNormalizedStaffDb() {
@@ -7343,24 +7361,75 @@
                 }
             },
 
-            onHubPtTrainerChange: function(trainerId) {
-                if (!currentActiveUser || appContext.currentRole !== 'admin') return;
-                if (!trainerId) {
-                    showNotice("Please select an active Trainer or Admin.", "error");
-                    return;
+            onHubPlanSwitchToggle: function() {
+                const planSel = document.getElementById('hub-plan-switch-select');
+                const trainerSel = document.getElementById('hub-pt-trainer-select');
+                if (!planSel || !trainerSel) return;
+                if (planSel.value === 'Personal Training') {
+                    trainerSel.style.display = 'block';
+                } else {
+                    trainerSel.style.display = 'none';
                 }
-                window.moduleContext.assignPtClientTrainer(currentActiveUser.id, trainerId, true);
+            },
+
+            saveHubPlanAndTrainer: function() {
+                if (!currentActiveUser) return;
+                const planSel = document.getElementById('hub-plan-switch-select');
+                const trainerSel = document.getElementById('hub-pt-trainer-select');
+                if (!planSel) return;
+                const newPlan = planSel.value;
+                let usersDb = storage.get('revive_users_db', []);
+                const idx = usersDb.findIndex(u => u && String(u.id) === String(currentActiveUser.id));
+                if (idx === -1) return;
+
+                if (newPlan === 'Personal Training') {
+                    const chosenTrainerId = trainerSel ? String(trainerSel.value || '').trim() : '';
+                    if (!chosenTrainerId) {
+                        showNotice("Please select an active Trainer from the list for Personal Training.", "error");
+                        if (trainerSel) trainerSel.focus();
+                        return;
+                    }
+                    const isAdminAssign = (chosenTrainerId.toUpperCase() === 'ADMIN');
+                    const activeStaff = getNormalizedStaffDb().filter(s => !isStaffRelieved(s));
+                    const st = isAdminAssign ? null : activeStaff.find(s => String(s.id) === chosenTrainerId);
+                    if (!isAdminAssign && !st) {
+                        showNotice("Please choose an active Trainer from the list.", "error");
+                        return;
+                    }
+                    usersDb[idx].trainingCategory = 'Personal Training';
+                    usersDb[idx].assignedTrainerId = isAdminAssign ? 'ADMIN' : st.id;
+                    usersDb[idx].assignedTrainerName = isAdminAssign ? 'Admin' : st.name;
+                    showNotice(`${usersDb[idx].fullName} updated to Personal Training (Trainer: ${usersDb[idx].assignedTrainerName}).`, "success");
+                } else {
+                    usersDb[idx].trainingCategory = 'Regular';
+                    usersDb[idx].assignedTrainerId = '';
+                    usersDb[idx].assignedTrainerName = '';
+                    showNotice(`${usersDb[idx].fullName} updated to Regular Training.`, "success");
+                }
+
+                currentActiveUser = usersDb[idx];
+                storage.set('revive_users_db', usersDb);
+                cloudSync.push('pushUser', currentActiveUser);
+
+                const dInfo = parseAdmissionDateInfo(currentActiveUser.date, currentActiveUser._month, currentActiveUser._fy);
+                const cleanTrain = String(currentActiveUser.trainingCategory || "Regular").replace(" Training", "") + (String(currentActiveUser.trainingCategory || "").includes("Personal") && currentActiveUser.assignedTrainerName ? ` (${currentActiveUser.assignedTrainerName})` : "");
+                const detEl = document.getElementById("hub-details");
+                if (detEl) detEl.innerText = `${currentActiveUser.admissionCategory || "Individual"} • ${cleanTrain}`;
+                window.moduleContext.renderFeeCalendar(currentActiveUser.id, currentActiveUser.selectedFY || dInfo.fy, currentActiveUser.trainingCategory, dInfo.formattedDate);
             },
 
             initStaffPtView: function() {
-                window._staffPtFilterMode = (appContext.currentRole === 'admin') ? 'ALL' : 'MY';
+                const isAdmin = (appContext.currentRole === 'admin');
+                window._staffPtFilterMode = isAdmin ? 'ALL' : 'MY';
                 const searchEl = document.getElementById('staff-pt-search-input');
                 if (searchEl) searchEl.value = '';
                 window.moduleContext.setStaffPtFilter(window._staffPtFilterMode);
             },
 
             setStaffPtFilter: function(mode) {
-                window._staffPtFilterMode = (mode === 'ALL') ? 'ALL' : 'MY';
+                const isAdmin = (appContext.currentRole === 'admin');
+                // Staff can ONLY view their own assigned PT clients ('MY')
+                window._staffPtFilterMode = (!isAdmin) ? 'MY' : ((mode === 'MY') ? 'MY' : 'ALL');
                 const tabMy = document.getElementById('pt-tab-my');
                 const tabAll = document.getElementById('pt-tab-all');
                 if (tabMy) tabMy.classList.toggle('active', window._staffPtFilterMode === 'MY');
@@ -7465,8 +7534,10 @@
                 if (headerMeta) {
                     headerMeta.innerHTML = `${isAdmin ? 'Admin PT Manager' : 'Trainer: <strong style="color:var(--accent-orange);">' + (st ? st.name : 'Staff') + '</strong>'} &nbsp;•&nbsp; ${todayPretty}`;
                 }
-                const tabMyBtn = document.getElementById('pt-tab-my');
-                if (tabMyBtn) tabMyBtn.innerText = isAdmin ? 'Admin Assigned' : 'My Clients';
+                const filterTabsWrap = document.getElementById('pt-filter-tabs-wrap');
+                if (filterTabsWrap) {
+                    filterTabsWrap.style.display = isAdmin ? 'inline-flex' : 'none';
+                }
 
                 const allUsers = storage.get('revive_users_db', []);
                 const supersededIds = getSupersededUserIdsSet(allUsers);
@@ -7492,23 +7563,36 @@
                 };
 
                 const myAssignedPt = activePtUsers.filter(u => isAssignedToMe(u));
-                const mode = window._staffPtFilterMode || (isAdmin ? 'ALL' : 'MY');
+                // Staff strictly sees ONLY their own PT clients
+                const mode = (!isAdmin) ? 'MY' : (window._staffPtFilterMode || 'ALL');
                 let displayList = (mode === 'MY') ? [...myAssignedPt] : [...activePtUsers];
 
                 const attDb = storage.get('revive_attendance_db', {});
                 const todayLogs = attDb[todayKey] || [];
                 const presentTodaySet = new Set(todayLogs.map(a => String(a.userId)));
 
-                // Update KPI counters
+                // Update KPI counters & labels for Staff vs Admin
+                const firstLblEl = document.getElementById('pt-kpi-first-lbl');
+                const thirdLblEl = document.getElementById('pt-kpi-third-lbl');
                 const myCountEl = document.getElementById('pt-kpi-my-count');
                 const presCountEl = document.getElementById('pt-kpi-present-today');
                 const totalPtEl = document.getElementById('pt-kpi-total-pt');
-                if (myCountEl) myCountEl.innerText = myAssignedPt.length || activePtUsers.length;
-                if (presCountEl) {
-                    const presCount = displayList.filter(u => presentTodaySet.has(String(u.id))).length;
-                    presCountEl.innerText = presCount;
+
+                if (isAdmin) {
+                    if (firstLblEl) firstLblEl.innerText = 'Admin Assigned';
+                    if (thirdLblEl) thirdLblEl.innerText = 'All Active PT';
+                    if (myCountEl) myCountEl.innerText = myAssignedPt.length;
+                    if (presCountEl) presCountEl.innerText = displayList.filter(u => presentTodaySet.has(String(u.id))).length;
+                    if (totalPtEl) totalPtEl.innerText = activePtUsers.length;
+                } else {
+                    const myPresentCount = myAssignedPt.filter(u => presentTodaySet.has(String(u.id))).length;
+                    const myPendingCount = Math.max(0, myAssignedPt.length - myPresentCount);
+                    if (firstLblEl) firstLblEl.innerText = 'My PT Clients';
+                    if (thirdLblEl) thirdLblEl.innerText = 'Pending Today';
+                    if (myCountEl) myCountEl.innerText = myAssignedPt.length;
+                    if (presCountEl) presCountEl.innerText = myPresentCount;
+                    if (totalPtEl) totalPtEl.innerText = myPendingCount;
                 }
-                if (totalPtEl) totalPtEl.innerText = activePtUsers.length;
 
                 // Apply search filter
                 const searchEl = document.getElementById('staff-pt-search-input');
@@ -7524,8 +7608,8 @@
                 if (displayList.length === 0) {
                     container.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align:center; padding:2.2rem 1rem; background:var(--bg-panel); border:1.5px dashed var(--border-color); border-radius:12px; color:var(--text-muted);">
-                        <div style="font-size:1rem; font-weight:800; color:var(--text-main); margin-bottom:4px;">No Active Personal Training Clients Found</div>
-                        <div style="font-size:0.8rem;">Switch to "All PT Clients" or register a member under Personal Training.</div>
+                        <div style="font-size:1rem; font-weight:800; color:var(--text-main); margin-bottom:4px;">${isAdmin ? 'No Active Personal Training Clients Found' : 'No Personal Training Clients Assigned to You'}</div>
+                        <div style="font-size:0.8rem;">${isAdmin ? 'Register a member under Personal Training or switch their plan from Member Profile.' : 'Clients assigned to you during PT registration or by Admin will appear here.'}</div>
                     </div>`;
                     return;
                 }
@@ -8315,16 +8399,26 @@
                 document.getElementById("hub-details").innerText = `${latestHubUser.admissionCategory || "Individual"} • ${hubTrainRefresh}`;
 
                 const ptBar = document.getElementById("hub-pt-trainer-bar");
+                const ptPlanSel = document.getElementById("hub-plan-switch-select");
                 const ptBarSel = document.getElementById("hub-pt-trainer-select");
-                if (ptBar && ptBarSel) {
-                    if (appContext.currentRole === "admin" && !isCanc && String(latestHubUser.trainingCategory || "").toLowerCase().includes("personal")) {
+                if (ptBar && ptPlanSel && ptBarSel) {
+                    if (!isCanc && currentHubMode !== "fee") {
+                        const isCurrPt = String(latestHubUser.trainingCategory || "").toLowerCase().includes("personal");
+                        ptPlanSel.value = isCurrPt ? "Personal Training" : "Regular";
                         const activeStaffList = getNormalizedStaffDb().filter(s => !isStaffRelieved(s));
-                        const isAdmT = (String(latestHubUser.assignedTrainerId || "").toUpperCase() === "ADMIN" || String(latestHubUser.assignedTrainerName || "").toLowerCase() === "admin" || (!latestHubUser.assignedTrainerId && !latestHubUser.assignedTrainerName));
-                        ptBarSel.innerHTML = activeStaffList.map(s => {
+                        const hasAssigned = !!(latestHubUser.assignedTrainerId || latestHubUser.assignedTrainerName);
+                        const isAdmT = hasAssigned && (String(latestHubUser.assignedTrainerId || "").toUpperCase() === "ADMIN" || String(latestHubUser.assignedTrainerName || "").toLowerCase() === "admin");
+                        ptBarSel.innerHTML = `<option value="">-- Select Active Trainer --</option>` + activeStaffList.map(s => {
                             const isSel = (String(latestHubUser.assignedTrainerId || "") === String(s.id) || String(latestHubUser.assignedTrainerName || "").toLowerCase() === String(s.name).toLowerCase());
                             return `<option value="${s.id}" ${isSel ? 'selected' : ''}>${s.name} (${s.role || 'Staff'})</option>`;
-                        }).join('') + `<option value="ADMIN" ${isAdmT ? 'selected' : ''}>Admin</option>`;
-                        ptBar.style.display = "flex";
+                        }).join('') + (appContext.currentRole === "admin" || isAdmT || activeStaffList.length === 0 ? `<option value="ADMIN" ${isAdmT ? 'selected' : ''}>Admin</option>` : '');
+                        ptBarSel.style.display = isCurrPt ? "block" : "none";
+                        // Staff can upgrade Regular -> PT (must choose active trainer), while Admin can always change plan or reassign PT trainer
+                        if (appContext.currentRole === "admin" || !isCurrPt) {
+                            ptBar.style.display = "flex";
+                        } else {
+                            ptBar.style.display = "none";
+                        }
                     } else {
                         ptBar.style.display = "none";
                     }
